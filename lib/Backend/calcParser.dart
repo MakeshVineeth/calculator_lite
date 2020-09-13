@@ -45,7 +45,7 @@ class CalcParser {
   }
 
   void setSign() {
-    // Not very advanced but just a basic function to insert or revert signs wherever possible.4
+    // Not very advanced but just a basic function to insert minus sign wherever possible
 
     int lastChar = calculationString.length - 1;
     bool found = false;
@@ -60,7 +60,19 @@ class CalcParser {
     }
 
     if (i != lastChar) {
-      calculationString.insert(i + 1, '(-');
+      if (i != -1) {
+        if (calculationString[i].contains('(')) {
+          calculationString.insert(i + 1, '-');
+        } else if (calculationString[i].contains('+')) {
+          calculationString[i] = '-';
+        } else if (calculationString[i].contains('-')) {
+          calculationString[i] = '-';
+        } else {
+          calculationString.insert(i + 1, '(-');
+        }
+      } else {
+        calculationString.insert(i + 1, '-');
+      }
     } else {
       // To get last operator and insert a sign there.
       for (i = lastChar; i >= 0; i--) {
