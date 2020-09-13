@@ -51,6 +51,7 @@ class CalcParser {
     bool found = false;
     int i = 0;
 
+    // parse the string from the end to start. Break immediately if any symbol found other than integers.
     for (i = lastChar; i >= 0; i--) {
       if ({'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
               .contains(calculationString[i]) ==
@@ -59,7 +60,9 @@ class CalcParser {
       }
     }
 
+    // check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
     if (i != lastChar) {
+      // pre-check if i is -1 and avoid run-time errors.
       if (i != -1) {
         if (calculationString[i].contains('(')) {
           calculationString.insert(i + 1, '-');
@@ -71,17 +74,18 @@ class CalcParser {
           calculationString.insert(i + 1, '(-');
         }
       } else {
+        // if it indeed equal to -1 then add sign directly as there are no operators at this point, only a number.
         calculationString.insert(i + 1, '-');
       }
     } else {
-      // To get last operator and insert a sign there.
+      // executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
       for (i = lastChar; i >= 0; i--) {
         if (operations.contains(calculationString[i])) {
-          found = true;
+          found =
+              true; // sets to true and can be checked if found and add the sign.
           break;
         }
       }
-
       if (found) {
         calculationString.insert(i + 1, '(-');
       }
