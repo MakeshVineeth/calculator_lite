@@ -31,10 +31,15 @@ dependencies:
   shared_preferences: ^0.5.10
   math_expressions: ^2.0.1
   flutter_statusbarcolor: ^0.2.3
+  flutter_rename_app: ^1.0.0
+  flutter_launcher_icons: ^0.8.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_rename_app:
+  application_name: Calculator Lite
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
