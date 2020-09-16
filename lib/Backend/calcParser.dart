@@ -64,12 +64,14 @@ class CalcParser {
     if (i != lastChar) {
       // pre-check if i is -1 and avoid run-time errors.
       if (i != -1) {
-        if (calculationString[i].contains('(')) {
+        if (calculationString[i].contains('(-')) {
+          calculationString.removeAt(i);
+        } else if (calculationString[i].contains('(')) {
           calculationString.insert(i + 1, '-');
         } else if (calculationString[i].contains('+')) {
           calculationString[i] = '-';
         } else if (calculationString[i].contains('-')) {
-          calculationString[i] = '-';
+          calculationString[i] = '+';
         } else {
           calculationString.insert(i + 1, '(-');
         }
