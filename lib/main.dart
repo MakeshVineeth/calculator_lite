@@ -6,6 +6,7 @@ import 'package:calculator_lite/calculatorTab.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/Backend/themeChange.dart';
 
 void main() => runApp(BottomNavBar());
 
@@ -30,30 +31,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
     HistoryTab()
   ];
 
-  void getThemeStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final theme = prefs.getString('theme') ?? 'System Default';
-    setState(() {
-      switch (theme) {
-        case 'System Default':
-          setTheme = ThemeMode.system;
-          break;
-        case 'Dark':
-          setTheme = ThemeMode.dark;
-          break;
-        case 'Light':
-          setTheme = ThemeMode.light;
-          break;
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getThemeStatus();
-  }
-
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -70,31 +47,58 @@ class _BottomNavBarState extends State<BottomNavBar> {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
   }
 
+  void getThemeStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final theme = prefs.getString('theme') ?? 'System Default';
+    ThemeMode themeMode;
+    switch (theme) {
+      case 'System Default':
+        themeMode = ThemeMode.system;
+        break;
+      case 'Dark':
+        themeMode = ThemeMode.dark;
+        break;
+      case 'Light':
+        themeMode = ThemeMode.light;
+        break;
+    }
+    setThemeFunction(themeMode);
+  }
+
+  void setThemeFunction(ThemeMode themeMode) {
+    setState(() {
+      setTheme = themeMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Calculator Lite',
-      debugShowCheckedModeBanner: false,
-      themeMode: setTheme,
-      theme: FixedValues.lightTheme(),
-      darkTheme: FixedValues.darkTheme(),
-      home: Scaffold(
-        body: SafeArea(
-          child: IndexedStack(
-            index: _currentIndex,
-            children: availableWidgets,
+    return ThemeChange(
+      stateFunction: setThemeFunction,
+      child: MaterialApp(
+        title: 'Calculator Lite',
+        debugShowCheckedModeBanner: false,
+        themeMode: setTheme,
+        theme: FixedValues.lightTheme(),
+        darkTheme: FixedValues.darkTheme(),
+        home: Scaffold(
+          body: SafeArea(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: availableWidgets,
+            ),
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          type: BottomNavigationBarType.fixed,
-          items: List.generate(e.length, (index) {
-            return BottomNavClass(
-              title: e.keys.elementAt(index),
-              icon: e.values.elementAt(index),
-            ).returnNavItems();
-          }),
-          onTap: _onItemTapped,
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            type: BottomNavigationBarType.fixed,
+            items: List.generate(e.length, (index) {
+              return BottomNavClass(
+                title: e.keys.elementAt(index),
+                icon: e.values.elementAt(index),
+              ).returnNavItems();
+            }),
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );

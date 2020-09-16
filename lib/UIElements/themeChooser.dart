@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:calculator_lite/Backend/themeChange.dart';
 
 // Pop up for Choosing Theme
 class PopThemeChooser extends StatelessWidget {
@@ -25,6 +26,7 @@ class ThemeButtons extends StatefulWidget {
 
 class _ThemeButtonsState extends State<ThemeButtons> {
   String _currentTheme;
+  ThemeChange themeChange;
 
   void getCurrentThemeStat() async {
     final prefs = await SharedPreferences.getInstance();
@@ -42,6 +44,7 @@ class _ThemeButtonsState extends State<ThemeButtons> {
 
   @override
   Widget build(BuildContext context) {
+    themeChange = ThemeChange.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: e.entries
@@ -61,5 +64,18 @@ class _ThemeButtonsState extends State<ThemeButtons> {
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('theme', _currentTheme);
+    ThemeMode themeMode;
+    switch (_currentTheme) {
+      case 'System Default':
+        themeMode = ThemeMode.system;
+        break;
+      case 'Dark':
+        themeMode = ThemeMode.dark;
+        break;
+      case 'Light':
+        themeMode = ThemeMode.light;
+        break;
+    }
+    themeChange.stateFunction(themeMode);
   }
 }
