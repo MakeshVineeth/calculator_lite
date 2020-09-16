@@ -16,36 +16,7 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _currentIndex = 1;
   ThemeMode setTheme = ThemeMode.system;
-
-  Map e = {
-    'Currency': Icons.monetization_on_outlined,
-    'Calculator': Icons.calculate_outlined,
-    'History': Icons.history_outlined
-  };
-
-  List<Widget> availableWidgets = <Widget>[
-    CurrencyTab(),
-    CalculatorTab(),
-    HistoryTab()
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
-  void setFlatStatusBar() {
-    // Must be executed every time the theme changes.
-    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-    Brightness getCurrentLight = Theme.of(context).brightness;
-    print(getCurrentLight);
-    bool useWhiteForeground =
-        (getCurrentLight == Brightness.dark) ? true : false;
-    FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
-  }
 
   void getThemeStatus() async {
     final prefs = await SharedPreferences.getInstance();
@@ -72,6 +43,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getThemeStatus();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ThemeChange(
       stateFunction: setThemeFunction,
@@ -81,25 +58,67 @@ class _BottomNavBarState extends State<BottomNavBar> {
         themeMode: setTheme,
         theme: FixedValues.lightTheme(),
         darkTheme: FixedValues.darkTheme(),
-        home: Scaffold(
-          body: SafeArea(
-            child: IndexedStack(
-              index: _currentIndex,
-              children: availableWidgets,
-            ),
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            type: BottomNavigationBarType.fixed,
-            items: List.generate(e.length, (index) {
-              return BottomNavClass(
-                title: e.keys.elementAt(index),
-                icon: e.values.elementAt(index),
-              ).returnNavItems();
-            }),
-            onTap: _onItemTapped,
-          ),
+        home: ScaffoldHome(),
+      ),
+    );
+  }
+}
+
+class ScaffoldHome extends StatefulWidget {
+  @override
+  _ScaffoldHomeState createState() => _ScaffoldHomeState();
+}
+
+class _ScaffoldHomeState extends State<ScaffoldHome> {
+  int _currentIndex = 1;
+
+  Map e = {
+    'Currency': Icons.monetization_on_outlined,
+    'Calculator': Icons.calculate_outlined,
+    'History': Icons.history_outlined
+  };
+
+  List<Widget> availableWidgets = <Widget>[
+    CurrencyTab(),
+    CalculatorTab(),
+    HistoryTab()
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void setFlatStatusBar() {
+    // Must be executed every time the theme changes.
+    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    ThemeData temp = Theme.of(context);
+    bool useWhiteForeground =
+        (temp.brightness == Brightness.dark) ? true : false;
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    setFlatStatusBar();
+    return Scaffold(
+      body: SafeArea(
+        child: IndexedStack(
+          index: _currentIndex,
+          children: availableWidgets,
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        items: List.generate(e.length, (index) {
+          return BottomNavClass(
+            title: e.keys.elementAt(index),
+            icon: e.values.elementAt(index),
+          ).returnNavItems();
+        }),
+        onTap: _onItemTapped,
       ),
     );
   }
