@@ -69,7 +69,8 @@ class ScaffoldHome extends StatefulWidget {
   _ScaffoldHomeState createState() => _ScaffoldHomeState();
 }
 
-class _ScaffoldHomeState extends State<ScaffoldHome> {
+class _ScaffoldHomeState extends State<ScaffoldHome>
+    with WidgetsBindingObserver {
   int _currentIndex = 1;
 
   Map e = {
@@ -97,6 +98,25 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
     bool useWhiteForeground =
         (temp.brightness == Brightness.dark) ? true : false;
     FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setFlatStatusBar();
+    }
   }
 
   @override

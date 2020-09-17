@@ -64,16 +64,21 @@ class CalcParser {
     if (i != lastChar) {
       // pre-check if i is -1 and avoid run-time errors.
       if (i != -1) {
-        if (calculationString[i].contains('(-')) {
-          calculationString.removeAt(i);
-        } else if (calculationString[i].contains('(')) {
-          calculationString.insert(i + 1, '-');
-        } else if (calculationString[i].contains('+')) {
-          calculationString[i] = '-';
-        } else if (calculationString[i].contains('-')) {
-          calculationString[i] = '+';
-        } else {
-          calculationString.insert(i + 1, '(-');
+        switch (calculationString[i]) {
+          case '(-':
+            calculationString.removeAt(i);
+            break;
+          case '(':
+            calculationString.insert(i + 1, '-');
+            break;
+          case '+':
+            calculationString[i] = '-';
+            break;
+          case '-':
+            calculationString[i] = '+';
+            break;
+          default:
+            calculationString.insert(i + 1, '(-');
         }
       } else {
         // if it indeed equal to -1 then add sign directly as there are no operators at this point, only a number.

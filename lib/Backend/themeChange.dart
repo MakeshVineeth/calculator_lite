@@ -6,7 +6,8 @@ class ThemeChange extends InheritedWidget {
   const ThemeChange({this.child, this.stateFunction}) : super(child: child);
 
   @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) => true;
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) =>
+      child != oldWidget.child;
 
   static ThemeChange of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<ThemeChange>();
