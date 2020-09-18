@@ -23,6 +23,10 @@ class CalcParser {
         if (value.contains(FixedValues.squareChar))
           calculationString[lastIndex] = '$lastChar\u00B2';
 
+        // Code for reciprocal button.
+        else if (value.contains(FixedValues.reciprocalChar))
+          calculationString[lastIndex] = '\u00B9\u002F$value';
+
         // Code for add bracket after following functions.
 
         else if ({'sin', 'cos', 'tan', 'ln', 'log'}.contains(value))
@@ -40,13 +44,18 @@ class CalcParser {
         else
           calculationString.add(value);
       }
-    } else if (!({
+    }
+    // Following functions should not present in the first position.
+    else if (!({
       '+',
       '*',
       '/',
       FixedValues.divisionChar,
       FixedValues.multiplyChar,
       ')',
+      '!',
+      FixedValues.reciprocalChar,
+      'mod',
       FixedValues.capChar,
       '%',
       FixedValues.squareChar,

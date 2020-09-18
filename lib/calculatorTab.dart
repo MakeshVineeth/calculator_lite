@@ -35,15 +35,17 @@ class _CalculatorTabState extends State<CalculatorTab> {
   displayToScreen(String value) {
     setState(() {
       // First check for down or up arrow buttons
-      if (value.contains(FixedValues.upperArrow) || value.contains('↓')) {
+      if (value.contains(FixedValues.upperArrow) || value.contains('↓'))
         changeButtons(); // Up and Down Arrows
+      else if (value.contains('inv')) {
+        // when inv clicked, inverse buttons.
       } else if (value.contains('C')) {
         calculationString.clear();
         mainValue = 0.0;
-      } else if (value.contains(FixedValues.backSpaceChar)) {
+      } else if (value.contains(FixedValues.backSpaceChar))
         // Back Button
         backSpaceBtn();
-      } else {
+      else {
         CalcParser calcParser =
             CalcParser(calculationString: calculationString);
         calculationString = calcParser.addToExpression(value);
