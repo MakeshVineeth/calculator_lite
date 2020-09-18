@@ -12,7 +12,20 @@ class CalcParser {
     '-',
     '/'
   ];
-  List<String> numbersList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  List<String> numbersList = [
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '.',
+    FixedValues.decimalChar
+  ];
   List<String> addToExpression(String value) {
     if (calculationString.length != 0) {
       int lastIndex = calculationString.length - 1;
@@ -72,24 +85,39 @@ class CalcParser {
   }
 
   void reciprocalFunction() {
-    int lastIndex = calculationString.length;
-    for (int i = lastIndex; i >= 0; i++)
-      if (!numbersList.contains(calculationString[i])) break;
+    int lastIndex = calculationString.length - 1;
+    int i = parseNumbersFromEnd();
+    if (i != lastIndex) {
+      // parse numbers
+      double num =
+          double.tryParse(calculationString.join().substring(i, lastIndex));
+      calculationString.removeRange(i, lastIndex);
+      calculationString.insert(
+          calculationString.length - 1, (1 / num).toString());
+    }
+  }
+
+  int parseNumbersFromEnd() {
+    int i = calculationString.length - 1;
+    // parse the string from the end to start. Break immediately if any symbol found other than integers.
+    for (; i >= 0; i--) if (!numbersList.contains(calculationString[i])) break;
+    return i;
+  }
+
+  int parseOperatorFromEnd() {
+    int i = calculationString.length - 1;
+    for (; i >= 0; i--) if (operations.contains(calculationString[i])) break;
+    return i;
   }
 
   void setSign() {
     // Not very advanced but just a basic function to insert minus sign wherever possible
 
-    int lastChar = calculationString.length - 1; // Get index of last char
-    bool found = false;
-    int i = 0;
-
-    // parse the string from the end to start. Break immediately if any symbol found other than integers.
-    for (i = lastChar; i >= 0; i--)
-      if (!numbersList.contains(calculationString[i])) break;
+    int lastIndex = calculationString.length - 1; // Get index of last char
+    int i = parseNumbersFromEnd();
 
     // check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
-    if (i != lastChar) {
+    if (i != lastIndex) {
       // pre-check if i is -1 and avoid run-time errors.
       if (i != -1)
         switch (calculationString[i]) {
@@ -117,14 +145,8 @@ class CalcParser {
         calculationString.insert(i + 1, '-');
     } else {
       // executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
-      for (i = lastChar; i >= 0; i--) {
-        if (operations.contains(calculationString[i])) {
-          found =
-              true; // sets to true and can be checked if found and add the sign.
-          break;
-        }
-      }
-      if (found) calculationString.insert(i + 1, '(-');
+      i = parseOperatorFromEnd();
+      calculationString.insert(i + 1, '(-');
     }
   }
 
