@@ -12,7 +12,7 @@ class CalcParser {
     '-',
     '/'
   ];
-
+  List<String> numbersList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   List<String> addToExpression(String value) {
     if (calculationString.length != 0) {
       int lastIndex = calculationString.length - 1;
@@ -25,7 +25,7 @@ class CalcParser {
 
         // Code for reciprocal button.
         else if (value.contains(FixedValues.reciprocalChar))
-          calculationString[lastIndex] = '\u00B9\u002F$value';
+          reciprocalFunction();
 
         // Code for add bracket after following functions.
 
@@ -59,13 +59,22 @@ class CalcParser {
       FixedValues.capChar,
       '%',
       FixedValues.squareChar,
-      FixedValues.changeSignChar
+      FixedValues.changeSignChar,
     }.contains(value))) {
-      // Check if only value present is an operator.
+      // Check if only value present is NOT an operator.
 
-      calculationString.add(value);
+      if ({'sin', 'cos', 'tan', 'ln', 'log'}.contains(value))
+        calculationString.add('$value(');
+      else
+        calculationString.add(value);
     }
     return calculationString;
+  }
+
+  void reciprocalFunction() {
+    int lastIndex = calculationString.length;
+    for (int i = lastIndex; i >= 0; i++)
+      if (!numbersList.contains(calculationString[i])) break;
   }
 
   void setSign() {
@@ -76,11 +85,8 @@ class CalcParser {
     int i = 0;
 
     // parse the string from the end to start. Break immediately if any symbol found other than integers.
-    for (i = lastChar; i >= 0; i--) {
-      if ({'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
-              .contains(calculationString[i]) ==
-          false) break;
-    }
+    for (i = lastChar; i >= 0; i--)
+      if (!numbersList.contains(calculationString[i])) break;
 
     // check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
     if (i != lastChar) {
@@ -97,7 +103,11 @@ class CalcParser {
             calculationString[i] = '-';
             break;
           case '-':
-            calculationString[i] = '+';
+            if (i != 0)
+              calculationString[i] = '+';
+            else
+              calculationString.removeAt(
+                  i); // Just remove - instead of adding + when position is at 0.
             break;
           default:
             calculationString.insert(i + 1, '(-');
