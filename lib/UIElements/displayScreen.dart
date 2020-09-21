@@ -48,8 +48,8 @@ class DisplayScreen extends StatelessWidget {
         letterSpacing: 1.0,
       );
 
-  String formatNumber(double value) {
-    int precision = 2;
+  static String formatNumber(double value) {
+    int precision = 3;
     if (value % 1 == 0) {
       return value.toInt().toString();
     } else {

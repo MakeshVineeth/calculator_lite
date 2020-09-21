@@ -1,5 +1,6 @@
 import 'package:math_expressions/math_expressions.dart';
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/UIElements/displayScreen.dart';
 
 class CalcParser {
   List<String> calculationString;
@@ -90,10 +91,10 @@ class CalcParser {
     if (i != lastIndex) {
       // parse numbers
       double num =
-          double.tryParse(calculationString.join().substring(i, lastIndex));
-      calculationString.removeRange(i, lastIndex);
+          double.tryParse(calculationString.join().substring(i, lastIndex + 1));
+      calculationString.removeRange(i + 1, lastIndex + 1);
       calculationString.insert(
-          calculationString.length - 1, (1 / num).toString());
+          calculationString.length, DisplayScreen.formatNumber(1 / num));
     }
   }
 
