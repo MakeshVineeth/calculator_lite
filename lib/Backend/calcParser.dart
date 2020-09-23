@@ -127,35 +127,35 @@ class CalcParser {
     int lastIndex = calculationString.length - 1; // Get index of last char
     int i = parseNumbersFromEnd();
 
+    if (i == -1)
+      // if it is equal to -1 then add sign directly as there are no operators at this point, only a number.
+      calculationString.insert(i + 1, '-');
+
     // check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
-    if (i != lastIndex) {
-      // pre-check if i is NOT -1 and avoid run-time errors.
-      if (i != -1)
-        switch (calculationString[i]) {
-          case '(-':
-            calculationString.removeAt(i);
-            break;
-          case '(':
-            calculationString.insert(i + 1, '-');
-            break;
-          case '+':
-            calculationString[i] = '-';
-            break;
-          case '-':
-            if (i != 0)
-              calculationString[i] = '+';
-            else
-              calculationString.removeAt(
-                  i); // Just remove - instead of adding + when position is at 0.
-            break;
-          default:
-            calculationString.insert(i + 1, '(-');
-        }
-      else
-        // if it indeed equal to -1 then add sign directly as there are no operators at this point, only a number.
-        calculationString.insert(i + 1, '-');
-    } else {
-      // executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
+    else if (i != lastIndex)
+      switch (calculationString[i]) {
+        case '(-':
+          calculationString.removeAt(i);
+          break;
+        case '(':
+          calculationString.insert(i + 1, '-');
+          break;
+        case '+':
+          calculationString[i] = '-';
+          break;
+        case '-':
+          if (i != 0)
+            calculationString[i] = '+';
+          else
+            calculationString.removeAt(
+                i); // Just remove - instead of adding + when position is at 0.
+          break;
+        default:
+          calculationString.insert(i + 1, '(-');
+      }
+
+    // executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
+    else {
       i = parseOperatorFromEnd();
       calculationString.insert(i + 1, '(-');
     }
@@ -182,6 +182,16 @@ class CalcParser {
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
     computerStr = computerStr.replaceAll('\u00B2', '^2');
+
+    // attach parentheses automatically.
+    int count = '('.allMatches(computerStr).length;
+    int count1 = ')'.allMatches(computerStr).length;
+    if (count != count1) {
+      int toAdd = count - count1;
+      for (int i = 0; i < toAdd; i++)
+        computerStr = computerStr + ')';
+    }
+
     return computerStr;
   }
 }
