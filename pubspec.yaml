@@ -33,6 +33,7 @@ dependencies:
   flutter_statusbarcolor: ^0.2.3
   flutter_rename_app: ^1.0.0
   flutter_launcher_icons: ^0.8.0
+  package_info: ^0.4.3
 
 dev_dependencies:
   flutter_test:
