@@ -51,6 +51,8 @@ class CalcParser {
           calculationString.add('\u00B3√');
         else if (value.contains(FixedValues.decimalChar))
           calculationString.add('.');
+        else if (value.contains(')'))
+          addClosedBracket();
 
         // Code for +/- Option
         else if (value.contains(FixedValues.changeSignChar))
@@ -83,6 +85,14 @@ class CalcParser {
         calculationString.add(value);
     }
     return calculationString;
+  }
+
+  void addClosedBracket() {
+    // This function adds closed bracket no more than what is required.
+    String computerStr = calculationString.join();
+    int count = '('.allMatches(computerStr).length;
+    int count1 = ')'.allMatches(computerStr).length;
+    if (count1 < count) calculationString.add(')');
   }
 
   void reciprocalFunction() {
@@ -188,8 +198,7 @@ class CalcParser {
     int count1 = ')'.allMatches(computerStr).length;
     if (count != count1) {
       int toAdd = count - count1;
-      for (int i = 0; i < toAdd; i++)
-        computerStr = computerStr + ')';
+      for (int i = 0; i < toAdd; i++) computerStr = computerStr + ')';
     }
 
     return computerStr;
