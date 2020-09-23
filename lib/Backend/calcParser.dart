@@ -86,16 +86,26 @@ class CalcParser {
   }
 
   void reciprocalFunction() {
-    int lastIndex = calculationString.length - 1;
-    int i = parseNumbersFromEnd();
-    if (i != lastIndex) {
-      // parse numbers
-      double num =
-          double.tryParse(calculationString.join().substring(i, lastIndex + 1));
+    try {
+      int lastIndex = calculationString.length - 1;
+      int i = parseNumbersFromEnd();
+      double value = 0;
+      if (i != lastIndex) {
+        // parse numbers
+        value = double.tryParse(
+            calculationString.join().substring(i + 1, lastIndex + 1));
+      } else {
+        // Executes if there are no integers from beginning.
+        i = parseOperatorFromEnd();
+        List<String> temp =
+            calculationString.getRange(i + 1, lastIndex + 1).toList();
+        value = evalFunction(temp);
+      }
+
       calculationString.removeRange(i + 1, lastIndex + 1);
       calculationString.insert(
-          calculationString.length, DisplayScreen.formatNumber(1 / num));
-    }
+          calculationString.length, DisplayScreen.formatNumber(1 / value));
+    } catch (e) {}
   }
 
   int parseNumbersFromEnd() {
@@ -119,7 +129,7 @@ class CalcParser {
 
     // check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
     if (i != lastIndex) {
-      // pre-check if i is -1 and avoid run-time errors.
+      // pre-check if i is NOT -1 and avoid run-time errors.
       if (i != -1)
         switch (calculationString[i]) {
           case '(-':
@@ -152,9 +162,13 @@ class CalcParser {
   }
 
   double getValue() {
+    return evalFunction(calculationString);
+  }
+
+  double evalFunction(List<String> calcStr) {
     try {
       Parser p = Parser();
-      Expression exp = p.parse(computerString());
+      Expression exp = p.parse(computerString(calcStr));
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
       return eval;
@@ -163,8 +177,8 @@ class CalcParser {
     }
   }
 
-  String computerString() {
-    String computerStr = calculationString.join();
+  String computerString(List<String> calcStr) {
+    String computerStr = calcStr.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
     computerStr = computerStr.replaceAll('\u00B2', '^2');

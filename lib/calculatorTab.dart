@@ -42,17 +42,24 @@ class _CalculatorTabState extends State<CalculatorTab> {
       } else if (value.contains('C')) {
         calculationString.clear();
         mainValue = 0.0;
-      } else if (value.contains(FixedValues.backSpaceChar))
+      } else if (value.contains(FixedValues.backSpaceChar)) {
         // Back Button
         backSpaceBtn();
-      else {
-        CalcParser calcParser =
-            CalcParser(calculationString: calculationString);
-        calculationString = calcParser.addToExpression(value);
-        mainValue = calcParser.getValue() ??
-            mainValue; // Used null-aware operator to default to mainValue in case of null.
-      }
+
+        if (calculationString.length > 0)
+          runCalcParser(null); // Sending null as backSpaceChar is not a value.
+        else
+          mainValue = 0;
+      } else
+        runCalcParser(value);
     });
+  }
+
+  void runCalcParser(String value) {
+    CalcParser calcParser = CalcParser(calculationString: calculationString);
+    if (value != null) calculationString = calcParser.addToExpression(value);
+    mainValue = calcParser.getValue() ??
+        mainValue; // Used null-aware operator to default to mainValue in case of null.
   }
 
   Widget calcRows(List rowData, int index) {
