@@ -33,7 +33,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     }
   }
 
-  displayToScreen(String value) {
+  void displayToScreen(String value) {
     setState(() {
       // First check for down or up arrow buttons
       if (value.contains(FixedValues.upperArrow) || value.contains('↓'))
