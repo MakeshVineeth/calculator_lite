@@ -89,14 +89,14 @@ class CalcParser {
     if (calculationString.length > 1) {
       // add * to respective positions.
       int lastIndex = calculationString.length - 1;
-
+      String lastButOne = calculationString[lastIndex - 1];
+      String lastChar = calculationString[lastIndex];
       // check pre-value
-      if ((numbersList.contains(calculationString[lastIndex - 1]) ||
-          ['%', 'e', 'π', ')', '!', '\u00B2']
-              .contains(calculationString[lastIndex - 1]))) {
+      if ((numbersList.contains(lastButOne) ||
+          ['%', 'e', 'π', ')', '!', '\u00B2'].contains(lastButOne))) {
         // check post value
-        if (calculationString[lastIndex].contains('tan(') ||
-            ['e', 'π'].contains(calculationString[lastIndex])) {
+        if (['sin(', 'cos(', 'tan(', 'ln(', 'log('].contains(lastChar) ||
+            ['e', 'π'].contains(lastChar)) {
           calculationString.insert(lastIndex, '*');
         }
       }
