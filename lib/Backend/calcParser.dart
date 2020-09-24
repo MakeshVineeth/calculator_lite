@@ -27,6 +27,7 @@ class CalcParser {
     '.',
     FixedValues.decimalChar
   ];
+  List<String> trigFunctions = ['sin', 'cos', 'tan', 'ln', 'log'];
   List<String> addToExpression(String value) {
     if (calculationString.length != 0) {
       int lastIndex = calculationString.length - 1;
@@ -43,7 +44,7 @@ class CalcParser {
 
         // Code for add bracket after following functions.
 
-        else if ({'sin', 'cos', 'tan', 'ln', 'log'}.contains(value))
+        else if (trigFunctions.contains(value))
           calculationString.add('$value(');
 
         // Code for cube root
@@ -79,7 +80,7 @@ class CalcParser {
     }.contains(value))) {
       // Check if only value present is NOT an operator.
 
-      if ({'sin', 'cos', 'tan', 'ln', 'log'}.contains(value))
+      if (trigFunctions.contains(value))
         calculationString.add('$value(');
       else
         calculationString.add(value);
@@ -172,6 +173,16 @@ class CalcParser {
   }
 
   double getValue() {
+    // add * to respective positions.
+    int lastIndex = calculationString.length - 1;
+    if ((numbersList.contains(calculationString[lastIndex - 1]) ||
+            ['%', 'e', 'π', ')', '!', '\u00B2']
+                .contains(calculationString[lastIndex - 1])) &&
+        calculationString.length > 0) {
+      if (trigFunctions.contains(calculationString[lastIndex]) ||
+          ['e', 'π'].contains(calculationString[lastIndex]))
+        calculationString.insert(lastIndex - 1, '*');
+    }
     return evalFunction(calculationString);
   }
 
