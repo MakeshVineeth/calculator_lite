@@ -85,6 +85,23 @@ class CalcParser {
       else
         calculationString.add(value);
     }
+
+    if (calculationString.length > 1) {
+      // add * to respective positions.
+      int lastIndex = calculationString.length - 1;
+
+      // check pre-value
+      if ((numbersList.contains(calculationString[lastIndex - 1]) ||
+          ['%', 'e', 'π', ')', '!', '\u00B2']
+              .contains(calculationString[lastIndex - 1]))) {
+        // check post value
+        if (calculationString[lastIndex].contains('tan(') ||
+            ['e', 'π'].contains(calculationString[lastIndex])) {
+          calculationString.insert(lastIndex, '*');
+        }
+      }
+    }
+
     return calculationString;
   }
 
@@ -173,16 +190,6 @@ class CalcParser {
   }
 
   double getValue() {
-    // add * to respective positions.
-    int lastIndex = calculationString.length - 1;
-    if ((numbersList.contains(calculationString[lastIndex - 1]) ||
-            ['%', 'e', 'π', ')', '!', '\u00B2']
-                .contains(calculationString[lastIndex - 1])) &&
-        calculationString.length > 0) {
-      if (trigFunctions.contains(calculationString[lastIndex]) ||
-          ['e', 'π'].contains(calculationString[lastIndex]))
-        calculationString.insert(lastIndex - 1, '*');
-    }
     return evalFunction(calculationString);
   }
 

@@ -45,11 +45,11 @@ class DisplayScreen extends StatelessWidget {
 
   TextStyle completeStringStyle() => TextStyle(
         fontSize: 25,
-        letterSpacing: 1.0,
+        letterSpacing: 1.5,
       );
 
   static String formatNumber(double value) {
-    int precision = 3;
+    int precision = 4;
     if (value % 1 == 0) {
       return value.toInt().toString();
     } else {
