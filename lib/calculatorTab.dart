@@ -143,13 +143,15 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void showAboutDialogFunc() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    return showAboutDialog(
-      context: context,
-      applicationName: packageInfo.appName,
-      applicationVersion: packageInfo.version,
-      applicationLegalese: '',
-    );
+    try {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      return showAboutDialog(
+        context: context,
+        applicationName: packageInfo.appName,
+        applicationVersion: packageInfo.version,
+        applicationLegalese: '',
+      );
+    } catch (e) {}
   }
 
   void changeButtons() {

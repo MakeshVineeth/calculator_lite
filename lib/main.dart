@@ -7,6 +7,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
+import 'dart:io' show Platform;
 
 void main() => runApp(BottomNavBar());
 
@@ -92,12 +93,16 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   }
 
   void setFlatStatusBar() {
-    // Must be executed every time the theme changes.
-    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-    ThemeData temp = Theme.of(context);
-    bool useWhiteForeground =
-        (temp.brightness == Brightness.dark) ? true : false;
-    FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
+    try {
+      if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+        // Must be executed every time the theme changes.
+        FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+        ThemeData temp = Theme.of(context);
+        bool useWhiteForeground =
+            (temp.brightness == Brightness.dark) ? true : false;
+        FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
+      }
+    } catch (e) {}
   }
 
   @override
