@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class FixedValues {
   static String upperArrow = '\u2191';
   static String backSpaceChar = '\u2190';
-  static String multiplyChar = '\u2217';
+  static String multiplyChar = 'X';
   static String changeSignChar = '\u207A/-';
   static String decimalChar = '\u00B7';
   static String cubeRoot = '\u00B3√x';

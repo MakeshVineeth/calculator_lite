@@ -32,6 +32,20 @@ class CalcParser {
     if (calculationString.length != 0) {
       int lastIndex = calculationString.length - 1;
       String lastChar = calculationString[lastIndex];
+
+      if (calculationString.length > 1) {
+        // add * to respective positions.
+        String lastButOne = calculationString[lastIndex - 1];
+        // check pre-value
+        if ((numbersList.contains(lastButOne) ||
+            ['%', 'e', 'π', ')', '!', '\u00B2'].contains(lastButOne))) {
+          // check post value
+          if (['sin(', 'cos(', 'tan(', 'ln(', 'log('].contains(lastChar) ||
+              ['e', 'π'].contains(lastChar)) {
+            calculationString.insert(lastIndex, FixedValues.multiplyChar);
+          }
+        }
+      }
       // Check if previous value is NOT an operator.
       if (!(operations.contains(value) && lastChar.contains(value))) {
         // Code for Square of Number.
@@ -85,23 +99,6 @@ class CalcParser {
       else
         calculationString.add(value);
     }
-
-    if (calculationString.length > 1) {
-      // add * to respective positions.
-      int lastIndex = calculationString.length - 1;
-      String lastButOne = calculationString[lastIndex - 1];
-      String lastChar = calculationString[lastIndex];
-      // check pre-value
-      if ((numbersList.contains(lastButOne) ||
-          ['%', 'e', 'π', ')', '!', '\u00B2'].contains(lastButOne))) {
-        // check post value
-        if (['sin(', 'cos(', 'tan(', 'ln(', 'log('].contains(lastChar) ||
-            ['e', 'π'].contains(lastChar)) {
-          calculationString.insert(lastIndex, '*');
-        }
-      }
-    }
-
     return calculationString;
   }
 
