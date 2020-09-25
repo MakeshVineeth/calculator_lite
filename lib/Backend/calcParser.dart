@@ -11,7 +11,8 @@ class CalcParser {
     '*',
     '+',
     '-',
-    '/'
+    '/',
+    '^'
   ];
   List<String> numbersList = [
     '0',
