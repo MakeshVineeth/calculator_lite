@@ -62,6 +62,22 @@ class CalcParser {
         else
           calculationString.add(value);
       }
+
+      if (calculationString.length > 1) {
+        lastIndex = calculationString.length - 1;
+        lastChar = calculationString[lastIndex];
+        // add * to respective positions.
+        String lastButOne = calculationString[lastIndex - 1];
+        // check pre-value
+        if ((numbersList.contains(lastButOne) ||
+            ['%', 'e', 'π', ')', '!', '\u00B2'].contains(lastButOne))) {
+          // check post value
+          if (['sin(', 'cos(', 'tan(', 'ln(', 'log('].contains(lastChar) ||
+              ['e', 'π'].contains(lastChar)) {
+            calculationString.insert(lastIndex, FixedValues.multiplyChar);
+          }
+        }
+      }
     }
     // Following functions should not present in the first position.
     else if (!({
@@ -85,22 +101,6 @@ class CalcParser {
         calculationString.add('$value(');
       else
         calculationString.add(value);
-    }
-
-    if (calculationString.length > 1) {
-      int lastIndex = calculationString.length - 1;
-      String lastChar = calculationString[lastIndex];
-      // add * to respective positions.
-      String lastButOne = calculationString[lastIndex - 1];
-      // check pre-value
-      if ((numbersList.contains(lastButOne) ||
-          ['%', 'e', 'π', ')', '!', '\u00B2'].contains(lastButOne))) {
-        // check post value
-        if (['sin(', 'cos(', 'tan(', 'ln(', 'log('].contains(lastChar) ||
-            ['e', 'π'].contains(lastChar)) {
-          calculationString.insert(lastIndex, FixedValues.multiplyChar);
-        }
-      }
     }
     return calculationString;
   }
