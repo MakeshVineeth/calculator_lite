@@ -14,8 +14,6 @@ class CalculatorTab extends StatefulWidget {
 class _CalculatorTabState extends State<CalculatorTab> {
   List currentRow = FixedValues
       .rowSimple; // Storing row in currentRow for switching using setState.
-  bool isSimpleMode =
-      true; // A check on whether Simple Mode is displayed, better performance as compared to List comparison.
 
   List<String> calculationString = [];
   double mainValue = 0.0;
@@ -155,12 +153,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void changeButtons() {
-    if (isSimpleMode) {
+    if (currentRow[0][0].contains(FixedValues.upperArrow)) {
       currentRow = FixedValues.rowExtras;
-      isSimpleMode = false;
     } else {
       currentRow = FixedValues.rowSimple;
-      isSimpleMode = true;
     }
   }
 }
