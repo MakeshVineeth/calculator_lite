@@ -12,9 +12,8 @@ class CalculatorTab extends StatefulWidget {
 }
 
 class _CalculatorTabState extends State<CalculatorTab> {
-  List currentRow = FixedValues
-      .rowSimple; // Storing row in currentRow for switching using setState.
-
+  Widget _currentChild;
+  bool isSimple = true;
   List<String> calculationString = [];
   double mainValue = 0.0;
   List<String> menuList = ['About', 'Change Theme'];
@@ -22,6 +21,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   @override
   void initState() {
     super.initState();
+    _currentChild = buildCalcRows(FixedValues.rowSimple);
   }
 
   void backSpaceBtn() {
@@ -116,13 +116,21 @@ class _CalculatorTabState extends State<CalculatorTab> {
           flex: 3,
           child: Padding(
             padding: const EdgeInsets.all(5.0),
-            child: Column(
-              children: List.generate(currentRow.length,
-                  (index) => calcRows(currentRow[index], index)),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: _currentChild,
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildCalcRows(List currentRow) {
+    return Column(
+      key: ValueKey(isSimple),
+      children: List.generate(
+          currentRow.length, (index) => calcRows(currentRow[index], index)),
     );
   }
 
@@ -153,10 +161,12 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void changeButtons() {
-    if (currentRow[0][0].contains(FixedValues.upperArrow)) {
-      currentRow = FixedValues.rowExtras;
+    if (isSimple) {
+      _currentChild = buildCalcRows(FixedValues.rowExtras);
+      isSimple = false;
     } else {
-      currentRow = FixedValues.rowSimple;
+      _currentChild = buildCalcRows(FixedValues.rowSimple);
+      isSimple = true;
     }
   }
 }
