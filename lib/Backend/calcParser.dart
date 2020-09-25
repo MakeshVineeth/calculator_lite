@@ -209,6 +209,7 @@ class CalcParser {
     String computerStr = calcStr.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
+    computerStr = computerStr.replaceAll('π', '3.14159265359');
     computerStr = computerStr.replaceAll('\u00B2', '^2');
 
     // attach parentheses automatically.
