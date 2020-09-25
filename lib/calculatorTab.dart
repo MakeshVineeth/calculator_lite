@@ -162,11 +162,11 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   void changeButtons() {
     if (isSimple) {
-      _currentChild = buildCalcRows(FixedValues.rowExtras);
       isSimple = false;
+      _currentChild = buildCalcRows(FixedValues.rowExtras);
     } else {
-      _currentChild = buildCalcRows(FixedValues.rowSimple);
       isSimple = true;
+      _currentChild = buildCalcRows(FixedValues.rowSimple);
     }
   }
 }
