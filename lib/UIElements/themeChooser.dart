@@ -25,14 +25,14 @@ class ThemeButtons extends StatefulWidget {
 }
 
 class _ThemeButtonsState extends State<ThemeButtons> {
-  String _currentTheme;
+  String _currentThemeString;
   ThemeChange themeChange;
 
   void getCurrentThemeStat() async {
     final prefs = await SharedPreferences.getInstance();
     final theme = prefs.getString('theme') ?? 'System Default';
     setState(() {
-      _currentTheme = theme;
+      _currentThemeString = theme;
     });
   }
 
@@ -51,7 +51,7 @@ class _ThemeButtonsState extends State<ThemeButtons> {
           .map((e) => RadioListTile(
                 title: Text(e.key),
                 value: e.value,
-                groupValue: _currentTheme,
+                groupValue: _currentThemeString,
                 onChanged: setTheme,
               ))
           .toList(),
@@ -60,22 +60,11 @@ class _ThemeButtonsState extends State<ThemeButtons> {
 
   void setTheme(var val) async {
     setState(() {
-      _currentTheme = val;
+      _currentThemeString = val;
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('theme', _currentTheme);
-    ThemeMode themeMode;
-    switch (_currentTheme) {
-      case 'System Default':
-        themeMode = ThemeMode.system;
-        break;
-      case 'Dark':
-        themeMode = ThemeMode.dark;
-        break;
-      case 'Light':
-        themeMode = ThemeMode.light;
-        break;
-    }
+    await prefs.setString('theme', _currentThemeString);
+    ThemeMode themeMode = MiniThemeFunctions.parseTheme(_currentThemeString);
     themeChange.stateFunction(themeMode);
   }
 }

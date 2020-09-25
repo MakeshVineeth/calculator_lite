@@ -21,19 +21,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   void getThemeStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    final theme = prefs.getString('theme') ?? 'System Default';
-    ThemeMode themeMode;
-    switch (theme) {
-      case 'System Default':
-        themeMode = ThemeMode.system;
-        break;
-      case 'Dark':
-        themeMode = ThemeMode.dark;
-        break;
-      case 'Light':
-        themeMode = ThemeMode.light;
-        break;
-    }
+    final themeString = prefs.getString('theme') ?? 'System Default';
+    ThemeMode themeMode = MiniThemeFunctions.parseTheme(themeString);
     setThemeFunction(themeMode);
   }
 

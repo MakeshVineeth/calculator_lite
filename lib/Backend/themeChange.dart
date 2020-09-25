@@ -12,3 +12,21 @@ class ThemeChange extends InheritedWidget {
   static ThemeChange of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<ThemeChange>();
 }
+
+class MiniThemeFunctions {
+  static ThemeMode parseTheme(String theme) {
+    ThemeMode themeMode;
+    switch (theme) {
+      case 'System Default':
+        themeMode = ThemeMode.system;
+        break;
+      case 'Dark':
+        themeMode = ThemeMode.dark;
+        break;
+      case 'Light':
+        themeMode = ThemeMode.light;
+        break;
+    }
+    return themeMode;
+  }
+}
