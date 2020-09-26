@@ -73,7 +73,7 @@ class CalcParser {
         if ((numbersList.contains(lastButOne) ||
             ['%', 'e', 'π', ')', '!', '\u00B2'].contains(lastButOne))) {
           // check post value
-          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', 'π'].contains(lastChar)) {
+          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', 'π'].contains(lastChar)) { // should keep number parsing two times
             calculationString.insert(lastIndex, FixedValues.multiplyChar);
           }
         }

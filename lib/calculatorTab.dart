@@ -117,7 +117,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
           child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 300),
               child: _currentChild,
             ),
           ),

@@ -11,7 +11,32 @@ class CalcButtons extends StatefulWidget {
   _CalcButtonsState createState() => _CalcButtonsState();
 }
 
-class _CalcButtonsState extends State<CalcButtons> {
+class _CalcButtonsState extends State<CalcButtons>
+    with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+  Animation _animation;
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+
+    _animation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(_controller);
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Color fgColor = Theme.of(context)
@@ -26,6 +51,8 @@ class _CalcButtonsState extends State<CalcButtons> {
     if (this.widget.isCornerRows) {
       fgColor = Theme.of(context).primaryColor; // Check if it corners rows
     }
+
+    _controller.forward();
     return Expanded(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -37,9 +64,12 @@ class _CalcButtonsState extends State<CalcButtons> {
               child: RaisedButton(
                 elevation: 2.0,
                 onPressed: this.widget.displayFunction,
-                child: Text(
-                  this.widget.rowData[this.widget.index].toString(),
-                  style: calcButtonTextStyle(fgColor),
+                child: FadeTransition(
+                  opacity: _animation,
+                  child: Text(
+                    this.widget.rowData[this.widget.index].toString(),
+                    style: calcButtonTextStyle(fgColor),
+                  ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
