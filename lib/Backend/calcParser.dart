@@ -211,7 +211,7 @@ class CalcParser {
     String computerStr = calcStr.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
-    computerStr = computerStr.replaceAll('π', '3.14159265359');
+    computerStr = computerStr.replaceAll('π', '3.1415926535897932384626433832795');
     computerStr =
         computerStr.replaceAll('e', '2.7182818284590452353602874713527');
     computerStr = computerStr.replaceAll('\u00B2', '^2');
