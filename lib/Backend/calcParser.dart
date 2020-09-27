@@ -73,7 +73,9 @@ class CalcParser {
         if ((numbersList.contains(lastButOne) ||
             ['%', 'e', 'π', ')', '!', '\u00B2'].contains(lastButOne))) {
           // check post value
-          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', 'π'].contains(lastChar)) { // should keep number parsing two times
+          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', 'π']
+              .contains(lastChar)) {
+            // should keep number parsing two times
             calculationString.insert(lastIndex, FixedValues.multiplyChar);
           }
         }
@@ -210,6 +212,8 @@ class CalcParser {
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
     computerStr = computerStr.replaceAll('π', '3.14159265359');
+    computerStr =
+        computerStr.replaceAll('e', '2.7182818284590452353602874713527');
     computerStr = computerStr.replaceAll('\u00B2', '^2');
 
     // attach parentheses automatically.

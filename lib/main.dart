@@ -125,6 +125,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
+        elevation: 0,
         type: BottomNavigationBarType.fixed,
         items: List.generate(e.length, (index) {
           return BottomNavClass(
