@@ -1,6 +1,7 @@
 import 'package:math_expressions/math_expressions.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
+import 'dart:math' as math;
 
 class CalcParser {
   List<String> calculationString;
@@ -211,9 +212,8 @@ class CalcParser {
     String computerStr = calcStr.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
-    computerStr = computerStr.replaceAll('π', '3.1415926535897932384626433832795');
-    computerStr =
-        computerStr.replaceAll('e', '2.7182818284590452353602874713527');
+    computerStr = computerStr.replaceAll('π', math.pi.toString());
+    computerStr = computerStr.replaceAll('e', math.e.toString());
     computerStr = computerStr.replaceAll('\u00B2', '^2');
 
     // attach parentheses automatically.
