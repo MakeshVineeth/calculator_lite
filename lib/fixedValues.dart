@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:charcode/charcode.dart' as charcode;
 
 class FixedValues {
   static String upperArrow = '\u2191';
@@ -9,8 +10,9 @@ class FixedValues {
   static String cubeRoot = '\u00B3√x';
   static String squareChar = 'x\u00B2';
   static String capChar = '\u005E';
-  static String reciprocalChar = '\u00B9\u002Fx';
-  static String divisionChar = '÷';
+  static String reciprocalChar =
+      String.fromCharCodes([charcode.$sup1, charcode.$division, charcode.$x]);
+  static String divisionChar = String.fromCharCode(charcode.$divide);
 
   static List rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
