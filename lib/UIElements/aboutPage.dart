@@ -23,19 +23,18 @@ class AboutPage extends StatelessWidget {
 
   static void showAboutDialogFunc(BuildContext context) async {
     try {
+      ThemeData temp = Theme.of(context);
+      bool useWhiteForeground =
+          (temp.brightness == Brightness.dark) ? true : false;
+      if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS))
+        FlutterStatusbarcolor.setStatusBarWhiteForeground(!useWhiteForeground);
       showDialog(
         context: context,
         barrierColor: Colors.black12,
         builder: (context) => AboutPage(),
       ).then((value) {
-        if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-          // Must be executed every time the theme changes.
-          FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-          ThemeData temp = Theme.of(context);
-          bool useWhiteForeground =
-              (temp.brightness == Brightness.dark) ? true : false;
+        if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS))
           FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
-        }
       });
     } catch (e) {}
   }
