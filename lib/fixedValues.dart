@@ -14,8 +14,8 @@ class FixedValues {
   static String divisionChar = String.fromCharCode(charcode.$divide);
   static String root = String.fromCharCode(charcode.$radic);
   static String pi = String.fromCharCode(charcode.$pi);
-  static String squareChar =
-      String.fromCharCodes([charcode.$x, charcode.$sup2]);
+  static String sup2 = String.fromCharCode(charcode.$sup2);
+  static String squareChar = String.fromCharCode(charcode.$x) + sup2;
   static String reciprocalChar =
       String.fromCharCodes([charcode.$sup1, charcode.$division, charcode.$x]);
   static String cubeRoot =

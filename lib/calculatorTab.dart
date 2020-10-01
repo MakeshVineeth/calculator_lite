@@ -34,7 +34,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void displayToScreen(String value) {
     setState(() {
       // First check for down or up arrow buttons
-      if (value.contains(FixedValues.upperArrow) || value.contains('↓'))
+      if (value.contains(FixedValues.upperArrow) ||
+          value.contains(FixedValues.downArrow))
         changeButtons(); // Up and Down Arrows
       else if (value.contains('inv')) {
         // when inv clicked, inverse buttons.

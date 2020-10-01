@@ -2,6 +2,7 @@ import 'package:math_expressions/math_expressions.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
 import 'dart:math' as math;
+import 'package:charcode/charcode.dart' as charcode;
 
 class CalcParser {
   List<String> calculationString;
@@ -39,7 +40,7 @@ class CalcParser {
       if (!(operations.contains(value) && lastChar.contains(value))) {
         // Code for Square of Number.
         if (value.contains(FixedValues.squareChar))
-          calculationString[lastIndex] = '$lastChar\u00B2';
+          calculationString[lastIndex] = '$lastChar' + FixedValues.sup2;
 
         // Code for reciprocal button.
         else if (value.contains(FixedValues.reciprocalChar))
@@ -52,7 +53,8 @@ class CalcParser {
 
         // Code for cube root
         else if (value.contains(FixedValues.cubeRoot))
-          calculationString.add('\u00B3√');
+          calculationString
+              .add(String.fromCharCodes([charcode.$sup3, charcode.$radic]));
         else if (value.contains(FixedValues.decimalChar))
           calculationString.add('.');
         else if (value.contains(')'))
@@ -72,9 +74,10 @@ class CalcParser {
         String lastButOne = calculationString[lastIndex - 1];
         // check pre-value
         if ((numbersList.contains(lastButOne) ||
-            ['%', 'e', 'π', ')', '!', '\u00B2'].contains(lastButOne))) {
+            ['%', 'e', FixedValues.pi, ')', '!', FixedValues.sup2]
+                .contains(lastButOne))) {
           // check post value
-          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', 'π']
+          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', FixedValues.pi]
               .contains(lastChar)) {
             // should keep number parsing two times
             calculationString.insert(lastIndex, FixedValues.multiplyChar);
@@ -212,9 +215,10 @@ class CalcParser {
     String computerStr = calcStr.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
-    computerStr = computerStr.replaceAll('π', math.pi.toString());
+    computerStr = computerStr.replaceAll(FixedValues.minus, '-');
+    computerStr = computerStr.replaceAll(FixedValues.pi, math.pi.toString());
     computerStr = computerStr.replaceAll('e', math.e.toString());
-    computerStr = computerStr.replaceAll('\u00B2', '^2');
+    computerStr = computerStr.replaceAll(FixedValues.sup2, '^2');
 
     // attach parentheses automatically.
     int count = '('.allMatches(computerStr).length;
