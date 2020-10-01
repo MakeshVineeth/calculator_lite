@@ -4,7 +4,7 @@ import 'package:calculator_lite/UIElements/displayScreen.dart';
 import 'package:calculator_lite/UIElements/calcButtons.dart';
 import 'package:calculator_lite/Backend/calcParser.dart';
 import 'package:calculator_lite/fixedValues.dart';
-import 'package:package_info/package_info.dart';
+import 'package:calculator_lite/UIElements/aboutPage.dart';
 
 class CalculatorTab extends StatefulWidget {
   @override
@@ -138,7 +138,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void popUpFunction(int value) {
     switch (value) {
       case 0:
-        return showAboutDialogFunc();
+        return AboutPage.showAboutDialogFunc(context);
         break;
       case 1:
         showDialog(
@@ -147,18 +147,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
         );
         break;
     }
-  }
-
-  void showAboutDialogFunc() async {
-    try {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      return showAboutDialog(
-        context: context,
-        applicationName: packageInfo.appName,
-        applicationVersion: packageInfo.version,
-        applicationLegalese: '',
-      );
-    } catch (e) {}
   }
 
   void changeButtons() {
