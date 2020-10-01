@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'dart:io' show Platform;
@@ -9,10 +11,13 @@ class AboutPage extends StatelessWidget {
       'Make faster calculations, display latest currencies, endless history scrolling';
   @override
   Widget build(BuildContext context) {
-    return AboutDialog(
-      applicationName: appName,
-      applicationVersion: appVersion,
-      applicationLegalese: appLegalese,
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      child: AboutDialog(
+        applicationName: appName,
+        applicationVersion: appVersion,
+        applicationLegalese: appLegalese,
+      ),
     );
   }
 
@@ -20,19 +25,17 @@ class AboutPage extends StatelessWidget {
     try {
       showDialog(
         context: context,
+        barrierColor: Colors.black12,
         builder: (context) => AboutPage(),
       ).then((value) {
-        try {
-          if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-            // Must be executed every time the theme changes.
-            FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-            ThemeData temp = Theme.of(context);
-            bool useWhiteForeground =
-                (temp.brightness == Brightness.dark) ? true : false;
-            FlutterStatusbarcolor.setStatusBarWhiteForeground(
-                useWhiteForeground);
-          }
-        } catch (e) {}
+        if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+          // Must be executed every time the theme changes.
+          FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+          ThemeData temp = Theme.of(context);
+          bool useWhiteForeground =
+              (temp.brightness == Brightness.dark) ? true : false;
+          FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
+        }
       });
     } catch (e) {}
   }
