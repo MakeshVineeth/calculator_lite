@@ -20,11 +20,12 @@ class FixedValues {
       String.fromCharCodes([charcode.$sup1, charcode.$division, charcode.$x]);
   static String cubeRoot =
       String.fromCharCodes([charcode.$sup3, charcode.$radic, charcode.$x]);
+  static String minus = String.fromCharCode(charcode.$ndash);
 
   static List rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
     [7, 8, 9, multiplyChar],
-    [4, 5, 6, '-'],
+    [4, 5, 6, minus],
     [1, 2, 3, '+'],
     [changeSignChar, 0, decimalChar, '=']
   ];
