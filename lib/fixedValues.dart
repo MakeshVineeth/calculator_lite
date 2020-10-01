@@ -2,17 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:charcode/charcode.dart' as charcode;
 
 class FixedValues {
-  static String upperArrow = '\u2191';
-  static String backSpaceChar = '\u2190';
-  static String multiplyChar = 'x';
-  static String changeSignChar = '\u207A/-';
-  static String decimalChar = '\u00B7';
-  static String cubeRoot = '\u00B3√x';
-  static String squareChar = 'x\u00B2';
-  static String capChar = '\u005E';
+  // Set Symbols from Flutter CharCode Library and Static to access across all files.
+  static String upperArrow = String.fromCharCode(charcode.$uarr);
+  static String downArrow = String.fromCharCode(charcode.$darr);
+  static String backSpaceChar = String.fromCharCode(charcode.$larr);
+  static String multiplyChar = String.fromCharCode(charcode.$x);
+  static String changeSignChar =
+      '\u207A/-'; // superscript + is not present in charcode library.
+  static String decimalChar = String.fromCharCode(charcode.$middot);
+  static String capChar = String.fromCharCode(charcode.$hat);
+  static String divisionChar = String.fromCharCode(charcode.$divide);
+  static String root = String.fromCharCode(charcode.$radic);
+  static String pi = String.fromCharCode(charcode.$pi);
+  static String squareChar =
+      String.fromCharCodes([charcode.$x, charcode.$sup2]);
   static String reciprocalChar =
       String.fromCharCodes([charcode.$sup1, charcode.$division, charcode.$x]);
-  static String divisionChar = String.fromCharCode(charcode.$divide);
+  static String cubeRoot =
+      String.fromCharCodes([charcode.$sup3, charcode.$radic, charcode.$x]);
 
   static List rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
@@ -23,11 +30,11 @@ class FixedValues {
   ];
 
   static List rowExtras = [
-    ['↓', 'i', 'e', '%'],
+    [downArrow, 'i', 'e', '%'],
     ['sin', 'cos', 'tan', 'inv'],
     ['ln', 'log', 'mod', reciprocalChar],
-    ['(', ')', '!', '√'],
-    ['π', cubeRoot, capChar, squareChar]
+    ['(', ')', '!', root],
+    [pi, cubeRoot, capChar, squareChar]
   ];
 
   static ThemeData lightTheme() {
