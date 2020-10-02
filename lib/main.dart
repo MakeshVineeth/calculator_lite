@@ -7,6 +7,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
+import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'dart:io' show Platform;
 
 void main() => runApp(BottomNavBar());
@@ -118,7 +119,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
     setFlatStatusBar();
     return Scaffold(
       body: SafeArea(
-        child: IndexedStack(
+        child: FadeIndexedStack(
           index: _currentIndex,
           children: availableWidgets,
         ),
