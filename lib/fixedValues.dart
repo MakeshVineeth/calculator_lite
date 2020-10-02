@@ -65,4 +65,10 @@ class FixedValues {
       buttonColor: Colors.grey[900],
     );
   }
+
+  static Color blurBgColor = Colors.black26;
+  static const String appName = 'Calculator Lite';
+  static const String appVersion = '1.0.0';
+  static const String appLegalese =
+      'Make faster calculations, display latest currencies, endless history scrolling.';
 }

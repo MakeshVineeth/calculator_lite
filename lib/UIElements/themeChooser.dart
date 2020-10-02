@@ -1,18 +1,32 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
+import 'package:calculator_lite/fixedValues.dart';
 
 // Pop up for Choosing Theme
 class PopThemeChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Choose Theme'),
-      content: ThemeButtons(),
-      elevation: 50.0, // Little Shadows
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      child: AlertDialog(
+        title: Text('Choose Theme'),
+        content: ThemeButtons(),
+        elevation: 20.0, // Little Shadows
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
       ),
+    );
+  }
+
+  static void showThemeChooser(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: FixedValues.blurBgColor,
+      builder: (context) => PopThemeChooser(),
     );
   }
 }

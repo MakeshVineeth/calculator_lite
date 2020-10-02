@@ -1,22 +1,18 @@
 import 'dart:ui';
-
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'dart:io' show Platform;
+import 'package:calculator_lite/fixedValues.dart';
 
 class AboutPage extends StatelessWidget {
-  final String appName = 'Calculator Lite';
-  final String appVersion = '1.0.0';
-  final String appLegalese =
-      'Make faster calculations, display latest currencies, endless history scrolling';
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: AboutDialog(
-        applicationName: appName,
-        applicationVersion: appVersion,
-        applicationLegalese: appLegalese,
+        applicationName: FixedValues.appName,
+        applicationVersion: FixedValues.appVersion,
+        applicationLegalese: FixedValues.appLegalese,
       ),
     );
   }
@@ -30,7 +26,7 @@ class AboutPage extends StatelessWidget {
         FlutterStatusbarcolor.setStatusBarWhiteForeground(!useWhiteForeground);
       showDialog(
         context: context,
-        barrierColor: Colors.black12,
+        barrierColor: FixedValues.blurBgColor,
         builder: (context) => AboutPage(),
       ).then((value) {
         if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS))

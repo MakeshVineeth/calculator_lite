@@ -138,13 +138,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void popUpFunction(int value) {
     switch (value) {
       case 0:
-        return AboutPage.showAboutDialogFunc(context);
+        AboutPage.showAboutDialogFunc(context);
         break;
       case 1:
-        showDialog(
-          context: context,
-          builder: (context) => PopThemeChooser(),
-        );
+        PopThemeChooser.showThemeChooser(context);
         break;
     }
   }
