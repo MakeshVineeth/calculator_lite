@@ -1,42 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 
 class CalcButtons extends StatefulWidget {
   final List rowData;
   final int index;
   final Function displayFunction;
   final bool isCornerRows;
-  CalcButtons(
+  const CalcButtons(
       {this.rowData, this.index, this.displayFunction, this.isCornerRows});
   @override
   _CalcButtonsState createState() => _CalcButtonsState();
 }
 
-class _CalcButtonsState extends State<CalcButtons>
-    with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation _animation;
-
-  @override
-  void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 800),
-    );
-
-    _animation = Tween(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(_controller);
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
+class _CalcButtonsState extends State<CalcButtons> {
   @override
   Widget build(BuildContext context) {
     Color fgColor = Theme.of(context)
@@ -52,7 +28,6 @@ class _CalcButtonsState extends State<CalcButtons>
       fgColor = Theme.of(context).primaryColor; // Check if it corners rows
     }
 
-    _controller.forward();
     return Expanded(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -64,8 +39,7 @@ class _CalcButtonsState extends State<CalcButtons>
               child: RaisedButton(
                 elevation: 2.0,
                 onPressed: this.widget.displayFunction,
-                child: FadeTransition(
-                  opacity: _animation,
+                child: FadeThis(
                   child: Text(
                     this.widget.rowData[this.widget.index].toString(),
                     style: calcButtonTextStyle(fgColor),
