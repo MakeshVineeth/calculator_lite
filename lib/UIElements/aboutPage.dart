@@ -8,7 +8,8 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      filter: ImageFilter.blur(
+          sigmaX: FixedValues.sigmaLevel, sigmaY: FixedValues.sigmaLevel),
       child: AboutDialog(
         applicationName: FixedValues.appName,
         applicationVersion: FixedValues.appVersion,
