@@ -1,6 +1,5 @@
 import 'package:calculator_lite/currencyTab.dart';
 import 'package:calculator_lite/historyTab.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';
 import 'package:calculator_lite/calculatorTab.dart';
@@ -11,10 +10,7 @@ import 'package:calculator_lite/Backend/themeChange.dart';
 import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'dart:io' show Platform;
 
-void main() {
-  GestureBinding.instance.resamplingEnabled = true;
-  runApp(BottomNavBar());
-}
+void main() => runApp(BottomNavBar());
 
 class BottomNavBar extends StatefulWidget {
   @override
