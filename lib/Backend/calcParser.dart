@@ -8,6 +8,8 @@ class CalcParser {
   List<String> calculationString;
   CalcParser({this.calculationString});
   List<String> operations = [
+    FixedValues.divisionChar,
+    FixedValues.multiplyChar,
     '*',
     '+',
     '-',
@@ -25,7 +27,8 @@ class CalcParser {
     '7',
     '8',
     '9',
-    '.'
+    '.',
+    FixedValues.decimalChar
   ];
   List<String> trigFunctions = ['sin', 'cos', 'tan', 'ln', 'log'];
   List<String> addToExpression(String value) {
@@ -86,6 +89,8 @@ class CalcParser {
     // Following functions should not present in the first position.
     else if (!({
       '+',
+      '*',
+      '/',
       FixedValues.divisionChar,
       FixedValues.multiplyChar,
       ')',
