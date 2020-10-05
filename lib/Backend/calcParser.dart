@@ -106,6 +106,8 @@ class CalcParser {
 
       if (trigFunctions.contains(value))
         calculationString.add('$value(');
+      else if (value.contains(FixedValues.decimalChar))
+        calculationString.add('.');
       else
         calculationString.add(value);
     }
