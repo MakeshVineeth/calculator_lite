@@ -56,7 +56,7 @@ class CalcParser {
           calculationString
               .add(String.fromCharCodes([charcode.$sup3, charcode.$radic]));
         else if (value.contains(FixedValues.decimalChar))
-          calculationString.add('.');
+          setDecimalChar();
         else if (value.contains(')'))
           addClosedBracket();
 
@@ -67,10 +67,11 @@ class CalcParser {
           calculationString.add(value);
       }
 
+      // add * to respective positions.
       if (calculationString.length > 1) {
         lastIndex = calculationString.length - 1;
         lastChar = calculationString[lastIndex];
-        // add * to respective positions.
+
         String lastButOne = calculationString[lastIndex - 1];
         // check pre-value
         if ((numbersList.contains(lastButOne) ||
@@ -193,6 +194,12 @@ class CalcParser {
       i = parseOperatorFromEnd();
       calculationString.insert(i + 1, '(-');
     }
+  }
+
+  void setDecimalChar() {
+    int index = parseNumbersFromEnd();
+    bool count = calculationString.join().contains('.', index + 1);
+    if (!count) calculationString.add('.');
   }
 
   double getValue() {
