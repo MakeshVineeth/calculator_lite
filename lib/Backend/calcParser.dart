@@ -191,7 +191,19 @@ class CalcParser {
         default:
           calculationString.insert(i + 1, '(${FixedValues.minus}');
       }
-
+    // If lastChar is closed bracket, do this function.
+    else if (calculationString[lastIndex].contains(')')) {
+      int count = lastIndex;
+      int openBrace = 0;
+      int closedBrace = 0;
+      for (; count >= 0; --count) {
+        if (calculationString[count].contains(')')) closedBrace += 1;
+        if (calculationString[count].contains('(')) openBrace += 1;
+        if (openBrace == closedBrace) break;
+      }
+      //print(calculationString.getRange(count, lastIndex + 1).join());
+      calculationString.insert(count, '(${FixedValues.minus}');
+    }
     // executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
     else {
       i = parseOperatorFromEnd();
