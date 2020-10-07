@@ -10,6 +10,7 @@ class CalcParser {
   List<String> operations = [
     FixedValues.divisionChar,
     FixedValues.multiplyChar,
+    FixedValues.minus,
     '*',
     '+',
     '-',
@@ -166,21 +167,21 @@ class CalcParser {
 
     if (i == -1)
       // if it is equal to -1 then add sign directly as there are no operators at this point, only a number.
-      calculationString.insert(i + 1, '-');
+      calculationString.insert(i + 1, FixedValues.minus);
 
     // check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
     else if (i != lastIndex)
       switch (calculationString[i]) {
-        case '(-':
+        case '(–':
           calculationString.removeAt(i);
           break;
         case '(':
-          calculationString.insert(i + 1, '-');
+          calculationString.insert(i + 1, FixedValues.minus);
           break;
         case '+':
-          calculationString[i] = '-';
+          calculationString[i] = FixedValues.minus;
           break;
-        case '-':
+        case '–':
           if (i != 0)
             calculationString[i] = '+';
           else
@@ -188,13 +189,13 @@ class CalcParser {
                 i); // Just remove - instead of adding + when position is at 0.
           break;
         default:
-          calculationString.insert(i + 1, '(-');
+          calculationString.insert(i + 1, '(${FixedValues.minus}');
       }
 
     // executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
     else {
       i = parseOperatorFromEnd();
-      calculationString.insert(i + 1, '(-');
+      calculationString.insert(i + 1, '(${FixedValues.minus}');
     }
   }
 
