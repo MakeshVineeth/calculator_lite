@@ -229,6 +229,7 @@ class CalcParser {
     computerStr = computerStr.replaceAll(FixedValues.pi, math.pi.toString());
     computerStr = computerStr.replaceAll('e', math.e.toString());
     computerStr = computerStr.replaceAll(FixedValues.sup2, '^2');
+    computerStr = computerStr.replaceAll('mod', '%');
 
     // attach parentheses automatically.
     int count = '('.allMatches(computerStr).length;
