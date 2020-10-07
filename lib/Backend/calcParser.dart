@@ -126,14 +126,27 @@ class CalcParser {
   void reciprocalFunction() {
     try {
       int lastIndex = calculationString.length - 1;
-      int i = parseNumbersFromEnd();
+      int i = 0;
       double value = 0;
+
+      //Parse numbers initially.
+      i = parseNumbersFromEnd();
       if (i != lastIndex) {
-        // parse numbers
         value = double.tryParse(
             calculationString.join().substring(i + 1, lastIndex + 1));
-      } else {
-        // Executes if there are no integers from beginning.
+      }
+
+      // Run below code for Matching brackets
+      else if (calculationString[lastIndex].contains(')')) {
+        i = parseMatchingBrackets();
+        List<String> temp =
+            calculationString.getRange(i, lastIndex + 1).toList();
+        value = evalFunction(temp);
+        i -= 1; // Temp solution, i should be 1 low for left-most bracket.
+      }
+
+      // Executes if there are no integers from beginning.
+      else {
         i = parseOperatorFromEnd();
         List<String> temp =
             calculationString.getRange(i + 1, lastIndex + 1).toList();
@@ -143,7 +156,9 @@ class CalcParser {
       calculationString.removeRange(i + 1, lastIndex + 1);
       calculationString.insert(
           calculationString.length, DisplayScreen.formatNumber(1 / value));
-    } catch (e) {}
+    } catch (e) {
+      // Do nothing for exceptions.
+    }
   }
 
   int parseNumbersFromEnd() {
