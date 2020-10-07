@@ -129,7 +129,7 @@ class CalcParser {
       int i = 0;
       double value = 0;
 
-      //Parse numbers initially.
+      // Parse numbers initially.
       i = parseNumbersFromEnd();
       if (i != lastIndex) {
         value = double.tryParse(
@@ -142,7 +142,8 @@ class CalcParser {
         List<String> temp =
             calculationString.getRange(i, lastIndex + 1).toList();
         value = evalFunction(temp);
-        i -= 1; // Temp solution, i should be 1 low for left-most bracket.
+        i -=
+            1; // Temp solution, i should be 1 low for counting left-most bracket which will be removed using below-most code.
       }
 
       // Executes if there are no integers from beginning.
@@ -154,11 +155,22 @@ class CalcParser {
       }
 
       calculationString.removeRange(i + 1, lastIndex + 1);
-      calculationString.insert(
-          calculationString.length, DisplayScreen.formatNumber(1 / value));
-    } catch (e) {
-      // Do nothing for exceptions.
+      value = 1 / value;
+      String valueStr = "";
+      // Negative checks happens here
+      if (value >= 0)
+        valueStr = DisplayScreen.formatNumber(value);
+      else {
+        valueStr = DisplayScreen.formatNumber(value);
+        valueStr = valueStr.replaceAll('-', FixedValues.minus);
+        valueStr = "(" + valueStr;
+      }
+
+      calculationString.insert(calculationString.length, valueStr);
     }
+
+    // Do nothing for exceptions.
+    catch (e) {}
   }
 
   int parseNumbersFromEnd() {
