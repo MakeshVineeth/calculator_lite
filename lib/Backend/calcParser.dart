@@ -104,7 +104,6 @@ class CalcParser {
       FixedValues.changeSignChar,
     }.contains(value))) {
       // Check if only value present is NOT an operator.
-
       if (trigFunctions.contains(value))
         calculationString.add('$value(');
       else if (value.contains(FixedValues.decimalChar))
@@ -157,6 +156,7 @@ class CalcParser {
       calculationString.removeRange(i + 1, lastIndex + 1);
       value = 1 / value;
       String valueStr = "";
+
       // Negative checks happens here
       if (value >= 0)
         valueStr = DisplayScreen.formatNumber(value);
@@ -175,7 +175,7 @@ class CalcParser {
 
   int parseNumbersFromEnd() {
     int i = calculationString.length - 1;
-    // parse the string from the end to start. Break immediately if any symbol found other than integers.
+    // Parse the string from the end to start. Break immediately if any symbol found other than integers.
     for (; i >= 0; i--) if (!numbersList.contains(calculationString[i])) break;
     return i;
   }
@@ -190,21 +190,22 @@ class CalcParser {
     int lastIndex = calculationString.length - 1; // Get index of last char
     int i = parseNumbersFromEnd();
 
-    // if it is equal to -1 then add sign directly as there are no operators at this point, only a number.
+    // If it is equal to -1 then add sign directly as there are no operators at this point, only a number.
     if (i == -1)
       calculationString.insert(0, FixedValues.minus);
 
-    // check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
+    // Check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
     else if (i != lastIndex)
       insertSign(i);
 
     // If lastChar is closed bracket, do this matching function.
     else if (calculationString[lastIndex].contains(')')) {
       i = parseMatchingBrackets() - 1;
+      // if (i == -1) i = 0;
       insertSign(i);
     }
 
-    // executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
+    // Executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
     else {
       i = parseOperatorFromEnd();
       insertSign(i);
