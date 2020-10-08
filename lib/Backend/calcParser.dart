@@ -201,14 +201,19 @@ class CalcParser {
     // If lastChar is closed bracket, do this matching function.
     else if (calculationString[lastIndex].contains(')')) {
       i = parseMatchingBrackets() - 1;
-      // if (i == -1) i = 0;
-      insertSign(i);
+      if (i != -1)
+        insertSign(i);
+      else
+        calculationString.insert(0, FixedValues.minus);
     }
 
     // Executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
     else {
       i = parseOperatorFromEnd();
-      insertSign(i);
+      if (i != -1)
+        insertSign(i);
+      else
+        calculationString.insert(0, FixedValues.minus);
     }
   }
 
