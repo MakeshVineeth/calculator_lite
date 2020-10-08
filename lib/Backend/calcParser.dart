@@ -32,6 +32,21 @@ class CalcParser {
     FixedValues.decimalChar
   ];
   List<String> trigFunctions = ['sin', 'cos', 'tan', 'ln', 'log'];
+  List<String> avoidFirstElement = [
+    '+',
+    '*',
+    '/',
+    FixedValues.divisionChar,
+    FixedValues.multiplyChar,
+    ')',
+    '!',
+    FixedValues.reciprocalChar,
+    'mod',
+    FixedValues.capChar,
+    '%',
+    FixedValues.squareChar,
+    FixedValues.changeSignChar,
+  ];
   List<String> addToExpression(String value) {
     if (calculationString.length != 0) {
       int lastIndex = calculationString.length - 1;
@@ -88,21 +103,7 @@ class CalcParser {
       }
     }
     // Following functions should not present in the first position.
-    else if (!({
-      '+',
-      '*',
-      '/',
-      FixedValues.divisionChar,
-      FixedValues.multiplyChar,
-      ')',
-      '!',
-      FixedValues.reciprocalChar,
-      'mod',
-      FixedValues.capChar,
-      '%',
-      FixedValues.squareChar,
-      FixedValues.changeSignChar,
-    }.contains(value))) {
+    else if (!(avoidFirstElement.contains(value))) {
       // Check if only value present is NOT an operator.
       if (trigFunctions.contains(value))
         calculationString.add('$value(');
@@ -259,9 +260,11 @@ class CalcParser {
     if (!count) calculationString.add('.');
   }
 
-  int factorial(int n) {
-    if (n < 0) throw ('Negative numbers are not allowed.');
-    return n <= 1 ? 1 : n * factorial(n - 1);
+  BigInt factorial(BigInt n) {
+    if (n < BigInt.from(0)) throw ('Negative numbers are not allowed.');
+    return n <= BigInt.from(1)
+        ? BigInt.from(1)
+        : n * factorial(n - BigInt.from(1));
   }
 
   double getValue() {
@@ -281,6 +284,19 @@ class CalcParser {
   }
 
   String computerString(List<String> calcStr) {
+    // Factorial Function
+    if (calcStr.contains('!')) {
+      int index = calcStr.indexOf('!') - 1;
+      int i = index;
+      for (; i >= 0; i--) if (!numbersList.contains(calcStr[i])) break;
+      String numberList = calcStr.getRange(i + 1, index + 1).join();
+      print(numberList);
+      if (!numberList.contains('.')) {
+        BigInt getNum = BigInt.tryParse(numberList);
+        BigInt factNum = factorial(getNum);
+        print(factNum);
+      }
+    }
     String computerStr = calcStr.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
