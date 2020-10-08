@@ -187,47 +187,50 @@ class CalcParser {
   }
 
   void setSign() {
-    // Not very advanced but just a basic function to insert minus sign wherever possible
-
     int lastIndex = calculationString.length - 1; // Get index of last char
     int i = parseNumbersFromEnd();
 
+    // if it is equal to -1 then add sign directly as there are no operators at this point, only a number.
     if (i == -1)
-      // if it is equal to -1 then add sign directly as there are no operators at this point, only a number.
       calculationString.insert(i + 1, FixedValues.minus);
 
     // check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
     else if (i != lastIndex)
-      switch (calculationString[i]) {
-        case '(–':
-          calculationString.removeAt(i);
-          break;
-        case '(':
-          calculationString.insert(i + 1, FixedValues.minus);
-          break;
-        case '+':
-          calculationString[i] = FixedValues.minus;
-          break;
-        case '–':
-          if (i != 0)
-            calculationString[i] = '+';
-          else
-            calculationString.removeAt(
-                i); // Just remove - instead of adding + when position is at 0.
-          break;
-        default:
-          calculationString.insert(i + 1, '(${FixedValues.minus}');
-      }
+      insertSign(i);
+
     // If lastChar is closed bracket, do this matching function.
     else if (calculationString[lastIndex].contains(')')) {
-      // print(calculationString.getRange(count, lastIndex + 1).join());
-      calculationString.insert(
-          parseMatchingBrackets(), '(${FixedValues.minus}');
+      i = parseMatchingBrackets() - 1;
+      insertSign(i);
     }
+
     // executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
     else {
       i = parseOperatorFromEnd();
-      calculationString.insert(i + 1, '(${FixedValues.minus}');
+      insertSign(i);
+    }
+  }
+
+  void insertSign(int i) {
+    switch (calculationString[i]) {
+      case '(–':
+        calculationString.removeAt(i);
+        break;
+      case '(':
+        calculationString.insert(i + 1, FixedValues.minus);
+        break;
+      case '+':
+        calculationString[i] = FixedValues.minus;
+        break;
+      case '–':
+        if (i != 0)
+          calculationString[i] = '+';
+        else
+          calculationString.removeAt(
+              i); // Just remove - instead of adding + when position is at 0.
+        break;
+      default:
+        calculationString.insert(i + 1, '(${FixedValues.minus}');
     }
   }
 
