@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AboutPage extends StatelessWidget {
   @override
@@ -23,16 +24,25 @@ class AboutPage extends StatelessWidget {
       ThemeData temp = Theme.of(context);
       bool useWhiteForeground =
           (temp.brightness == Brightness.dark) ? true : false;
-      if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS))
+
+      if (!(kIsWeb ||
+          Platform.isWindows ||
+          Platform.isLinux ||
+          Platform.isMacOS))
         FlutterStatusbarcolor.setStatusBarWhiteForeground(!useWhiteForeground);
       showDialog(
         context: context,
         barrierColor: FixedValues.blurBgColor,
         builder: (context) => AboutPage(),
       ).then((value) {
-        if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS))
+        if (!(kIsWeb ||
+            Platform.isWindows ||
+            Platform.isLinux ||
+            Platform.isMacOS))
           FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
       });
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 }
