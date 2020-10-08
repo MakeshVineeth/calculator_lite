@@ -259,6 +259,11 @@ class CalcParser {
     if (!count) calculationString.add('.');
   }
 
+  int factorial(int n) {
+    if (n < 0) throw ('Negative numbers are not allowed.');
+    return n <= 1 ? 1 : n * factorial(n - 1);
+  }
+
   double getValue() {
     return evalFunction(calculationString);
   }
