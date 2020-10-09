@@ -297,14 +297,14 @@ class CalcParser {
     computerStr = computerStr.replaceAll('mod', '%');
 
     // Factorial Function
-    if (calcStr.contains('!')) {
-      int index = calcStr.indexOf('!');
+    int total = '!'.allMatches(computerStr).length;
+    while (total > 0) {
+      int index = computerStr.indexOf('!');
       int count = index - 1;
       for (; count >= 0; count--)
-        if (!numbersList.contains(calcStr[count])) break;
-      String numberList = calcStr
-          .getRange(count + 1, index)
-          .join(); // i + 1 because one non-int char will be added in for loop and thus must be trimmed.
+        if (!numbersList.contains(computerStr[count])) break;
+      String numberList = computerStr.substring(count + 1,
+          index); // i + 1 because one non-int char will be added in for loop and thus must be trimmed.
 
       if (!numberList.contains('.')) {
         BigInt getNum = BigInt.tryParse(numberList);
@@ -312,6 +312,7 @@ class CalcParser {
         computerStr = computerStr.replaceRange(count + 1, index + 1,
             '(${factNum.toString()})'); // index + 1 to replace the factorial symbol.
       }
+      total -= 1;
     }
 
     // Attach parentheses automatically.
