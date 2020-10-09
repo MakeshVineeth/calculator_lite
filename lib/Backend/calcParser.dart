@@ -298,24 +298,27 @@ class CalcParser {
 
     // Factorial Function
     if (calcStr.contains('!')) {
-      int index = calcStr.indexOf('!') - 1;
-      int i = index;
-      for (; i >= 0; i--) if (!numbersList.contains(calcStr[i])) break;
-      String numberList = calcStr.getRange(i + 1, index + 1).join();
+      int index = calcStr.indexOf('!');
+      int count = index - 1;
+      for (; count >= 0; count--)
+        if (!numbersList.contains(calcStr[count])) break;
+      String numberList = calcStr
+          .getRange(count + 1, index)
+          .join(); // i + 1 because one non-int char will be added in for loop and thus must be trimmed.
 
       if (!numberList.contains('.')) {
         BigInt getNum = BigInt.tryParse(numberList);
         BigInt factNum = factorial(getNum);
-        computerStr = computerStr.replaceRange(
-            i + 1, index + 2, '(${factNum.toString()})');
+        computerStr = computerStr.replaceRange(count + 1, index + 1,
+            '(${factNum.toString()})'); // index + 1 to replace the factorial symbol.
       }
     }
 
     // Attach parentheses automatically.
-    int count = '('.allMatches(computerStr).length;
-    int count1 = ')'.allMatches(computerStr).length;
-    if (count != count1) {
-      int toAdd = count - count1;
+    int countOpen = '('.allMatches(computerStr).length;
+    int countClosed = ')'.allMatches(computerStr).length;
+    if (countOpen != countClosed) {
+      int toAdd = countOpen - countClosed;
       for (int i = 0; i < toAdd; i++) computerStr = computerStr + ')';
     }
     return computerStr;

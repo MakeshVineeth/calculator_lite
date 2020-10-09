@@ -49,9 +49,9 @@ class DisplayScreen extends StatelessWidget {
       );
 
   static String formatNumber(double value) {
-    int precision = 8;
+    int precision = 10;
     if (value % 1 == 0)
-      return value.toInt().toString();
+      return value.toStringAsFixed(0);
     else
       return value.toStringAsFixed(precision);
   }
