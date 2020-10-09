@@ -269,8 +269,10 @@ class CalcParser {
         : n * factorial(n - BigInt.from(1));
   }
 
+  // This function called from CalcTab.dart after calling addToExpression.
   double getValue() {
-    return evalFunction(calculationString);
+    double value = evalFunction(calculationString);
+    return value;
   }
 
   double evalFunction(List<String> calcStr) {
@@ -281,7 +283,6 @@ class CalcParser {
           comptStr); // evalFunction is executed first, internally function asks for computerString.
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
-      print('eval: $eval');
       return eval;
     } catch (e) {
       return null;
@@ -308,8 +309,8 @@ class CalcParser {
       if (!numberList.contains('.')) {
         BigInt getNum = BigInt.tryParse(numberList);
         BigInt factNum = factorial(getNum);
-        computerStr =
-            computerStr.replaceRange(i + 1, index + 2, '(${factNum.toString()})');
+        computerStr = computerStr.replaceRange(
+            i + 1, index + 2, '(${factNum.toString()})');
       }
     }
 
@@ -320,7 +321,6 @@ class CalcParser {
       int toAdd = count - count1;
       for (int i = 0; i < toAdd; i++) computerStr = computerStr + ')';
     }
-    print('Line 324 $computerStr');
     return computerStr;
   }
 }
