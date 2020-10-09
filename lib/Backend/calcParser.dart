@@ -47,6 +47,8 @@ class CalcParser {
     FixedValues.squareChar,
     FixedValues.changeSignChar,
   ];
+
+  // This function adds elements to displayScreen with formatting.
   List<String> addToExpression(String value) {
     if (calculationString.length != 0) {
       int lastIndex = calculationString.length - 1;
@@ -274,9 +276,12 @@ class CalcParser {
   double evalFunction(List<String> calcStr) {
     try {
       Parser p = Parser();
-      Expression exp = p.parse(computerString(calcStr));
+      String comptStr = computerString(calcStr);
+      Expression exp = p.parse(
+          comptStr); // evalFunction is executed first, internally function asks for computerString.
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
+      print('eval: $eval');
       return eval;
     } catch (e) {
       return null;
@@ -284,19 +289,6 @@ class CalcParser {
   }
 
   String computerString(List<String> calcStr) {
-    // Factorial Function
-    if (calcStr.contains('!')) {
-      int index = calcStr.indexOf('!') - 1;
-      int i = index;
-      for (; i >= 0; i--) if (!numbersList.contains(calcStr[i])) break;
-      String numberList = calcStr.getRange(i + 1, index + 1).join();
-      print(numberList);
-      if (!numberList.contains('.')) {
-        BigInt getNum = BigInt.tryParse(numberList);
-        BigInt factNum = factorial(getNum);
-        print(factNum);
-      }
-    }
     String computerStr = calcStr.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
@@ -306,14 +298,29 @@ class CalcParser {
     computerStr = computerStr.replaceAll(FixedValues.sup2, '^2');
     computerStr = computerStr.replaceAll('mod', '%');
 
-    // attach parentheses automatically.
+    // Factorial Function
+    if (calcStr.contains('!')) {
+      int index = calcStr.indexOf('!') - 1;
+      int i = index;
+      for (; i >= 0; i--) if (!numbersList.contains(calcStr[i])) break;
+      String numberList = calcStr.getRange(i + 1, index + 1).join();
+
+      if (!numberList.contains('.')) {
+        BigInt getNum = BigInt.tryParse(numberList);
+        BigInt factNum = factorial(getNum);
+        computerStr =
+            computerStr.replaceRange(i + 1, index + 2, '(${factNum.toString()})');
+      }
+    }
+
+    // Attach parentheses automatically.
     int count = '('.allMatches(computerStr).length;
     int count1 = ')'.allMatches(computerStr).length;
     if (count != count1) {
       int toAdd = count - count1;
       for (int i = 0; i < toAdd; i++) computerStr = computerStr + ')';
     }
-
+    print('Line 324 $computerStr');
     return computerStr;
   }
 }
