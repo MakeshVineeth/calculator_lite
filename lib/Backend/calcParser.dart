@@ -270,10 +270,7 @@ class CalcParser {
   }
 
   // This function called from CalcTab.dart after calling addToExpression.
-  double getValue() {
-    double value = evalFunction(calculationString);
-    return value;
-  }
+  double getValue() => evalFunction(calculationString);
 
   double evalFunction(List<String> calcStr) {
     try {
