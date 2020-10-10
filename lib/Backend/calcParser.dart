@@ -295,6 +295,7 @@ class CalcParser {
     computerStr = computerStr.replaceAll('e', math.e.toString());
     computerStr = computerStr.replaceAll(FixedValues.sup2, '^2');
     computerStr = computerStr.replaceAll('mod', '%');
+    computerStr = computerStr.replaceAll('log(', 'log(10,');
 
     // Factorial Function
     int total = '!'.allMatches(computerStr).length;
