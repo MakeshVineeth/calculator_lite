@@ -23,7 +23,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   flutter::DartProject project(L"data");
   FlutterWindow window(&run_loop, project);
   Win32Window::Point origin(10, 10);
-  Win32Window::Size size(410, 590);
+  Win32Window::Size size(390, 590);
   if (!window.CreateAndShow(L"Calculator Lite", origin, size)) {
     return EXIT_FAILURE;
   }
