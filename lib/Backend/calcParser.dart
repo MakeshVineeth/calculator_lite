@@ -288,6 +288,8 @@ class CalcParser {
 
   String computerString(List<String> calcStr) {
     String computerStr = calcStr.join();
+
+    // Replace with strings that dart/math_exp package can understand.
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
     computerStr = computerStr.replaceAll(FixedValues.minus, '-');
@@ -297,24 +299,8 @@ class CalcParser {
     computerStr = computerStr.replaceAll('mod', '%');
     computerStr = computerStr.replaceAll('log(', 'log(10,');
 
-    // Factorial Function
-    int total = '!'.allMatches(computerStr).length;
-    while (total > 0) {
-      int index = computerStr.indexOf('!');
-      int count = index - 1;
-      for (; count >= 0; count--)
-        if (!numbersList.contains(computerStr[count])) break;
-      String numberList = computerStr.substring(count + 1,
-          index); // i + 1 because one non-int char will be added in for loop and thus must be trimmed.
-
-      if (!numberList.contains('.')) {
-        BigInt getNum = BigInt.tryParse(numberList);
-        BigInt factNum = factorial(getNum);
-        computerStr = computerStr.replaceRange(count + 1, index + 1,
-            '(${factNum.toString()})'); // index + 1 to replace the factorial symbol.
-      }
-      total -= 1;
-    }
+    // Custom Functions
+    computerStr = getFactorialString(computerStr);
 
     // Attach parentheses automatically.
     int countOpen = '('.allMatches(computerStr).length;
@@ -322,6 +308,35 @@ class CalcParser {
     if (countOpen != countClosed) {
       int toAdd = countOpen - countClosed;
       for (int i = 0; i < toAdd; i++) computerStr = computerStr + ')';
+    }
+    return computerStr;
+  }
+
+  // Factorial Function
+  String getFactorialString(String computerStr) {
+    int total = '!'.allMatches(computerStr).length;
+    while (total > 0) {
+      int index = computerStr.indexOf('!');
+      int count = index - 1;
+
+      // Counting numbers takes place.
+      for (; count >= 0; count--)
+        if (!numbersList.contains(computerStr[count])) break;
+
+      // Get numbers from expressions here.
+      String number = "";
+      if (count != index - 1)
+        number = computerStr.substring(count + 1,
+            index); // count + 1 because one non-int char will be added in for loop and thus must be trimmed.
+
+      // Final execution.
+      if (!number.contains('.')) {
+        BigInt getNum = BigInt.tryParse(number);
+        BigInt factNum = factorial(getNum);
+        computerStr = computerStr.replaceRange(count + 1, index + 1,
+            '(${factNum.toString()})'); // index + 1 to replace the factorial symbol.
+      }
+      total -= 1;
     }
     return computerStr;
   }
