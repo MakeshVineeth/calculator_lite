@@ -125,14 +125,12 @@ class CalcParser {
     if (count1 < count) calculationString.add(')');
   }
 
-  void reciprocalFunction() {
+  List smartParseLast(int lastIndex) {
+    double value = 0;
+    int i = 0;
     try {
-      int lastIndex = calculationString.length - 1;
-      int i = 0;
-      double value = 0;
-
       // Parse numbers initially.
-      i = parseNumbersFromEnd();
+      i = parseNumbersFromEnd(lastIndex, calculationString);
       if (i != lastIndex) {
         value = double.tryParse(
             calculationString.join().substring(i + 1, lastIndex + 1));
@@ -155,16 +153,25 @@ class CalcParser {
             calculationString.getRange(i + 1, lastIndex + 1).toList();
         value = evalFunction(temp);
       }
+    } catch (e) {}
 
-      calculationString.removeRange(i + 1, lastIndex + 1);
-      value = 1 / value;
+    return [i, value];
+  }
+
+  void reciprocalFunction() {
+    try {
+      int lastIndex = calculationString.length - 1;
+      List values = smartParseLast(lastIndex);
+
+      calculationString.removeRange(values[0] + 1, lastIndex + 1);
+      values[1] = 1 / values[1];
       String valueStr = "";
 
       // Negative checks happens here
-      if (value >= 0)
-        valueStr = DisplayScreen.formatNumber(value);
+      if (values[1] >= 0)
+        valueStr = DisplayScreen.formatNumber(values[1]);
       else {
-        valueStr = DisplayScreen.formatNumber(value);
+        valueStr = DisplayScreen.formatNumber(values[1]);
         valueStr = valueStr.replaceAll('-', FixedValues.minus);
         valueStr = "(" + valueStr;
       }
@@ -176,10 +183,9 @@ class CalcParser {
     catch (e) {}
   }
 
-  int parseNumbersFromEnd() {
-    int i = calculationString.length - 1;
+  int parseNumbersFromEnd(int i, var str) {
     // Parse the string from the end to start. Break immediately if any symbol found other than integers.
-    for (; i >= 0; i--) if (!numbersList.contains(calculationString[i])) break;
+    for (; i >= 0; i--) if (!numbersList.contains(str[i])) break;
     return i;
   }
 
@@ -191,7 +197,7 @@ class CalcParser {
 
   void setSign() {
     int lastIndex = calculationString.length - 1; // Get index of last char
-    int i = parseNumbersFromEnd();
+    int i = parseNumbersFromEnd(lastIndex, calculationString);
 
     // If it is equal to -1 then add sign directly as there are no operators at this point, only a number.
     if (i == -1)
@@ -257,7 +263,8 @@ class CalcParser {
   }
 
   void setDecimalChar() {
-    int index = parseNumbersFromEnd();
+    int index =
+        parseNumbersFromEnd(calculationString.length - 1, calculationString);
     bool count = calculationString.join().contains('.', index + 1);
     if (!count) calculationString.add('.');
   }
@@ -320,8 +327,7 @@ class CalcParser {
       int count = index - 1;
 
       // Counting numbers takes place.
-      for (; count >= 0; count--)
-        if (!numbersList.contains(computerStr[count])) break;
+      count = parseNumbersFromEnd(count, computerStr);
 
       // Get numbers from expressions here.
       String number = "";
