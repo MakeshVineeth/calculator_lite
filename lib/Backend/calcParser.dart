@@ -125,22 +125,20 @@ class CalcParser {
     if (count1 < count) calculationString.add(')');
   }
 
-  List smartParseLast(int lastIndex) {
+  List smartParseLast(int lastIndex, List<String> compStr) {
     double value = 0;
     int i = 0;
     try {
       // Parse numbers initially.
-      i = parseNumbersFromEnd(lastIndex, calculationString);
+      i = parseNumbersFromEnd(lastIndex, compStr);
       if (i != lastIndex) {
-        value = double.tryParse(
-            calculationString.join().substring(i + 1, lastIndex + 1));
+        value = double.tryParse(compStr.getRange(i + 1, lastIndex + 1).join());
       }
 
       // Run below code for Matching brackets
-      else if (calculationString[lastIndex].contains(')')) {
-        i = parseMatchingBrackets();
-        List<String> temp =
-            calculationString.getRange(i, lastIndex + 1).toList();
+      else if (compStr[lastIndex].contains(')')) {
+        i = parseMatchingBrackets(compStr);
+        List<String> temp = compStr.getRange(i, lastIndex + 1).toList();
         value = evalFunction(temp);
         i -=
             1; // Temp solution, i should be 1 low for counting left-most bracket which will be removed using below-most code.
@@ -149,8 +147,7 @@ class CalcParser {
       // Executes if there are no integers from beginning.
       else {
         i = parseOperatorFromEnd();
-        List<String> temp =
-            calculationString.getRange(i + 1, lastIndex + 1).toList();
+        List<String> temp = compStr.getRange(i + 1, lastIndex + 1).toList();
         value = evalFunction(temp);
       }
     } catch (e) {}
@@ -161,7 +158,7 @@ class CalcParser {
   void reciprocalFunction() {
     try {
       int lastIndex = calculationString.length - 1;
-      List values = smartParseLast(lastIndex);
+      List values = smartParseLast(lastIndex, calculationString);
 
       calculationString.removeRange(values[0] + 1, lastIndex + 1);
       values[1] = 1 / values[1];
@@ -209,7 +206,7 @@ class CalcParser {
 
     // If lastChar is closed bracket, do this matching function.
     else if (calculationString[lastIndex].contains(')')) {
-      i = parseMatchingBrackets() - 1;
+      i = parseMatchingBrackets(calculationString) - 1;
       if (i != -1)
         insertSign(i);
       else
@@ -249,14 +246,14 @@ class CalcParser {
     }
   }
 
-  int parseMatchingBrackets() {
-    int lastIndex = calculationString.length - 1;
+  int parseMatchingBrackets(List<String> compStr) {
+    int lastIndex = compStr.length - 1;
     int count = lastIndex;
     int openBrace = 0;
     int closedBrace = 0;
     for (; count >= 0; --count) {
-      if (calculationString[count].contains(')')) closedBrace += 1;
-      if (calculationString[count].contains('(')) openBrace += 1;
+      if (compStr[count].contains(')')) closedBrace += 1;
+      if (compStr[count].contains('(')) openBrace += 1;
       if (openBrace == closedBrace) break;
     }
     return count;
@@ -296,8 +293,14 @@ class CalcParser {
   String computerString(List<String> calcStr) {
     // Go through Custom Functions
     List<String> tempString = List.from(calcStr);
-    String computerStr = getFactorialString(tempString);
 
+    int F = '!'.allMatches(tempString.join()).length;
+    while (F > 0) {
+      tempString = getFactorialString(tempString);
+      F -= 1;
+    }
+
+    String computerStr = tempString.join();
     // Replace with strings that dart/math_exp package can understand.
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
@@ -319,31 +322,19 @@ class CalcParser {
   }
 
   // Factorial Function
-  String getFactorialString(List<String> computerStr) {
-    int total = '!'.allMatches(computerStr.join()).length;
-    while (total > 0) {
-      int index = computerStr.indexOf('!');
-      int count = index - 1;
+  List<String> getFactorialString(List<String> computerStr) {
+    int index = computerStr.indexOf('!');
+    int count = index - 1;
+    computerStr.removeAt(index);
+    List data = smartParseLast(count, computerStr);
+    count = data[0];
 
-      // Counting numbers takes place.
-      count = parseNumbersFromEnd(count, computerStr);
-
-      // Get numbers from expressions here.
-      String number = "";
-      if (count != index - 1)
-        number = computerStr
-            .getRange(count + 1, index)
-            .join(); // count + 1 because one non-int char will be added in for loop and thus must be trimmed.
-
-      // Final execution.
-      if (!number.contains('.')) {
-        BigInt getNum = BigInt.tryParse(number);
-        BigInt factNum = factorial(getNum);
-        computerStr.removeRange(count + 1, index + 1);
-        computerStr.insert(count + 1, '(${factNum.toString()})');
-      }
-      total -= 1;
+    if (data[1] % 1 == 0) {
+      BigInt getNum = BigInt.from(data[1]);
+      BigInt factNum = factorial(getNum);
+      computerStr.removeRange(count + 1, index);
+      computerStr.insert(count + 1, '${factNum.toString()}');
     }
-    return computerStr.join();
+    return computerStr;
   }
 }
