@@ -123,7 +123,7 @@ class CalcParser {
         List<String> temp = compStr.getRange(start, lastIndex + 1).toList();
         value = evalFunction(temp);
         start -=
-            1; // Temp solution, i should be 1 low for counting left-most bracket which will be removed using below-most code.
+            1; // Temp solution, i should be 1 low to keep left-most bracket as it will be removed during the process.
       }
 
       // Executes if there are no integers from beginning.
