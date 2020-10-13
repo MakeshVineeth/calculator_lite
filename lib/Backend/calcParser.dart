@@ -1,38 +1,16 @@
 import 'package:math_expressions/math_expressions.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
-import 'dart:math' as math;
+import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:charcode/charcode.dart' as charcode;
+import 'dart:math' as math;
 
 class CalcParser {
   List<String> calculationString;
   CalcParser({this.calculationString});
+  HelperFunctions helperFunctions = HelperFunctions();
 
   // List of constants for conditional checks.
-  List<String> operations = [
-    FixedValues.divisionChar,
-    FixedValues.multiplyChar,
-    FixedValues.minus,
-    '*',
-    '+',
-    '-',
-    '/',
-    '^'
-  ];
-  List<String> numbersList = [
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '.',
-    FixedValues.decimalChar
-  ];
   List<String> trigFunctions = ['sin', 'cos', 'tan', 'ln', 'log'];
   List<String> avoidFirstElement = [
     '+',
@@ -57,7 +35,8 @@ class CalcParser {
       String lastChar = calculationString[lastIndex];
 
       // Check if previous value is NOT an operator.
-      if (!(operations.contains(value) && operations.contains(lastChar))) {
+      if (!(helperFunctions.operations.contains(value) &&
+          helperFunctions.operations.contains(lastChar))) {
         // Code for Square of Number.
         if (value.contains(FixedValues.squareChar))
           calculationString[lastIndex] = '$lastChar' + FixedValues.sup2;
@@ -94,7 +73,7 @@ class CalcParser {
 
         String lastButOne = calculationString[lastIndex - 1];
         // check pre-value
-        if ((numbersList.contains(lastButOne) ||
+        if ((helperFunctions.numbersList.contains(lastButOne) ||
             ['%', 'e', FixedValues.pi, ')', '!', FixedValues.sup2]
                 .contains(lastButOne))) {
           // check post value
@@ -132,7 +111,7 @@ class CalcParser {
     int start = 0;
     try {
       // Parse numbers initially.
-      start = parseNumbersFromEnd(lastIndex, compStr);
+      start = helperFunctions.parseNumbersFromEnd(lastIndex, compStr);
       if (start != lastIndex) {
         value =
             double.tryParse(compStr.getRange(start + 1, lastIndex + 1).join());
@@ -140,7 +119,7 @@ class CalcParser {
 
       // Run below code for Matching brackets
       else if (compStr[lastIndex].contains(')')) {
-        start = parseMatchingBrackets(compStr);
+        start = helperFunctions.parseMatchingBrackets(compStr);
         List<String> temp = compStr.getRange(start, lastIndex + 1).toList();
         value = evalFunction(temp);
         start -=
@@ -149,7 +128,7 @@ class CalcParser {
 
       // Executes if there are no integers from beginning.
       else {
-        start = parseOperatorFromEnd(lastIndex, compStr);
+        start = helperFunctions.parseOperatorFromEnd(lastIndex, compStr);
         List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
         value = evalFunction(temp);
       }
@@ -183,20 +162,9 @@ class CalcParser {
     catch (e) {}
   }
 
-  int parseNumbersFromEnd(int i, var str) {
-    // Parse the string from the end to start. Break immediately if any symbol found other than integers.
-    for (; i >= 0; i--) if (!numbersList.contains(str[i])) break;
-    return i;
-  }
-
-  int parseOperatorFromEnd(int i, var str) {
-    for (; i >= 0; i--) if (operations.contains(calculationString[i])) break;
-    return i;
-  }
-
   void setSign() {
     int lastIndex = calculationString.length - 1; // Get index of last char
-    int i = parseNumbersFromEnd(lastIndex, calculationString);
+    int i = helperFunctions.parseNumbersFromEnd(lastIndex, calculationString);
 
     // If it is equal to -1 then add sign directly as there are no operators at this point, only a number.
     if (i == -1)
@@ -208,7 +176,7 @@ class CalcParser {
 
     // If lastChar is closed bracket, do this matching function.
     else if (calculationString[lastIndex].contains(')')) {
-      i = parseMatchingBrackets(calculationString) - 1;
+      i = helperFunctions.parseMatchingBrackets(calculationString) - 1;
       if (i != -1)
         insertSign(i);
       else
@@ -217,7 +185,7 @@ class CalcParser {
 
     // Executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
     else {
-      i = parseOperatorFromEnd(lastIndex, calculationString);
+      i = helperFunctions.parseOperatorFromEnd(lastIndex, calculationString);
       if (i != -1)
         insertSign(i);
       else
@@ -248,31 +216,11 @@ class CalcParser {
     }
   }
 
-  int parseMatchingBrackets(List<String> compStr) {
-    int lastIndex = compStr.length - 1;
-    int count = lastIndex;
-    int openBrace = 0;
-    int closedBrace = 0;
-    for (; count >= 0; --count) {
-      if (compStr[count].contains(')')) closedBrace += 1;
-      if (compStr[count].contains('(')) openBrace += 1;
-      if (openBrace == closedBrace) break;
-    }
-    return count;
-  }
-
   void setDecimalChar() {
-    int index =
-        parseNumbersFromEnd(calculationString.length - 1, calculationString);
+    int index = helperFunctions.parseNumbersFromEnd(
+        calculationString.length - 1, calculationString);
     bool count = calculationString.join().contains('.', index + 1);
     if (!count) calculationString.add('.');
-  }
-
-  BigInt factorial(BigInt n) {
-    if (n < BigInt.from(0)) throw ('Negative numbers are not allowed.');
-    return n <= BigInt.from(1)
-        ? BigInt.from(1)
-        : n * factorial(n - BigInt.from(1));
   }
 
   // This function called from CalcTab.dart after calling addToExpression.
@@ -333,7 +281,7 @@ class CalcParser {
 
     if (data[1] % 1 == 0) {
       BigInt getNum = BigInt.from(data[1]);
-      BigInt factNum = factorial(getNum);
+      BigInt factNum = helperFunctions.factorial(getNum);
       computerStr.removeRange(count + 1, index);
       computerStr.insert(count + 1, '${factNum.toString()}');
     }
