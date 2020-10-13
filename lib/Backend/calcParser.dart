@@ -119,7 +119,7 @@ class CalcParser {
 
       // Run below code for Matching brackets
       else if (compStr[lastIndex].contains(')')) {
-        start = helperFunctions.parseMatchingBrackets(compStr);
+        start = helperFunctions.parseMatchingBrackets(lastIndex, compStr);
         List<String> temp = compStr.getRange(start, lastIndex + 1).toList();
         value = evalFunction(temp);
         start -=
@@ -176,7 +176,8 @@ class CalcParser {
 
     // If lastChar is closed bracket, do this matching function.
     else if (calculationString[lastIndex].contains(')')) {
-      i = helperFunctions.parseMatchingBrackets(calculationString) - 1;
+      i = helperFunctions.parseMatchingBrackets(lastIndex, calculationString) -
+          1;
       if (i != -1)
         insertSign(i);
       else

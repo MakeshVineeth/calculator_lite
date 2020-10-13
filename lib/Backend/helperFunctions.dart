@@ -36,17 +36,15 @@ class HelperFunctions {
     return i;
   }
 
-  int parseMatchingBrackets(List<String> compStr) {
-    int lastIndex = compStr.length - 1;
-    int count = lastIndex;
+  int parseMatchingBrackets(int end, var str) {
     int openBrace = 0;
     int closedBrace = 0;
-    for (; count >= 0; --count) {
-      if (compStr[count].contains(')')) closedBrace += 1;
-      if (compStr[count].contains('(')) openBrace += 1;
+    for (; end >= 0; --end) {
+      if (str[end].contains(')')) closedBrace += 1;
+      if (str[end].contains('(')) openBrace += 1;
       if (openBrace == closedBrace) break;
     }
-    return count;
+    return end;
   }
 
   BigInt factorial(BigInt n) {
