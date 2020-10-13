@@ -7,6 +7,8 @@ import 'package:charcode/charcode.dart' as charcode;
 class CalcParser {
   List<String> calculationString;
   CalcParser({this.calculationString});
+
+  // List of constants for conditional checks.
   List<String> operations = [
     FixedValues.divisionChar,
     FixedValues.multiplyChar,
@@ -127,32 +129,33 @@ class CalcParser {
 
   List smartParseLast(int lastIndex, List<String> compStr) {
     double value = 0;
-    int i = 0;
+    int start = 0;
     try {
       // Parse numbers initially.
-      i = parseNumbersFromEnd(lastIndex, compStr);
-      if (i != lastIndex) {
-        value = double.tryParse(compStr.getRange(i + 1, lastIndex + 1).join());
+      start = parseNumbersFromEnd(lastIndex, compStr);
+      if (start != lastIndex) {
+        value =
+            double.tryParse(compStr.getRange(start + 1, lastIndex + 1).join());
       }
 
       // Run below code for Matching brackets
       else if (compStr[lastIndex].contains(')')) {
-        i = parseMatchingBrackets(compStr);
-        List<String> temp = compStr.getRange(i, lastIndex + 1).toList();
+        start = parseMatchingBrackets(compStr);
+        List<String> temp = compStr.getRange(start, lastIndex + 1).toList();
         value = evalFunction(temp);
-        i -=
+        start -=
             1; // Temp solution, i should be 1 low for counting left-most bracket which will be removed using below-most code.
       }
 
       // Executes if there are no integers from beginning.
       else {
-        i = parseOperatorFromEnd();
-        List<String> temp = compStr.getRange(i + 1, lastIndex + 1).toList();
+        start = parseOperatorFromEnd(lastIndex, compStr);
+        List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
         value = evalFunction(temp);
       }
     } catch (e) {}
 
-    return [i, value];
+    return [start, value];
   }
 
   void reciprocalFunction() {
@@ -186,8 +189,7 @@ class CalcParser {
     return i;
   }
 
-  int parseOperatorFromEnd() {
-    int i = calculationString.length - 1;
+  int parseOperatorFromEnd(int i, var str) {
     for (; i >= 0; i--) if (operations.contains(calculationString[i])) break;
     return i;
   }
@@ -215,7 +217,7 @@ class CalcParser {
 
     // Executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
     else {
-      i = parseOperatorFromEnd();
+      i = parseOperatorFromEnd(lastIndex, calculationString);
       if (i != -1)
         insertSign(i);
       else
@@ -294,10 +296,10 @@ class CalcParser {
     // Go through Custom Functions
     List<String> tempString = List.from(calcStr);
 
-    int F = '!'.allMatches(tempString.join()).length;
-    while (F > 0) {
+    int symTOTAL = '!'.allMatches(tempString.join()).length;
+    while (symTOTAL > 0) {
       tempString = getFactorialString(tempString);
-      F -= 1;
+      symTOTAL -= 1;
     }
 
     String computerStr = tempString.join();
@@ -324,8 +326,8 @@ class CalcParser {
   // Factorial Function
   List<String> getFactorialString(List<String> computerStr) {
     int index = computerStr.indexOf('!');
-    int count = index - 1;
     computerStr.removeAt(index);
+    int count = index - 1;
     List data = smartParseLast(count, computerStr);
     count = data[0];
 
