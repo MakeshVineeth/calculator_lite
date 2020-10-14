@@ -53,8 +53,6 @@ class AboutPage extends StatelessWidget {
             Platform.isMacOS))
           FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
       });
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 }
