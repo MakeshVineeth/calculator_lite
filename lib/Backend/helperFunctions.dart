@@ -5,10 +5,7 @@ class HelperFunctions {
     FixedValues.divisionChar,
     FixedValues.multiplyChar,
     FixedValues.minus,
-    '*',
     '+',
-    '-',
-    '/',
     '^'
   ];
   List<String> numbersList = [
@@ -22,8 +19,7 @@ class HelperFunctions {
     '7',
     '8',
     '9',
-    '.',
-    FixedValues.decimalChar
+    '.'
   ];
   int parseNumbersFromEnd(int i, var str) {
     // Parse the string from the end to start. Break immediately if any symbol found other than integers.
