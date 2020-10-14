@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:charcode/charcode.dart' as charcode;
 
 class DisplayScreen extends StatelessWidget {
   const DisplayScreen({
@@ -50,9 +51,13 @@ class DisplayScreen extends StatelessWidget {
 
   static String formatNumber(double value) {
     int precision = 10;
+    String infinity = 'Infinity';
+    String infinitySymbol = String.fromCharCode(charcode.$infin);
     if (value % 1 == 0)
-      return value.toStringAsFixed(0);
+      return value.toStringAsFixed(0).replaceAll(infinity, infinitySymbol);
     else
-      return value.toStringAsFixed(precision);
+      return value
+          .toStringAsFixed(precision)
+          .replaceAll(infinity, infinitySymbol);
   }
 }
