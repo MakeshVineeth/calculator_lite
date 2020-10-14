@@ -65,25 +65,6 @@ class CalcParser {
         else
           calculationString.add(value);
       }
-
-      // add * to respective positions.
-      if (calculationString.length > 1) {
-        lastIndex = calculationString.length - 1;
-        lastChar = calculationString[lastIndex];
-
-        String lastButOne = calculationString[lastIndex - 1];
-        // check pre-value
-        if ((helperFunctions.numbersList.contains(lastButOne) ||
-            ['%', 'e', FixedValues.pi, ')', '!', FixedValues.sup2]
-                .contains(lastButOne))) {
-          // check post value
-          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', FixedValues.pi]
-              .contains(lastChar)) {
-            // should keep number parsing two times
-            calculationString.insert(lastIndex, FixedValues.multiplyChar);
-          }
-        }
-      }
     }
     // Following functions should not present in the first position.
     else if (!(avoidFirstElement.contains(value))) {
@@ -244,6 +225,26 @@ class CalcParser {
   String computerString(List<String> calcStr) {
     // Go through Custom Functions
     List<String> tempString = List.from(calcStr);
+
+    // add * to respective positions.
+    if (tempString.length > 1) {
+      for (int i = tempString.length - 1; i > 0; i--) {
+        int lastIndex = i;
+        String lastChar = tempString[lastIndex];
+        String lastButOne = tempString[lastIndex - 1];
+        // check pre-value
+        if ((helperFunctions.numbersList.contains(lastButOne) ||
+            ['%', 'e', FixedValues.pi, ')', '!', FixedValues.sup2]
+                .contains(lastButOne))) {
+          // check post value
+          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', FixedValues.pi]
+              .contains(lastChar)) {
+            // should keep number parsing two times
+            tempString.insert(lastIndex, FixedValues.multiplyChar);
+          }
+        }
+      }
+    }
 
     int symTOTAL = '!'.allMatches(tempString.join()).length;
     while (symTOTAL > 0) {
