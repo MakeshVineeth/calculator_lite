@@ -8,14 +8,10 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(
-          sigmaX: FixedValues.sigmaLevel, sigmaY: FixedValues.sigmaLevel),
-      child: AboutDialog(
-        applicationName: FixedValues.appName,
-        applicationVersion: FixedValues.appVersion,
-        applicationLegalese: FixedValues.appLegalese,
-      ),
+    return AboutDialog(
+      applicationName: FixedValues.appName,
+      applicationVersion: FixedValues.appVersion,
+      applicationLegalese: FixedValues.appLegalese,
     );
   }
 
@@ -32,19 +28,25 @@ class AboutPage extends StatelessWidget {
         FlutterStatusbarcolor.setStatusBarWhiteForeground(!useWhiteForeground);
 
       showGeneralDialog(
-          barrierColor: FixedValues.blurBgColor,
-          transitionBuilder: (context, animation, secondaryAnimation, child) {
-            return Opacity(
+        context: context,
+        pageBuilder: (context, animation, secondaryAnimation) => AboutPage(),
+        barrierColor: FixedValues.blurBgColor,
+        transitionBuilder: (context, animation, secondaryAnimation, child) {
+          return BackdropFilter(
+            filter: ImageFilter.blur(
+                sigmaX: FixedValues.sigmaLevel * animation.value,
+                sigmaY: FixedValues.sigmaLevel * animation.value),
+            child: AnimatedOpacity(
               opacity: animation.value,
-              child: AboutPage(),
-            );
-          },
-          transitionDuration: Duration(milliseconds: 300),
-          barrierDismissible: true,
-          barrierLabel: '',
-          context: context,
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              AboutPage()).then((value) {
+              duration: FixedValues.transitionDuration,
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: FixedValues.transitionDuration,
+        barrierDismissible: true,
+        barrierLabel: '',
+      ).then((value) {
         if (!(kIsWeb ||
             Platform.isWindows ||
             Platform.isLinux ||
