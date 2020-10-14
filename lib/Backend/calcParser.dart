@@ -233,8 +233,13 @@ class CalcParser {
         int lastIndex = i;
         String lastChar = tempString[lastIndex];
         String lastButOne = tempString[lastIndex - 1];
+
+        if (lastButOne.contains('.') &&
+            !helperFunctions.numbersList.contains(lastChar)) {
+          tempString[lastIndex - 1] = '.0';
+        }
         // check pre-value
-        if (helperFunctions.numbersList.contains(lastButOne)) {
+        else if (helperFunctions.numbersList.contains(lastButOne)) {
           // check post value
           if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', '(', FixedValues.pi]
               .contains(lastChar))
