@@ -234,13 +234,30 @@ class CalcParser {
         String lastChar = tempString[lastIndex];
         String lastButOne = tempString[lastIndex - 1];
         // check pre-value
-        if ((helperFunctions.numbersList.contains(lastButOne) ||
-            ['%', 'e', FixedValues.pi, ')', '!', FixedValues.sup2]
-                .contains(lastButOne)))
-        // check post value
-        if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', FixedValues.pi]
-            .contains(lastChar))
+        if (helperFunctions.numbersList.contains(lastButOne)) {
+          // check post value
+          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', FixedValues.pi]
+              .contains(lastChar))
+            tempString.insert(lastIndex, FixedValues.multiplyChar);
+        } else if ([
+          '%',
+          'e',
+          FixedValues.pi,
+          ')',
+          '!',
+          FixedValues.sup2
+        ].contains(lastButOne)) if ([
+              'sin(',
+              'cos(',
+              'tan(',
+              'ln(',
+              'log(',
+              'e',
+              FixedValues.pi
+            ].contains(lastChar) ||
+            helperFunctions.numbersList.contains(lastChar)) {
           tempString.insert(lastIndex, FixedValues.multiplyChar);
+        }
       }
     }
 
