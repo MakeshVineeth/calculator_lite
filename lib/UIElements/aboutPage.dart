@@ -1,9 +1,9 @@
-import 'dart:ui';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 
 class AboutPage extends StatelessWidget {
   @override
@@ -27,25 +27,9 @@ class AboutPage extends StatelessWidget {
           Platform.isMacOS))
         FlutterStatusbarcolor.setStatusBarWhiteForeground(!useWhiteForeground);
 
-      showGeneralDialog(
+      showBlurDialog(
         context: context,
-        pageBuilder: (context, animation, secondaryAnimation) => AboutPage(),
-        barrierColor: FixedValues.blurBgColor,
-        transitionBuilder: (context, animation, secondaryAnimation, child) {
-          return BackdropFilter(
-            filter: ImageFilter.blur(
-                sigmaX: FixedValues.sigmaLevel * animation.value,
-                sigmaY: FixedValues.sigmaLevel * animation.value),
-            child: AnimatedOpacity(
-              opacity: animation.value,
-              duration: FixedValues.transitionDuration,
-              child: child,
-            ),
-          );
-        },
-        transitionDuration: FixedValues.transitionDuration,
-        barrierDismissible: true,
-        barrierLabel: '',
+        child: AboutPage(),
       ).then((value) {
         if (!(kIsWeb ||
             Platform.isWindows ||
