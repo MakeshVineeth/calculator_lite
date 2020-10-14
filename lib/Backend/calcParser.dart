@@ -236,14 +236,11 @@ class CalcParser {
         // check pre-value
         if ((helperFunctions.numbersList.contains(lastButOne) ||
             ['%', 'e', FixedValues.pi, ')', '!', FixedValues.sup2]
-                .contains(lastButOne))) {
-          // check post value
-          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', FixedValues.pi]
-              .contains(lastChar)) {
-            // should keep number parsing two times
-            tempString.insert(lastIndex, FixedValues.multiplyChar);
-          }
-        }
+                .contains(lastButOne)))
+        // check post value
+        if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', FixedValues.pi]
+            .contains(lastChar))
+          tempString.insert(lastIndex, FixedValues.multiplyChar);
       }
     }
 
