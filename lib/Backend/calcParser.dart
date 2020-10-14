@@ -236,7 +236,7 @@ class CalcParser {
         // check pre-value
         if (helperFunctions.numbersList.contains(lastButOne)) {
           // check post value
-          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', FixedValues.pi]
+          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', '(', FixedValues.pi]
               .contains(lastChar))
             tempString.insert(lastIndex, FixedValues.multiplyChar);
         } else if ([
