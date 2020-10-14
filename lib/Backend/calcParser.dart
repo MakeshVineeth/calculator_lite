@@ -234,7 +234,7 @@ class CalcParser {
         String lastChar = tempString[lastIndex];
         String lastButOne = tempString[lastIndex - 1];
 
-        if (lastButOne.contains('.') &&
+        if (lastButOne == '.' &&
             !helperFunctions.numbersList.contains(lastChar)) {
           tempString[lastIndex - 1] = '.0';
         }
