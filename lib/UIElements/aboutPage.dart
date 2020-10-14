@@ -30,11 +30,21 @@ class AboutPage extends StatelessWidget {
           Platform.isLinux ||
           Platform.isMacOS))
         FlutterStatusbarcolor.setStatusBarWhiteForeground(!useWhiteForeground);
-      showDialog(
-        context: context,
-        barrierColor: FixedValues.blurBgColor,
-        builder: (context) => AboutPage(),
-      ).then((value) {
+
+      showGeneralDialog(
+          barrierColor: FixedValues.blurBgColor,
+          transitionBuilder: (context, animation, secondaryAnimation, child) {
+            return Opacity(
+              opacity: animation.value,
+              child: AboutPage(),
+            );
+          },
+          transitionDuration: Duration(milliseconds: 300),
+          barrierDismissible: true,
+          barrierLabel: '',
+          context: context,
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              AboutPage()).then((value) {
         if (!(kIsWeb ||
             Platform.isWindows ||
             Platform.isLinux ||
