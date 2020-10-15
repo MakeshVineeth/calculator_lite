@@ -165,14 +165,15 @@ class CalcParser {
         insertSign(i);
       else
         calculationString.insert(0, FixedValues.minus);
-    }
-
-    // Executes if there is an operator from the end, gets last available operator in calculator string and insert a sign there.
-    else if ((i =
-            helperFunctions.parseRandomFromEnd(lastIndex, calculationString)) !=
-        -1)
-      insertSign(i);
-    else {
+    } else if (HelperFunctions.constList
+        .contains(calculationString[lastIndex])) {
+      i = helperFunctions.parseConstFromEnd(lastIndex, calculationString);
+      if (i != -1) insertSign(i);
+    } else if (HelperFunctions.randomList
+        .contains(calculationString[lastIndex])) {
+      i = helperFunctions.parseRandomFromEnd(lastIndex, calculationString);
+      if (i != -1) insertSign(i);
+    } else {
       i = helperFunctions.parseOperatorFromEnd(lastIndex, calculationString);
       if (i != -1)
         insertSign(i);
