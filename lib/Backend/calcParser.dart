@@ -305,9 +305,16 @@ class CalcParser {
 
     if (val % 1 == 0 && val >= 0) {
       BigInt getNum = BigInt.from(val);
-      BigInt factNum = helperFunctions.factorial(getNum);
-      computerStr.removeRange(count + 1, index);
-      computerStr.insert(count + 1, '${factNum.toString()}');
+      BigInt factNum;
+
+      // Catch overloaded values here.
+      try {
+        factNum = helperFunctions.factorial(getNum);
+        computerStr.removeRange(count + 1, index);
+        computerStr.insert(count + 1, '${factNum.toString()}');
+      } catch (StackOverflowError) {
+        computerStr = ['0/0']; // Make it NaN this way.
+      }
       return computerStr;
     } else
       return null;
