@@ -21,9 +21,25 @@ class HelperFunctions {
     '9',
     '.'
   ];
+  List<String> randomList = [
+    FixedValues.pi,
+    'e',
+    //'tan(',
+    'sin(',
+    'cos(',
+    'log(',
+    'ln(',
+    FixedValues.root
+  ]; // Cube root too must be added here.
   int parseNumbersFromEnd(int i, var str) {
     // Parse the string from the end to start. Break immediately if any symbol found other than integers.
     for (; i >= 0; i--) if (!numbersList.contains(str[i])) break;
+    return i;
+  }
+
+  int parseRandomFromEnd(int i, var str) {
+    // Parse the string from the end to start. Break immediately if any symbol found other than integers.
+    for (; i >= 0; i--) if (!randomList.contains(str[i])) break;
     return i;
   }
 
