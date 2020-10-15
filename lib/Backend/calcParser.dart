@@ -109,6 +109,13 @@ class CalcParser {
             1; // Temp solution, i should be 1 low to keep left-most bracket as it will be removed during the process.
       }
 
+      // Check for constants.
+      else if (HelperFunctions.constList.contains(compStr[lastIndex])) {
+        start = helperFunctions.parseConstFromEnd(lastIndex, compStr);
+        List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
+        value = evalFunction(temp);
+      }
+
       // Executes if there are no integers from beginning.
       else {
         start = helperFunctions.parseOperatorFromEnd(lastIndex, compStr);
@@ -123,22 +130,24 @@ class CalcParser {
   void reciprocalFunction() {
     try {
       int lastIndex = calculationString.length - 1;
-      List values = smartParseLast(lastIndex, calculationString);
+      if (!HelperFunctions.randomList.contains(calculationString[lastIndex])) {
+        List values = smartParseLast(lastIndex, calculationString);
 
-      calculationString.removeRange(values[0] + 1, lastIndex + 1);
-      values[1] = 1 / values[1];
-      String valueStr = "";
+        calculationString.removeRange(values[0] + 1, lastIndex + 1);
+        values[1] = 1 / values[1];
+        String valueStr = "";
 
-      // Negative checks happens here
-      if (values[1] >= 0)
-        valueStr = DisplayScreen.formatNumber(values[1]);
-      else {
-        valueStr = DisplayScreen.formatNumber(values[1]);
-        valueStr = valueStr.replaceAll('-', FixedValues.minus);
-        valueStr = "(" + valueStr;
+        // Negative checks happens here
+        if (values[1] >= 0)
+          valueStr = DisplayScreen.formatNumber(values[1]);
+        else {
+          valueStr = DisplayScreen.formatNumber(values[1]);
+          valueStr = valueStr.replaceAll('-', FixedValues.minus);
+          valueStr = "(" + valueStr;
+        }
+
+        calculationString.insert(calculationString.length, valueStr);
       }
-
-      calculationString.insert(calculationString.length, valueStr);
     }
 
     // Do nothing for exceptions.
