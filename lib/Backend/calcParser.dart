@@ -64,8 +64,16 @@ class CalcParser {
         // Code for +/- Option
         else if (value.contains(FixedValues.changeSignChar))
           setSign();
-        else
+
+        // Factorial
+        else if (value.contains('!') ||
+            helperFunctions.operations.contains(value)) {
+          if (value.contains(FixedValues.minus) ||
+              !helperFunctions.randomList.contains(lastChar))
+            calculationString.add(value);
+        } else {
           calculationString.add(value);
+        }
       }
     }
     // Following functions should not present in the first position.
@@ -110,7 +118,7 @@ class CalcParser {
       }
 
       // Check for constants.
-      else if (HelperFunctions.constList.contains(compStr[lastIndex])) {
+      else if (helperFunctions.constList.contains(compStr[lastIndex])) {
         start = helperFunctions.parseConstFromEnd(lastIndex, compStr);
         List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
         value = evalFunction(temp);
@@ -130,7 +138,7 @@ class CalcParser {
   void reciprocalFunction() {
     try {
       int lastIndex = calculationString.length - 1;
-      if (!HelperFunctions.randomList.contains(calculationString[lastIndex])) {
+      if (!helperFunctions.randomList.contains(calculationString[lastIndex])) {
         List values = smartParseLast(lastIndex, calculationString);
 
         calculationString.removeRange(values[0] + 1, lastIndex + 1);
@@ -174,11 +182,11 @@ class CalcParser {
         insertSign(i);
       else
         calculationString.insert(0, FixedValues.minus);
-    } else if (HelperFunctions.constList
+    } else if (helperFunctions.constList
         .contains(calculationString[lastIndex])) {
       i = helperFunctions.parseConstFromEnd(lastIndex, calculationString);
       if (i != -1) insertSign(i);
-    } else if (HelperFunctions.randomList
+    } else if (helperFunctions.randomList
         .contains(calculationString[lastIndex])) {
       i = helperFunctions.parseRandomFromEnd(lastIndex, calculationString);
       if (i != -1) insertSign(i);

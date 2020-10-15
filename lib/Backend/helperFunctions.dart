@@ -21,8 +21,8 @@ class HelperFunctions {
     '9',
     '.'
   ];
-  static List<String> constList = ['e', FixedValues.pi];
-  static List<String> randomList = [
+  List<String> constList = ['e', FixedValues.pi];
+  List<String> randomList = [
     'tan(',
     'sin(',
     'cos(',
