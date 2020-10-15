@@ -58,6 +58,7 @@ class DisplayScreen extends StatelessWidget {
       valueStr = value.toStringAsFixed(0);
     } else {
       valueStr = value.toStringAsFixed(precision);
+      if (valueStr.endsWith('0')) valueStr = value.toString();
     }
 
     return valueStr.replaceAll(infinity, infinitySymbol);
