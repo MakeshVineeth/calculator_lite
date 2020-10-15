@@ -53,11 +53,13 @@ class DisplayScreen extends StatelessWidget {
     int precision = 10;
     String infinity = 'Infinity';
     String infinitySymbol = String.fromCharCode(charcode.$infin);
-    if (value % 1 == 0)
-      return value.toStringAsFixed(0).replaceAll(infinity, infinitySymbol);
-    else
-      return value
-          .toStringAsFixed(precision)
-          .replaceAll(infinity, infinitySymbol);
+    String valueStr = value.toString();
+    if (value % 1 == 0) {
+      valueStr = value.toStringAsFixed(0);
+    } else {
+      valueStr = value.toStringAsFixed(precision);
+    }
+
+    return valueStr.replaceAll(infinity, infinitySymbol);
   }
 }
