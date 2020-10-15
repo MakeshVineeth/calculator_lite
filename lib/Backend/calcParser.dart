@@ -35,7 +35,8 @@ class CalcParser {
       String lastChar = calculationString[lastIndex];
 
       // Check if previous value is NOT an operator.
-      if (value.contains(FixedValues.minus) ||
+      if ((value.contains(FixedValues.minus) &&
+              !lastChar.contains(FixedValues.minus)) ||
           !(helperFunctions.operations.contains(value) &&
               helperFunctions.operations.contains(lastChar))) {
         // Code for Square of Number.
