@@ -54,12 +54,12 @@ class DisplayScreen extends StatelessWidget {
     String infinity = 'Infinity';
     String infinitySymbol = String.fromCharCode(charcode.$infin);
     String valueStr = value.toString();
-    if (value % 1 == 0)
+    if (value % 1 == 0) {
       valueStr = value.toStringAsFixed(0);
-    else if (valueStr.endsWith('0'))
-      valueStr = value.toString();
-    else
+    } else {
       valueStr = value.toStringAsFixed(precision);
+      if (valueStr.endsWith('0')) valueStr = value.toString();
+    }
 
     return valueStr.replaceAll(infinity, infinitySymbol);
   }
