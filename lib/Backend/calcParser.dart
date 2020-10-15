@@ -301,9 +301,10 @@ class CalcParser {
     int count = index - 1;
     List data = smartParseLast(count, computerStr);
     count = data[0];
+    double val = data[1];
 
-    if (data[1] % 1 == 0 && data[1] >= 0) {
-      BigInt getNum = BigInt.from(data[1]);
+    if (val % 1 == 0 && val >= 0) {
+      BigInt getNum = BigInt.from(val);
       BigInt factNum = helperFunctions.factorial(getNum);
       computerStr.removeRange(count + 1, index);
       computerStr.insert(count + 1, '${factNum.toString()}');
