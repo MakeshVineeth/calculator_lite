@@ -189,7 +189,7 @@ class CalcParser {
         calculationString[i] = FixedValues.minus;
         break;
       case '–':
-        if (i != 0)
+        if (i != 0 && !calculationString[i - 1].contains('('))
           calculationString[i] = '+';
         else
           calculationString.removeAt(
