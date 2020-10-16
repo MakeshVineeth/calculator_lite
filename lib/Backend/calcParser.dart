@@ -69,7 +69,8 @@ class CalcParser {
         else if (value.contains('!') ||
             helperFunctions.operations.contains(value)) {
           if (value.contains(FixedValues.minus) ||
-              !helperFunctions.randomList.contains(lastChar))
+              !(helperFunctions.randomList.contains(lastChar) ||
+                  helperFunctions.operations.contains(lastChar)))
             calculationString.add(value);
         } else {
           calculationString.add(value);
@@ -291,7 +292,7 @@ class CalcParser {
 
     int symTOTAL = '!'.allMatches(tempString.join()).length;
     while (symTOTAL > 0) {
-      tempString = getFactorialString(tempString);
+      tempString = getFactorOrPercent(tempString, '!');
       symTOTAL -= 1;
     }
 
@@ -317,8 +318,8 @@ class CalcParser {
   }
 
   // Factorial Function
-  List<String> getFactorialString(List<String> computerStr) {
-    int index = computerStr.indexOf('!');
+  List<String> getFactorOrPercent(List<String> computerStr, String char) {
+    int index = computerStr.indexOf(char);
     computerStr.removeAt(index);
     int count = index - 1;
     List data = smartParseLast(count, computerStr);
@@ -331,9 +332,11 @@ class CalcParser {
 
       // Catch overloaded values here.
       try {
-        factNum = helperFunctions.factorial(getNum);
-        computerStr.removeRange(count + 1, index);
-        computerStr.insert(count + 1, '${factNum.toString()}');
+        if (char.contains('!')) {
+          factNum = helperFunctions.factorial(getNum);
+          computerStr.removeRange(count + 1, index);
+          computerStr.insert(count + 1, '${factNum.toString()}');
+        } else {}
       } catch (StackOverflowError) {
         computerStr = ['0/0']; // Make it NaN this way.
       }
