@@ -351,16 +351,16 @@ class CalcParser {
 
     // For % below code.
     else if (char.contains("%")) {
-      print(computerStr[count]);
       List data2 = smartParseLast(count - 1, computerStr);
       int count2 = data2[0];
-      double val;
-      switch (computerStr[count]) {
-        case '–':
-          val = data2[1] - (data2[1] * (data[1] / 100));
-          break;
-      }
-      computerStr.replaceRange(count2 + 1, count + 2, [val.toString()]);
+      String exp;
+      if ([FixedValues.minus, '+'].contains(computerStr[count]))
+        exp =
+            '(${data2[1]}${computerStr[count]}${(data2[1] * (data[1] / 100))})';
+      else
+        exp = '(${data2[1]}${computerStr[count]}${(data[1] / 100)})';
+
+      computerStr.replaceRange(count2 + 1, count + 2, [exp]);
       return computerStr;
     } else
       return null;
