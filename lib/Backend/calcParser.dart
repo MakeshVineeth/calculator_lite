@@ -333,21 +333,34 @@ class CalcParser {
     List data = smartParseLast(count, computerStr);
     count = data[0];
     double val = data[1];
-
-    if (val % 1 == 0 && val >= 0) {
+    if (char.contains('!') && (val % 1 == 0 && val >= 0)) {
       BigInt getNum = BigInt.from(val);
       BigInt factNum;
 
       // Catch overloaded values here.
       try {
-        if (char.contains('!')) {
-          factNum = helperFunctions.factorial(getNum);
-          computerStr.removeRange(count + 1, index);
-          computerStr.insert(count + 1, '${factNum.toString()}');
-        } else {}
+        factNum = helperFunctions.factorial(getNum);
+        computerStr.removeRange(count + 1, index);
+        computerStr.insert(count + 1, '${factNum.toString()}');
       } catch (StackOverflowError) {
         computerStr = ['0/0']; // Make it NaN this way.
       }
+
+      return computerStr;
+    }
+
+    // For % below code.
+    else if (char.contains("%")) {
+      print(computerStr[count]);
+      List data2 = smartParseLast(count - 1, computerStr);
+      int count2 = data2[0];
+      double val;
+      switch (computerStr[count]) {
+        case '–':
+          val = data2[1] - (data2[1] * (data[1] / 100));
+          break;
+      }
+      computerStr.replaceRange(count2 + 1, count + 2, [val.toString()]);
       return computerStr;
     } else
       return null;
