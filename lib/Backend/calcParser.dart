@@ -290,9 +290,17 @@ class CalcParser {
       }
     }
 
-    int symTOTAL = '!'.allMatches(tempString.join()).length;
+    String sym = "!";
+    int symTOTAL = sym.allMatches(tempString.join()).length;
     while (symTOTAL > 0) {
-      tempString = getFactorOrPercent(tempString, '!');
+      tempString = getFactorOrPercent(tempString, sym);
+      symTOTAL -= 1;
+    }
+
+    sym = "%";
+    symTOTAL = sym.allMatches(tempString.join()).length;
+    while (symTOTAL > 0) {
+      tempString = getFactorOrPercent(tempString, sym);
       symTOTAL -= 1;
     }
 
