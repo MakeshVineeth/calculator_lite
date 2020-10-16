@@ -66,7 +66,7 @@ class CalcParser {
           setSign();
 
         // Factorial
-        else if (value.contains('!') ||
+        else if (['!', '%'].contains(value) ||
             helperFunctions.operations.contains(value)) {
           if (value.contains(FixedValues.minus) ||
               !(helperFunctions.randomList.contains(lastChar) ||
