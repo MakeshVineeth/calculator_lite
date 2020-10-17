@@ -359,12 +359,18 @@ class CalcParser {
       double second = data2[1];
       second = csk;
       String exp;
-      if ([FixedValues.minus, '+'].contains(computerStr[count])) {
-        exp = '$second${computerStr[count]}${(second * first / 100)}';
-      } else
-        exp = '($second${computerStr[count]}${(first / 100)})';
 
-      computerStr.replaceRange(0, count + 2, [exp]);
+      if ((index < computerStr.length) &&
+          ![FixedValues.minus, '+'].contains(computerStr[index])) {
+        exp = '${(first / 100)}';
+        computerStr.replaceRange(count + 1, count + 2, [exp]);
+      } else if ([FixedValues.minus, '+'].contains(computerStr[count])) {
+        exp = '$second${computerStr[count]}${(second * first / 100)}';
+        computerStr.replaceRange(0, count + 2, [exp]);
+      } else {
+        exp = '($second${computerStr[count]}${(first / 100)})';
+        computerStr.replaceRange(0, count + 2, [exp]);
+      }
       return computerStr;
     } else
       return null;
