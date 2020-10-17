@@ -364,6 +364,10 @@ class CalcParser {
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
         exp = '${(first / 100)}';
         computerStr.replaceRange(count + 1, count + 2, [exp]);
+      } else if ((index - 1 > -1) &&
+          !helperFunctions.numbersList.contains(computerStr[index - 1])) {
+        exp = '${(first / 100)}';
+        computerStr.replaceRange(count + 1, index, [exp]);
       } else if ([FixedValues.minus, '+'].contains(computerStr[count])) {
         exp = '$second${computerStr[count]}${(second * first / 100)}';
         computerStr.replaceRange(0, count + 2, [exp]);
