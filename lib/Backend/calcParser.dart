@@ -362,15 +362,14 @@ class CalcParser {
       double first = data[1];
       String exp;
 
-      // Detects 8 + 5 % * debug point here (This: 8+5% * 5 + 3%)
-      // Detecting post 5% if it * or ^ something else.
+      // Detects 8 + 5 % * debug point here (This: 8 + 5% * 5 + 3%); Detects post 5% if it is * or ^ or something else.
       if ((index < computerStr.length) &&
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
         exp = '${(first / 100)}';
         computerStr.replaceRange(count + 1, count + 2, [exp]);
       }
 
-      // Detects 9-tan(2)% and 9+cos(2)*cos(2)%
+      // Detects 9 - tan(2)% and 9 + cos(2) * cos(2)%
       else if ((index - 1 > -1) &&
           !helperFunctions.numbersList.contains(computerStr[index - 1])) {
         if (prev[prev.length - 1].contains(')'))
@@ -380,15 +379,15 @@ class CalcParser {
         computerStr.replaceRange(count + 1, index, [exp]);
       }
 
-      // Detects 9-5+6*sin(5)+3%
-      else if ([FixedValues.minus, '+'].contains(computerStr[count])) {
-        exp = '$second${computerStr[count]}${(second * first / 100)}';
+      // Detects 9 - 5 + 6 * sin(5) + 3%
+      else if ([FixedValues.minus, '+'].contains(lastChar)) {
+        exp = '$second$lastChar${(second * first / 100)}';
         computerStr.replaceRange(0, count + 2, [exp]);
       }
 
-      // Detects 9+6*sin(5)*6%
+      // Detects 9 + 6 * sin(5) * 6%
       else {
-        exp = '($second${computerStr[count]}${(first / 100)})';
+        exp = '($second$lastChar${(first / 100)})';
         computerStr.replaceRange(0, count + 2, [exp]);
       }
       return computerStr;
