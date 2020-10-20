@@ -352,12 +352,9 @@ class CalcParser {
     // For % below code.
     else if (char.contains("%")) {
       List<String> prev = computerStr.getRange(0, count).toList();
-      double csk = evalFunction(prev);
+      double preValue = evalFunction(prev);
       double first = data[1];
-
-      List data2 = smartParseLast(count - 1, computerStr);
-      double second = data2[1];
-      second = csk;
+      double second = preValue;
       String exp;
 
       // Detects 8 + 5 % x (This: 8+5% * 5 + 3%)
