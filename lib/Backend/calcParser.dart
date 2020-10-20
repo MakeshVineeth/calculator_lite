@@ -360,18 +360,28 @@ class CalcParser {
       second = csk;
       String exp;
 
+      // Detects 8 + 5 % x (This: 8+5% * 5 + 3%)
       if ((index < computerStr.length) &&
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
         exp = '${(first / 100)}';
         computerStr.replaceRange(count + 1, count + 2, [exp]);
-      } else if ((index - 1 > -1) &&
+      }
+
+      // Detects 9-tan(2)% and 9+cos(2)*cos(2)%
+      else if ((index - 1 > -1) &&
           !helperFunctions.numbersList.contains(computerStr[index - 1])) {
         exp = '${(second * first / 100)}';
         computerStr.replaceRange(count + 1, index, [exp]);
-      } else if ([FixedValues.minus, '+'].contains(computerStr[count])) {
+      }
+
+      // Detects 9-5+6*sin(5)+3%
+      else if ([FixedValues.minus, '+'].contains(computerStr[count])) {
         exp = '$second${computerStr[count]}${(second * first / 100)}';
         computerStr.replaceRange(0, count + 2, [exp]);
-      } else {
+      }
+
+      // Detects 9+6*sin(5)*6%
+      else {
         exp = '($second${computerStr[count]}${(first / 100)})';
         computerStr.replaceRange(0, count + 2, [exp]);
       }
