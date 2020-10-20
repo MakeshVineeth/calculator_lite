@@ -352,12 +352,12 @@ class CalcParser {
     // For % below code.
     else if (char.contains("%")) {
       List<String> prev = computerStr.getRange(0, count).toList();
-      double preValue = evalFunction(prev);
+      double second = evalFunction(prev);
       double first = data[1];
-      double second = preValue;
       String exp;
 
-      // Detects 8 + 5 % x (This: 8+5% * 5 + 3%)
+      // Detects 8 + 5 % * debug point here (This: 8+5% * 5 + 3%)
+      // Detecting post 5% if it * or ^ something else.
       if ((index < computerStr.length) &&
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
         exp = '${(first / 100)}';
@@ -367,7 +367,10 @@ class CalcParser {
       // Detects 9-tan(2)% and 9+cos(2)*cos(2)%
       else if ((index - 1 > -1) &&
           !helperFunctions.numbersList.contains(computerStr[index - 1])) {
-        exp = '${(second * first / 100)}';
+        if (prev[prev.length - 1].contains(')'))
+          exp = '${(first / 100)}';
+        else
+          exp = '${(second * first / 100)}';
         computerStr.replaceRange(count + 1, index, [exp]);
       }
 
