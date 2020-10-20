@@ -351,8 +351,14 @@ class CalcParser {
 
     // For % below code.
     else if (char.contains("%")) {
-      List<String> prev = computerStr.getRange(0, count).toList();
-      double second = evalFunction(prev);
+      List<String> prev = computerStr.getRange(0, count + 1).toList();
+
+      String lastChar = prev.last;
+      double second = 0.0;
+      if (helperFunctions.operations.contains(lastChar)) {
+        prev.removeLast();
+        second = evalFunction(prev);
+      }
       double first = data[1];
       String exp;
 
