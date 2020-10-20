@@ -356,16 +356,21 @@ class CalcParser {
       String lastChar = prev.last;
       double second = 0.0;
       if (helperFunctions.operations.contains(lastChar)) {
-        prev.removeLast();
-        second = evalFunction(prev);
+        second = evalFunction(prev.getRange(0, count).toList());
       }
-      double first = data[1];
+      double first = val;
       String exp;
 
       // Detects 8 + 5 % * debug point here (This: 8 + 5% * 5 + 3%); Detects post 5% if it is * or ^ or something else.
       if ((index < computerStr.length) &&
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
-        exp = '${(first / 100)}';
+        exp = '${first / 100}';
+        computerStr.replaceRange(count + 1, count + 2, [exp]);
+      }
+
+      // Detects tan( etc at the end
+      else if (helperFunctions.randomList.contains(lastChar)) {
+        exp = '${first / 100}';
         computerStr.replaceRange(count + 1, count + 2, [exp]);
       }
 
