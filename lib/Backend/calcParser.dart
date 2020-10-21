@@ -351,61 +351,61 @@ class CalcParser {
 
     // For % below code.
     else if (char.contains("%")) {
-      // Detects single 55 or 25 etc
-      if (count == -1) {
-        String exp = '${val / 100}';
-        computerStr.replaceRange(count + 1, count + 2, [exp]);
-        return computerStr;
-      }
-
-      // Parsing of % things goes here.
-      else {
-        List<String> prev = computerStr.getRange(0, count + 1).toList();
-
-        String lastChar = prev.last;
-        double second = 0.0;
+      List<String> prev;
+      String lastChar;
+      double second = 0.0;
+      double first = val;
+      String exp;
+      if (count != -1) {
+        prev = computerStr.getRange(0, count + 1).toList();
+        lastChar = prev.last;
         if (helperFunctions.operations.contains(lastChar)) {
           second = evalFunction(prev.getRange(0, count).toList());
         }
-        double first = val;
-        String exp;
+      }
 
-        // Detects 8 + 5 % * debug point here (This: 8 + 5% * 5 + 3%); Detects post 5% if it is * or ^ or something else.
-        if ((index < computerStr.length) &&
-            ![FixedValues.minus, '+'].contains(computerStr[index])) {
-          exp = '${first / 100}';
-          computerStr.replaceRange(count + 1, count + 2, [exp]);
-        }
-
-        // Detects tan( etc at the end
-        else if (helperFunctions.randomList.contains(lastChar)) {
-          exp = '${first / 100}';
-          computerStr.replaceRange(count + 1, count + 2, [exp]);
-        }
-
-        // Detects 9 - tan(2)% and 9 + cos(2) * cos(2)%
-        else if ((index - 1 > -1) &&
-            !helperFunctions.numbersList.contains(computerStr[index - 1])) {
-          if (prev[prev.length - 1].contains(')'))
-            exp = '${(first / 100)}';
-          else
-            exp = '${(second * first / 100)}';
-          computerStr.replaceRange(count + 1, index, [exp]);
-        }
-
-        // Detects 9 - 5 + 6 * sin(5) + 3%
-        else if ([FixedValues.minus, '+'].contains(lastChar)) {
-          exp = '$second$lastChar${(second * first / 100)}';
-          computerStr.replaceRange(0, count + 2, [exp]);
-        }
-
-        // Detects 9 + 6 * sin(5) * 6%
-        else {
-          exp = '($second$lastChar${(first / 100)})';
-          computerStr.replaceRange(0, count + 2, [exp]);
-        }
+      // Detects single 55 or 25 etc
+      if (count == -1) {
+        String exp = '${val / 100}';
+        computerStr.replaceRange(count + 1, index, [exp]);
         return computerStr;
       }
+
+      // Detects 8 + 5 % * debug point here (This: 8 + 5% * 5 + 3%); Detects post 5% if it is * or ^ or something else.
+      else if ((index < computerStr.length) &&
+          ![FixedValues.minus, '+'].contains(computerStr[index])) {
+        exp = '${first / 100}';
+        computerStr.replaceRange(count + 1, count + 2, [exp]);
+      }
+
+      // Detects tan( etc at the end
+      else if (helperFunctions.randomList.contains(lastChar)) {
+        exp = '${first / 100}';
+        computerStr.replaceRange(count + 1, count + 2, [exp]);
+      }
+
+      // Detects 9 - tan(2)% and 9 + cos(2) * cos(2)%
+      else if ((index - 1 > -1) &&
+          !helperFunctions.numbersList.contains(computerStr[index - 1])) {
+        if (prev[prev.length - 1].contains(')'))
+          exp = '${(first / 100)}';
+        else
+          exp = '${(second * first / 100)}';
+        computerStr.replaceRange(count + 1, index, [exp]);
+      }
+
+      // Detects 9 - 5 + 6 * sin(5) + 3%
+      else if ([FixedValues.minus, '+'].contains(lastChar)) {
+        exp = '$second$lastChar${(second * first / 100)}';
+        computerStr.replaceRange(0, count + 2, [exp]);
+      }
+
+      // Detects 9 + 6 * sin(5) * 6%
+      else {
+        exp = '($second$lastChar${(first / 100)})';
+        computerStr.replaceRange(0, count + 2, [exp]);
+      }
+      return computerStr;
     }
 
     // Returns null if char is neither % nor ! nor even if it is factorial but unsupported value like decimals etc.
