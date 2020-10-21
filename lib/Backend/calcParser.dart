@@ -353,16 +353,15 @@ class CalcParser {
     else if (char.contains("%")) {
       List<String> prev;
       String lastChar;
-      double second = 0.0;
+      String second;
       double first = val;
       String exp;
       List plusminus = [FixedValues.minus, '+'];
       if (count != -1) {
         prev = computerStr.getRange(0, count + 1).toList();
         lastChar = prev.last;
-        if (helperFunctions.operations.contains(lastChar)) {
-          second = evalFunction(prev.getRange(0, count).toList());
-        }
+        if (helperFunctions.operations.contains(lastChar))
+          second = prev.getRange(0, count).toList().join();
       }
 
       // Detects single 55 or 25 etc
@@ -389,7 +388,7 @@ class CalcParser {
       else if ((index - 1 > -1) &&
           !helperFunctions.numbersList.contains(computerStr[index - 1])) {
         if (plusminus.contains(prev[prev.length - 1]))
-          exp = '${(second * first / 100)}';
+          exp = '$second*$first/100';
         else
           exp = '${(first / 100)}';
         computerStr.replaceRange(count + 1, index, [exp]);
@@ -397,15 +396,16 @@ class CalcParser {
 
       // Detects 9 - 5 + 6 * sin(5) + 3%
       else if (plusminus.contains(lastChar)) {
-        exp = '$second$lastChar${(second * first / 100)}';
+        exp = '$second$lastChar($second)*$first/100';
         computerStr.replaceRange(0, count + 2, [exp]);
       }
 
       // Detects 9 + 6 * sin(5) * 6%
       else {
-        exp = '($second$lastChar${(first / 100)})';
+        exp = '$second$lastChar${(first / 100)}';
         computerStr.replaceRange(0, count + 2, [exp]);
       }
+
       return computerStr;
     }
 
