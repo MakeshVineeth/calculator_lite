@@ -356,6 +356,7 @@ class CalcParser {
       double second = 0.0;
       double first = val;
       String exp;
+      List plusminus = [FixedValues.minus, '+'];
       if (count != -1) {
         prev = computerStr.getRange(0, count + 1).toList();
         lastChar = prev.last;
@@ -387,15 +388,15 @@ class CalcParser {
       // Detects 9 - tan(2)% and 9 + cos(2) * cos(2)%
       else if ((index - 1 > -1) &&
           !helperFunctions.numbersList.contains(computerStr[index - 1])) {
-        if (prev[prev.length - 1].contains(')'))
-          exp = '${(first / 100)}';
-        else
+        if (plusminus.contains(prev[prev.length - 1]))
           exp = '${(second * first / 100)}';
+        else
+          exp = '${(first / 100)}';
         computerStr.replaceRange(count + 1, index, [exp]);
       }
 
       // Detects 9 - 5 + 6 * sin(5) + 3%
-      else if ([FixedValues.minus, '+'].contains(lastChar)) {
+      else if (plusminus.contains(lastChar)) {
         exp = '$second$lastChar${(second * first / 100)}';
         computerStr.replaceRange(0, count + 2, [exp]);
       }
