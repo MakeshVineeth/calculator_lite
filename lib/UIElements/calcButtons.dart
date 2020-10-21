@@ -37,7 +37,7 @@ class _CalcButtonsState extends State<CalcButtons> {
             child: Container(
               margin: EdgeInsets.all(5.0),
               child: RaisedButton(
-                elevation: 2.0,
+                elevation: 1.5,
                 onPressed: this.widget.displayFunction,
                 child: FadeThis(
                   child: Text(
