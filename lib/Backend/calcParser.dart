@@ -375,13 +375,13 @@ class CalcParser {
       else if ((index < computerStr.length) &&
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
         exp = '${first / 100}';
-        computerStr.replaceRange(count + 1, count + 2, [exp]);
+        computerStr.replaceRange(count + 1, index, [exp]);
       }
 
       // Detects tan( etc at the end
       else if (helperFunctions.randomList.contains(lastChar)) {
         exp = '${first / 100}';
-        computerStr.replaceRange(count + 1, count + 2, [exp]);
+        computerStr.replaceRange(count + 1, index, [exp]);
       }
 
       // Detects 9 - tan(2)% and 9 + cos(2) * cos(2)%
@@ -397,15 +397,16 @@ class CalcParser {
       // Detects 9 - 5 + 6 * sin(5) + 3%
       else if (plusminus.contains(lastChar)) {
         exp = '$second$lastChar($second)*$first/100';
-        computerStr.replaceRange(0, count + 2, [exp]);
+        computerStr.replaceRange(0, index, [exp]);
       }
 
       // Detects 9 + 6 * sin(5) * 6%
       else {
         exp = '$second$lastChar${(first / 100)}';
-        computerStr.replaceRange(0, count + 2, [exp]);
+        computerStr.replaceRange(0, index, [exp]);
       }
 
+      print(computerStr);
       return computerStr;
     }
 
