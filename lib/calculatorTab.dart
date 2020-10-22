@@ -50,6 +50,12 @@ class _CalculatorTabState extends State<CalculatorTab> {
           runCalcParser(null); // Sending null as backSpaceChar is not a value.
         else
           mainValue = 0;
+      }
+      // Code for =
+      else if (value.contains('=')) {
+        // Incomplete for now.
+        calculationString.clear();
+        calculationString.add(mainValue.toString());
       } else
         runCalcParser(value);
     });
