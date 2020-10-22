@@ -297,6 +297,12 @@ class CalcParser {
       symTOTAL -= 1;
     }
 
+    symTOTAL = FixedValues.root.allMatches(tempString.join()).length;
+    while (symTOTAL > 0) {
+      tempString = getRoot(tempString, sym);
+      symTOTAL -= 1;
+    }
+
     sym = "%";
     symTOTAL = sym.allMatches(tempString.join()).length;
     while (symTOTAL > 0) {
@@ -323,6 +329,36 @@ class CalcParser {
       for (int i = 0; i < toAdd; i++) computerStr = computerStr + ')';
     }
     return computerStr;
+  }
+
+  // For Root
+  List<String> getRoot(List<String> computerStr, String char) {
+    if (char.contains(FixedValues.root)) {
+      int index = computerStr.indexOf(char);
+      int count = 0;
+      if (index < computerStr.length && computerStr[index + 1].contains('(')) {
+        int openBrace = 0;
+        int closedBrace = 0;
+        for (; count < computerStr.length; count++) {
+          if (computerStr[count].contains(')')) closedBrace += 1;
+          if (computerStr[count].contains('(')) openBrace += 1;
+          if (openBrace == closedBrace) break;
+        }
+      } else {
+        for (; count < computerStr.length; count++)
+          if (helperFunctions.operations.contains(computerStr[count])) break;
+      }
+
+      double val = evalFunction(computerStr.getRange(index, count));
+
+      computerStr.replaceRange(index, count, ['sqrt($val)']);
+      return computerStr;
+    }
+
+    // Executes for Cube Root
+    else {
+      return computerStr;
+    }
   }
 
   // Factorial Function
