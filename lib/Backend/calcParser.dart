@@ -405,8 +405,6 @@ class CalcParser {
         exp = '$second$lastChar${(first / 100)}';
         computerStr.replaceRange(0, index, [exp]);
       }
-
-      print(computerStr);
       return computerStr;
     }
 
