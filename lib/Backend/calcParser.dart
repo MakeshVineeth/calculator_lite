@@ -345,13 +345,16 @@ class CalcParser {
     int count = index + 1;
 
     // Detect braces first.
-    if (index < computerStr.length && computerStr[count].contains('(')) {
+    if (index < computerStr.length - 1 && computerStr[count].contains('(')) {
       int openBrace = 0;
       int closedBrace = 0;
       for (; count < computerStr.length; count++) {
-        if (computerStr[count].contains(')')) closedBrace += 1;
         if (computerStr[count].contains('(')) openBrace += 1;
-        if (openBrace == closedBrace) break;
+        if (computerStr[count].contains(')')) closedBrace += 1;
+        if (openBrace == closedBrace) {
+          count += 1;
+          break;
+        }
       }
     }
 
