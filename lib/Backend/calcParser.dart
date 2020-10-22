@@ -25,6 +25,7 @@ class CalcParser {
     FixedValues.capChar,
     '%',
     FixedValues.squareChar,
+    FixedValues.cubeChar,
     FixedValues.changeSignChar,
   ];
 
@@ -42,6 +43,10 @@ class CalcParser {
         // Code for Square of Number.
         if (value.contains(FixedValues.squareChar))
           calculationString[lastIndex] = '$lastChar' + FixedValues.sup2;
+
+        // Code for Cube of Number.
+        if (value.contains(FixedValues.cubeChar))
+          calculationString[lastIndex] = '$lastChar' + FixedValues.sup3;
 
         // Code for reciprocal button.
         else if (value.contains(FixedValues.reciprocalChar))
@@ -275,7 +280,8 @@ class CalcParser {
           FixedValues.pi,
           ')',
           '!',
-          FixedValues.sup2
+          FixedValues.sup2,
+          FixedValues.sup3
         ].contains(lastButOne)) if ([
               'sin(',
               'cos(',
@@ -332,6 +338,7 @@ class CalcParser {
     computerStr = computerStr.replaceAll(FixedValues.pi, math.pi.toString());
     computerStr = computerStr.replaceAll('e', math.e.toString());
     computerStr = computerStr.replaceAll(FixedValues.sup2, '^2');
+    computerStr = computerStr.replaceAll(FixedValues.sup3, '^3');
     computerStr = computerStr.replaceAll('mod', '%');
     computerStr = computerStr.replaceAll('log(', 'log(10,');
 
