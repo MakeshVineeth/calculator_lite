@@ -297,14 +297,15 @@ class CalcParser {
       symTOTAL -= 1;
     }
 
-    symTOTAL = FixedValues.root.allMatches(tempString.join()).length;
+    sym = FixedValues.root;
+    symTOTAL = sym.allMatches(tempString.join()).length;
     while (symTOTAL > 0) {
       tempString = getRoot(tempString, sym);
       symTOTAL -= 1;
     }
 
-    String cubeRoot = String.fromCharCodes([charcode.$sup3, charcode.$radic]);
-    symTOTAL = cubeRoot.allMatches(tempString.join()).length;
+    sym = String.fromCharCodes([charcode.$sup3, charcode.$radic]);
+    symTOTAL = sym.allMatches(tempString.join()).length;
     while (symTOTAL > 0) {
       tempString = getRoot(tempString, sym);
       symTOTAL -= 1;
@@ -341,8 +342,10 @@ class CalcParser {
   // For Root
   List<String> getRoot(List<String> computerStr, String char) {
     int index = computerStr.indexOf(char);
-    int count = 0;
-    if (index < computerStr.length && computerStr[index + 1].contains('(')) {
+    int count = index + 1;
+
+    // Detect braces first.
+    if (index < computerStr.length && computerStr[count].contains('(')) {
       int openBrace = 0;
       int closedBrace = 0;
       for (; count < computerStr.length; count++) {
@@ -350,12 +353,16 @@ class CalcParser {
         if (computerStr[count].contains('(')) openBrace += 1;
         if (openBrace == closedBrace) break;
       }
-    } else {
+    }
+
+    // Detect operators now.
+    else {
       for (; count < computerStr.length; count++)
         if (helperFunctions.operations.contains(computerStr[count])) break;
     }
 
-    double val = evalFunction(computerStr.getRange(index, count));
+    List<String> valStr = computerStr.getRange(index + 1, count).toList();
+    double val = evalFunction(valStr);
     List<String> replaceRoot;
     if (char.contains(FixedValues.root))
       replaceRoot = ['sqrt($val)'];
