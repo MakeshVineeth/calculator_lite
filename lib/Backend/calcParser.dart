@@ -54,8 +54,7 @@ class CalcParser {
 
         // Code for cube root
         else if (value.contains(FixedValues.cubeRoot))
-          calculationString
-              .add(String.fromCharCodes([charcode.$sup3, charcode.$radic]));
+          calculationString.add(FixedValues.cubeRootSym);
         else if (value.contains(FixedValues.decimalChar))
           setDecimalChar();
         else if (value.contains(')'))
@@ -82,6 +81,8 @@ class CalcParser {
       // Check if only value present is NOT an operator.
       if (trigFunctions.contains(value))
         calculationString.add('$value(');
+      else if (value.contains(FixedValues.cubeRoot))
+        calculationString.add(FixedValues.cubeRootSym);
       else if (value.contains(FixedValues.decimalChar))
         calculationString.add('.');
       else
@@ -298,16 +299,21 @@ class CalcParser {
     }
 
     sym = FixedValues.root;
-    symTOTAL = sym.allMatches(tempString.join()).length;
+    symTOTAL = 0;
+    tempString.forEach((element) {
+      if (element == sym) symTOTAL += 1;
+    });
     while (symTOTAL > 0) {
       tempString = getRoot(tempString, sym);
       symTOTAL -= 1;
     }
 
-    sym = String.fromCharCodes([charcode.$sup3, charcode.$radic]);
-    symTOTAL = sym.allMatches(tempString.join()).length;
+    symTOTAL = 0;
+    tempString.forEach((element) {
+      if (element == FixedValues.cubeRootSym) symTOTAL += 1;
+    });
     while (symTOTAL > 0) {
-      tempString = getRoot(tempString, sym);
+      tempString = getRoot(tempString, FixedValues.cubeRootSym);
       symTOTAL -= 1;
     }
 
@@ -367,7 +373,7 @@ class CalcParser {
     List<String> valStr = computerStr.getRange(index + 1, count).toList();
     double val = evalFunction(valStr);
     List<String> replaceRoot;
-    if (char.contains(FixedValues.root))
+    if (char == FixedValues.root)
       replaceRoot = ['sqrt($val)'];
     else
       replaceRoot = ['nrt(3, $val)'];

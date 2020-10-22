@@ -21,6 +21,8 @@ class FixedValues {
   static String cubeRoot =
       String.fromCharCodes([charcode.$sup3, charcode.$radic, charcode.$x]);
   static String minus = String.fromCharCode(charcode.$ndash);
+  static String cubeRootSym =
+      String.fromCharCodes([charcode.$sup3, charcode.$radic]);
 
   static List rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
