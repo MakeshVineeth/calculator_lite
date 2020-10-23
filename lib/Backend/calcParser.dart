@@ -10,7 +10,7 @@ class CalcParser {
   HelperFunctions helperFunctions = HelperFunctions();
 
   // List of constants for conditional checks.
-  List<String> trigFunctions = ['sin', 'cos', 'tan', 'ln', 'log'];
+  List<String> trigFunctions = ['sin', 'cos', 'tan', 'ln', 'log', 'sin⁻¹', 'cos⁻¹', 'tan⁻¹'];
   List<String> avoidFirstElement = [
     '+',
     '*',

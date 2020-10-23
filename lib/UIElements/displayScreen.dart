@@ -39,13 +39,13 @@ class DisplayScreen extends StatelessWidget {
   }
 
   TextStyle mainValueStyle() => TextStyle(
-        fontSize: 40.0,
+        fontSize: 35.0,
         letterSpacing: 1.0,
         fontWeight: FontWeight.bold,
       );
 
   TextStyle completeStringStyle() => TextStyle(
-        fontSize: 25,
+        fontSize: 40,
         letterSpacing: 1.5,
       );
 

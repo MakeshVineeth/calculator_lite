@@ -104,18 +104,25 @@ class _CalculatorTabState extends State<CalculatorTab> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              child: MaterialButton(
-                minWidth: 30,
-                onPressed: () {},
-                child: Text('RAD'),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                    shape: FixedValues.roundShapeLarge,
+                  ),
+                  onPressed: () {
+                    print('DEG');
+                  },
+                  child: Text('RAD'),
+                ),
               ),
             ),
             Container(
               alignment: Alignment.centerRight,
               child: PopupMenuButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
+                shape: FixedValues.roundShapeLarge,
                 itemBuilder: (context) => List.generate(
                     menuList.length,
                     (index) => PopupMenuItem(

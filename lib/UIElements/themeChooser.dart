@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
+import 'package:calculator_lite/fixedValues.dart';
 
 // Pop up for Choosing Theme
 class PopThemeChooser extends StatelessWidget {
@@ -11,9 +12,7 @@ class PopThemeChooser extends StatelessWidget {
       title: Text('Choose Theme'),
       content: ThemeButtons(),
       elevation: 20.0, // Little Shadows
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-      ),
+      shape: FixedValues.roundShapeLarge,
     );
   }
 

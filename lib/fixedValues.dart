@@ -41,7 +41,7 @@ class FixedValues {
     [pi, cubeRoot, capChar, squareChar]
   ];
 
-    static List rowInverse = [
+  static List rowInverse = [
     [downArrow, cubeChar, 'e', '%'],
     ['sin⁻¹', 'cos⁻¹', 'tan⁻¹', 'inv'],
     ['eˣ', '𝟏𝟬ˣ', 'mod', reciprocalChar],
@@ -62,6 +62,12 @@ class FixedValues {
       bottomAppBarColor: background,
       backgroundColor: background,
       canvasColor: background, // Makes bottomNavBG white along with scaffoldBG
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(background),
+          foregroundColor: MaterialStateProperty.all(Colors.black),
+        ),
+      ),
     );
   }
 
@@ -84,6 +90,8 @@ class FixedValues {
   static const String appVersion = '1.0.0';
   static const String appLegalese =
       'Make faster calculations, display latest currencies, endless history scrolling.';
-  
-  
+
+  static RoundedRectangleBorder roundShapeLarge = RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(20.0),
+  );
 }
