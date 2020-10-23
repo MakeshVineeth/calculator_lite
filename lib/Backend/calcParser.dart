@@ -2,7 +2,6 @@ import 'package:math_expressions/math_expressions.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
-import 'package:charcode/charcode.dart' as charcode;
 import 'dart:math' as math;
 
 class CalcParser {
@@ -379,12 +378,17 @@ class CalcParser {
 
     List<String> valStr = computerStr.getRange(index + 1, count).toList();
     double val = evalFunction(valStr);
-    List<String> replaceRoot;
-    if (char == FixedValues.root)
-      replaceRoot = ['sqrt($val)'];
-    else
-      replaceRoot = ['nrt(3, $val)'];
-    computerStr.replaceRange(index, count, replaceRoot);
+    if (val < 0 || val == null) {
+      computerStr = ['0/0']; // Make it NaN
+    } else {
+      List<String> replaceRoot;
+      if (char == FixedValues.root)
+        replaceRoot = ['sqrt($val)'];
+      else
+        replaceRoot = ['nrt(3, $val)'];
+      computerStr.replaceRange(index, count, replaceRoot);
+    }
+
     return computerStr;
   }
 
