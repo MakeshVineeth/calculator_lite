@@ -390,6 +390,8 @@ class CalcParser {
       symTOTAL -= 1;
     }
 
+    List<String> trigs = ['sin(', 'cos(', 'tan(', 'sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('];
+
     // Attach parentheses automatically.
     String computerStr = tempString.join();
     int countOpen = '('.allMatches(computerStr).length;
@@ -403,7 +405,7 @@ class CalcParser {
     if (currentMetric == 'DEG') {
       List<int> indices = [];
       for (int i = 0; i < tempString.length; i++) {
-        if (['sin(', 'cos(', 'tan('].contains(tempString[i])) indices.add(i);
+        if (trigs.contains(tempString[i])) indices.add(i);
       }
       for (int i = 0; i < indices.length; i++) {
         int index = indices[i];
@@ -415,12 +417,22 @@ class CalcParser {
           if (tempString[count].contains(')')) closedBrace += 1;
           if (openBrace == closedBrace) break;
         }
-        tempString.insert(count, '*${math.pi}/180');
+        tempString.replaceRange(count, count, [')*${math.pi}/180']);
+      }
+
+      computerStr = tempString.join();
+
+      if (indices.length > 0) {
+        computerStr = computerStr.replaceAll('sin(', 'sin((');
+        computerStr = computerStr.replaceAll('cos(', 'cos((');
+        computerStr = computerStr.replaceAll('tan(', 'tan((');
+        computerStr = computerStr.replaceAll('sin⁻¹(', 'sin⁻¹((');
+        computerStr = computerStr.replaceAll('cos⁻¹(', 'cos⁻¹((');
+        computerStr = computerStr.replaceAll('tan⁻¹(', 'tan⁻¹((');
       }
     }
 
     // Replace with strings that dart/math_exp package can understand.
-    computerStr = tempString.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
     computerStr = computerStr.replaceAll(FixedValues.minus, '-');
