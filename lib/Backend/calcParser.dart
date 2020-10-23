@@ -401,16 +401,22 @@ class CalcParser {
 
     // For DEG
     if (currentMetric == 'DEG') {
-      int index = tempString.indexOf('sin(');
-      int count = index + 1;
-      int openBrace = 1;
-      int closedBrace = 0;
-      for (; count < tempString.length; count++) {
-        if (tempString[count] == '(') openBrace += 1;
-        if (tempString[count] == ')') closedBrace += 1;
-        if (openBrace == closedBrace) break;
+      List<int> indices = [];
+      for (int i = 0; i < tempString.length; i++) {
+        if (['sin(', 'cos(', 'tan('].contains(tempString[i])) indices.add(i);
       }
-      tempString.insert(count, '*${math.pi}/180');
+      for (int i = 0; i < indices.length; i++) {
+        int index = indices[i];
+        int count = index;
+        int openBrace = 0;
+        int closedBrace = 0;
+        for (; count < tempString.length; count++) {
+          if (tempString[count].contains('(')) openBrace += 1;
+          if (tempString[count].contains(')')) closedBrace += 1;
+          if (openBrace == closedBrace) break;
+        }
+        tempString.insert(count, '*${math.pi}/180');
+      }
     }
 
     // Replace with strings that dart/math_exp package can understand.
