@@ -45,8 +45,9 @@ class CalcParser {
       String lastChar = calculationString[lastIndex];
 
       bool case1 = (value.contains(FixedValues.minus) &&
-          !lastChar
-              .contains(FixedValues.minus)); // checks -+, *- etc but not --
+          !lastChar.contains(FixedValues.minus) &&
+          ![FixedValues.root, FixedValues.cubeRootSym]
+              .contains(lastChar)); // checks -+, *- etc but not -- and root-
       bool case2 = !(helperFunctions.operations.contains(value) &&
           helperFunctions.operations.contains(
               lastChar)); // same operators side-by-side aren't allowed.
@@ -68,6 +69,13 @@ class CalcParser {
         else if (trigFunctions.contains(value))
           calculationString.add('$value(');
 
+        // Code for powers
+        else if ([FixedValues.sup2, FixedValues.sup3].contains(value) &&
+            ([')', FixedValues.pi, 'e'].contains(lastChar) ||
+                helperFunctions.numbersList.contains(lastChar))) {
+          calculationString.add(value);
+        }
+
         // Code for replace x with
         else if (value == 'eˣ')
           calculationString.add('e^');
@@ -86,8 +94,9 @@ class CalcParser {
         else if (value.contains(FixedValues.changeSignChar))
           setSign();
 
-        // Factorial
-        else if (['!', '%'].contains(value) ||
+        // Avoids following operations after randomList
+        else if (['!', '%', FixedValues.root, FixedValues.cubeRoot]
+                .contains(value) ||
             helperFunctions.operations.contains(value)) {
           if (value.contains(FixedValues.minus) ||
               !(helperFunctions.randomList.contains(lastChar) ||
@@ -98,6 +107,7 @@ class CalcParser {
         }
       }
     }
+
     // Following functions should not present in the first position.
     else if (!(avoidFirstElement.contains(value))) {
       // Check if only value present is NOT an operator.
@@ -109,9 +119,9 @@ class CalcParser {
         calculationString.add('.');
       // Code for replace x with
       else if (value == 'eˣ')
-        calculationString.add('e^');
+        calculationString.addAll(['e', '^']);
       else if (value == '𝟏𝟬ˣ')
-        calculationString.add('10^');
+        calculationString.addAll(['10', '^']);
       else
         calculationString.add(value);
     }
@@ -263,9 +273,6 @@ class CalcParser {
 
   double evalFunction(List<String> calcStr) {
     try {
-      if (currentMetric == 'DEG') {
-        print('Degrees');
-      }
       Parser p = Parser();
       String comptStr = computerString(calcStr);
       Expression exp = p.parse(
@@ -375,8 +382,45 @@ class CalcParser {
       symTOTAL -= 1;
     }
 
+    // Attach parentheses automatically.
     String computerStr = tempString.join();
+    int countOpen = '('.allMatches(computerStr).length;
+    int countClosed = ')'.allMatches(computerStr).length;
+    if (countOpen != countClosed) {
+      int toAdd = countOpen - countClosed;
+      for (int i = 0; i < toAdd; i++) tempString.add(')');
+    }
+
+    // For DEG
+    if (currentMetric == 'DEG') {
+      tempString.forEach((element) {
+        if ([
+          'sin(',
+          'cos(',
+          'tan(',
+          'sin⁻¹(',
+          'cos⁻¹(',
+          'tan⁻¹(',
+        ].contains(element)) {
+          int index = computerStr.indexOf(element);
+          int count = index;
+          int openBrace = 0;
+          int closedBrace = 0;
+          for (; count < computerStr.length; count++) {
+            if (computerStr[count].contains('(')) openBrace += 1;
+            if (computerStr[count].contains(')')) closedBrace += 1;
+            if (openBrace == closedBrace) {
+              count += 1;
+              break;
+            }
+          }
+          tempString.insert(count, '*${math.pi}/180');
+        }
+      });
+    }
+
     // Replace with strings that dart/math_exp package can understand.
+    computerStr = tempString.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
     computerStr = computerStr.replaceAll(FixedValues.minus, '-');
@@ -389,14 +433,6 @@ class CalcParser {
     computerStr = computerStr.replaceAll('sin⁻¹(', 'arcsin(');
     computerStr = computerStr.replaceAll('cos⁻¹(', 'arccos(');
     computerStr = computerStr.replaceAll('tan⁻¹(', 'arctan(');
-
-    // Attach parentheses automatically.
-    int countOpen = '('.allMatches(computerStr).length;
-    int countClosed = ')'.allMatches(computerStr).length;
-    if (countOpen != countClosed) {
-      int toAdd = countOpen - countClosed;
-      for (int i = 0; i < toAdd; i++) computerStr = computerStr + ')';
-    }
     return computerStr;
   }
 
