@@ -18,8 +18,7 @@ class FixedValues {
   static String sup3 = String.fromCharCode(charcode.$sup3);
   static String squareChar = String.fromCharCode(charcode.$x) + sup2;
   static String cubeChar = String.fromCharCode(charcode.$x) + sup3;
-  static String reciprocalChar =
-      String.fromCharCodes([charcode.$sup1, charcode.$division, charcode.$x]);
+  static String reciprocalChar = '⅟𝔁';
   static String cubeRoot =
       String.fromCharCodes([charcode.$sup3, charcode.$radic, charcode.$x]);
   static String minus = String.fromCharCode(charcode.$ndash);
@@ -38,6 +37,14 @@ class FixedValues {
     [downArrow, cubeChar, 'e', '%'],
     ['sin', 'cos', 'tan', 'inv'],
     ['ln', 'log', 'mod', reciprocalChar],
+    ['(', ')', '!', root],
+    [pi, cubeRoot, capChar, squareChar]
+  ];
+
+    static List rowInverse = [
+    [downArrow, cubeChar, 'e', '%'],
+    ['sin⁻¹', 'cos⁻¹', 'tan⁻¹', 'inv'],
+    ['eˣ', '𝟏𝟬ˣ', 'mod', reciprocalChar],
     ['(', ')', '!', root],
     [pi, cubeRoot, capChar, squareChar]
   ];
@@ -77,4 +84,6 @@ class FixedValues {
   static const String appVersion = '1.0.0';
   static const String appLegalese =
       'Make faster calculations, display latest currencies, endless history scrolling.';
+  
+  
 }

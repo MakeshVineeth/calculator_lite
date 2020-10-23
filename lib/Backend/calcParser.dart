@@ -34,11 +34,14 @@ class CalcParser {
       int lastIndex = calculationString.length - 1;
       String lastChar = calculationString[lastIndex];
 
-      // Check if previous value is NOT an operator.
-      if ((value.contains(FixedValues.minus) &&
-              !lastChar.contains(FixedValues.minus)) ||
-          !(helperFunctions.operations.contains(value) &&
-              helperFunctions.operations.contains(lastChar))) {
+      bool case1 = (value.contains(FixedValues.minus) &&
+          !lastChar
+              .contains(FixedValues.minus)); // checks -+, *- etc but not --
+      bool case2 = !(helperFunctions.operations.contains(value) &&
+          helperFunctions.operations.contains(
+              lastChar)); // same operators side-by-side aren't allowed.
+
+      if (case1 || case2) {
         // Code for Square of Number.
         if (value.contains(FixedValues.squareChar))
           calculationString[lastIndex] = '$lastChar' + FixedValues.sup2;
@@ -267,13 +270,27 @@ class CalcParser {
             !helperFunctions.numbersList.contains(lastChar)) {
           tempString[lastIndex - 1] = '.0';
         }
+
         // check pre-value
         else if (helperFunctions.numbersList.contains(lastButOne)) {
           // check post value
-          if (['sin(', 'cos(', 'tan(', 'ln(', 'log(', 'e', '(', FixedValues.pi]
-              .contains(lastChar))
+          if ([
+            'sin(',
+            'cos(',
+            'tan(',
+            'ln(',
+            'log(',
+            'e',
+            '(',
+            FixedValues.pi,
+            FixedValues.root,
+            FixedValues.cubeRootSym
+          ].contains(lastChar))
             tempString.insert(lastIndex, FixedValues.multiplyChar);
-        } else if ([
+        }
+
+        // another use case
+        else if ([
           '%',
           'e',
           FixedValues.pi,

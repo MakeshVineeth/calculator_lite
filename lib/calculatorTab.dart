@@ -13,7 +13,7 @@ class CalculatorTab extends StatefulWidget {
 
 class _CalculatorTabState extends State<CalculatorTab> {
   Widget _currentChild;
-  bool isSimple = true;
+  bool secondPageFlip = false;
   List<String> calculationString = [];
   double mainValue = 0.0;
   List<String> menuList = ['About', 'Change Theme'];
@@ -34,16 +34,18 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void displayToScreen(String value) {
     setState(() {
       // First check for down or up arrow buttons
-      if (value.contains(FixedValues.upperArrow) ||
-          value.contains(FixedValues.downArrow))
-        changeButtons(); // Up and Down Arrows
-      else if (value.contains('inv')) {
-        // when inv clicked, inverse buttons.
-      } else if (value.contains('C')) {
+      if ([FixedValues.upperArrow, FixedValues.downArrow, 'inv']
+          .contains(value))
+        changeButtons(value);
+
+      // Clear button
+      else if (value.contains('C')) {
         calculationString.clear();
         mainValue = 0.0;
-      } else if (value.contains(FixedValues.backSpaceChar)) {
-        // Back Button
+      }
+
+      // Back button
+      else if (value.contains(FixedValues.backSpaceChar)) {
         backSpaceBtn();
 
         if (calculationString.length > 0)
@@ -51,6 +53,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
         else
           mainValue = 0;
       }
+
       // Code for =
       else if (value.contains('=')) {
         // Incomplete for now.
@@ -97,22 +100,36 @@ class _CalculatorTabState extends State<CalculatorTab> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          alignment: Alignment.centerRight,
-          child: PopupMenuButton(
-            itemBuilder: (context) => List.generate(
-                menuList.length,
-                (index) => PopupMenuItem(
-                      value: index,
-                      child: Text(menuList[index]),
-                    )),
-            offset: Offset(0, 50),
-            elevation: 5.0,
-            icon: Icon(
-              Icons.more_vert,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              child: MaterialButton(
+                minWidth: 30,
+                onPressed: () {},
+                child: Text('RAD'),
+              ),
             ),
-            onSelected: (value) => popUpFunction(value),
-          ),
+            Container(
+              alignment: Alignment.centerRight,
+              child: PopupMenuButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                itemBuilder: (context) => List.generate(
+                    menuList.length,
+                    (index) => PopupMenuItem(
+                          value: index,
+                          child: Text(menuList[index]),
+                        )),
+                elevation: 5.0,
+                icon: Icon(
+                  Icons.more_vert,
+                ),
+                onSelected: (value) => popUpFunction(value),
+              ),
+            ),
+          ],
         ),
         // Display Widget
         DisplayScreen(
@@ -135,7 +152,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   Widget buildCalcRows(List currentRow) {
     return Column(
-      key: ValueKey(isSimple),
+      key: UniqueKey(),
       children: List.generate(
           currentRow.length, (index) => calcRows(currentRow[index], index)),
     );
@@ -152,13 +169,26 @@ class _CalculatorTabState extends State<CalculatorTab> {
     }
   }
 
-  void changeButtons() {
-    if (isSimple) {
-      isSimple = false;
-      _currentChild = buildCalcRows(FixedValues.rowExtras);
-    } else {
-      isSimple = true;
-      _currentChild = buildCalcRows(FixedValues.rowSimple);
+  void changeButtons(String value) {
+    // If inv clicked, reverse bool var and call changeButtons again with upperArrow to change in second page itself.
+    if (value.contains('inv')) {
+      if (secondPageFlip)
+        secondPageFlip = false;
+      else
+        secondPageFlip = true;
+      changeButtons(FixedValues.upperArrow);
     }
+
+    // For upper arrow.
+    else if (value.contains(FixedValues.upperArrow)) {
+      if (secondPageFlip)
+        _currentChild = buildCalcRows(FixedValues.rowInverse);
+      else
+        _currentChild = buildCalcRows(FixedValues.rowExtras);
+    }
+
+    // For down arrow.
+    else
+      _currentChild = buildCalcRows(FixedValues.rowSimple);
   }
 }
