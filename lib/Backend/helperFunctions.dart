@@ -28,7 +28,11 @@ class HelperFunctions {
     'cos(',
     'log(',
     'ln(',
-    FixedValues.root
+    'sin⁻¹(',
+    'cos⁻¹(',
+    'tan⁻¹(',
+    FixedValues.root,
+    FixedValues.cubeRootSym
   ]; // Cube root too must be added here.
   int parseNumbersFromEnd(int i, var str) {
     // Parse the string from the end to start. Break immediately if any symbol found other than integers.

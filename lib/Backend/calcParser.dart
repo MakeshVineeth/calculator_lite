@@ -6,11 +6,21 @@ import 'dart:math' as math;
 
 class CalcParser {
   List<String> calculationString;
-  CalcParser({this.calculationString});
+  String currentMetric;
+  CalcParser({this.calculationString, this.currentMetric});
   HelperFunctions helperFunctions = HelperFunctions();
 
   // List of constants for conditional checks.
-  List<String> trigFunctions = ['sin', 'cos', 'tan', 'ln', 'log', 'sin⁻¹', 'cos⁻¹', 'tan⁻¹'];
+  List<String> trigFunctions = [
+    'sin',
+    'cos',
+    'tan',
+    'ln',
+    'log',
+    'sin⁻¹',
+    'cos⁻¹',
+    'tan⁻¹'
+  ];
   List<String> avoidFirstElement = [
     '+',
     '*',
@@ -55,9 +65,14 @@ class CalcParser {
           reciprocalFunction();
 
         // Code for add bracket after following functions.
-
         else if (trigFunctions.contains(value))
           calculationString.add('$value(');
+
+        // Code for replace x with
+        else if (value == 'eˣ')
+          calculationString.add('e^');
+        else if (value == '𝟏𝟬ˣ')
+          calculationString.add('10^');
 
         // Code for cube root
         else if (value.contains(FixedValues.cubeRoot))
@@ -92,6 +107,11 @@ class CalcParser {
         calculationString.add(FixedValues.cubeRootSym);
       else if (value.contains(FixedValues.decimalChar))
         calculationString.add('.');
+      // Code for replace x with
+      else if (value == 'eˣ')
+        calculationString.add('e^');
+      else if (value == '𝟏𝟬ˣ')
+        calculationString.add('10^');
       else
         calculationString.add(value);
     }
@@ -243,6 +263,9 @@ class CalcParser {
 
   double evalFunction(List<String> calcStr) {
     try {
+      if (currentMetric == 'DEG') {
+        print('Degrees');
+      }
       Parser p = Parser();
       String comptStr = computerString(calcStr);
       Expression exp = p.parse(
@@ -280,6 +303,9 @@ class CalcParser {
             'tan(',
             'ln(',
             'log(',
+            'sin⁻¹(',
+            'cos⁻¹(',
+            'tan⁻¹(',
             'e',
             '(',
             FixedValues.pi,
@@ -304,6 +330,9 @@ class CalcParser {
               'tan(',
               'ln(',
               'log(',
+              'sin⁻¹(',
+              'cos⁻¹(',
+              'tan⁻¹(',
               'e',
               FixedValues.pi
             ].contains(lastChar) ||
@@ -357,6 +386,9 @@ class CalcParser {
     computerStr = computerStr.replaceAll(FixedValues.sup3, '^3');
     computerStr = computerStr.replaceAll('mod', '%');
     computerStr = computerStr.replaceAll('log(', 'log(10,');
+    computerStr = computerStr.replaceAll('sin⁻¹(', 'arcsin(');
+    computerStr = computerStr.replaceAll('cos⁻¹(', 'arccos(');
+    computerStr = computerStr.replaceAll('tan⁻¹(', 'arctan(');
 
     // Attach parentheses automatically.
     int countOpen = '('.allMatches(computerStr).length;

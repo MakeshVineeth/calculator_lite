@@ -5,6 +5,7 @@ import 'package:calculator_lite/UIElements/calcButtons.dart';
 import 'package:calculator_lite/Backend/calcParser.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/aboutPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CalculatorTab extends StatefulWidget {
   @override
@@ -17,11 +18,22 @@ class _CalculatorTabState extends State<CalculatorTab> {
   List<String> calculationString = [];
   double mainValue = 0.0;
   List<String> menuList = ['About', 'Change Theme'];
+  String currentMetric;
 
   @override
   void initState() {
     super.initState();
     _currentChild = buildCalcRows(FixedValues.rowSimple);
+    getCurrentMetrics();
+  }
+
+  void getCurrentMetrics() async {
+    final prefs = await SharedPreferences.getInstance();
+    final current = prefs.getString('metrics') ?? 'RAD';
+
+    setState(() {
+      currentMetric = current;
+    });
   }
 
   void backSpaceBtn() {
@@ -65,7 +77,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void runCalcParser(String value) {
-    CalcParser calcParser = CalcParser(calculationString: calculationString);
+    CalcParser calcParser = CalcParser(
+        calculationString: calculationString, currentMetric: currentMetric);
     if (value != null) calculationString = calcParser.addToExpression(value);
     mainValue = calcParser.getValue() ??
         mainValue; // Used null-aware operator to default to mainValue in case of null.
@@ -105,17 +118,15 @@ class _CalculatorTabState extends State<CalculatorTab> {
           children: [
             Container(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
                     shape: FixedValues.roundShapeLarge,
                   ),
-                  onPressed: () {
-                    print('DEG');
-                  },
-                  child: Text('RAD'),
+                  onPressed: changeMetrics,
+                  child: Text('$currentMetric'),
                 ),
               ),
             ),
@@ -129,6 +140,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
                           value: index,
                           child: Text(menuList[index]),
                         )),
+                offset: Offset(0, -10),
                 elevation: 5.0,
                 icon: Icon(
                   Icons.more_vert,
@@ -163,6 +175,17 @@ class _CalculatorTabState extends State<CalculatorTab> {
       children: List.generate(
           currentRow.length, (index) => calcRows(currentRow[index], index)),
     );
+  }
+
+  void changeMetrics() async {
+    setState(() {
+      if (currentMetric == 'RAD')
+        currentMetric = 'DEG';
+      else
+        currentMetric = 'RAD';
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('metrics', currentMetric);
   }
 
   void popUpFunction(int value) {

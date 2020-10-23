@@ -18,7 +18,7 @@ class DisplayScreen extends StatelessWidget {
       flex: 2,
       child: Container(
         alignment: Alignment.centerLeft,
-        padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -18,7 +18,7 @@ class FixedValues {
   static String sup3 = String.fromCharCode(charcode.$sup3);
   static String squareChar = String.fromCharCode(charcode.$x) + sup2;
   static String cubeChar = String.fromCharCode(charcode.$x) + sup3;
-  static String reciprocalChar = '⅟𝔁';
+  static String reciprocalChar = '⅟𝑥';
   static String cubeRoot =
       String.fromCharCodes([charcode.$sup3, charcode.$radic, charcode.$x]);
   static String minus = String.fromCharCode(charcode.$ndash);
