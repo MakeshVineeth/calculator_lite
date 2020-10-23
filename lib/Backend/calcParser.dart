@@ -45,48 +45,57 @@ class CalcParser {
       String lastChar = calculationString[lastIndex];
 
       bool case1 = (value.contains(FixedValues.minus) &&
-          !lastChar.contains(FixedValues.minus) &&
-          ![FixedValues.root, FixedValues.cubeRootSym]
-              .contains(lastChar)); // checks -+, *- etc but not -- and root-
+          !lastChar.contains(
+              FixedValues.minus)); // checks -+, *- etc but not -- and root-
       bool case2 = !(helperFunctions.operations.contains(value) &&
           helperFunctions.operations.contains(
               lastChar)); // same operators side-by-side aren't allowed.
 
       if (case1 || case2) {
-        // Code for Square of Number.
-        if (value.contains(FixedValues.squareChar))
-          calculationString[lastIndex] = '$lastChar' + FixedValues.sup2;
-
-        // Code for Cube of Number.
-        if (value.contains(FixedValues.cubeChar))
-          calculationString[lastIndex] = '$lastChar' + FixedValues.sup3;
-
         // Code for reciprocal button.
-        else if (value.contains(FixedValues.reciprocalChar))
+        if (value.contains(FixedValues.reciprocalChar))
           reciprocalFunction();
+
+        // Helper for minus
+        else if (value.contains(FixedValues.minus)) {
+          if (!([FixedValues.cubeRootSym, FixedValues.root, FixedValues.minus]
+              .contains(lastChar))) calculationString.add(value);
+        }
 
         // Code for add bracket after following functions.
         else if (trigFunctions.contains(value))
           calculationString.add('$value(');
 
         // Code for powers
-        else if ([FixedValues.sup2, FixedValues.sup3].contains(value) &&
-            ([')', FixedValues.pi, 'e'].contains(lastChar) ||
-                helperFunctions.numbersList.contains(lastChar))) {
-          calculationString.add(value);
+        else if ([FixedValues.squareChar, FixedValues.cubeChar]
+            .contains(value)) {
+          if ([')', FixedValues.pi, 'e'].contains(lastChar) ||
+              helperFunctions.numbersList.contains(lastChar) ||
+              [FixedValues.sup2, FixedValues.sup3].contains(lastChar)) {
+            if (value.contains(FixedValues.squareChar))
+              calculationString.add(FixedValues.sup2);
+            else
+              calculationString.add(FixedValues.sup3);
+          }
         }
 
         // Code for replace x with
         else if (value == 'eˣ')
           calculationString.add('e^');
+
+        // Replace
         else if (value == '𝟏𝟬ˣ')
           calculationString.add('10^');
 
         // Code for cube root
-        else if (value.contains(FixedValues.cubeRoot))
+        else if (value == FixedValues.cubeRoot)
           calculationString.add(FixedValues.cubeRootSym);
+
+        // Decimal
         else if (value.contains(FixedValues.decimalChar))
           setDecimalChar();
+
+        // Check no of closed brackets and add.
         else if (value.contains(')'))
           addClosedBracket();
 
@@ -95,8 +104,7 @@ class CalcParser {
           setSign();
 
         // Avoids following operations after randomList
-        else if (['!', '%', FixedValues.root, FixedValues.cubeRoot]
-                .contains(value) ||
+        else if (['!', '%'].contains(value) ||
             helperFunctions.operations.contains(value)) {
           if (value.contains(FixedValues.minus) ||
               !(helperFunctions.randomList.contains(lastChar) ||
