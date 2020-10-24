@@ -420,12 +420,15 @@ class CalcParser {
         }
 
         if (['sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('].contains(tempString[indices[i]])) {
-          if (count + 1 < tempString.length) {
-            tempString.replaceRange(count + 1, count + 1, ['))']);
+          if (count + 1 <= tempString.length) {
+            tempString
+                .replaceRange(count + 1, count + 1, [')*180/${math.pi})']);
             inverseAvailable = true;
           }
         } else if (tempString[indices[i]].contains('tan(')) {
-          double val = evalFunction(tempString.getRange(indices[i], count));
+          List<String> temp =
+              tempString.getRange(indices[i] + 1, count).toList();
+          double val = evalFunction(temp);
           if (val == 90) {
             tempString = ['1/0'];
             break;
