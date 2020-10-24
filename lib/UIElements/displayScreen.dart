@@ -50,6 +50,8 @@ class DisplayScreen extends StatelessWidget {
       );
 
   static String formatNumber(double value) {
+    // For cos(90), cos(270)
+    if (value == 0.0 || value == -0.0) value = 0;
     int precision = 10;
     String infinity = 'Infinity';
     String infinitySymbol = String.fromCharCode(charcode.$infin);
