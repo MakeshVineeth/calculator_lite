@@ -50,6 +50,7 @@ class DisplayScreen extends StatelessWidget {
       );
 
   static String formatNumber(double value) {
+    if (value == -0) value = 0;
     int precision = 10;
     String infinity = 'Infinity';
     String infinitySymbol = String.fromCharCode(charcode.$infin);

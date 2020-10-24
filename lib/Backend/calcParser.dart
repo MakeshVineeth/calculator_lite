@@ -461,17 +461,16 @@ class CalcParser {
               tempString = ['1/0'];
               break;
             } else if (isInfinite && tempString[indices[i]].contains('cos(')) {
-              tempString.replaceRange(count + 1, count + 1, [')*0)']);
-              inverseAvailable = true;
+              tempString[count] = '))*0';
             } else
-              tempString.replaceRange(count, count, [')*${math.pi}/180']);
+              tempString[count] = ')*${math.pi}/180)';
           } else
-            tempString.replaceRange(count, count, [')*${math.pi}/180']);
+            tempString[count] = ')*${math.pi}/180)';
         }
 
         // For remaining trig Functions, replace as usual.
         else
-          tempString.replaceRange(count, count, [')*${math.pi}/180']);
+          tempString[count] = ')*${math.pi}/180)';
       }
 
       computerStr = tempString.join();
@@ -479,15 +478,10 @@ class CalcParser {
       if (indices.length > 0) {
         computerStr = computerStr.replaceAll('sin(', 'sin((');
         computerStr = computerStr.replaceAll('tan(', 'tan((');
+        computerStr = computerStr.replaceAll('cos(', 'cos((');
         if (!inverseAvailable) {
-          computerStr = computerStr.replaceAll('sin⁻¹(', 'sin⁻¹((');
-          computerStr = computerStr.replaceAll('cos⁻¹(', 'cos⁻¹((');
-          computerStr = computerStr.replaceAll('cos(', 'cos((');
-          computerStr = computerStr.replaceAll('tan⁻¹(', 'tan⁻¹((');
-        } else {
           computerStr = computerStr.replaceAll('sin⁻¹(', '(sin⁻¹(');
           computerStr = computerStr.replaceAll('cos⁻¹(', '(cos⁻¹(');
-          computerStr = computerStr.replaceAll('cos(', '(cos((');
           computerStr = computerStr.replaceAll('tan⁻¹(', '(tan⁻¹(');
         }
       }
