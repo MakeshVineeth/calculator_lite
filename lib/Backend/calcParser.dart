@@ -398,7 +398,6 @@ class CalcParser {
       int toAdd = countOpen - countClosed;
       for (int i = 0; i < toAdd; i++) tempString.add(')');
     }
-    computerStr = tempString.join();
 
     // For DEG
     if (currentMetric == 'DEG') {
@@ -462,7 +461,8 @@ class CalcParser {
           computerStr = computerStr.replaceAll('tan⁻¹(', '(tan⁻¹((');
         }
       }
-    }
+    } else
+      computerStr = tempString.join();
 
     // Replace with strings that dart/math_exp package can understand.
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
