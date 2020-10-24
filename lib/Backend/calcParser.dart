@@ -390,8 +390,6 @@ class CalcParser {
       symTOTAL -= 1;
     }
 
-    List<String> trigs = ['sin(', 'cos(', 'tan(', 'sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('];
-
     // Attach parentheses automatically.
     String computerStr = tempString.join();
     int countOpen = '('.allMatches(computerStr).length;
@@ -400,9 +398,18 @@ class CalcParser {
       int toAdd = countOpen - countClosed;
       for (int i = 0; i < toAdd; i++) tempString.add(')');
     }
+    computerStr = tempString.join();
 
     // For DEG
     if (currentMetric == 'DEG') {
+      List<String> trigs = [
+        'sin(',
+        'cos(',
+        'tan(',
+        'sin⁻¹(',
+        'cos⁻¹(',
+        'tan⁻¹('
+      ];
       List<int> indices = [];
       bool inverseAvailable = false;
       for (int i = 0; i < tempString.length; i++) {
@@ -429,11 +436,8 @@ class CalcParser {
           List<String> temp =
               tempString.getRange(indices[i] + 1, count).toList();
           double val = evalFunction(temp);
-          if (val == 90) {
+          if (val == 90 || val == -90 || val / 3 == 90) {
             tempString = ['1/0'];
-            break;
-          } else if (val == -90) {
-            tempString = ['-(1/0)'];
             break;
           } else {
             tempString.replaceRange(count, count, [')*${math.pi}/180']);
@@ -473,6 +477,7 @@ class CalcParser {
     computerStr = computerStr.replaceAll('sin⁻¹(', 'arcsin(');
     computerStr = computerStr.replaceAll('cos⁻¹(', 'arccos(');
     computerStr = computerStr.replaceAll('tan⁻¹(', 'arctan(');
+
     return computerStr;
   }
 
