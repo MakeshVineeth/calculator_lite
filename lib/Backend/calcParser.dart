@@ -479,7 +479,7 @@ class CalcParser {
         computerStr = computerStr.replaceAll('sin(', 'sin((');
         computerStr = computerStr.replaceAll('tan(', 'tan((');
         computerStr = computerStr.replaceAll('cos(', 'cos((');
-        if (!inverseAvailable) {
+        if (inverseAvailable) {
           computerStr = computerStr.replaceAll('sin⁻¹(', '(sin⁻¹(');
           computerStr = computerStr.replaceAll('cos⁻¹(', '(cos⁻¹(');
           computerStr = computerStr.replaceAll('tan⁻¹(', '(tan⁻¹(');
@@ -502,7 +502,6 @@ class CalcParser {
     computerStr = computerStr.replaceAll('cos⁻¹(', 'arccos(');
     computerStr = computerStr.replaceAll('tan⁻¹(', 'arctan(');
 
-    print(computerStr);
     return computerStr;
   }
 
