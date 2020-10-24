@@ -68,6 +68,20 @@ class HelperFunctions {
     return end;
   }
 
+  List<String> concatenateList(List list) {
+    List<String> result = [];
+    list.forEach((element) {
+      if (element is List<String>) {
+        element.forEach((element1) {
+          result.add(element1);
+        });
+      } else {
+        result.add(element);
+      }
+    });
+    return result;
+  }
+
   BigInt factorial(BigInt n) {
     if (n < BigInt.from(0)) throw ('Negative numbers are not allowed.');
     return n <= BigInt.from(1)

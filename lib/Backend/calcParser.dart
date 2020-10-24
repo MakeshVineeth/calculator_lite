@@ -624,7 +624,11 @@ class CalcParser {
       // Detects 9 + 6 * sin(5) * 6%
       else {
         exp = '$second$lastChar${(first / 100)}';
-        computerStr.replaceRange(0, index, [exp]);
+        computerStr.replaceRange(
+            0,
+            index,
+            helperFunctions
+                .concatenateList([second, lastChar, (first / 100).toString()]));
       }
       return computerStr;
     }
