@@ -427,15 +427,11 @@ class CalcParser {
 
         // catch inverse functions.
         if (['sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('].contains(tempString[indices[i]])) {
-          if (count + 1 <= tempString.length) {
-            tempString
-                .replaceRange(count + 1, count + 1, [')*180/${math.pi})']);
-            inverseAvailable = true;
-          }
+          tempString[count] = ')*180/${math.pi})';
+          inverseAvailable = true;
         }
-
         // Run below code for tan.
-        else if (tempString[indices[i]].contains('tan(')) {
+        else if (['tan(', 'cos('].contains(tempString[indices[i]])) {
           List<String> temp =
               tempString.getRange(indices[i] + 1, count).toList();
           double val = evalFunction(temp);
@@ -461,9 +457,12 @@ class CalcParser {
                   break;
                 }
               }
-            if (isInfinite) {
+            if (isInfinite && tempString[indices[i]].contains('tan(')) {
               tempString = ['1/0'];
               break;
+            } else if (isInfinite && tempString[indices[i]].contains('cos(')) {
+              tempString.replaceRange(count + 1, count + 1, [')*0)']);
+              inverseAvailable = true;
             } else
               tempString.replaceRange(count, count, [')*${math.pi}/180']);
           } else
@@ -479,16 +478,17 @@ class CalcParser {
 
       if (indices.length > 0) {
         computerStr = computerStr.replaceAll('sin(', 'sin((');
-        computerStr = computerStr.replaceAll('cos(', 'cos((');
         computerStr = computerStr.replaceAll('tan(', 'tan((');
         if (!inverseAvailable) {
           computerStr = computerStr.replaceAll('sin⁻¹(', 'sin⁻¹((');
           computerStr = computerStr.replaceAll('cos⁻¹(', 'cos⁻¹((');
+          computerStr = computerStr.replaceAll('cos(', 'cos((');
           computerStr = computerStr.replaceAll('tan⁻¹(', 'tan⁻¹((');
         } else {
-          computerStr = computerStr.replaceAll('sin⁻¹(', '(sin⁻¹((');
-          computerStr = computerStr.replaceAll('cos⁻¹(', '(cos⁻¹((');
-          computerStr = computerStr.replaceAll('tan⁻¹(', '(tan⁻¹((');
+          computerStr = computerStr.replaceAll('sin⁻¹(', '(sin⁻¹(');
+          computerStr = computerStr.replaceAll('cos⁻¹(', '(cos⁻¹(');
+          computerStr = computerStr.replaceAll('cos(', '(cos((');
+          computerStr = computerStr.replaceAll('tan⁻¹(', '(tan⁻¹(');
         }
       }
     } else
@@ -508,6 +508,7 @@ class CalcParser {
     computerStr = computerStr.replaceAll('cos⁻¹(', 'arccos(');
     computerStr = computerStr.replaceAll('tan⁻¹(', 'arctan(');
 
+    print(computerStr);
     return computerStr;
   }
 
