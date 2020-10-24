@@ -425,23 +425,53 @@ class CalcParser {
           if (openBrace == closedBrace) break;
         }
 
+        // catch inverse functions.
         if (['sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('].contains(tempString[indices[i]])) {
           if (count + 1 <= tempString.length) {
             tempString
                 .replaceRange(count + 1, count + 1, [')*180/${math.pi})']);
             inverseAvailable = true;
           }
-        } else if (tempString[indices[i]].contains('tan(')) {
+        }
+
+        // Run below code for tan.
+        else if (tempString[indices[i]].contains('tan(')) {
           List<String> temp =
               tempString.getRange(indices[i] + 1, count).toList();
           double val = evalFunction(temp);
-          if (val == 90 || val == -90 || val / 3 == 90) {
-            tempString = ['1/0'];
-            break;
-          } else {
+
+          // Check Tan for possible infinity.
+          bool isInfinite = false;
+          if (val % 1 == 0) {
+            if (val > 0)
+              for (int i = 1;; i += 2) {
+                int temp = 90 * i;
+                if (temp > val) break;
+                if (temp == val.toInt()) {
+                  isInfinite = true;
+                  break;
+                }
+              }
+            else
+              for (int i = 1;; i += 2) {
+                int temp = -90 * i;
+                if (temp < val) break;
+                if (temp == val.toInt()) {
+                  isInfinite = true;
+                  break;
+                }
+              }
+            if (isInfinite) {
+              tempString = ['1/0'];
+              break;
+            } else
+              tempString.replaceRange(count, count, [')*${math.pi}/180']);
+          } else
             tempString.replaceRange(count, count, [')*${math.pi}/180']);
-          }
-        } else
+        }
+
+        // For remaining trig Functions, replace as usual.
+        else
           tempString.replaceRange(count, count, [')*${math.pi}/180']);
       }
 
