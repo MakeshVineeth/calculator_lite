@@ -581,6 +581,8 @@ class CalcParser {
         lastChar = prev.last;
         if (helperFunctions.operations.contains(lastChar))
           second = prev.getRange(0, count).toList();
+        else
+          second = prev.getRange(0, count + 1).toList();
       }
 
       // Detects single 55 or 25 etc
