@@ -186,6 +186,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('metrics', currentMetric);
+    runCalcParser(null);
   }
 
   void popUpFunction(int value) {

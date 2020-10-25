@@ -501,7 +501,6 @@ class CalcParser {
     computerStr = computerStr.replaceAll('sin⁻¹(', 'arcsin(');
     computerStr = computerStr.replaceAll('cos⁻¹(', 'arccos(');
     computerStr = computerStr.replaceAll('tan⁻¹(', 'arctan(');
-
     return computerStr;
   }
 
@@ -574,7 +573,7 @@ class CalcParser {
     else if (char.contains("%")) {
       List<String> prev;
       String lastChar;
-      String second;
+      List<String> second;
       double first = val;
       String exp;
       List plusminus = [FixedValues.minus, '+'];
@@ -582,53 +581,57 @@ class CalcParser {
         prev = computerStr.getRange(0, count + 1).toList();
         lastChar = prev.last;
         if (helperFunctions.operations.contains(lastChar))
-          second = prev.getRange(0, count).toList().join();
+          second = prev.getRange(0, count).toList();
       }
 
       // Detects single 55 or 25 etc
       if (count == -1) {
-        String exp = '${val / 100}';
-        computerStr.replaceRange(count + 1, index, [exp]);
+        computerStr.replaceRange(
+            count + 1, index, helperFunctions.concatenateList([val / 100]));
         return computerStr;
       }
 
       // Detects 8 + 5 % * debug point here (This: 8 + 5% * 5 + 3%); Detects post 5% if it is * or ^ or something else.
       else if ((index < computerStr.length) &&
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
-        exp = '${first / 100}';
-        computerStr.replaceRange(count + 1, index, [exp]);
+        computerStr.replaceRange(
+            count + 1, index, helperFunctions.concatenateList([first / 100]));
       }
 
       // Detects tan( etc at the end
       else if (helperFunctions.randomList.contains(lastChar)) {
-        exp = '${first / 100}';
-        computerStr.replaceRange(count + 1, index, [exp]);
+        computerStr.replaceRange(
+            count + 1, index, helperFunctions.concatenateList([first / 100]));
       }
 
       // Detects 9 - tan(2)% and 9 + cos(2) * cos(2)%
       else if ((index - 1 > -1) &&
           !helperFunctions.numbersList.contains(computerStr[index - 1])) {
         if (plusminus.contains(prev[prev.length - 1]))
-          exp = '$second*$first/100';
+          computerStr.replaceRange(
+              count + 1,
+              index,
+              helperFunctions
+                  .concatenateList([second, '*', first, '/', '100']));
         else
-          exp = '${(first / 100)}';
+          computerStr.replaceRange(
+              count + 1, index, helperFunctions.concatenateList([first / 100]));
         computerStr.replaceRange(count + 1, index, [exp]);
       }
 
       // Detects 9 - 5 + 6 * sin(5) + 3%
       else if (plusminus.contains(lastChar)) {
-        exp = '$second$lastChar($second)*$first/100';
-        computerStr.replaceRange(0, index, [exp]);
+        computerStr.replaceRange(
+            0,
+            index,
+            helperFunctions.concatenateList(
+                [second, lastChar, '(', second, ')', '*', first, '/', '100']));
       }
 
       // Detects 9 + 6 * sin(5) * 6%
       else {
-        exp = '$second$lastChar${(first / 100)}';
-        computerStr.replaceRange(
-            0,
-            index,
-            helperFunctions
-                .concatenateList([second, lastChar, (first / 100).toString()]));
+        computerStr.replaceRange(0, index,
+            helperFunctions.concatenateList([second, lastChar, first / 100]));
       }
       return computerStr;
     }

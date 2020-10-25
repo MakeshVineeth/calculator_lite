@@ -71,13 +71,14 @@ class HelperFunctions {
   List<String> concatenateList(List list) {
     List<String> result = [];
     list.forEach((element) {
-      if (element is List<String>) {
+      if (element is List<String>)
         element.forEach((element1) {
           result.add(element1);
         });
-      } else {
+      else if (element is double)
+        result.add(element.toString());
+      else
         result.add(element);
-      }
     });
     return result;
   }
