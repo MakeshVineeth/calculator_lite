@@ -616,7 +616,7 @@ class CalcParser {
       }
 
       // Special checks
-      else if (previousMinus) {
+      else if (previousMinus || lastChar.contains('(${FixedValues.minus}')) {
         computerStr.addAll(['*', '0.01']);
       }
 
