@@ -575,7 +575,6 @@ class CalcParser {
       String lastChar;
       List<String> second;
       double first = val;
-      String exp;
       List plusminus = [FixedValues.minus, '+'];
       if (count != -1) {
         prev = computerStr.getRange(0, count + 1).toList();
@@ -616,7 +615,6 @@ class CalcParser {
         else
           computerStr.replaceRange(
               count + 1, index, helperFunctions.concatenateList([first / 100]));
-        computerStr.replaceRange(count + 1, index, [exp]);
       }
 
       // Detects 9 - 5 + 6 * sin(5) + 3%
