@@ -216,6 +216,12 @@ class CalcParser {
     // If it is equal to -1 then add sign directly as there are no operators at this point, only a number.
     if (i == -1)
       calculationString.insert(0, FixedValues.minus);
+    else if (calculationString.length == 1) {
+      if (calculationString[lastIndex] != FixedValues.minus)
+        calculationString.insert(0, FixedValues.minus);
+      else
+        calculationString.removeAt(lastIndex);
+    }
 
     // Check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
     else if (i != lastIndex)
