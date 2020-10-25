@@ -582,11 +582,28 @@ class CalcParser {
       List<String> second;
       double first = val;
       List plusminus = [FixedValues.minus, '+'];
+      bool previousMinus = false;
+
       if (count != -1) {
         prev = computerStr.getRange(0, count + 1).toList();
         lastChar = prev.last;
-        if (helperFunctions.operations.contains(lastChar))
-          second = prev.getRange(0, count).toList();
+
+        if (helperFunctions.operations.contains(lastChar)) {
+          // Run separate checks for minus
+          if (lastChar.contains(FixedValues.minus)) {
+            if (prev.length < 2 ||
+                prev[prev.length - 2].contains('(') ||
+                helperFunctions.randomList.contains(prev[prev.length - 2]))
+              previousMinus = true;
+            else
+              second = prev.getRange(0, count).toList();
+          }
+
+          // Return if it is not an minus operator.
+          else
+            second = prev.getRange(0, count).toList();
+        }
+        // Return if it is not any operator.
         else
           second = prev.getRange(0, count + 1).toList();
       }
@@ -596,6 +613,11 @@ class CalcParser {
         computerStr.replaceRange(
             count + 1, index, helperFunctions.concatenateList([val / 100]));
         return computerStr;
+      }
+
+      // Special checks
+      else if (previousMinus) {
+        computerStr.addAll(['*', '0.01']);
       }
 
       // Detects 8 + 5 % * debug point here (This: 8 + 5% * 5 + 3%); Detects post 5% if it is * or ^ or something else.
