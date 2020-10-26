@@ -104,10 +104,11 @@ class CalcParser {
           setSign();
 
         // Avoids following operations after randomList
-        else if (['!', '%'].contains(value) ||
+        else if (['!', '%', 'mod'].contains(value) ||
             helperFunctions.operations.contains(value)) {
           if (value.contains(FixedValues.minus) ||
               !(helperFunctions.randomList.contains(lastChar) ||
+                  lastChar.contains('(') ||
                   helperFunctions.operations.contains(lastChar)))
             calculationString.add(value);
         } else {
@@ -278,7 +279,10 @@ class CalcParser {
   void setDecimalChar() {
     int index = helperFunctions.parseNumbersFromEnd(
         calculationString.length - 1, calculationString);
-    bool count = calculationString.join().contains('.', index + 1);
+    List<String> getCompareStr = calculationString
+        .getRange(index + 1, calculationString.length)
+        .toList();
+    bool count = getCompareStr.join().contains('.');
     if (!count) calculationString.add('.');
   }
 
