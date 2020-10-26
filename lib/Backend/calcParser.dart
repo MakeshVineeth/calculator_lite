@@ -140,10 +140,14 @@ class CalcParser {
 
   void addClosedBracket() {
     // This function adds closed bracket no more than what is required.
+    String lastChar = calculationString.last;
     String computerStr = calculationString.join();
     int count = '('.allMatches(computerStr).length;
     int count1 = ')'.allMatches(computerStr).length;
-    if (count1 < count) calculationString.add(')');
+    if (count1 < count) {
+      if (lastChar != '${FixedValues.minus}' && lastChar != '(')
+        calculationString.add(')');
+    }
   }
 
   List smartParseLast(int lastIndex, List<String> compStr) {
@@ -218,6 +222,8 @@ class CalcParser {
     // If it is equal to -1 then add sign directly as there are no operators at this point, only a number.
     if (i == -1)
       calculationString.insert(0, FixedValues.minus);
+
+    // Use case #1
     else if (calculationString.length == 1) {
       if (calculationString[lastIndex] != FixedValues.minus)
         calculationString.insert(0, FixedValues.minus);
@@ -229,6 +235,10 @@ class CalcParser {
     else if (i != lastIndex)
       insertSign(i);
 
+    // If starting itself is open bracket
+    else if (calculationString[lastIndex] == '(')
+      insertSign(i);
+
     // If lastChar is closed bracket, do this matching function.
     else if (calculationString[lastIndex].contains(')')) {
       i = helperFunctions.parseMatchingBrackets(lastIndex, calculationString) -
@@ -237,15 +247,23 @@ class CalcParser {
         insertSign(i);
       else
         calculationString.insert(0, FixedValues.minus);
-    } else if (helperFunctions.constList
-        .contains(calculationString[lastIndex])) {
+    }
+
+    // Use Case
+    else if (helperFunctions.constList.contains(calculationString[lastIndex])) {
       i = helperFunctions.parseConstFromEnd(lastIndex, calculationString);
       if (i != -1) insertSign(i);
-    } else if (helperFunctions.randomList
+    }
+
+    // Use Case
+    else if (helperFunctions.randomList
         .contains(calculationString[lastIndex])) {
       i = helperFunctions.parseRandomFromEnd(lastIndex, calculationString);
       if (i != -1) insertSign(i);
-    } else {
+    }
+
+    // Use Case
+    else {
       i = helperFunctions.parseOperatorFromEnd(lastIndex, calculationString);
       if (i != -1)
         insertSign(i);
@@ -342,6 +360,7 @@ class CalcParser {
             'tan⁻¹(',
             'e',
             '(',
+            '(–',
             FixedValues.pi,
             FixedValues.root,
             FixedValues.cubeRootSym
@@ -366,8 +385,10 @@ class CalcParser {
               'log(',
               'sin⁻¹(',
               'cos⁻¹(',
+              '(–',
               'tan⁻¹(',
               'e',
+              '(',
               FixedValues.pi
             ].contains(lastChar) ||
             helperFunctions.numbersList.contains(lastChar)) {
