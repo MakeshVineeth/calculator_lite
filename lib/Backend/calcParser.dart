@@ -21,6 +21,7 @@ class CalcParser {
     'cos⁻¹',
     'tan⁻¹'
   ];
+  List<String> trigs = ['sin(', 'cos(', 'tan(', 'sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('];
   List<String> avoidFirstElement = [
     '+',
     '*',
@@ -258,6 +259,14 @@ class CalcParser {
       case '(–':
         calculationString.removeAt(i);
         break;
+      case 'ln(':
+      case 'log(':
+      case 'sin(':
+      case 'cos(':
+      case 'tan(':
+      case 'sin⁻¹(':
+      case 'cos⁻¹(':
+      case 'tan⁻¹(':
       case '(':
         calculationString.insert(i + 1, FixedValues.minus);
         break;
@@ -411,14 +420,6 @@ class CalcParser {
 
     // For DEG
     if (currentMetric == 'DEG') {
-      List<String> trigs = [
-        'sin(',
-        'cos(',
-        'tan(',
-        'sin⁻¹(',
-        'cos⁻¹(',
-        'tan⁻¹('
-      ];
       List<int> indices = [];
       bool inverseAvailable = false;
       for (int i = 0; i < tempString.length; i++) {
@@ -520,9 +521,10 @@ class CalcParser {
     int count = index + 1;
 
     // Detect braces first.
-    if (index < computerStr.length - 1 && computerStr[count].contains('(')) {
+    if (index < computerStr.length - 1 && (computerStr[count].contains('('))) {
       int openBrace = 0;
       int closedBrace = 0;
+      //if (trigs.contains(computerStr[count])) openBrace = 1;
       for (; count < computerStr.length; count++) {
         if (computerStr[count].contains('(')) openBrace += 1;
         if (computerStr[count].contains(')')) closedBrace += 1;
