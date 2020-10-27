@@ -553,54 +553,58 @@ class CalcParser {
   // For Root
   List<String> getRoot(List<String> computerStr, String char) {
     int index = computerStr.indexOf(char);
-    int count = index + 1;
+    if (index != -1) {
+      int count = index + 1;
 
-    // Detect braces first.
-    if (index < computerStr.length - 1 && (computerStr[count].contains('('))) {
-      int openBrace = 0;
-      int closedBrace = 0;
-      //if (trigs.contains(computerStr[count])) openBrace = 1;
-      for (; count < computerStr.length; count++) {
-        if (computerStr[count].contains('(')) openBrace += 1;
-        if (computerStr[count].contains(')')) closedBrace += 1;
-        if (openBrace == closedBrace) {
-          count += 1;
-          break;
+      // Detect braces first.
+      if (index < computerStr.length - 1 &&
+          (computerStr[count].contains('('))) {
+        int openBrace = 0;
+        int closedBrace = 0;
+        //if (trigs.contains(computerStr[count])) openBrace = 1;
+        for (; count < computerStr.length; count++) {
+          if (computerStr[count].contains('(')) openBrace += 1;
+          if (computerStr[count].contains(')')) closedBrace += 1;
+          if (openBrace == closedBrace) {
+            count += 1;
+            break;
+          }
         }
       }
-    }
 
-    // Detect operators now.
-    else {
-      for (; count < computerStr.length; count++)
-        if (helperFunctions.operations.contains(computerStr[count])) break;
-    }
-
-    List<String> valStr = computerStr.getRange(index + 1, count).toList();
-    double val = evalFunction(valStr);
-    if (val < 0 || val == null) {
-      computerStr = ['0/0']; // Make it NaN
-    } else {
-      List<String> replaceRoot;
-      if (char == FixedValues.root)
-        replaceRoot = ['sqrt($val)'];
-      else
-        replaceRoot = ['nrt(3, $val)'];
-
-      if (index == 0 ||
-          helperFunctions.operations.contains(computerStr[index - 1]) ||
-          trigs.contains(computerStr[index - 1]) ||
-          ['('].contains(computerStr[index - 1]))
-        computerStr.replaceRange(index, count, replaceRoot);
+      // Detect operators now.
       else {
-        replaceRoot[0] = '*' +
-            replaceRoot[
-                0]; // Add * for those that do not contain any operator before.
-        computerStr.replaceRange(index, count, replaceRoot);
+        for (; count < computerStr.length; count++)
+          if (helperFunctions.operations.contains(computerStr[count])) break;
       }
-    }
 
-    return computerStr;
+      List<String> valStr = computerStr.getRange(index + 1, count).toList();
+      double val = evalFunction(valStr);
+      if (val < 0 || val == null) {
+        computerStr = ['0/0']; // Make it NaN
+      } else {
+        List<String> replaceRoot;
+        if (char == FixedValues.root)
+          replaceRoot = ['sqrt($val)'];
+        else
+          replaceRoot = ['nrt(3, $val)'];
+
+        if (index == 0 ||
+            helperFunctions.operations.contains(computerStr[index - 1]) ||
+            trigs.contains(computerStr[index - 1]) ||
+            ['('].contains(computerStr[index - 1]))
+          computerStr.replaceRange(index, count, replaceRoot);
+        else {
+          replaceRoot[0] = '*' +
+              replaceRoot[
+                  0]; // Add * for those that do not contain any operator before.
+          computerStr.replaceRange(index, count, replaceRoot);
+        }
+      }
+
+      return computerStr;
+    } else
+      return computerStr;
   }
 
   // Factorial Function
