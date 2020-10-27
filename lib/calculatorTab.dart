@@ -46,7 +46,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void displayToScreen(String value) {
     setState(() {
       // First check for down or up arrow buttons
-      if ([FixedValues.upperArrow, FixedValues.downArrow, 'inv']
+      if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
           .contains(value))
         changeButtons(value);
 
@@ -202,7 +202,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   void changeButtons(String value) {
     // If inv clicked, reverse bool var and call changeButtons again with upperArrow to change in second page itself.
-    if (value.contains('inv')) {
+    if (value.contains(FixedValues.invButton)) {
       if (secondPageFlip)
         secondPageFlip = false;
       else

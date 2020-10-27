@@ -24,6 +24,7 @@ class FixedValues {
   static String minus = String.fromCharCode(charcode.$ndash);
   static String cubeRootSym =
       String.fromCharCodes([charcode.$sup3, charcode.$radic]);
+  static String invButton = 'inv';
 
   static List rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
@@ -34,16 +35,16 @@ class FixedValues {
   ];
 
   static List rowExtras = [
-    [downArrow, cubeChar, 'e', '%'],
-    ['sin', 'cos', 'tan', 'inv'],
+    [downArrow, invButton, 'e', '%'],
+    ['sin', 'cos', 'tan', cubeChar],
     ['ln', 'log', 'mod', reciprocalChar],
     ['(', ')', '!', root],
     [pi, cubeRoot, capChar, squareChar]
   ];
 
   static List rowInverse = [
-    [downArrow, cubeChar, 'e', '%'],
-    ['sin⁻¹', 'cos⁻¹', 'tan⁻¹', 'inv'],
+    [downArrow, invButton, 'e', '%'],
+    ['sin⁻¹', 'cos⁻¹', 'tan⁻¹', cubeChar],
     ['eˣ', '𝟏𝟬ˣ', 'mod', reciprocalChar],
     ['(', ')', '!', root],
     [pi, cubeRoot, capChar, squareChar]
