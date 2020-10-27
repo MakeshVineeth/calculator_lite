@@ -586,7 +586,18 @@ class CalcParser {
         replaceRoot = ['sqrt($val)'];
       else
         replaceRoot = ['nrt(3, $val)'];
-      computerStr.replaceRange(index, count, replaceRoot);
+
+      if (index == 0 ||
+          helperFunctions.operations.contains(computerStr[index - 1]) ||
+          trigs.contains(computerStr[index - 1]) ||
+          ['('].contains(computerStr[index - 1]))
+        computerStr.replaceRange(index, count, replaceRoot);
+      else {
+        replaceRoot[0] = '*' +
+            replaceRoot[
+                0]; // Add * for those that do not contain any operator before.
+        computerStr.replaceRange(index, count, replaceRoot);
+      }
     }
 
     return computerStr;
@@ -661,8 +672,8 @@ class CalcParser {
       }
 
       // Special checks
-      else if (previousMinus || lastChar.contains('(${FixedValues.minus}')) {
-        computerStr.addAll(['*', '0.01']);
+      else if (previousMinus || prev.last.contains('(${FixedValues.minus}')) {
+        computerStr.insertAll(prev.length + 1, ['*', '0.01']);
       }
 
       // Detects 8 + 5 % * debug point here (This: 8 + 5% * 5 + 3%); Detects post 5% if it is * or ^ or something else.
