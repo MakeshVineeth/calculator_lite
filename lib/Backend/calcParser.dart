@@ -626,6 +626,10 @@ class CalcParser {
       bool previousMinus = false;
 
       if (count != -1) {
+        if (computerStr.last.contains(')'))
+          previousMinus =
+              true; // Set it intentionally to fix some issues temporarily.
+
         prev = computerStr.getRange(0, count + 1).toList();
         lastChar = prev.last;
 
