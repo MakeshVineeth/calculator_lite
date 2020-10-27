@@ -177,6 +177,16 @@ class CalcParser {
         value = evalFunction(temp);
       }
 
+      // Check for % and ! now.
+      else if (['%', '!'].contains(compStr[lastIndex])) {
+        start = 0;
+        List<String> temp = compStr.getRange(start, lastIndex).toList();
+        List getData = smartParseLast(temp.length - 1, temp);
+        start = getData[0];
+        temp = compStr.getRange(start + 1, lastIndex + 1).toList();
+        value = evalFunction(temp);
+      }
+
       // Executes if there are no integers from beginning.
       else {
         start = helperFunctions.parseOperatorFromEnd(lastIndex, compStr);
@@ -204,10 +214,14 @@ class CalcParser {
         else {
           valueStr = DisplayScreen.formatNumber(values[1]);
           valueStr = valueStr.replaceAll('-', FixedValues.minus);
-          valueStr = "(" + valueStr;
-        }
 
-        calculationString.insert(calculationString.length, valueStr);
+          // if (calculationString.length > 0) valueStr = "(" + valueStr;
+        }
+        if (calculationString.length > 0)
+          calculationString
+              .insertAll(calculationString.length, ['(', valueStr]);
+        else
+          calculationString.insertAll(calculationString.length, [valueStr]);
       }
     }
 
