@@ -577,7 +577,8 @@ class CalcParser {
         for (; count < computerStr.length; count++)
           if (helperFunctions.operations.contains(computerStr[count]) ||
               helperFunctions.randomList.contains(computerStr[count]) ||
-              ['%', '!', 'mod'].contains(computerStr[count])) break;
+              ['%', '!', 'mod', FixedValues.sup2, FixedValues.sup3]
+                  .contains(computerStr[count])) break;
       }
 
       List<String> valStr = computerStr.getRange(index + 1, count).toList();
