@@ -473,9 +473,31 @@ class CalcParser {
 
         // catch inverse functions.
         if (['sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('].contains(tempString[indices[i]])) {
-          tempString[count] = ')*180/${math.pi})';
+          List<String> temp =
+              tempString.getRange(indices[i] + 1, count).toList();
+          double val = evalFunction(temp);
+          double val1;
+          if (val == 0.5) {
+            switch (tempString[indices[i]]) {
+              case 'sin⁻¹(':
+                val1 = math.asin(0.5);
+                break;
+              case 'cos⁻¹(':
+                val1 = math.acos(0.5);
+                break;
+              case 'tan⁻¹(':
+                val1 = math.atan(0.5);
+                break;
+            }
+            val1 = val1 * 180 / math.pi;
+            tempString[indices[i]] = '${val1.round()}';
+            for (int j = indices[i] + 1; j <= count; j++) tempString[j] = '';
+          } else
+            tempString[count] = ')*180/${math.pi})';
+
           inverseAvailable = true;
         }
+
         // Run below code for tan.
         else if (['tan(', 'cos('].contains(tempString[indices[i]])) {
           List<String> temp =
