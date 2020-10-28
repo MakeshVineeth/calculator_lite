@@ -477,16 +477,13 @@ class CalcParser {
               tempString.getRange(indices[i] + 1, count).toList();
           double val = evalFunction(temp);
           double val1;
-          if (val == 0.5) {
+          if (val == 0.5 && !tempString[indices[i]].contains('tan⁻¹(')) {
             switch (tempString[indices[i]]) {
               case 'sin⁻¹(':
                 val1 = math.asin(0.5);
                 break;
               case 'cos⁻¹(':
                 val1 = math.acos(0.5);
-                break;
-              case 'tan⁻¹(':
-                val1 = math.atan(0.5);
                 break;
             }
             val1 = val1 * 180 / math.pi;
