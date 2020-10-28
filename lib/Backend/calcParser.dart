@@ -610,7 +610,6 @@ class CalcParser {
 
   // Factorial Function
   List<String> getFactorOrPercent(List<String> computerStr, String char) {
-    print(computerStr);
     int index = computerStr.indexOf(char);
     computerStr.removeAt(index);
     int count = index - 1;
