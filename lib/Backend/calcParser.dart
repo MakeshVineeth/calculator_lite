@@ -411,15 +411,8 @@ class CalcParser {
       }
     }
 
-    String sym = "!";
-    int symTOTAL = sym.allMatches(tempString.join()).length;
-    while (symTOTAL > 0) {
-      tempString = getFactorOrPercent(tempString, sym);
-      symTOTAL -= 1;
-    }
-
-    sym = FixedValues.root;
-    symTOTAL = 0;
+    String sym = FixedValues.root;
+    int symTOTAL = 0;
     tempString.forEach((element) {
       if (element == sym) symTOTAL += 1;
     });
@@ -434,6 +427,13 @@ class CalcParser {
     });
     while (symTOTAL > 0) {
       tempString = getRoot(tempString, FixedValues.cubeRootSym);
+      symTOTAL -= 1;
+    }
+
+    sym = "!";
+    symTOTAL = sym.allMatches(tempString.join()).length;
+    while (symTOTAL > 0) {
+      tempString = getFactorOrPercent(tempString, sym);
       symTOTAL -= 1;
     }
 
@@ -575,7 +575,9 @@ class CalcParser {
       // Detect operators now.
       else {
         for (; count < computerStr.length; count++)
-          if (helperFunctions.operations.contains(computerStr[count])) break;
+          if (helperFunctions.operations.contains(computerStr[count]) ||
+              helperFunctions.randomList.contains(computerStr[count]) ||
+              ['%', '!', 'mod'].contains(computerStr[count])) break;
       }
 
       List<String> valStr = computerStr.getRange(index + 1, count).toList();
@@ -601,7 +603,6 @@ class CalcParser {
           computerStr.replaceRange(index, count, replaceRoot);
         }
       }
-
       return computerStr;
     } else
       return computerStr;
@@ -609,6 +610,7 @@ class CalcParser {
 
   // Factorial Function
   List<String> getFactorOrPercent(List<String> computerStr, String char) {
+    print(computerStr);
     int index = computerStr.indexOf(char);
     computerStr.removeAt(index);
     int count = index - 1;
@@ -641,7 +643,7 @@ class CalcParser {
       bool previousMinus = false;
 
       if (count != -1) {
-        if (computerStr.last.contains(')'))
+        if (computerStr.last == ')')
           previousMinus =
               true; // Set it intentionally to fix some issues temporarily.
 
