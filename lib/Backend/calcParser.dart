@@ -576,9 +576,16 @@ class CalcParser {
       else {
         for (; count < computerStr.length; count++)
           if (helperFunctions.operations.contains(computerStr[count]) ||
-              helperFunctions.randomList.contains(computerStr[count]) ||
-              ['%', '!', 'mod', FixedValues.sup2, FixedValues.sup3]
-                  .contains(computerStr[count])) break;
+              trigs.contains(computerStr[count]) ||
+              [
+                '%',
+                '!',
+                'mod',
+                FixedValues.sup2,
+                FixedValues.sup3,
+                'log(',
+                'ln('
+              ].contains(computerStr[count])) break;
       }
 
       List<String> valStr = computerStr.getRange(index + 1, count).toList();
@@ -595,7 +602,8 @@ class CalcParser {
         if (index == 0 ||
             helperFunctions.operations.contains(computerStr[index - 1]) ||
             trigs.contains(computerStr[index - 1]) ||
-            ['('].contains(computerStr[index - 1]))
+            ['(', FixedValues.root, FixedValues.cubeRootSym]
+                .contains(computerStr[index - 1]))
           computerStr.replaceRange(index, count, replaceRoot);
         else {
           replaceRoot[0] = '*' +
