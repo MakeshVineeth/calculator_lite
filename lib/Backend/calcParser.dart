@@ -670,6 +670,10 @@ class CalcParser {
       bool previousMinus = false;
 
       if (count != -1) {
+        if (computerStr.last == ')')
+          previousMinus =
+              true; // Set it intentionally to fix some issues temporarily.
+
         prev = computerStr.getRange(0, count + 1).toList();
         lastChar = prev.last;
 
@@ -720,9 +724,17 @@ class CalcParser {
 
       // Detects 9 - tan(2)% and 9 + cos(2) * cos(2)%
       else if ((index - 1 > -1) &&
-          !helperFunctions.numbersList.contains(computerStr[index - 1]))
-        computerStr.replaceRange(count + 1, index,
-            helperFunctions.concatenateList([first, '/', '100']));
+          !helperFunctions.numbersList.contains(computerStr[index - 1])) {
+        if (plusminus.contains(prev[prev.length - 1]))
+          computerStr.replaceRange(
+              count + 1,
+              index,
+              helperFunctions
+                  .concatenateList([second, '*', first, '/', '100']));
+        else
+          computerStr.replaceRange(
+              count + 1, index, helperFunctions.concatenateList([first / 100]));
+      }
 
       // Detects 9 - 5 + 6 * sin(5) + 3%
       else if (plusminus.contains(lastChar)) {
