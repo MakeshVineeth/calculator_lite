@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:charcode/charcode.dart' as charcode;
+import 'package:calculator_lite/UIElements/editText.dart';
 
 class DisplayScreen extends StatelessWidget {
   const DisplayScreen({
@@ -23,10 +24,8 @@ class DisplayScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Text Widget for all calculations.
-            Text(
-              calculationString
-                  .join(), // We are storing each button text as objects
-              style: completeStringStyle(),
+            TextFieldCalc(
+              calculationString: calculationString,
             ),
             Text(
               mainValueStr,
@@ -42,11 +41,6 @@ class DisplayScreen extends StatelessWidget {
         fontSize: 35.0,
         letterSpacing: 1.0,
         fontWeight: FontWeight.bold,
-      );
-
-  TextStyle completeStringStyle() => TextStyle(
-        fontSize: 40,
-        letterSpacing: 1.5,
       );
 
   static String formatNumber(double value) {
