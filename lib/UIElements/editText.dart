@@ -1,3 +1,4 @@
+import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/material.dart';
 
 class TextFieldCalc extends StatefulWidget {
@@ -53,9 +54,16 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   void onTapFunction() {
     try {
       TextSelection i = myController.selection;
-      int count = i.start - 1;
+      String myText = myController.text;
+      int start = i.start;
+
+      if (myText[start].contains(FixedValues.root) &&
+          myText.length > 1 &&
+          myText[start - 1].contains(FixedValues.sup3)) start -= 1;
+
+      int count = start - 1;
       for (; count >= 0; count--) {
-        if (!lists.contains(myController.text[count])) {
+        if (!lists.contains(myText[count])) {
           count += 1;
           break;
         }

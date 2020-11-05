@@ -5,5 +5,10 @@
         "middot",
         "ndash",
         "uarr"
+    ],
+    "cSpell.ignoreWords": [
+        "mngl",
+        "sicotao",
+        "sicotao mngl"
     ]
 }
