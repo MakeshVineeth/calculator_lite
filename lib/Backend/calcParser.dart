@@ -82,11 +82,11 @@ class CalcParser {
 
         // Code for replace x with
         else if (value == 'eˣ')
-          calculationString.add('e^');
+          calculationString.addAll(['e', '^']);
 
         // Replace
         else if (value == '𝟏𝟬ˣ')
-          calculationString.add('10^');
+          calculationString.addAll(['1', '0', '^']);
 
         // Code for cube root
         else if (value == FixedValues.cubeRoot)
@@ -131,7 +131,7 @@ class CalcParser {
       else if (value == 'eˣ')
         calculationString.addAll(['e', '^']);
       else if (value == '𝟏𝟬ˣ')
-        calculationString.addAll(['10', '^']);
+        calculationString.addAll(['1', '0', '^']);
       else
         calculationString.add(value);
     }
@@ -251,7 +251,7 @@ class CalcParser {
 
     // If starting itself is open bracket
     else if (calculationString[lastIndex] == '(')
-      insertSign(i);
+      insertSign(i - 1);
 
     // If lastChar is closed bracket, do this matching function.
     else if (calculationString[lastIndex].contains(')')) {

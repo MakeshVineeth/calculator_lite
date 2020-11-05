@@ -4,10 +4,9 @@ import 'package:calculator_lite/UIElements/editText.dart';
 
 class DisplayScreen extends StatelessWidget {
   const DisplayScreen({
-    Key key,
     @required this.calculationString,
     @required this.mainValue,
-  }) : super(key: key);
+  });
 
   final List<String> calculationString;
   final double mainValue;

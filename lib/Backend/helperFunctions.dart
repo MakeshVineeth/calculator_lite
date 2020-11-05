@@ -42,8 +42,8 @@ class HelperFunctions {
 
   int parseRandomFromEnd(int i, var str) {
     // Parse the string from the end to start. Break immediately if any symbol found other than integers.
-    for (; i >= 0; i--) if (!randomList.contains(str[i])) break;
-    return i;
+    for (; i >= 0; i--) if (randomList.contains(str[i])) break;
+    return i - 1;
   }
 
   int parseConstFromEnd(int i, var str) {
