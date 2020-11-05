@@ -11,6 +11,8 @@ class TextFieldCalc extends StatefulWidget {
 class _TextFieldCalcState extends State<TextFieldCalc> {
   final myController = TextEditingController();
   final myFocus = FocusNode();
+  static String list = 'sicotao⁻¹mngl';
+  List<String> lists = list.split('');
 
   @override
   void initState() {
@@ -49,10 +51,20 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   }
 
   void onTapFunction() {
-    var i = myController.selection;
-    String char;
-    if (i.start != -1) char = myController.text[i.start];
-    print('char: $char');
+    try {
+      TextSelection i = myController.selection;
+      int count = i.start - 1;
+      for (; count >= 0; count--) {
+        if (!lists.contains(myController.text[count])) {
+          count += 1;
+          break;
+        }
+      }
+
+      TextSelection textSelection =
+          TextSelection(baseOffset: count, extentOffset: count);
+      myController.selection = textSelection;
+    } catch (e) {}
   }
 
   TextStyle completeStringStyle() => TextStyle(
