@@ -1,5 +1,6 @@
-import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/Backend/focusEvent.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TextFieldCalc extends StatefulWidget {
   const TextFieldCalc({@required this.calculationString});
@@ -12,8 +13,6 @@ class TextFieldCalc extends StatefulWidget {
 class _TextFieldCalcState extends State<TextFieldCalc> {
   final myController = TextEditingController();
   final myFocus = FocusNode();
-  static String list = 'sicotao⁻¹mngl';
-  List<String> lists = list.split('');
 
   @override
   void initState() {
@@ -47,32 +46,20 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       showCursor: true,
       focusNode: myFocus,
       onChanged: (text) {},
-      onTap: onTapFunction,
+      onTap: () => onTapFunction(context),
     );
   }
 
-  void onTapFunction() {
-    try {
-      TextSelection i = myController.selection;
-      String myText = myController.text;
-      int start = i.start;
+  void onTapFunction(BuildContext context) {
+    TextSelection i = myController.selection;
+    String myText = myController.text;
+    int count = Provider.of<FocusEvent>(context, listen: false)
+            .getPosition(start: i.start, myText: myText) ??
+        i.end;
 
-      if (myText[start].contains(FixedValues.root) &&
-          myText.length > 1 &&
-          myText[start - 1].contains(FixedValues.sup3)) start -= 1;
-
-      int count = start - 1;
-      for (; count >= 0; count--) {
-        if (!lists.contains(myText[count])) {
-          count += 1;
-          break;
-        }
-      }
-
-      TextSelection textSelection =
-          TextSelection(baseOffset: count, extentOffset: count);
-      myController.selection = textSelection;
-    } catch (e) {}
+    TextSelection textSelection =
+        TextSelection(baseOffset: count, extentOffset: count);
+    myController.selection = textSelection;
   }
 
   TextStyle completeStringStyle() => TextStyle(

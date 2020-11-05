@@ -7,7 +7,7 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/aboutPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:calculator_lite/UIElements/editText.dart';
+import 'package:calculator_lite/Backend/focusEvent.dart';
 
 class CalculatorTab extends StatefulWidget {
   @override
@@ -45,7 +45,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
     }
   }
 
-  void displayToScreen(String value) {
+  void displayToScreen(
+      {@required String value, @required BuildContext context}) {
     setState(() {
       // First check for down or up arrow buttons
       if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
@@ -103,8 +104,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
                   isCornerRows: isCornerRows,
                   displayFunction: () {
                     displayToScreen(
-                      rowData[index].toString(),
-                    );
+                        value: rowData[index].toString(), context: context);
                   },
                 )),
       ),
@@ -113,61 +113,64 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
-                    shape: FixedValues.roundShapeLarge,
+    return ChangeNotifierProvider(
+      create: (context) => FocusEvent(),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 12.0),
+                      shape: FixedValues.roundShapeLarge,
+                    ),
+                    onPressed: changeMetrics,
+                    child: Text('$currentMetric'),
                   ),
-                  onPressed: changeMetrics,
-                  child: Text('$currentMetric'),
                 ),
               ),
-            ),
-            Container(
-              alignment: Alignment.centerRight,
-              child: PopupMenuButton(
-                shape: FixedValues.roundShapeLarge,
-                itemBuilder: (context) => List.generate(
-                    menuList.length,
-                    (index) => PopupMenuItem(
-                          value: index,
-                          child: Text(menuList[index]),
-                        )),
-                offset: Offset(0, -10),
-                elevation: 5.0,
-                icon: Icon(
-                  Icons.more_vert,
+              Container(
+                alignment: Alignment.centerRight,
+                child: PopupMenuButton(
+                  shape: FixedValues.roundShapeLarge,
+                  itemBuilder: (context) => List.generate(
+                      menuList.length,
+                      (index) => PopupMenuItem(
+                            value: index,
+                            child: Text(menuList[index]),
+                          )),
+                  offset: Offset(0, -10),
+                  elevation: 5.0,
+                  icon: Icon(
+                    Icons.more_vert,
+                  ),
+                  onSelected: (value) => popUpFunction(value),
                 ),
-                onSelected: (value) => popUpFunction(value),
               ),
-            ),
-          ],
-        ),
-        // Display Widget
-        DisplayScreen(
-          calculationString: calculationString,
-          mainValue: mainValue,
-        ),
-        Expanded(
-          flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: _currentChild,
+            ],
+          ),
+          // Display Widget
+          DisplayScreen(
+            calculationString: calculationString,
+            mainValue: mainValue,
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: _currentChild,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
