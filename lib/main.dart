@@ -47,8 +47,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         title: 'Calculator Lite',
         debugShowCheckedModeBanner: false,
         themeMode: setTheme,
-        theme: FixedValues.lightTheme(),
-        darkTheme: FixedValues.darkTheme(),
+        theme: FixedValues.getTotalData(Brightness.light),
+        darkTheme: FixedValues.getTotalData(Brightness.dark),
         home: ScaffoldHome(),
       ),
     );

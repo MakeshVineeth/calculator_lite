@@ -50,37 +50,29 @@ class FixedValues {
     [pi, cubeRoot, capChar, squareChar]
   ];
 
-  static ThemeData lightTheme() {
-    Color background = Colors.white;
-    Color foreground = Colors.red; // For highlighted buttons.
+  static ThemeData getTotalData(Brightness brightness) {
+    bool isLight = brightness == Brightness.light;
+    Color foreground = isLight ? Colors.red : Colors.yellow;
+    Color background = isLight ? Colors.white : Colors.grey[900];
     return ThemeData(
-      primaryColor: foreground,
-      primarySwatch: foreground,
-      accentColor: foreground,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: background,
-      buttonColor: background,
-      bottomAppBarColor: background,
-      backgroundColor: background,
-      canvasColor: background, // Makes bottomNavBG white along with scaffoldBG
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(background),
-          foregroundColor: MaterialStateProperty.all(Colors.black),
-        ),
-      ),
-    );
-  }
-
-  static ThemeData darkTheme() {
-    Color foreground = Colors.yellow; // For highlighted buttons.
-    return ThemeData(
+      brightness: brightness,
       primaryColor:
           foreground, // For Dark, primary Color has to be set, otherwise issues with foreground text for Calc Buttons.
       primarySwatch: foreground,
       accentColor: foreground,
-      brightness: Brightness.dark,
-      buttonColor: Colors.grey[900],
+      buttonColor: background,
+      scaffoldBackgroundColor: background,
+      bottomAppBarColor: background,
+      backgroundColor: background,
+      canvasColor: background,
+      applyElevationOverlayColor: !isLight,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(background),
+          foregroundColor: MaterialStateProperty.all(foreground),
+          elevation: isLight ? MaterialStateProperty.all(2.0) : MaterialStateProperty.all(20.0),
+        ),
+      ),
     );
   }
 
