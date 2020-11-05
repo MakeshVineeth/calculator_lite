@@ -7,6 +7,11 @@ class FocusEvent extends ChangeNotifier {
   static String list = 'sicotao⁻¹mngl';
   List<String> lists = list.split('');
 
+  int getCurPosition() {
+    notifyListeners();
+    return position;
+  }
+
   int getPosition({@required int start, @required String myText}) {
     try {
       if (myText[start].contains(FixedValues.root) &&
@@ -22,7 +27,6 @@ class FocusEvent extends ChangeNotifier {
       }
 
       position = count;
-      notifyListeners();
       return position;
     } catch (e) {
       return null;

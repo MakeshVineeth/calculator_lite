@@ -46,7 +46,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void displayToScreen(
-      {@required String value, @required BuildContext context}) {
+      {@required String value,
+      @required BuildContext context,
+      @required FocusEvent focus}) {
+    print(focus.getCurPosition());
     setState(() {
       // First check for down or up arrow buttons
       if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
@@ -96,17 +99,23 @@ class _CalculatorTabState extends State<CalculatorTab> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: List.generate(
-            rowData.length,
-            (index) => CalcButtons(
-                  rowData: rowData,
-                  index: index,
-                  isCornerRows: isCornerRows,
-                  displayFunction: () {
-                    displayToScreen(
-                        value: rowData[index].toString(), context: context);
-                  },
-                )),
+        children: List.generate(rowData.length, (index) {
+          return Consumer<FocusEvent>(
+            builder: (context, focus, child) {
+              return CalcButtons(
+                rowData: rowData,
+                index: index,
+                isCornerRows: isCornerRows,
+                displayFunction: () {
+                  displayToScreen(
+                      value: rowData[index].toString(),
+                      context: context,
+                      focus: focus);
+                },
+              );
+            },
+          );
+        }),
       ),
     );
   }
