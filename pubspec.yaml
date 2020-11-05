@@ -24,11 +24,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^0.5.10
-  math_expressions: ^2.0.1
-  flutter_statusbarcolor: ^0.2.3
-  flutter_rename_app: ^1.0.0
   flutter_launcher_icons: ^0.8.0
+  flutter_rename_app: ^1.0.0
+  flutter_statusbarcolor: ^0.2.3
+  math_expressions: ^2.0.1
+  provider: ^4.3.2+2
+  shared_preferences: ^0.5.10
 
 dev_dependencies:
   flutter_test:
@@ -73,4 +74,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-

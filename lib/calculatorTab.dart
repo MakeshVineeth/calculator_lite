@@ -6,6 +6,8 @@ import 'package:calculator_lite/Backend/calcParser.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/aboutPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:calculator_lite/UIElements/editText.dart';
 
 class CalculatorTab extends StatefulWidget {
   @override
