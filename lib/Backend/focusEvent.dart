@@ -11,23 +11,25 @@ class FocusEvent extends ChangeNotifier {
 
   int getCurPosition(List<String> calculationString) {
     List<String> convertStr = [];
-    if (calculationString != null &&
-        myText != null &&
-        calculationString.length != myText.length) {
-      String trimmedText = myText.substring(0, position);
+    if (calculationString != null && myText != null) {
+      if (calculationString.length != myText.length) {
+        String trimmedText = myText.substring(0, position);
 
-      for (int i = 0; i < trimmedText.length; i++) {
-        if ((lists.contains(trimmedText[i]) || trimmedText.contains('(')) &&
-            i - 1 >= 0 &&
-            lists.contains(trimmedText[i - 1])) {
-          int len = convertStr.length - 1;
-          convertStr[len] = '${convertStr[len]}${trimmedText[i]}';
-        } else
-          convertStr.add('${trimmedText[i]}');
-      }
+        for (int i = 0; i < trimmedText.length; i++) {
+          if ((lists.contains(trimmedText[i]) || trimmedText.contains('(')) &&
+              i - 1 >= 0 &&
+              lists.contains(trimmedText[i - 1])) {
+            int len = convertStr.length - 1;
+            convertStr[len] = '${convertStr[len]}${trimmedText[i]}';
+          } else
+            convertStr.add('${trimmedText[i]}');
+        }
+      } else
+        return position;
+
+      notifyListeners();
     }
 
-    notifyListeners();
     return convertStr.length;
   }
 
