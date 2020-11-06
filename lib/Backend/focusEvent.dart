@@ -1,5 +1,6 @@
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:calculator_lite/Backend/calcParser.dart';
 
 class FocusEvent extends ChangeNotifier {
   int position = 0;
@@ -54,5 +55,27 @@ class FocusEvent extends ChangeNotifier {
 
   void updateFocus() {
     isFocused = true;
+  }
+
+  List<String> getRegulatedString(
+      {@required List<String> calculationString,
+      @required var currentMetric,
+      @required var value}) {
+    try {
+      int pos = getCurPosition(calculationString);
+      List<String> temp = calculationString.getRange(0, pos).toList();
+      int flag = temp.length;
+      CalcParser calcParser1 =
+          CalcParser(calculationString: temp, currentMetric: currentMetric);
+      temp = calcParser1.addToExpression(value);
+      if (flag != temp.length) {
+        calculationString.insert(pos, value);
+        position += 1;
+      }
+      return calculationString;
+    } catch (e) {
+      print('Exception: $e');
+      return calculationString;
+    }
   }
 }
