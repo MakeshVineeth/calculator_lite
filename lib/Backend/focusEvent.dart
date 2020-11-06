@@ -6,6 +6,7 @@ class FocusEvent extends ChangeNotifier {
 
   List<String> lists = 'sicotao⁻¹mngl'.split('');
   String myText;
+  bool isFocused = false;
 
   int getCurPosition(List<String> calculationString) {
     List<String> convertStr = [];
@@ -49,5 +50,9 @@ class FocusEvent extends ChangeNotifier {
     } catch (e) {
       return null;
     }
+  }
+
+  void updateFocus() {
+    isFocused = true;
   }
 }

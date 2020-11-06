@@ -12,22 +12,16 @@ class TextFieldCalc extends StatefulWidget {
 
 class _TextFieldCalcState extends State<TextFieldCalc> {
   final myController = TextEditingController();
-  final myFocus = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    myFocus.addListener(onFocusChange);
-  }
-
-  void onFocusChange() {
-    print('hasFocus: ${myFocus.hasFocus}');
   }
 
   @override
   void dispose() {
     myController.dispose();
-    myFocus.dispose();
+
     super.dispose();
   }
 
@@ -36,7 +30,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
     myController.value = TextEditingValue(
         text: this.widget.calculationString.join(),
         selection: TextSelection.fromPosition(
-          TextPosition(offset: this.widget.calculationString.join().length),
+          TextPosition(offset: Provider.of<FocusEvent>(context).position),
         ));
     return TextField(
       style: completeStringStyle(),
@@ -44,7 +38,6 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       decoration: null,
       readOnly: true,
       showCursor: true,
-      focusNode: myFocus,
       onChanged: (text) {},
       onTap: () => onTapFunction(context),
     );
@@ -60,6 +53,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
     TextSelection textSelection =
         TextSelection(baseOffset: count, extentOffset: count);
     myController.selection = textSelection;
+    Provider.of<FocusEvent>(context, listen: false).updateFocus();
   }
 
   TextStyle completeStringStyle() => TextStyle(
