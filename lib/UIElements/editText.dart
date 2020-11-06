@@ -35,6 +35,8 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       controller: myController,
       decoration: null,
       readOnly: true,
+      minLines: 1,
+      maxLines: 2,
       focusNode: focus,
       showCursor: true,
       onChanged: (text) {},
@@ -74,6 +76,6 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   }
 
   TextStyle completeStringStyle() => TextStyle(
-        fontSize: 50,
+        fontSize: 55,
       );
 }

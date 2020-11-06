@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charcode/charcode.dart' as charcode;
 import 'package:calculator_lite/UIElements/editText.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class DisplayScreen extends StatelessWidget {
   const DisplayScreen({
@@ -23,12 +24,17 @@ class DisplayScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Text Widget for all calculations.
-            TextFieldCalc(
-              calculationString: calculationString,
+            Expanded(
+              child: TextFieldCalc(
+                calculationString: calculationString,
+              ),
             ),
-            Text(
-              mainValueStr,
-              style: mainValueStyle(),
+            Expanded(
+              child: AutoSizeText(
+                mainValueStr,
+                maxLines: 1,
+                style: mainValueStyle(),
+              ),
             ),
           ],
         ),
