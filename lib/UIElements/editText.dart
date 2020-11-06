@@ -1,6 +1,7 @@
 import 'package:calculator_lite/Backend/focusEvent.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:auto_size_text_field/auto_size_text_field.dart';
 
 class TextFieldCalc extends StatefulWidget {
   const TextFieldCalc({@required this.calculationString});
@@ -29,7 +30,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   @override
   Widget build(BuildContext context) {
     onStart(context);
-    return TextField(
+    return AutoSizeTextField(
       style: completeStringStyle(),
       controller: myController,
       decoration: null,
@@ -73,7 +74,6 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   }
 
   TextStyle completeStringStyle() => TextStyle(
-        fontSize: 40,
-        letterSpacing: 1.5,
+        fontSize: 50,
       );
 }

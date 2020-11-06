@@ -24,6 +24,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  auto_size_text_field: ^0.1.6
   flutter_launcher_icons: ^0.8.0
   flutter_rename_app: ^1.0.0
   flutter_statusbarcolor: ^0.2.3
