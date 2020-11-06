@@ -1,3 +1,4 @@
+import 'package:calculator_lite/main.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/themeChooser.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
@@ -76,8 +77,28 @@ class _CalculatorTabState extends State<CalculatorTab> {
         // Incomplete for now.
         calculationString.clear();
         calculationString.add(mainValue.toString());
-      } else
-        runCalcParser(value);
+      }
+
+      // at last
+      else {
+        bool isFocused = focus.isFocused;
+        if (!isFocused)
+          runCalcParser(value);
+        else {
+          try {
+            int pos = focus.getCurPosition(calculationString);
+            List<String> temp = calculationString.getRange(0, pos).toList();
+            int flag = temp.length;
+            print(temp);
+            CalcParser calcParser1 = CalcParser(
+                calculationString: temp, currentMetric: currentMetric);
+            temp = calcParser1.addToExpression(value);
+            if (flag != temp.length) {
+              calculationString.insert(pos, value);
+            }
+          } catch (e) {}
+        }
+      }
     });
   }
 
