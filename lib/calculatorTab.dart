@@ -49,7 +49,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
       {@required String value,
       @required BuildContext context,
       @required FocusEvent focus}) {
-    print(focus.getCurPosition());
     setState(() {
       // First check for down or up arrow buttons
       if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
