@@ -75,7 +75,7 @@ class FocusEvent extends ChangeNotifier {
         if (flag != temp.length) {
           calculationString.replaceRange(0, pos + 1, temp);
           String tempStr = temp.join();
-          if (!lists.contains(temp.join()[position + 1]))
+          if (!lists.contains(temp.join()[position]))
             position += 1;
           else {
             // for cos etc
