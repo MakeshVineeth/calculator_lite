@@ -77,5 +77,6 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
 
   TextStyle completeStringStyle() => TextStyle(
         fontSize: 55,
+        letterSpacing: 1,
       );
 }

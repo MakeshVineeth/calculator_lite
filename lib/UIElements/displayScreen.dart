@@ -17,26 +17,25 @@ class DisplayScreen extends StatelessWidget {
     String mainValueStr = formatNumber(mainValue);
     return Expanded(
       flex: 2,
-      child: Container(
-        alignment: Alignment.centerLeft,
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Text Widget for all calculations.
-            Expanded(
-              child: TextFieldCalc(
+      child: SingleChildScrollView(
+        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        child: Container(
+          alignment: Alignment.centerLeft,
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Text Widget for all calculations.
+              TextFieldCalc(
                 calculationString: calculationString,
               ),
-            ),
-            Expanded(
-              child: AutoSizeText(
+              AutoSizeText(
                 mainValueStr,
                 maxLines: 1,
                 style: mainValueStyle(),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
