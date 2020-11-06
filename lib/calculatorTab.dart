@@ -142,38 +142,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 12.0),
-                      shape: FixedValues.roundShapeLarge,
-                    ),
-                    onPressed: changeMetrics,
-                    child: Text('$currentMetric'),
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.centerRight,
-                child: PopupMenuButton(
-                  shape: FixedValues.roundShapeLarge,
-                  itemBuilder: (context) => List.generate(
-                      menuList.length,
-                      (index) => PopupMenuItem(
-                            value: index,
-                            child: Text(menuList[index]),
-                          )),
-                  offset: Offset(0, -10),
-                  elevation: 5.0,
-                  icon: Icon(
-                    Icons.more_vert,
-                  ),
-                  onSelected: (value) => popUpFunction(value),
-                ),
-              ),
+              metricsButton(),
+              popUpDotMenu(),
             ],
           ),
           // Display Widget
@@ -192,6 +162,48 @@ class _CalculatorTabState extends State<CalculatorTab> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget popUpDotMenu() {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: PopupMenuButton(
+        shape: FixedValues.roundShapeLarge,
+        itemBuilder: (context) => List.generate(
+            menuList.length,
+            (index) => PopupMenuItem(
+                  value: index,
+                  child: Text(menuList[index]),
+                )),
+        offset: Offset(0, -10),
+        elevation: 5.0,
+        icon: Icon(
+          Icons.more_vert,
+        ),
+        onSelected: (value) => popUpFunction(value),
+      ),
+    );
+  }
+
+  Widget metricsButton() {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
+            shape: FixedValues.roundShapeLarge,
+          ),
+          onPressed: changeMetrics,
+          child: Text(
+            '$currentMetric',
+            style: TextStyle(
+              fontWeight: FontWeight.w600, //w600 is semi-bold.
+            ),
+          ),
+        ),
       ),
     );
   }

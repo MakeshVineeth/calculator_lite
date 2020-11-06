@@ -70,7 +70,9 @@ class FixedValues {
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(background),
           foregroundColor: MaterialStateProperty.all(foreground),
-          elevation: isLight ? MaterialStateProperty.all(2.0) : MaterialStateProperty.all(20.0),
+          elevation: isLight
+              ? MaterialStateProperty.all(2.0)
+              : MaterialStateProperty.all(20.0),
         ),
       ),
     );
