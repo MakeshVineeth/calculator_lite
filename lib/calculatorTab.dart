@@ -49,6 +49,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       {@required String value,
       @required BuildContext context,
       @required FocusEvent focus}) {
+    bool isFocused = focus.isFocused;
     setState(() {
       // First check for down or up arrow buttons
       if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
@@ -59,6 +60,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       else if (value.contains('C')) {
         calculationString.clear();
         mainValue = 0.0;
+        if (isFocused) focus.clearData();
       }
 
       // Back button
@@ -80,14 +82,14 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
       // at last
       else {
-        bool isFocused = focus.isFocused;
         if (!isFocused)
           runCalcParser(value);
         else {
           calculationString = focus.getRegulatedString(
-              calculationString: calculationString,
-              currentMetric: currentMetric,
-              value: value) ?? calculationString;
+                  calculationString: calculationString,
+                  currentMetric: currentMetric,
+                  value: value) ??
+              calculationString;
         }
       }
     });

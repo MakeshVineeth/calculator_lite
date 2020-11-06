@@ -63,25 +63,28 @@ class FocusEvent extends ChangeNotifier {
       @required var value}) {
     try {
       int pos = getCurPosition(calculationString);
-      print('pos: $pos');
       List<String> temp = calculationString.getRange(0, pos).toList();
       int flag = temp.length;
       CalcParser calcParser1 =
           CalcParser(calculationString: temp, currentMetric: currentMetric);
       temp = calcParser1.addToExpression(value);
       if (flag != temp.length) {
-        calculationString.replaceRange(0, pos, temp);
+        flag = temp.length;
+        temp = calcParser1.addToExpression(calculationString[pos]);
 
-        String tempStr = temp.join();
-        if (!lists.contains(temp.join()[position + 1]))
-          position += 1;
-        else {
-          // for cos etc
-          int i = position + 1;
-          for (; i < tempStr.length; i++) {
-            if (!lists.contains(tempStr[i])) break;
+        if (flag != temp.length) {
+          calculationString.replaceRange(0, pos + 1, temp);
+          String tempStr = temp.join();
+          if (!lists.contains(temp.join()[position + 1]))
+            position += 1;
+          else {
+            // for cos etc
+            int i = position + 1;
+            for (; i < tempStr.length; i++) {
+              if (!lists.contains(tempStr[i])) break;
+            }
+            position = i + 1;
           }
-          position = i + 1;
         }
       }
       return calculationString;
@@ -89,5 +92,11 @@ class FocusEvent extends ChangeNotifier {
       print('Exception: $e');
       return null;
     }
+  }
+
+  void clearData() {
+    position = 0;
+    myText = '';
+    isFocused = false;
   }
 }
