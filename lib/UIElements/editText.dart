@@ -27,11 +27,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
 
   @override
   Widget build(BuildContext context) {
-    myController.value = TextEditingValue(
-        text: this.widget.calculationString.join(),
-        selection: TextSelection.fromPosition(
-          TextPosition(offset: Provider.of<FocusEvent>(context).position),
-        ));
+    onStart(context);
     return TextField(
       style: completeStringStyle(),
       controller: myController,
@@ -41,6 +37,15 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       onChanged: (text) {},
       onTap: () => onTapFunction(context),
     );
+  }
+
+  void onStart(BuildContext context) {
+    FocusEvent focusEvent = Provider.of(context);
+    myController.value = TextEditingValue(
+        text: this.widget.calculationString.join(),
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: focusEvent.position),
+        ));
   }
 
   void onTapFunction(BuildContext context) {
