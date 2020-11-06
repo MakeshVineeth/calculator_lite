@@ -36,7 +36,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       decoration: null,
       readOnly: true,
       minLines: 1,
-      maxLines: 2,
+      maxLines: 3,
       focusNode: focus,
       showCursor: true,
       onChanged: (text) {},
@@ -76,7 +76,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   }
 
   TextStyle completeStringStyle() => TextStyle(
-        fontSize: 55,
+        fontSize: 60,
         letterSpacing: 1,
       );
 }
