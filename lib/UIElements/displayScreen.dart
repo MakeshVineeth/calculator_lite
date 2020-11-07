@@ -85,7 +85,8 @@ class _DisplayScreenState extends State<DisplayScreen> {
   }
 
   void runInitial() {
-    myController.text = DisplayScreen.formatNumber(widget.mainValue);
+    if (this.mounted)
+      myController.text = DisplayScreen.formatNumber(widget.mainValue);
   }
 
   TextStyle mainValueStyle() => TextStyle(
