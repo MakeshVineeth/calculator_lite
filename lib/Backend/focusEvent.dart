@@ -94,7 +94,8 @@ class FocusEvent extends ChangeNotifier {
         }
       }
 
-      // return final string.
+      // save newly made text and return final string.
+      myText = calculationString.join();
       return calculationString;
     } catch (e) {
       print('Exception: $e');

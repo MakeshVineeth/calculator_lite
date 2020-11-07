@@ -35,11 +35,11 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       controller: myController,
       decoration: InputDecoration(
         border: InputBorder.none,
-        hintText: 'Calculate',
+        hintText: 'Calculate.',
       ),
       readOnly: true,
       minLines: 1,
-      maxLines: 3,
+      maxLines: 2,
       focusNode: focus,
       showCursor: true,
       onChanged: (text) {},
