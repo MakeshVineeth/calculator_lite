@@ -91,6 +91,6 @@ class _DisplayScreenState extends State<DisplayScreen> {
   TextStyle mainValueStyle() => TextStyle(
         fontSize: 45.0,
         letterSpacing: 1.0,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w800,
       );
 }
