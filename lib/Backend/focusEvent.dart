@@ -65,22 +65,26 @@ class FocusEvent extends ChangeNotifier {
       @required var value}) {
     try {
       int pos = getCurPosition(calculationString);
+
+      // Temp String for Checking.
       List<String> temp = calculationString.getRange(0, pos).toList();
       int flag = temp.length;
-      CalcParser calcParser1 =
+      CalcParser calcParser =
           CalcParser(calculationString: temp, currentMetric: currentMetric);
-      temp = calcParser1.addToExpression(value);
+      temp = calcParser.addToExpression(value);
       if (flag != temp.length) {
         flag = temp.length;
-        temp = calcParser1.addToExpression(calculationString[pos]);
+        temp = calcParser.addToExpression(calculationString[pos]);
 
+        // To move position to next item.
         if (flag != temp.length) {
           calculationString.replaceRange(0, pos + 1, temp);
           String tempStr = temp.join();
           if (!lists.contains(temp.join()[position]))
             position += 1;
+
+          // To detect cos, tan, sin etc
           else {
-            // for cos etc
             int i = position + 1;
             for (; i < tempStr.length; i++) {
               if (!lists.contains(tempStr[i])) break;
@@ -89,6 +93,8 @@ class FocusEvent extends ChangeNotifier {
           }
         }
       }
+
+      // return final string.
       return calculationString;
     } catch (e) {
       print('Exception: $e');

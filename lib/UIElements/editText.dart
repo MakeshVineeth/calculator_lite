@@ -33,7 +33,10 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
     return AutoSizeTextField(
       style: completeStringStyle(),
       controller: myController,
-      decoration: null,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        hintText: 'Calculate',
+      ),
       readOnly: true,
       minLines: 1,
       maxLines: 3,
