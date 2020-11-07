@@ -61,7 +61,7 @@ class _CalcButtonsState extends State<CalcButtons> {
   TextStyle calcButtonTextStyle(Color fgColor) {
     return TextStyle(
       fontSize: 20.0,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w600,
       color: fgColor,
     );
   }

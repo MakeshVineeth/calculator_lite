@@ -9,7 +9,10 @@ class PopThemeChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Choose Theme'),
+      title: Text(
+        'Choose Theme',
+        style: FixedValues.semiBoldStyle,
+      ),
       content: ThemeButtons(),
       elevation: 20.0, // Little Shadows
       shape: FixedValues.roundShapeLarge,
@@ -56,7 +59,10 @@ class _ThemeButtonsState extends State<ThemeButtons> {
       mainAxisSize: MainAxisSize.min,
       children: e.entries
           .map((e) => RadioListTile(
-                title: Text(e.key),
+                title: Text(
+                  e.key,
+                  style: FixedValues.semiBoldStyle,
+                ),
                 value: e.value,
                 groupValue: _currentThemeString,
                 onChanged: setTheme,

@@ -175,7 +175,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
             menuList.length,
             (index) => PopupMenuItem(
                   value: index,
-                  child: Text(menuList[index]),
+                  child: Text(
+                    menuList[index],
+                    style: FixedValues.semiBoldStyle,
+                  ),
                 )),
         offset: Offset(0, -10),
         elevation: 5.0,

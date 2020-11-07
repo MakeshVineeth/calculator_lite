@@ -78,6 +78,7 @@ class FixedValues {
     );
   }
 
+  static TextStyle semiBoldStyle = TextStyle(fontWeight: FontWeight.w600);
   static Color blurBgColor = Colors.white10;
   static const double sigmaLevel = 5.0;
   static const Duration transitionDuration = const Duration(milliseconds: 100);

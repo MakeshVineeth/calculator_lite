@@ -44,29 +44,26 @@ class _DisplayScreenState extends State<DisplayScreen> {
     runInitial();
     return Expanded(
       flex: 2,
-      child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        child: Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Text Widget for all calculations.
-              TextFieldCalc(
-                calculationString: widget.calculationString,
-              ),
-              AutoSizeTextField(
-                controller: myController,
-                minLines: 1,
-                maxLines: 2,
-                readOnly: true,
-                showCursor: true,
-                decoration: null,
-                style: mainValueStyle(),
-              ),
-            ],
-          ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: ListView(
+          physics:
+              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          children: [
+            // Text Widget for all calculations.
+            TextFieldCalc(
+              calculationString: widget.calculationString,
+            ),
+            AutoSizeTextField(
+              controller: myController,
+              minLines: 1,
+              maxLines: 2,
+              readOnly: true,
+              showCursor: true,
+              decoration: null,
+              style: mainValueStyle(),
+            ),
+          ],
         ),
       ),
     );

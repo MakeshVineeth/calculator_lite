@@ -130,6 +130,8 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
+        selectedLabelStyle: FixedValues.semiBoldStyle,
+        unselectedLabelStyle: FixedValues.semiBoldStyle,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
         items: List.generate(e.length, (index) {
