@@ -34,6 +34,11 @@ class _DisplayScreenState extends State<DisplayScreen> {
   final myController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     myController.dispose();
     super.dispose();
@@ -44,24 +49,34 @@ class _DisplayScreenState extends State<DisplayScreen> {
     runInitial();
     return Expanded(
       flex: 2,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: ListView(
+      child: LayoutBuilder(
+        builder: (context, constraints) => ListView(
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           children: [
-            // Text Widget for all calculations.
-            TextFieldCalc(
-              calculationString: widget.calculationString,
-            ),
-            AutoSizeTextField(
-              controller: myController,
-              minLines: 1,
-              maxLines: 2,
-              readOnly: true,
-              showCursor: true,
-              decoration: null,
-              style: mainValueStyle(),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Text Widget for all calculations.
+                  TextFieldCalc(
+                    calculationString: widget.calculationString,
+                  ),
+                  AutoSizeTextField(
+                    controller: myController,
+                    minLines: 1,
+                    maxLines: 2,
+                    readOnly: true,
+                    showCursor: true,
+                    decoration: null,
+                    style: mainValueStyle(),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
