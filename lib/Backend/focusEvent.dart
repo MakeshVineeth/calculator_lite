@@ -33,23 +33,29 @@ class FocusEvent extends ChangeNotifier {
     return convertStr.length;
   }
 
-  int getPosition({@required int start, @required String givenText}) {
+  int getPosition({@required int start, @required List<String> givenText}) {
     try {
-      myText = givenText;
-      if (myText[start].contains(FixedValues.root) &&
-          myText.length > 1 &&
-          myText[start - 1].contains(FixedValues.sup3)) start -= 1;
+      int len = givenText.length;
+      if (start > 0 && start < len) {
+        myText = givenText.join();
+        if (myText[start].contains(FixedValues.root) &&
+            myText.length > 1 &&
+            myText[start - 1].contains(FixedValues.sup3)) start -= 1;
 
-      int count = start - 1;
-      for (; count >= 0; count--) {
-        if (!lists.contains(myText[count])) {
-          count += 1;
-          break;
+        int count = start - 1;
+        for (; count >= 0; count--) {
+          if (!lists.contains(myText[count])) {
+            count += 1;
+            break;
+          }
         }
-      }
 
-      position = count;
-      return position;
+        position = count;
+        return position;
+      } else {
+        position = start;
+        return position;
+      }
     } catch (e) {
       return null;
     }
