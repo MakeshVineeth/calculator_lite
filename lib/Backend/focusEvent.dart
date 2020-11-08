@@ -79,12 +79,19 @@ class FocusEvent extends ChangeNotifier {
           CalcParser(calculationString: temp, currentMetric: currentMetric);
       temp = calcParser.addToExpression(value);
       if (flag != temp.length) {
-        flag = temp.length;
-        temp = calcParser.addToExpression(calculationString[pos]);
+        // add the next element to check if it able to insert.
 
-        // To move position to next item.
+        if (pos < calculationString.length) {
+          flag = temp.length;
+          temp = calcParser.addToExpression(calculationString[pos]);
+        }
+
+        // Replace string and move position to next item.
         if (flag != temp.length) {
-          calculationString.replaceRange(0, pos + 1, temp);
+          if (pos < calculationString.length)
+            calculationString.replaceRange(0, pos + 1, temp);
+          else
+            calculationString.replaceRange(0, pos, temp);
           String tempStr = temp.join();
           if (!lists.contains(temp.join()[position]))
             position += 1;
@@ -104,7 +111,6 @@ class FocusEvent extends ChangeNotifier {
       myText = calculationString.join();
       return calculationString;
     } catch (e) {
-      print('Exception: $e');
       return null;
     }
   }
