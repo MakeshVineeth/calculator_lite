@@ -80,7 +80,6 @@ class FocusEvent extends ChangeNotifier {
       temp = calcParser.addToExpression(value);
       if (flag != temp.length) {
         // add the next element to check if it able to insert.
-
         if (pos < calculationString.length) {
           flag = temp.length;
           temp = calcParser.addToExpression(calculationString[pos]);
@@ -88,15 +87,19 @@ class FocusEvent extends ChangeNotifier {
 
         // Replace string and move position to next item.
         if (flag != temp.length) {
+
+          // replace by checking if pos is within range.
           if (pos < calculationString.length)
             calculationString.replaceRange(0, pos + 1, temp);
           else
             calculationString.replaceRange(0, pos, temp);
+          
+          // move position here.
           String tempStr = temp.join();
           if (!lists.contains(temp.join()[position]))
             position += 1;
 
-          // To detect cos, tan, sin etc
+          // detected cos, tan, sin etc here.
           else {
             int i = position + 1;
             for (; i < tempStr.length; i++) {
