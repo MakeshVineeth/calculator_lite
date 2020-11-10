@@ -65,12 +65,19 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
       // Back button
       else if (value.contains(FixedValues.backSpaceChar)) {
-        backSpaceBtn();
+        if (!isFocused) {
+          backSpaceBtn();
 
-        if (calculationString.length > 0)
-          runCalcParser(null); // Sending null as backSpaceChar is not a value.
-        else
-          mainValue = 0;
+          if (calculationString.length > 0)
+            runCalcParser(
+                null); // Sending null as backSpaceChar is not a value.
+          else
+            mainValue = 0;
+        } else {
+          calculationString =
+              focus.removeBack(calculationString: calculationString);
+          runCalcParser(null);
+        }
       }
 
       // Code for =

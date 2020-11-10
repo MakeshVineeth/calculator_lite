@@ -65,6 +65,14 @@ class FocusEvent extends ChangeNotifier {
     isFocused = true;
   }
 
+  List<String> removeBack({
+    @required List<String> calculationString,
+  }) {
+    int pos = getCurPosition(calculationString);
+    if (pos < calculationString.length) calculationString.removeAt(pos);
+    return calculationString;
+  }
+
   List<String> getRegulatedString(
       {@required List<String> calculationString,
       @required var currentMetric,
@@ -87,13 +95,12 @@ class FocusEvent extends ChangeNotifier {
 
         // Replace string and move position to next item.
         if (flag != temp.length) {
-
           // replace by checking if pos is within range.
           if (pos < calculationString.length)
             calculationString.replaceRange(0, pos + 1, temp);
           else
             calculationString.replaceRange(0, pos, temp);
-          
+
           // move position here.
           String tempStr = temp.join();
           if (!lists.contains(temp.join()[position]))
