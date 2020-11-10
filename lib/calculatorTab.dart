@@ -90,6 +90,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
                   currentMetric: currentMetric,
                   value: value) ??
               calculationString;
+          runCalcParser(null);
         }
       }
     });

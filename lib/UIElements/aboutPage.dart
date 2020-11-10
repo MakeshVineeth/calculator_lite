@@ -12,6 +12,9 @@ class AboutPage extends StatelessWidget {
       applicationName: FixedValues.appName,
       applicationVersion: FixedValues.appVersion,
       applicationLegalese: FixedValues.appLegalese,
+      applicationIcon: ImageIcon(
+        AssetImage('assets/Calculator-Icon-512.png'),
+      ),
     );
   }
 

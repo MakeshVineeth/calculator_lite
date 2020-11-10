@@ -35,7 +35,7 @@ packages:
       name: auto_size_text_field
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.6"
+    version: "0.1.7"
   boolean_selector:
     dependency: transitive
     description:
