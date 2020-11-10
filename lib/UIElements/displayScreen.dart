@@ -72,7 +72,9 @@ class _DisplayScreenState extends State<DisplayScreen> {
                     maxLines: 2,
                     readOnly: true,
                     showCursor: true,
-                    decoration: null,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                    ),
                     style: mainValueStyle(),
                   ),
                 ],
