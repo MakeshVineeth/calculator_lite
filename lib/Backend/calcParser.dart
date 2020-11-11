@@ -287,34 +287,37 @@ class CalcParser {
   }
 
   void insertSign(int i) {
-    switch (calculationString[i]) {
-      case '(–':
-        calculationString.removeAt(i);
-        break;
-      case 'ln(':
-      case 'log(':
-      case 'sin(':
-      case 'cos(':
-      case 'tan(':
-      case 'sin⁻¹(':
-      case 'cos⁻¹(':
-      case 'tan⁻¹(':
-      case '(':
-        calculationString.insert(i + 1, FixedValues.minus);
-        break;
-      case '+':
-        calculationString[i] = FixedValues.minus;
-        break;
-      case '–':
-        if (i != 0 && !calculationString[i - 1].contains('('))
-          calculationString[i] = '+';
-        else
-          calculationString.removeAt(
-              i); // Just remove - instead of adding + when position is at 0.
-        break;
-      default:
-        calculationString.insert(i + 1, '(${FixedValues.minus}');
-    }
+    // check if last is (-
+    if (calculationString.length > 1 &&
+        calculationString[i] != '–' &&
+        calculationString[i - 1] != '(')
+      switch (calculationString[i]) {
+        case 'ln(':
+        case 'log(':
+        case 'sin(':
+        case 'cos(':
+        case 'tan(':
+        case 'sin⁻¹(':
+        case 'cos⁻¹(':
+        case 'tan⁻¹(':
+        case '(':
+          calculationString.insert(i + 1, FixedValues.minus);
+          break;
+        case '+':
+          calculationString[i] = FixedValues.minus;
+          break;
+        case '–':
+          if (i != 0 && !calculationString[i - 1].contains('('))
+            calculationString[i] = '+';
+          else
+            calculationString.removeAt(
+                i); // Just remove - instead of adding + when position is at 0.
+          break;
+        default:
+          calculationString.insertAll(i + 1, ['(', '${FixedValues.minus}']);
+      }
+    else
+      calculationString.removeRange(i - 1, i);
   }
 
   void setDecimalChar() {
@@ -374,7 +377,6 @@ class CalcParser {
             'tan⁻¹(',
             'e',
             '(',
-            '(–',
             FixedValues.pi,
             FixedValues.root,
             FixedValues.cubeRootSym
@@ -399,7 +401,6 @@ class CalcParser {
               'log(',
               'sin⁻¹(',
               'cos⁻¹(',
-              '(–',
               'tan⁻¹(',
               'e',
               '(',
