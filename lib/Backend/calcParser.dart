@@ -289,8 +289,12 @@ class CalcParser {
   void insertSign(int i) {
     // check if last is (-
     if (calculationString.length > 1 &&
-        calculationString[i] != '–' &&
-        calculationString[i - 1] != '(')
+        i > 0 &&
+        calculationString[i] == '–' &&
+        calculationString[i - 1] == '(' &&
+        i + 1 <= calculationString.length)
+      calculationString.removeRange(i - 1, i + 1);
+    else {
       switch (calculationString[i]) {
         case 'ln(':
         case 'log(':
@@ -316,8 +320,7 @@ class CalcParser {
         default:
           calculationString.insertAll(i + 1, ['(', '${FixedValues.minus}']);
       }
-    else
-      calculationString.removeRange(i - 1, i);
+    }
   }
 
   void setDecimalChar() {
