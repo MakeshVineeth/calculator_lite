@@ -72,7 +72,8 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
     if (this.mounted) {
       TextSelection i = myController.selection;
       int count = Provider.of<FocusEvent>(context, listen: false).getPosition(
-              start: i.start, givenText: this.widget.calculationString) ??
+              start: i.start,
+              calculationString: this.widget.calculationString) ??
           i.end;
 
       TextSelection textSelection =
