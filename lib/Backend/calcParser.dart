@@ -477,7 +477,7 @@ class CalcParser {
                 helperFunctions.getDegValue(tempString, count, angle);
             String replaceThis =
                 degVal == double.infinity ? '1/0' : degVal.toString();
-            replaceThis = degVal == null ? '0/0' : replaceThis;
+            replaceThis = degVal.isNaN ? '0/0' : replaceThis;
             tempString.replaceRange(count, braceCount + 1, [replaceThis]);
             break;
           }

@@ -145,11 +145,11 @@ class HelperFunctions {
         }
 
       default:
-        angleResult = null;
+        angleResult = double.nan;
     }
 
     if (['cos⁻¹(', 'sin⁻¹(', 'tan⁻¹('].contains(computerString[index])) {
-      if (angle.abs() > 1) angleResult = null;
+      if (angle.abs() > 1) angleResult = double.nan;
     }
 
     return angleResult;
@@ -160,7 +160,7 @@ class HelperFunctions {
 
     if (isInteger(angle)) {
       double quotient = angle / 90;
-      if (isInteger(quotient)) isMultiple = quotient.toInt().isOdd;
+      if (isInteger(quotient)) isMultiple = quotient.round().isOdd;
     }
 
     return isMultiple;

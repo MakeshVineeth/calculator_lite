@@ -18,7 +18,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   Widget _currentChild;
   bool secondPageFlip = false;
   List<String> calculationString = [];
-  double mainValue = 0.0;
+  double mainValue;
   List<String> menuList = ['About', 'Change Theme'];
   String currentMetric;
 
@@ -59,7 +59,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       // Clear button
       else if (value.contains('C')) {
         calculationString.clear();
-        mainValue = 0.0;
+        mainValue = null;
         if (isFocused) focus.clearData();
       }
 
@@ -107,8 +107,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     CalcParser calcParser = CalcParser(
         calculationString: calculationString, currentMetric: currentMetric);
     if (value != null) calculationString = calcParser.addToExpression(value);
-    mainValue = calcParser.getValue() ??
-        mainValue; // Used null-aware operator to default to mainValue in case of null.
+    mainValue = calcParser.getValue();
   }
 
   Widget calcRows(List rowData, int index) {
