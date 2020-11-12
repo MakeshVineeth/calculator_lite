@@ -1,4 +1,5 @@
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:angles/angles.dart';
 
 class HelperFunctions {
   List<String> operations = [
@@ -88,5 +89,30 @@ class HelperFunctions {
     return n <= BigInt.from(1)
         ? BigInt.from(1)
         : n * factorial(n - BigInt.from(1));
+  }
+
+  double getDegValue(List<String> computerString, int index, double angle) {
+    final an = Angle.fromDegrees(angle);
+    switch (computerString[index]) {
+      case 'cos(':
+        return an.cos;
+        break;
+      case 'sin(':
+        return an.sin;
+        break;
+      case 'tan(':
+        return an.tan;
+        break;
+      case 'cos⁻¹(':
+        return Angle.acos(angle).degrees;
+        break;
+      case 'sin⁻¹(':
+        return Angle.asin(angle).degrees;
+        break;
+      case 'tan⁻¹(':
+        return Angle.atan(angle).degrees;
+      default:
+        return null;
+    }
   }
 }

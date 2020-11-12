@@ -1,11 +1,8 @@
-import 'dart:collection';
-
 import 'package:math_expressions/math_expressions.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'dart:math' as math;
-import 'package:angles/angles.dart';
 
 class CalcParser {
   List<String> calculationString;
@@ -462,8 +459,6 @@ class CalcParser {
 
     // For DEG
     if (currentMetric == 'DEG') {
-      int len = (tempString.where((item) => trigs.contains(item))).length;
-
       while ((tempString.where((item) => trigs.contains(item))).length > 0) {
         for (int count = 0; count < tempString.length; count++) {
           if (trigs.contains(tempString[count])) {
@@ -477,11 +472,9 @@ class CalcParser {
             }
             List<String> temp =
                 tempString.getRange(count + 1, braceCount).toList();
-            double val = evalFunction(temp);
-            final res = Angle.fromDegrees(val);
-            print('Angle: ${res.degrees}');
-            tempString
-                .replaceRange(count, braceCount + 1, [res.cos.toString()]);
+            double angle = evalFunction(temp);
+            double degVal = helperFunctions.getDegValue(tempString, count, angle);
+            tempString.replaceRange(count, braceCount + 1, [degVal.toString()]);
             break;
           }
         }
