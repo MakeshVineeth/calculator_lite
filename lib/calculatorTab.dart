@@ -95,8 +95,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
           calculationString = focus.getRegulatedString(
                   calculationString: calculationString,
                   currentMetric: currentMetric,
-                  value: value) ??
-              calculationString;
+                  value: value);
           runCalcParser(null);
         }
       }

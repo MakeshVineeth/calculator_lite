@@ -88,10 +88,9 @@ class _DisplayScreenState extends State<DisplayScreen> {
 
   void runInitial() {
     if (this.mounted) {
-      if (widget.mainValue != null)
-        myController.text = DisplayScreen.formatNumber(widget.mainValue);
-      else
-        myController.clear();
+      widget.mainValue != null
+          ? myController.text = DisplayScreen.formatNumber(widget.mainValue)
+          : myController.clear();
     }
   }
 
