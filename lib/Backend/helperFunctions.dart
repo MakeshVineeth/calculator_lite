@@ -97,7 +97,7 @@ class HelperFunctions {
     switch (computerString[index]) {
       case 'cos(':
         {
-          if (!isMultiple90(angle))
+          if (!isOddMultiple90(angle))
             angleResult = an.cos;
           else
             angleResult = an.cos.roundToDouble();
@@ -113,7 +113,7 @@ class HelperFunctions {
         {
           if (angle.abs() == 45)
             angleResult = an.tan.roundToDouble();
-          else if (!isMultiple90(angle))
+          else if (!isOddMultiple90(angle))
             angleResult = an.tan;
           else
             angleResult = double.infinity;
@@ -155,22 +155,16 @@ class HelperFunctions {
     return angleResult;
   }
 
-  bool isMultiple90(double angle) {
+  bool isOddMultiple90(double angle) {
     bool isMultiple = false;
 
-    if (angle % 1 == 0) {
-      int intAngle = angle.toInt().abs();
-
-      for (int i = 1;; i += 2) {
-        int temp = 90 * i;
-        if (temp > angle) break;
-        if (temp == intAngle) {
-          isMultiple = true;
-          break;
-        }
-      }
+    if (isInteger(angle)) {
+      double quotient = angle / 90;
+      if (isInteger(quotient)) isMultiple = quotient.toInt().isOdd;
     }
 
     return isMultiple;
   }
+
+  bool isInteger(num value) => value is int || value == value.roundToDouble();
 }
