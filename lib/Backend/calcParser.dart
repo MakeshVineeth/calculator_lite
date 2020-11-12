@@ -214,14 +214,13 @@ class CalcParser {
         else {
           valueStr = DisplayScreen.formatNumber(values[1]);
           valueStr = valueStr.replaceAll('-', FixedValues.minus);
-
-          // if (calculationString.length > 0) valueStr = "(" + valueStr;
         }
+
+        // if (calculationString.length > 0) valueStr = "(" + valueStr;
         if (calculationString.length > 0)
-          calculationString
-              .insertAll(calculationString.length, ['(', valueStr]);
+          calculationString.addAll(['(', ...valueStr.split('')]);
         else
-          calculationString.insertAll(calculationString.length, [valueStr]);
+          calculationString.addAll([...valueStr.split('')]);
       }
     }
 
