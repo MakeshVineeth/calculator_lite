@@ -473,123 +473,18 @@ class CalcParser {
             List<String> temp =
                 tempString.getRange(count + 1, braceCount).toList();
             double angle = evalFunction(temp);
-            double degVal = helperFunctions.getDegValue(tempString, count, angle);
-            tempString.replaceRange(count, braceCount + 1, [degVal.toString()]);
+            double degVal =
+                helperFunctions.getDegValue(tempString, count, angle);
+            String replaceThis =
+                degVal == double.infinity ? '1/0' : degVal.toString();
+            replaceThis = degVal == null ? '0/0' : replaceThis;
+            tempString.replaceRange(count, braceCount + 1, [replaceThis]);
             break;
           }
         }
       }
-
-      computerStr = tempString.join();
-      /*
-
-    double inl = (5 + 56 + 599999999666).toDouble();
-    final x = Angle.fromDegrees(inl);
-
-    double inl1 = (0.5).toDouble();
-    final y = Angle.acos(inl1);
-    print('inv : ${y.degrees}');
-
-    print('angle: ${x.tan}');
-
-      List<int> indices = [];
-      bool inverseAvailable = false;
-      for (int i = 0; i < tempString.length; i++) {
-        if (trigs.contains(tempString[i])) indices.add(i);
-      }
-      for (int i = 0; i < indices.length; i++) {
-        int index = indices[i];
-        int count = index;
-        int openBrace = 0;
-        int closedBrace = 0;
-        for (; count < tempString.length; count++) {
-          if (tempString[count].contains('(')) openBrace += 1;
-          if (tempString[count].contains(')')) closedBrace += 1;
-          if (openBrace == closedBrace) break;
-        }
-
-        // catch inverse functions.
-        if (['sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('].contains(tempString[indices[i]])) {
-          List<String> temp =
-              tempString.getRange(indices[i] + 1, count).toList();
-          double val = evalFunction(temp);
-          double val1;
-          if (val == 0.5 && !tempString[indices[i]].contains('tan⁻¹(')) {
-            switch (tempString[indices[i]]) {
-              case 'sin⁻¹(':
-                val1 = math.asin(0.5);
-                break;
-              case 'cos⁻¹(':
-                val1 = math.acos(0.5);
-                break;
-            }
-            val1 = val1 * 180 / math.pi;
-            tempString[indices[i]] = '${val1.round()}';
-            for (int j = indices[i] + 1; j <= count; j++) tempString[j] = '';
-          } else
-            tempString[count] = ')*180/${math.pi})';
-
-          inverseAvailable = true;
-        }
-
-        // Run below code for tan.
-        else if (['tan(', 'cos('].contains(tempString[indices[i]])) {
-          List<String> temp =
-              tempString.getRange(indices[i] + 1, count).toList();
-          double val = evalFunction(temp);
-
-          // Check Tan for possible infinity.
-          bool isInfinite = false;
-          if (val % 1 == 0) {
-            if (val > 0)
-              for (int i = 1;; i += 2) {
-                int temp = 90 * i;
-                if (temp > val) break;
-                if (temp == val.toInt()) {
-                  isInfinite = true;
-                  break;
-                }
-              }
-            else
-              for (int i = 1;; i += 2) {
-                int temp = -90 * i;
-                if (temp < val) break;
-                if (temp == val.toInt()) {
-                  isInfinite = true;
-                  break;
-                }
-              }
-            if (isInfinite && tempString[indices[i]].contains('tan(')) {
-              tempString = ['1/0'];
-              break;
-            } else if (isInfinite && tempString[indices[i]].contains('cos(')) {
-              tempString[count] = '))*0';
-            } else
-              tempString[count] = ')*${math.pi}/180)';
-          } else
-            tempString[count] = ')*${math.pi}/180)';
-        }
-
-        // For remaining trig Functions, replace as usual.
-        else
-          tempString[count] = ')*${math.pi}/180)';
-      }
-
-      computerStr = tempString.join();
-
-      if (indices.length > 0) {
-        computerStr = computerStr.replaceAll('sin(', 'sin((');
-        computerStr = computerStr.replaceAll('tan(', 'tan((');
-        computerStr = computerStr.replaceAll('cos(', 'cos((');
-        if (inverseAvailable) {
-          computerStr = computerStr.replaceAll('sin⁻¹(', '(sin⁻¹(');
-          computerStr = computerStr.replaceAll('cos⁻¹(', '(cos⁻¹(');
-          computerStr = computerStr.replaceAll('tan⁻¹(', '(tan⁻¹(');
-        }
-      }
-      */
-    } else
-      computerStr = tempString.join();
+    }
+    computerStr = tempString.join();
 
     // Replace with strings that dart/math_exp package can understand.
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');

@@ -93,26 +93,84 @@ class HelperFunctions {
 
   double getDegValue(List<String> computerString, int index, double angle) {
     final an = Angle.fromDegrees(angle);
+    double angleResult;
     switch (computerString[index]) {
       case 'cos(':
-        return an.cos;
-        break;
+        {
+          if (!isMultiple90(angle))
+            angleResult = an.cos;
+          else
+            angleResult = an.cos.roundToDouble();
+
+          break;
+        }
+
       case 'sin(':
-        return an.sin;
+        angleResult = an.sin;
         break;
+
       case 'tan(':
-        return an.tan;
-        break;
+        {
+          if (angle.abs() == 45)
+            angleResult = an.tan.roundToDouble();
+          else if (!isMultiple90(angle))
+            angleResult = an.tan;
+          else
+            angleResult = double.infinity;
+          break;
+        }
+
       case 'cos⁻¹(':
-        return Angle.acos(angle).degrees;
-        break;
+        {
+          if (angle.abs() != 0.5)
+            angleResult = Angle.acos(angle).degrees;
+          else
+            angleResult = Angle.acos(angle).degrees.roundToDouble();
+          break;
+        }
+
       case 'sin⁻¹(':
-        return Angle.asin(angle).degrees;
-        break;
+        {
+          if (angle.abs() != 0.5)
+            angleResult = Angle.asin(angle).degrees;
+          else
+            angleResult = Angle.asin(angle).degrees.roundToDouble();
+          break;
+        }
+
       case 'tan⁻¹(':
-        return Angle.atan(angle).degrees;
+        {
+          angleResult = Angle.atan(angle).degrees;
+          break;
+        }
+
       default:
-        return null;
+        angleResult = null;
     }
+
+    if (['cos⁻¹(', 'sin⁻¹(', 'tan⁻¹('].contains(computerString[index])) {
+      if (angle.abs() > 1) angleResult = null;
+    }
+
+    return angleResult;
+  }
+
+  bool isMultiple90(double angle) {
+    bool isMultiple = false;
+
+    if (angle % 1 == 0) {
+      int intAngle = angle.toInt().abs();
+
+      for (int i = 1;; i += 2) {
+        int temp = 90 * i;
+        if (temp > angle) break;
+        if (temp == intAngle) {
+          isMultiple = true;
+          break;
+        }
+      }
+    }
+
+    return isMultiple;
   }
 }
