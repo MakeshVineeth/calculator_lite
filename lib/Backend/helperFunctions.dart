@@ -158,9 +158,9 @@ class HelperFunctions {
   bool isOddMultiple90(double angle) {
     bool isMultiple = false;
 
-    if (isInteger(angle)) {
-      double quotient = angle / 90;
-      if (isInteger(quotient)) isMultiple = quotient.round().isOdd;
+    if (isInteger(angle) && angle % 90 == 0) {
+      int quotient = angle ~/ 90;
+      if (isInteger(quotient)) isMultiple = quotient.isOdd;
     }
 
     return isMultiple;
