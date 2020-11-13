@@ -69,15 +69,16 @@ class FocusEvent extends ChangeNotifier {
   List<String> removeBack({
     @required List<String> calculationString,
   }) {
+    int firstLength = calculationString.join().length;
     int pos = getCurPosition(calculationString) - 1;
-    if (pos > -1 && pos < calculationString.length) {
+    if (pos > -1 && pos < calculationString.length)
       calculationString.removeAt(pos);
-      position -= 1;
-    } else if (pos == calculationString.length) {
+    else if (pos == calculationString.length)
       calculationString.removeAt(pos - 1);
-      position -= 1;
-    }
+    int secondLength = calculationString.join().length;
 
+    int diff = firstLength - secondLength;
+    position = diff != 0 ? position - diff : position;
     return calculationString;
   }
 
