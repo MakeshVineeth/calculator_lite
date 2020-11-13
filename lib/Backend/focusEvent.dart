@@ -78,7 +78,7 @@ class FocusEvent extends ChangeNotifier {
     int secondLength = calculationString.join().length;
 
     int diff = firstLength - secondLength;
-    position = diff != 0 ? position - diff : position;
+    position = diff > 0 ? position - diff : position;
     return calculationString;
   }
 
