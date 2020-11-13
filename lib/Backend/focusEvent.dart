@@ -5,7 +5,7 @@ import 'package:calculator_lite/Backend/calcParser.dart';
 class FocusEvent extends ChangeNotifier {
   int position = 0;
 
-  List<String> lists = 'sicotao⁻¹mngl'.split('');
+  List<String> lists = 'sicotao⁻¹mngld'.split('');
   String myText;
   bool isFocused = false;
 
