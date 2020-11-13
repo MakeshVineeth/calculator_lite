@@ -93,9 +93,9 @@ class _CalculatorTabState extends State<CalculatorTab> {
           runCalcParser(value);
         else {
           calculationString = focus.getRegulatedString(
-                  calculationString: calculationString,
-                  currentMetric: currentMetric,
-                  value: value);
+              calculationString: calculationString,
+              currentMetric: currentMetric,
+              value: value);
           runCalcParser(null);
         }
       }
@@ -231,10 +231,11 @@ class _CalculatorTabState extends State<CalculatorTab> {
         currentMetric = 'DEG';
       else
         currentMetric = 'RAD';
+      runCalcParser(null);
     });
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('metrics', currentMetric);
-    runCalcParser(null);
   }
 
   void popUpFunction(int value) {
