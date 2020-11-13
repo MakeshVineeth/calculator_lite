@@ -64,7 +64,7 @@ class _DisplayScreenState extends State<DisplayScreen> {
                 children: [
                   // Text Widget for all calculations.
                   TextFieldCalc(
-                    calculationString: widget.calculationString,
+                    calculationString: widget?.calculationString,
                   ),
                   AutoSizeTextField(
                     controller: myController,

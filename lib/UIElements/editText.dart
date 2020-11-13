@@ -54,7 +54,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
 
       if (focusEvent.isFocused)
         myController.value = TextEditingValue(
-            text: this.widget.calculationString.join(),
+            text: this.widget.calculationString?.join(),
             selection: TextSelection.fromPosition(
               TextPosition(offset: focusEvent.position),
             ));
@@ -62,7 +62,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
         FocusScope.of(context).unfocus();
         myController.clear();
         myController.value = TextEditingValue(
-          text: this.widget.calculationString.join(),
+          text: this.widget.calculationString?.join(),
         );
       }
     }

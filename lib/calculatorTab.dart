@@ -75,7 +75,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
             mainValue = 0;
         } else {
           calculationString =
-              focus.removeBack(calculationString: calculationString);
+              focus.removeBack(calculationString: calculationString) ??
+                  calculationString;
           runCalcParser(null);
         }
       }
@@ -93,9 +94,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
           runCalcParser(value);
         else {
           calculationString = focus.getRegulatedString(
-              calculationString: calculationString,
-              currentMetric: currentMetric,
-              value: value);
+                  calculationString: calculationString,
+                  currentMetric: currentMetric,
+                  value: value) ??
+              calculationString;
           runCalcParser(null);
         }
       }
@@ -105,7 +107,9 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void runCalcParser(String value) {
     CalcParser calcParser = CalcParser(
         calculationString: calculationString, currentMetric: currentMetric);
-    if (value != null) calculationString = calcParser.addToExpression(value);
+    if (value != null)
+      calculationString =
+          calcParser.addToExpression(value) ?? calculationString;
     mainValue = calcParser.getValue();
   }
 

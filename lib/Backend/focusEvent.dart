@@ -86,6 +86,7 @@ class FocusEvent extends ChangeNotifier {
       @required var currentMetric,
       @required var value}) {
     try {
+      int firstLength = calculationString?.join()?.length;
       int pos = getCurPosition(calculationString);
 
       // Temp String for Checking.
@@ -109,19 +110,10 @@ class FocusEvent extends ChangeNotifier {
           else
             calculationString.replaceRange(0, pos, temp);
 
-          // move position here.
-          String tempStr = temp.join();
-          if (!lists.contains(temp.join()[position]))
-            position += 1;
-
-          // detected cos, tan, sin etc here.
-          else {
-            int i = position + 1;
-            for (; i < tempStr.length; i++) {
-              if (!lists.contains(tempStr[i])) break;
-            }
-            position = i + 1;
-          }
+          // set position of cursor.
+          int secondLength = calculationString?.join()?.length;
+          int diff = secondLength - firstLength;
+          position = diff > 0 ? position + diff : position;
         }
       }
 
