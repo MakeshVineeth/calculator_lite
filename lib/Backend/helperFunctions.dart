@@ -113,6 +113,8 @@ class HelperFunctions {
         {
           if (angle.abs() == 45)
             angleResult = an.tan.roundToDouble();
+          else if (check180(angle))
+            angleResult = 0;
           else if (!isOddMultiple90(angle))
             angleResult = an.tan;
           else
@@ -163,6 +165,12 @@ class HelperFunctions {
       if (isInteger(quotient)) isMultiple = quotient.isOdd;
     }
 
+    return isMultiple;
+  }
+
+  bool check180(double angle) {
+    bool isMultiple = false;
+    if (isInteger(angle) && angle % 180 == 0) isMultiple = true;
     return isMultiple;
   }
 
