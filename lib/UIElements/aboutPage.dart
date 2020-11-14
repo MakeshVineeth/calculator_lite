@@ -8,16 +8,57 @@ import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AboutDialog(
-      applicationName: FixedValues.appName,
-      applicationVersion: FixedValues.appVersion,
-      applicationLegalese: FixedValues.appLegalese,
-      applicationIcon: Image(
-        image: AssetImage('assets/Calculator-Icon-512.png'),
-        width: 30,
+    return AlertDialog(
+      shape: FixedValues.roundShapeLarge,
+      buttonPadding: EdgeInsets.all(10),
+      actions: [
+        TextButton(
+          onPressed: () => showLicensePage(
+            context: context,
+          ),
+          child: Text('VIEW LICENSES'),
+        ),
+      ],
+      content: SingleChildScrollView(
+        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image(
+              image: AssetImage('assets/Calculator-Icon-512.png'),
+              width: 30,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  FixedValues.appName,
+                  style: appTitleStyle,
+                ),
+                Text(
+                  FixedValues.appVersion,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  FixedValues.appLegalese,
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
+
+  final TextStyle appTitleStyle = TextStyle(
+    fontWeight: FontWeight.w600,
+    fontSize: 25,
+  );
 
   static void showAboutDialogFunc(BuildContext context) async {
     try {
