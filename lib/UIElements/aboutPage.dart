@@ -14,11 +14,20 @@ class AboutPage extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => showLicensePage(
-            context: context,
-          ),
-          child: Text(
-            'VIEW LICENSES',
-            textAlign: TextAlign.end,
+              context: context,
+              applicationName: FixedValues.appName,
+              applicationVersion: FixedValues.appVersion,
+              applicationLegalese: FixedValues.appLegalese,
+              applicationIcon: applicationIconImg()),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              'VIEW LICENSES',
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ),
       ],
@@ -27,10 +36,7 @@ class AboutPage extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image(
-              image: AssetImage('assets/Calculator-Icon-512.png'),
-              width: 30,
-            ),
+            applicationIconImg(),
             SizedBox(
               width: 10,
             ),
@@ -49,6 +55,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 Text(
                   FixedValues.appLegalese,
+                  style: appLegaleseStyle,
                 ),
               ],
             )
@@ -58,10 +65,21 @@ class AboutPage extends StatelessWidget {
     );
   }
 
+  Widget applicationIconImg() {
+    return Image(
+      image: AssetImage('assets/Calculator-Icon-512.png'),
+      width: 30,
+    );
+  }
+
   final TextStyle appTitleStyle = TextStyle(
     fontWeight: FontWeight.w600,
     fontSize: 25,
     height: 1,
+  );
+
+  final TextStyle appLegaleseStyle = TextStyle(
+    fontWeight: FontWeight.w500,
   );
 
   static void showAboutDialogFunc(BuildContext context) async {
