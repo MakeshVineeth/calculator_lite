@@ -414,38 +414,18 @@ class CalcParser {
       }
     }
 
-    String sym = FixedValues.root;
-    int symTOTAL = 0;
-    tempString.forEach((element) {
-      if (element == sym) symTOTAL += 1;
-    });
-    while (symTOTAL > 0) {
-      tempString = getRoot(tempString, sym);
-      symTOTAL -= 1;
-    }
+    while (tempString.where((value) => value == FixedValues.root).length > 0)
+      tempString = getRoot(tempString, FixedValues.root);
 
-    symTOTAL = 0;
-    tempString.forEach((element) {
-      if (element == FixedValues.cubeRootSym) symTOTAL += 1;
-    });
-    while (symTOTAL > 0) {
-      tempString = getRoot(tempString, FixedValues.cubeRootSym);
-      symTOTAL -= 1;
-    }
+    while (
+        tempString.where((value) => value == FixedValues.cubeRootSym).length >
+            0) tempString = getRoot(tempString, FixedValues.cubeRootSym);
 
-    sym = "!";
-    symTOTAL = sym.allMatches(tempString.join()).length;
-    while (symTOTAL > 0) {
-      tempString = getFactorOrPercent(tempString, sym);
-      symTOTAL -= 1;
-    }
+    while (tempString.where((value) => value == "!").length > 0)
+      tempString = getFactorOrPercent(tempString, "!");
 
-    sym = "%";
-    symTOTAL = sym.allMatches(tempString.join()).length;
-    while (symTOTAL > 0) {
-      tempString = getFactorOrPercent(tempString, sym);
-      symTOTAL -= 1;
-    }
+    while (tempString.where((value) => value == "%").length > 0)
+      tempString = getFactorOrPercent(tempString, "%");
 
     // Attach parentheses automatically.
     String computerStr = tempString.join();
@@ -625,8 +605,18 @@ class CalcParser {
           second = prev.getRange(0, count + 1).toList();
       }
 
+      // Detects %%
+      if (index + 1 < computerStr.length && computerStr[index + 1] == "%") {
+        int i = index + 1;
+        while (computerStr[i] == "%") {
+          computerStr[i] = '*0.01';
+          i++;
+          if (i >= computerStr.length) break;
+        }
+      }
+
       // Detects single 55 or 25 etc
-      if (count == -1) {
+      else if (count == -1) {
         computerStr.replaceRange(
             count + 1, index, helperFunctions.concatenateList([val / 100]));
         return computerStr;
