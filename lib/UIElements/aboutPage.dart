@@ -16,7 +16,10 @@ class AboutPage extends StatelessWidget {
           onPressed: () => showLicensePage(
             context: context,
           ),
-          child: Text('VIEW LICENSES'),
+          child: Text(
+            'VIEW LICENSES',
+            textAlign: TextAlign.end,
+          ),
         ),
       ],
       content: SingleChildScrollView(
@@ -58,6 +61,7 @@ class AboutPage extends StatelessWidget {
   final TextStyle appTitleStyle = TextStyle(
     fontWeight: FontWeight.w600,
     fontSize: 25,
+    height: 1,
   );
 
   static void showAboutDialogFunc(BuildContext context) async {
