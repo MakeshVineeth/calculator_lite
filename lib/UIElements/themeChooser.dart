@@ -58,14 +58,18 @@ class _ThemeButtonsState extends State<ThemeButtons> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: e.entries
-          .map((e) => RadioListTile(
+          .map((e) => ListTile(
+                shape: FixedValues.roundShapeLarge,
                 title: Text(
                   e.key,
                   style: FixedValues.semiBoldStyle,
                 ),
-                value: e.value,
-                groupValue: _currentThemeString,
-                onChanged: setTheme,
+                onTap: () => setTheme(e.value),
+                leading: Radio(
+                  value: e.value,
+                  groupValue: _currentThemeString,
+                  onChanged: setTheme,
+                ),
               ))
           .toList(),
     );

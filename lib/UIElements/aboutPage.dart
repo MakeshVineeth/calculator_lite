@@ -13,6 +13,9 @@ class AboutPage extends StatelessWidget {
       buttonPadding: EdgeInsets.all(10),
       actions: [
         TextButton(
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+          ),
           onPressed: () => showLicensePage(
               context: context,
               applicationName: FixedValues.appName,
