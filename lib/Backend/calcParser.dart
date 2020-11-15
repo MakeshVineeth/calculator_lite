@@ -605,20 +605,20 @@ class CalcParser {
           second = prev.getRange(0, count + 1).toList();
       }
 
-      // Detects %%
-      if (index + 1 < computerStr.length && computerStr[index + 1] == "%") {
-        int i = index + 1;
-        while (computerStr[i] == "%") {
-          computerStr[i] = '*0.01';
-          i++;
-          if (i >= computerStr.length) break;
-        }
-      }
-
       // Detects single 55 or 25 etc
-      else if (count == -1) {
+      if (count == -1) {
         computerStr.replaceRange(
             count + 1, index, helperFunctions.concatenateList([val / 100]));
+
+        // Detects %%
+        if (index + 1 < computerStr.length && computerStr[index + 1] == "%") {
+          int i = index + 1;
+          while (computerStr[i] == "%") {
+            computerStr[i] = '*0.01';
+            i++;
+            if (i >= computerStr.length) break;
+          }
+        }
         return computerStr;
       }
 
@@ -668,6 +668,7 @@ class CalcParser {
         computerStr.replaceRange(0, index,
             helperFunctions.concatenateList([second, lastChar, first / 100]));
       }
+
       return computerStr;
     }
 
