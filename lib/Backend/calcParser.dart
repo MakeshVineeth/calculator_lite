@@ -3,7 +3,6 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'dart:math' as math;
-import 'package:decimal/decimal.dart';
 
 class CalcParser {
   List<String> calculationString;
@@ -416,6 +415,8 @@ class CalcParser {
       }
     }
 
+    tempString = helperFunctions.replaceExp(tempString);
+
     while (tempString.where((value) => value == FixedValues.root).length > 0)
       tempString = getRoot(tempString, FixedValues.root);
 
@@ -472,7 +473,6 @@ class CalcParser {
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
     computerStr = computerStr.replaceAll(FixedValues.minus, '-');
     computerStr = computerStr.replaceAll(FixedValues.pi, math.pi.toString());
-    computerStr = computerStr.replaceAll('e', math.e.toString());
     computerStr = computerStr.replaceAll(FixedValues.sup2, '^2');
     computerStr = computerStr.replaceAll(FixedValues.sup3, '^3');
     computerStr = computerStr.replaceAll('mod', '%');
@@ -583,13 +583,6 @@ class CalcParser {
       List plusminus = [FixedValues.minus, '+'];
       bool previousMinus = false;
 
-      if (first == null) {
-        String lastVal = computerStr[index - 1];
-        final d = Decimal.tryParse(lastVal);
-        computerStr[index - 1] = '(($d)/100)';
-        return computerStr;
-      }
-
       if (count != -1) {
         prev = computerStr.getRange(0, count + 1).toList();
         lastChar = prev.last;
@@ -678,6 +671,7 @@ class CalcParser {
             helperFunctions.concatenateList([second, lastChar, first / 100]));
       }
 
+      computerStr = helperFunctions.replaceExp(computerStr);
       return computerStr;
     }
 

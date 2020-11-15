@@ -1,5 +1,7 @@
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:angles/angles.dart';
+import 'dart:math' as math;
+import 'package:decimal/decimal.dart';
 
 class HelperFunctions {
   List<String> operations = [
@@ -67,6 +69,20 @@ class HelperFunctions {
       if (openBrace == closedBrace) break;
     }
     return end;
+  }
+
+  List<String> replaceExp(List<String> computerStr) {
+    for (int i = 0; i < computerStr.length; i++) {
+      if (computerStr[i].contains('e')) {
+        if (computerStr[i] == 'e')
+          computerStr[i] = '${math.e}';
+        else {
+          final d = Decimal.tryParse(computerStr[i]);
+          computerStr[i] = '$d';
+        }
+      }
+    }
+    return computerStr;
   }
 
   List<String> concatenateList(List list) {
