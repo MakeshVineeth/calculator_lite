@@ -3,6 +3,7 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'dart:math' as math;
+import 'package:decimal/decimal.dart';
 
 class CalcParser {
   List<String> calculationString;
@@ -343,6 +344,7 @@ class CalcParser {
           comptStr); // evalFunction is executed first, internally function asks for computerString.
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
+
       return eval;
     } catch (e) {
       return null;
@@ -580,6 +582,13 @@ class CalcParser {
       double first = val;
       List plusminus = [FixedValues.minus, '+'];
       bool previousMinus = false;
+
+      if (first == null) {
+        String lastVal = computerStr[index - 1];
+        final d = Decimal.tryParse(lastVal);
+        computerStr[index - 1] = '(($d)/100)';
+        return computerStr;
+      }
 
       if (count != -1) {
         prev = computerStr.getRange(0, count + 1).toList();
