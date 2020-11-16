@@ -84,7 +84,7 @@ class AboutPage extends StatelessWidget {
   );
 
   final TextStyle appLegaleseStyle = TextStyle(
-    fontWeight: FontWeight.w500,
+    // any styles
   );
 
   static void showAboutDialogFunc(BuildContext context) async {

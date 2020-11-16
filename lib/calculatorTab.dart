@@ -193,6 +193,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     slideDialog.showSlideDialog(
       context: context,
       child: ListView.builder(
+        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         shrinkWrap: true,
         itemCount: menuList.length,
         itemBuilder: (context, index) => Padding(
