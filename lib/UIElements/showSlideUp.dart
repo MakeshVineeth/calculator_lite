@@ -45,16 +45,18 @@ void showSlideUp(BuildContext context) {
                           Navigator.of(context, rootNavigator: true).pop();
                           popUpFunction(index, context);
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Center(
-                            child: Text(
-                              menuList[index],
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18,
-                                letterSpacing: 0.5,
+                        child: IgnorePointer(
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Center(
+                              child: Text(
+                                menuList[index],
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ),
                           ),
