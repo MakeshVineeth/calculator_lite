@@ -8,6 +8,7 @@ import 'package:calculator_lite/UIElements/aboutPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:calculator_lite/Backend/focusEvent.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 
 class CalculatorTab extends StatefulWidget {
   @override
@@ -179,23 +180,45 @@ class _CalculatorTabState extends State<CalculatorTab> {
   Widget popUpDotMenu() {
     return Container(
       alignment: Alignment.centerRight,
-      child: PopupMenuButton(
-        shape: FixedValues.roundShapeLarge,
-        itemBuilder: (context) => List.generate(
-            menuList.length,
-            (index) => PopupMenuItem(
-                  value: index,
-                  child: Text(
-                    menuList[index],
-                    style: FixedValues.semiBoldStyle,
-                  ),
-                )),
-        offset: Offset(0, -10),
-        elevation: 5.0,
+      child: IconButton(
+        onPressed: () => showSlideUp(),
         icon: Icon(
           Icons.more_vert,
         ),
-        onSelected: (value) => popUpFunction(value),
+      ),
+    );
+  }
+
+  void showSlideUp() {
+    slideDialog.showSlideDialog(
+      context: context,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: menuList.length,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+          child: TextButton(
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+            ),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              popUpFunction(index);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Center(
+                child: Text(
+                  menuList[index],
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
