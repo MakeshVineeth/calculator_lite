@@ -43,24 +43,26 @@ class AboutPage extends StatelessWidget {
             SizedBox(
               width: 10,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  FixedValues.appName,
-                  style: appTitleStyle,
-                ),
-                Text(
-                  FixedValues.appVersion,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  FixedValues.appLegalese,
-                  style: appLegaleseStyle,
-                ),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    FixedValues.appName,
+                    style: appTitleStyle,
+                  ),
+                  Text(
+                    FixedValues.appVersion,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    FixedValues.appLegalese,
+                    style: appLegaleseStyle,
+                  ),
+                ],
+              ),
             )
           ],
         ),
