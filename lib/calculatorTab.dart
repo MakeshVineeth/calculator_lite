@@ -214,6 +214,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
