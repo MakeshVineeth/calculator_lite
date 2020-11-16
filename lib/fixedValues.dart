@@ -65,6 +65,7 @@ class FixedValues {
       bottomAppBarColor: background,
       backgroundColor: background,
       appBarTheme: AppBarTheme(
+          brightness: brightness,
           centerTitle: true,
           titleSpacing: 1,
           color: background,

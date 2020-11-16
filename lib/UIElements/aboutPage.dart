@@ -97,14 +97,12 @@ class AboutPage extends StatelessWidget {
   static void showAboutDialogFunc(BuildContext context) async {
     try {
       ThemeData temp = Theme.of(context);
-      bool useWhiteForeground =
-          (temp.brightness == Brightness.dark) ? true : false;
 
       if (!(kIsWeb ||
           Platform.isWindows ||
           Platform.isLinux ||
           Platform.isMacOS))
-        FlutterStatusbarcolor.setStatusBarWhiteForeground(!useWhiteForeground);
+        FlutterStatusbarcolor.setStatusBarColor(temp.backgroundColor);
 
       showBlurDialog(
         context: context,
@@ -114,7 +112,7 @@ class AboutPage extends StatelessWidget {
             Platform.isWindows ||
             Platform.isLinux ||
             Platform.isMacOS))
-          FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
+          FlutterStatusbarcolor.setStatusBarColor(temp.backgroundColor);
       });
     } catch (e) {}
   }
