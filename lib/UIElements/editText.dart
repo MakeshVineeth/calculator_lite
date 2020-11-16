@@ -41,6 +41,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       stepGranularity: 2,
       minLines: 1,
       maxLines: 2,
+      minFontSize: 30,
       focusNode: focus,
       showCursor: true,
       onChanged: (text) {},

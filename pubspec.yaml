@@ -25,11 +25,13 @@ dependencies:
   flutter:
     sdk: flutter
   angles: ^1.2.1
+  animations: ^1.1.2
   auto_size_text_field: ^0.1.6
   decimal: ^0.3.5
   flutter_animator: ^2.1.0
   flutter_launcher_icons: ^0.8.0
   flutter_rename_app: ^1.0.0
+  flutter_staggered_animations: ^0.1.2
   flutter_statusbarcolor: ^0.2.3
   math_expressions: ^2.0.1
   provider: ^4.3.2+2

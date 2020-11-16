@@ -5,6 +5,7 @@ import 'package:calculator_lite/UIElements/calcButtons.dart';
 import 'package:calculator_lite/Backend/calcParser.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/aboutPage.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:calculator_lite/Backend/focusEvent.dart';
@@ -20,7 +21,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   bool secondPageFlip = false;
   List<String> calculationString = [];
   double mainValue;
-  List<String> menuList = ['About', 'Change Theme'];
+  List<String> menuList = ['About', 'Change Theme', 'Exit'];
   String currentMetric;
 
   @override
@@ -28,6 +29,11 @@ class _CalculatorTabState extends State<CalculatorTab> {
     super.initState();
     _currentChild = buildCalcRows(FixedValues.rowSimple);
     getCurrentMetrics();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void getCurrentMetrics() async {
