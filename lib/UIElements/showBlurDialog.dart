@@ -41,9 +41,13 @@ class _BlurredWindowState extends State<BlurredWindow> {
           child: AnimatedContainer(
             key: UniqueKey(),
             duration: duration,
-            height: constraints.maxHeight,
-            width: constraints.maxWidth,
-            child: _currentChild,
+            child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
+                child: Container(
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth,
+                    child: Center(child: _currentChild))),
           ),
         ),
       ),
