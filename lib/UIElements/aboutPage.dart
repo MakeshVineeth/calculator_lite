@@ -23,7 +23,10 @@ class AboutPage extends StatelessWidget {
                 applicationName: FixedValues.appName,
                 applicationVersion: FixedValues.appVersion,
                 applicationLegalese: FixedValues.appLegalese,
-                applicationIcon: applicationIconImg()),
+                applicationIcon: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: applicationIconImg(),
+                )),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(

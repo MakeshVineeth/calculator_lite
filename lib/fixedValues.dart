@@ -64,6 +64,19 @@ class FixedValues {
       scaffoldBackgroundColor: background,
       bottomAppBarColor: background,
       backgroundColor: background,
+      appBarTheme: AppBarTheme(
+          centerTitle: true,
+          titleSpacing: 1,
+          color: background,
+          iconTheme: IconThemeData(
+            color: foreground,
+          ),
+          textTheme: TextTheme(
+              headline6: TextStyle(
+            color: foreground,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ))),
       canvasColor: background,
       applyElevationOverlayColor: !isLight,
       elevatedButtonTheme: ElevatedButtonThemeData(
