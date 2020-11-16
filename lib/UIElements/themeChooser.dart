@@ -2,20 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
+import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
 
 // Pop up for Choosing Theme
 class PopThemeChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        'Choose Theme',
-        style: FixedValues.semiBoldStyle,
+    return FadeScale(
+      child: AlertDialog(
+        title: Text(
+          'Choose Theme',
+          style: FixedValues.semiBoldStyle,
+        ),
+        content: ThemeButtons(),
+        elevation: 20.0, // Little Shadows
+        shape: FixedValues.roundShapeLarge,
       ),
-      content: ThemeButtons(),
-      elevation: 20.0, // Little Shadows
-      shape: FixedValues.roundShapeLarge,
     );
   }
 

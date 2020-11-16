@@ -4,67 +4,71 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
+import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: FixedValues.roundShapeLarge,
-      buttonPadding: EdgeInsets.all(10),
-      actions: [
-        TextButton(
-          style: ButtonStyle(
-            shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
-          ),
-          onPressed: () => showLicensePage(
-              context: context,
-              applicationName: FixedValues.appName,
-              applicationVersion: FixedValues.appVersion,
-              applicationLegalese: FixedValues.appLegalese,
-              applicationIcon: applicationIconImg()),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Text(
-              'VIEW LICENSES',
-              textAlign: TextAlign.end,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
+    return FadeScale(
+      child: AlertDialog(
+        shape: FixedValues.roundShapeLarge,
+        buttonPadding: EdgeInsets.all(10),
+        actions: [
+          TextButton(
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+            ),
+            onPressed: () => showLicensePage(
+                context: context,
+                applicationName: FixedValues.appName,
+                applicationVersion: FixedValues.appVersion,
+                applicationLegalese: FixedValues.appLegalese,
+                applicationIcon: applicationIconImg()),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                'VIEW LICENSES',
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-      content: SingleChildScrollView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            applicationIconImg(),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    FixedValues.appName,
-                    style: appTitleStyle,
-                  ),
-                  Text(
-                    FixedValues.appVersion,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    FixedValues.appLegalese,
-                    style: appLegaleseStyle,
-                  ),
-                ],
+        ],
+        content: SingleChildScrollView(
+          physics:
+              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              applicationIconImg(),
+              SizedBox(
+                width: 10,
               ),
-            )
-          ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      FixedValues.appName,
+                      style: appTitleStyle,
+                    ),
+                    Text(
+                      FixedValues.appVersion,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      FixedValues.appLegalese,
+                      style: appLegaleseStyle,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -84,8 +88,8 @@ class AboutPage extends StatelessWidget {
   );
 
   final TextStyle appLegaleseStyle = TextStyle(
-    // any styles
-  );
+      // any styles
+      );
 
   static void showAboutDialogFunc(BuildContext context) async {
     try {

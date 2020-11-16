@@ -5,18 +5,20 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/aboutPage.dart';
 import 'package:calculator_lite/UIElements/themeChooser.dart';
 import 'package:flutter/services.dart';
+import 'dart:io' show Platform, exit;
 
 var _androidAppRetain = MethodChannel("android_app_exit");
 
 void showSlideUp(BuildContext context) {
   List<String> menuList = ['About', 'Change Theme', 'Exit'];
+  double height = MediaQuery.of(context).size.height;
 
   slideDialog.showSlideDialog(
     context: context,
     child: SingleChildScrollView(
       physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       child: Container(
-        height: MediaQuery.of(context).size.height / 2,
+        height: height / 2,
         child: AnimationLimiter(
           child: ListView.separated(
             physics: NeverScrollableScrollPhysics(),
@@ -27,9 +29,9 @@ void showSlideUp(BuildContext context) {
             itemBuilder: (context, index) {
               return AnimationConfiguration.staggeredList(
                 position: index,
-                duration: const Duration(milliseconds: 375),
+                duration: const Duration(milliseconds: 500),
                 child: SlideAnimation(
-                  verticalOffset: 100.0,
+                  verticalOffset: height / 3,
                   child: FadeInAnimation(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -79,6 +81,12 @@ void popUpFunction(int value, BuildContext context) {
       PopThemeChooser.showThemeChooser(context);
       break;
     default:
-      _androidAppRetain.invokeMethod("sendToBackground");
+      {
+        if (Platform.isAndroid)
+          _androidAppRetain.invokeMethod("sendToBackground");
+        else if (!Platform.isIOS)
+          exit(
+              0); // Not allowed on IOS as it's against Apple Human Interface guidelines to exit the app programmatically.
+      }
   }
 }

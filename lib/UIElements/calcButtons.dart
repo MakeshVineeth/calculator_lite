@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
+import 'package:calculator_lite/fixedValues.dart';
 
 class CalcButtons extends StatefulWidget {
   final List rowData;
@@ -41,15 +42,15 @@ class _CalcButtonsState extends State<CalcButtons> {
                     ? 2.0
                     : 5.0,
                 onPressed: this.widget.displayFunction,
-                child: FadeThis(
-                  child: Text(
-                    this.widget.rowData[this.widget.index].toString(),
-                    style: calcButtonTextStyle(fgColor),
+                child: IgnorePointer(
+                  child: FadeThis(
+                    child: Text(
+                      this.widget.rowData[this.widget.index].toString(),
+                      style: calcButtonTextStyle(fgColor),
+                    ),
                   ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
+                shape: FixedValues.roundShapeLarge,
               ),
             ),
           ),
