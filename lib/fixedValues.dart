@@ -90,4 +90,8 @@ class FixedValues {
   static RoundedRectangleBorder roundShapeLarge = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(20.0),
   );
+
+  static RoundedRectangleBorder roundShapeBtns = RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(30.0),
+  );
 }

@@ -50,7 +50,7 @@ class _CalcButtonsState extends State<CalcButtons> {
                     ),
                   ),
                 ),
-                shape: FixedValues.roundShapeLarge,
+                shape: FixedValues.roundShapeBtns,
               ),
             ),
           ),
