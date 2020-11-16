@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:calculator_lite/UIElements/themeChooser.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
 import 'package:calculator_lite/UIElements/calcButtons.dart';
+import 'package:calculator_lite/UIElements/showSlideUp.dart';
 import 'package:calculator_lite/Backend/calcParser.dart';
 import 'package:calculator_lite/fixedValues.dart';
-import 'package:calculator_lite/UIElements/aboutPage.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:calculator_lite/Backend/focusEvent.dart';
-import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
-
-var _androidAppRetain = MethodChannel("android_app_exit");
 
 class CalculatorTab extends StatefulWidget {
   @override
@@ -23,7 +18,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
   bool secondPageFlip = false;
   List<String> calculationString = [];
   double mainValue;
-  List<String> menuList = ['About', 'Change Theme', 'Exit'];
   String currentMetric;
 
   @override
@@ -189,54 +183,9 @@ class _CalculatorTabState extends State<CalculatorTab> {
     return Container(
       alignment: Alignment.centerRight,
       child: IconButton(
-        onPressed: () => showSlideUp(),
+        onPressed: () => showSlideUp(context),
         icon: Icon(
           Icons.more_vert,
-        ),
-      ),
-    );
-  }
-
-  void showSlideUp() {
-    slideDialog.showSlideDialog(
-      context: context,
-      child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        child: Container(
-          height: MediaQuery.of(context).size.height / 2,
-          child: ListView.separated(
-            physics: NeverScrollableScrollPhysics(),
-            separatorBuilder: (context, index) => Divider(
-              thickness: 1,
-            ),
-            itemCount: menuList.length,
-            itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
-              child: TextButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
-                ),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  popUpFunction(index);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Center(
-                    child: Text(
-                      menuList[index],
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -282,19 +231,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('metrics', currentMetric);
-  }
-
-  void popUpFunction(int value) {
-    switch (value) {
-      case 0:
-        AboutPage.showAboutDialogFunc(context);
-        break;
-      case 1:
-        PopThemeChooser.showThemeChooser(context);
-        break;
-      default:
-        _androidAppRetain.invokeMethod("sendToBackground");
-    }
   }
 
   void changeButtons(String value) {
