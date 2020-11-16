@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:calculator_lite/Backend/focusEvent.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 
+var _androidAppRetain = MethodChannel("android_app_exit");
+
 class CalculatorTab extends StatefulWidget {
   @override
   _CalculatorTabState createState() => _CalculatorTabState();
@@ -201,7 +203,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       child: SingleChildScrollView(
         physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         child: Container(
-          height: MediaQuery.of(context).size.height / 3,
+          height: MediaQuery.of(context).size.height / 2,
           child: ListView.separated(
             physics: NeverScrollableScrollPhysics(),
             separatorBuilder: (context, index) => Divider(
@@ -290,6 +292,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
       case 1:
         PopThemeChooser.showThemeChooser(context);
         break;
+      default:
+        _androidAppRetain.invokeMethod("sendToBackground");
     }
   }
 
