@@ -192,30 +192,38 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void showSlideUp() {
     slideDialog.showSlideDialog(
       context: context,
-      child: ListView.builder(
+      child: SingleChildScrollView(
         physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        shrinkWrap: true,
-        itemCount: menuList.length,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
-          child: TextButton(
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+        child: Container(
+          height: MediaQuery.of(context).size.height / 3,
+          child: ListView.separated(
+            physics: NeverScrollableScrollPhysics(),
+            separatorBuilder: (context, index) => Divider(
+              thickness: 1,
             ),
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              popUpFunction(index);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Center(
-                child: Text(
-                  menuList[index],
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    letterSpacing: 0.5,
+            itemCount: menuList.length,
+            itemBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+              child: TextButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+                ),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  popUpFunction(index);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Center(
+                    child: Text(
+                      menuList[index],
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ),
                 ),
               ),
