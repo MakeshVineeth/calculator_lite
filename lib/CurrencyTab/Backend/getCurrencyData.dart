@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'commons.dart';
 import 'package:hive/hive.dart';
+import 'currencyListItem.dart';
 
 class CurrencyData {
   Future<http.Response> getResponse(String url) async {
@@ -27,9 +28,6 @@ class CurrencyData {
         Map _ratesListBase = _baseJson['rates'];
         List<String> allCurrencies = _ratesListBase.keys.toList();
 
-        Box currencyBox = await Hive.openBox(CommonsData.currencyBox);
-        allCurrencies.forEach((str) => currencyBox.add(str));
-
         print('All: $allCurrencies Date: $_updatedDate');
 
         allCurrencies.forEach((currentBase) {
@@ -44,6 +42,16 @@ class CurrencyData {
     } catch (e) {
       print('Exception: $e');
     }
+  }
+
+  void currencyListHive(List<String> allCurrencies) async {
+    Box currencyBox = await Hive.openBox(CommonsData.currencyBox);
+    allCurrencies.forEach((str) async {
+      currencyBox.add(str);
+    });
+
+    CurrencyListItem currencyListItem = new CurrencyListItem(currencyCode: 'INR');
+    currencyListItem.update();
   }
 
   void insertData(String currency, String currentBaseUrl) async {

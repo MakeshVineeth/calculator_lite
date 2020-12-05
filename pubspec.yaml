@@ -27,6 +27,7 @@ dependencies:
   angles: ^1.2.1
   animations: ^1.1.2
   auto_size_text_field: ^0.1.6
+  country_provider: ^1.0.1
   decimal: ^0.3.5
   flutter_animator: ^2.1.0
   flutter_launcher_icons: ^0.8.0
