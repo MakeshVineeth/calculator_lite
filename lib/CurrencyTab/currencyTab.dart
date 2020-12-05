@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Backend/getCurrencyData.dart';
+import 'package:hive/hive.dart';
 
 class CurrencyTab extends StatefulWidget {
   @override
@@ -11,6 +12,12 @@ class _CurrencyTabState extends State<CurrencyTab> {
   void initState() {
     super.initState();
     updateData();
+  }
+
+  @override
+  void dispose() {
+    Hive.close();
+    super.dispose();
   }
 
   void updateData() async {

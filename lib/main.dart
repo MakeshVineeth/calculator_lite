@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';
 import 'package:calculator_lite/calculatorTab.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
@@ -13,6 +15,7 @@ import 'dart:io' show Platform;
 
 void main() {
   runApp(BottomNavBar());
+  Hive.initFlutter();
   GestureBinding.instance.resamplingEnabled = true;
 }
 
