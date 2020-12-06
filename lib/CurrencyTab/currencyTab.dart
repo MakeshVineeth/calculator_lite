@@ -1,6 +1,5 @@
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:flutter/material.dart';
-import 'Backend/getCurrencyData.dart';
 import 'package:hive/hive.dart';
 
 class CurrencyTab extends StatefulWidget {

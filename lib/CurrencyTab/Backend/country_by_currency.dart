@@ -1,4 +1,4 @@
-Map e = {
+Map countryJsonList = {
   'Afghanistan': 'Afghanistan Afghani',
   'Albania': 'Albanian Lek',
   'Algeria': 'Algerian Dinar',
