@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:country_provider/country_provider.dart';
 
 class CurrencyListItem {
-  String currencyCode;
+  final String currencyCode;
   String flagURL;
-  String countryName;
+  String currencyName;
 
   CurrencyListItem({@required this.currencyCode});
 
@@ -21,10 +21,11 @@ class CurrencyListItem {
 
     for (int i = 0; i < result.length; i++) {
       List<Currency> currencies = result.elementAt(i).currencies;
+
       for (int i = 0; i < currencies.length; i++) {
         Currency current = currencies.elementAt(i);
         if (current.code == currencyCode) {
-          String name = current.name;
+          currencyName = current.name;
           isChecked = true;
           break;
         }
