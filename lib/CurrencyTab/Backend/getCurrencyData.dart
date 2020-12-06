@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'commons.dart';
 import 'package:hive/hive.dart';
-import 'currencyListItem.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 
 class CurrencyData {
   Future<http.Response> getResponse(String url) async {

@@ -1,3 +1,4 @@
+import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:flutter/material.dart';
 import 'Backend/getCurrencyData.dart';
 import 'package:hive/hive.dart';
@@ -21,8 +22,12 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   void updateData() async {
-    CurrencyData currencyData = CurrencyData();
-    currencyData.getRemoteData();
+    //CurrencyData currencyData = CurrencyData();
+    //currencyData.getRemoteData();
+
+    CurrencyListItem currencyListItem =
+        new CurrencyListItem(currencyCode: 'INR');
+    currencyListItem.update();
   }
 
   @override
