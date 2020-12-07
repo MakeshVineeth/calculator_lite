@@ -105,7 +105,7 @@ class CurrencyData {
       if (isChecked) break;
     }
 
-    Box currencyBox = Hive.box(CommonsData.currencyListBox);
+    final currencyBox = Hive.box(CommonsData.currencyListBox);
     final CurrencyListItem currencyListItem = CurrencyListItem(
       currencyCode: currencyCode,
       currencyName: currencyName,
@@ -122,7 +122,7 @@ class CurrencyData {
         Map data = jsonDecode(response.body);
         Map rates = data['rates'] as Map;
         if (rates.length > 0) {
-          Box box = await Hive.openBox(currency);
+          final box = await Hive.openBox(currency);
           rates.forEach((key, value) => box.put(key, double.tryParse(value)));
         }
       }

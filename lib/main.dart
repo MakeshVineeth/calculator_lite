@@ -12,10 +12,12 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
 import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'dart:io' show Platform;
+import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 
 void main() {
   runApp(BottomNavBar());
   Hive.initFlutter();
+  Hive.registerAdapter(CurrencyListItemAdapter());
   GestureBinding.instance.resamplingEnabled = true;
 }
 

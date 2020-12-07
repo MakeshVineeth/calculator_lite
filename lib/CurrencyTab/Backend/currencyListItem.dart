@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-@HiveType()
+part 'currencyListItem.g.dart';
+
+@HiveType(typeId: 0)
 class CurrencyListItem {
   @HiveField(0)
   final String currencyCode;
