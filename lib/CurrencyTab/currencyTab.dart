@@ -31,6 +31,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
   Future<void> runData() async {
     await Hive.openBox(CommonsData.fromBox);
     await Hive.openBox(CommonsData.toBox);
+    await Hive.openBox(CommonsData.currencyListBox);
+    addCurrencyCard();
   }
 
   @override
@@ -54,8 +56,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
     );
   }
 
-  void addCurrencyCard() {
-    final list = Hive.openBox(CommonsData.currencyListBox) as Box;
+  void addCurrencyCard() async {
+    final list = Hive.box(CommonsData.currencyListBox);
     if (list.length > 0) {
       Random random = Random();
 

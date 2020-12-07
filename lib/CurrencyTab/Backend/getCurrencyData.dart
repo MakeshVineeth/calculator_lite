@@ -27,6 +27,10 @@ class CurrencyData {
         print(_baseJson);
 
         String updatedDate = _baseJson['date'];
+
+        Box lastUpdate = await Hive.openBox('updatedDate');
+        lastUpdate.putAt(0, updatedDate);
+
         Map _ratesListBase = _baseJson['rates'];
         List<String> allCurrencies = _ratesListBase.keys.toList();
 

@@ -14,10 +14,11 @@ import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'dart:io' show Platform;
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 
-void main() {
-  runApp(BottomNavBar());
-  Hive.initFlutter();
+void main() async {
+  await Hive.initFlutter();
   Hive.registerAdapter(CurrencyListItemAdapter());
+
+  runApp(BottomNavBar());
   GestureBinding.instance.resamplingEnabled = true;
 }
 
