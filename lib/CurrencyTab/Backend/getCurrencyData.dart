@@ -16,7 +16,7 @@ class CurrencyData {
     }
   }
 
-  void getRemoteData() async {
+  Future<void> getRemoteData() async {
     try {
       http.Response _getBaseData =
           await getResponse(CommonsData.remoteUrl); // EUR by default.
@@ -26,20 +26,14 @@ class CurrencyData {
 
         print(_baseJson);
 
-        String _updatedDate = _baseJson['date'];
+        String updatedDate = _baseJson['date'];
         Map _ratesListBase = _baseJson['rates'];
         List<String> allCurrencies = _ratesListBase.keys.toList();
 
-        print('All: $allCurrencies Date: $_updatedDate');
-
-        allCurrencies.forEach((currentBase) {
+        allCurrencies.forEach((currentBase) async {
           String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
-          print('Current Base Url: $currentBaseUrl');
-
-          insertData(currentBase, currentBaseUrl);
+          await insertData(currentBase, currentBaseUrl);
         });
-
-        print('Done!');
       }
     } catch (e) {
       print('Exception: $e');
@@ -89,7 +83,6 @@ class CurrencyData {
                   await CountryProvider.getCountryByFullname(countryName);
               flagURL =
                   'icons/flags/${countryObj.alpha2Code.toLowerCase().trim()}.png';
-              print(flagURL);
               break;
             }
           }
@@ -115,7 +108,7 @@ class CurrencyData {
     currencyBox.add(currencyListItem);
   }
 
-  void insertData(String currency, String currentBaseUrl) async {
+  Future<void> insertData(String currency, String currentBaseUrl) async {
     try {
       http.Response response = await getResponse(currentBaseUrl);
       if (response != null) {
