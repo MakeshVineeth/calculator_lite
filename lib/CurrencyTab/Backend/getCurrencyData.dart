@@ -24,12 +24,9 @@ class CurrencyData {
       if (_getBaseData != null) {
         Map _baseJson = jsonDecode(_getBaseData.body);
 
-        print(_baseJson);
-
         String updatedDate = _baseJson['date'];
-
-        Box lastUpdate = await Hive.openBox('updatedDate');
-        lastUpdate.putAt(0, updatedDate);
+        Box lastUpdate = await Hive.openBox(CommonsData.updatedDateBox);
+        lastUpdate.put(CommonsData.updatedDateKey, updatedDate);
 
         Map _ratesListBase = _baseJson['rates'];
         List<String> allCurrencies = _ratesListBase.keys.toList();
@@ -38,13 +35,15 @@ class CurrencyData {
           String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
           await insertData(currentBase, currentBaseUrl);
         });
+
+        await getCurrenciesList(allCurrencies);
       }
     } catch (e) {
       print('Exception: $e');
     }
   }
 
-  void currenciesList(List<String> allCurrencies) async {
+  Future<void> getCurrenciesList(List<String> allCurrencies) async {
     await Hive.openBox(CommonsData.currencyListBox);
     allCurrencies.forEach((currencyCode) async {
       await writeCurrencyDetails(currencyCode);

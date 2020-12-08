@@ -4,4 +4,6 @@ class CommonsData {
 
   static const fromBox = 'fromBox';
   static const toBox = 'ToBox';
+  static const updatedDateBox = 'updatedDate';
+  static const updatedDateKey = 'date';
 }

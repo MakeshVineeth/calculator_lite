@@ -32,24 +32,26 @@ class _CurrencyTabState extends State<CurrencyTab> {
     await Hive.openBox(CommonsData.fromBox);
     await Hive.openBox(CommonsData.toBox);
     await Hive.openBox(CommonsData.currencyListBox);
-    addCurrencyCard();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
             onPressed: () => addCurrencyCard(),
             icon: Icon(
-              Icons.add_box_rounded,
+              Icons.add_circle_rounded,
             ),
           ),
-          FutureBuilder(
-            future: runData(),
-            builder: (context, snapshot) => widgetsData(snapshot),
+          Expanded(
+            child: FutureBuilder(
+              future: runData(),
+              builder: (context, snapshot) => widgetsData(snapshot),
+            ),
           )
         ],
       ),
@@ -64,22 +66,25 @@ class _CurrencyTabState extends State<CurrencyTab> {
       int t1 = random.nextInt(list.length);
       int t2 = random.nextInt(list.length);
 
-      final fromBox = Hive.openBox(CommonsData.fromBox) as Box;
+      final fromBox = await Hive.openBox(CommonsData.fromBox);
       fromBox.add(list.get(t1));
 
-      final toBox = Hive.openBox(CommonsData.toBox) as Box;
+      final toBox = await Hive.openBox(CommonsData.toBox);
       toBox.add(list.get(t2));
     }
   }
 
   Widget widgetsData(AsyncSnapshot snapshot) {
-    if (snapshot.connectionState == ConnectionState.active) {
-      final fromBox = Hive.box(CommonsData.fromBox);
+    if (snapshot.connectionState == ConnectionState.done) {
+      if (!snapshot.hasError) {
+        final fromBox = Hive.box(CommonsData.fromBox);
 
-      return ListView.builder(
-        itemCount: fromBox.length,
-        itemBuilder: (context, index) => CardUI(index: index),
-      );
+        return ListView.builder(
+          itemCount: fromBox.length,
+          itemBuilder: (context, index) => CardUI(index: index),
+        );
+      } else
+        return Text('Error'); // for error receiving.
     } else
       return CircularProgressIndicator();
   }
