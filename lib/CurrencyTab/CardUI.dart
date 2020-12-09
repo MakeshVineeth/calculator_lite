@@ -13,15 +13,9 @@ class CardUI extends StatefulWidget {
 }
 
 class _CardUIState extends State<CardUI> {
-  String currencyName;
-
   @override
   void initState() {
     super.initState();
-
-    final fromBox = Hive.box(CommonsData.fromBox);
-    final CurrencyListItem fromCur = fromBox.get(widget.index);
-    currencyName = fromCur.currencyName;
   }
 
   @override
@@ -29,11 +23,30 @@ class _CardUIState extends State<CardUI> {
     return Card(
       child: Row(
         children: [
-          MaterialButton(
-            onPressed: () {},
-            child: Text(currencyName),
-          ),
+          buttonCurrency(CommonsData.fromBox),
+          buttonCurrency(CommonsData.toBox),
         ],
+      ),
+    );
+  }
+
+  Widget buttonCurrency(String method) {
+    final fromBox = Hive.box(CommonsData.fromBox);
+    final CurrencyListItem fromCur = fromBox.getAt(widget.index);
+    String currencyNameFrom = fromCur.currencyName;
+
+    final toBox = Hive.box(CommonsData.toBox);
+
+    print('tobox: ${toBox.length}');
+    final CurrencyListItem toCur = toBox.getAt(widget.index);
+    print(toCur.currencyCode);
+    String currencyNameTo = toCur.currencyName;
+    print(currencyNameTo);
+
+    return Card(
+      child: InkWell(
+        onTap: () {},
+        child: Text(currencyNameFrom),
       ),
     );
   }

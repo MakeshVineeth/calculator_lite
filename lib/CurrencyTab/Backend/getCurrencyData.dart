@@ -1,10 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'commons.dart';
 import 'package:hive/hive.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
-import 'package:country_provider/country_provider.dart';
-import 'country_by_currency.dart';
 
 class CurrencyData {
   Future<http.Response> getResponse(String url) async {
@@ -16,7 +15,7 @@ class CurrencyData {
     }
   }
 
-  Future<void> getRemoteData() async {
+  Future<void> getRemoteData(BuildContext context) async {
     try {
       http.Response _getBaseData =
           await getResponse(CommonsData.remoteUrl); // EUR by default.
@@ -24,87 +23,56 @@ class CurrencyData {
       if (_getBaseData != null) {
         Map _baseJson = jsonDecode(_getBaseData.body);
 
+        // Sets the newly updated date.
         String updatedDate = _baseJson['date'];
         Box lastUpdate = await Hive.openBox(CommonsData.updatedDateBox);
         lastUpdate.put(CommonsData.updatedDateKey, updatedDate);
 
+        // get a list of all currencies.
         Map _ratesListBase = _baseJson['rates'];
         List<String> allCurrencies = _ratesListBase.keys.toList();
 
+        // for each currency, store it's values in separate boxes. Each currency is used as base.
         allCurrencies.forEach((currentBase) async {
           String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
           await insertData(currentBase, currentBaseUrl);
         });
 
-        await getCurrenciesList(allCurrencies);
+        // get list of all currencies and store it with Name, FlagURL, Code.
+        await Hive.openBox(CommonsData.currencyListBox);
+        allCurrencies.forEach((currencyCode) async {
+          await writeCurrencyDetails(currencyCode, context);
+        });
       }
     } catch (e) {
       print('Exception: $e');
     }
   }
 
-  Future<void> getCurrenciesList(List<String> allCurrencies) async {
-    await Hive.openBox(CommonsData.currencyListBox);
-    allCurrencies.forEach((currencyCode) async {
-      await writeCurrencyDetails(currencyCode);
-    });
-  }
-
-  Future<void> writeCurrencyDetails(String currencyCode) async {
+  Future<void> writeCurrencyDetails(
+      String currencyCode, BuildContext context) async {
     String flagURL;
-    String currencyName;
-    bool isChecked = false;
+    String countryName;
 
-    List<Country> result =
-        await CountryProvider.getCountryByCurrencyCode(currencyCode,
-            filter: CountryFilter(
-              isCurrency: true,
-              isName: true,
-              isAlpha2Code: true,
-            ));
+    String localJson = await DefaultAssetBundle.of(context)
+        .loadString('assets/countries.json');
+    List mapsList = json.decode(localJson)['countries']['country'];
 
-    for (int i = 0; i < result.length; i++) {
-      List<Currency> currencies = result.elementAt(i).currencies;
+    for (Map eachMap in mapsList) {
+      if (eachMap['currencyCode'] == currencyCode) {
+        countryName = eachMap['countryName'];
 
-      for (int i = 0; i < currencies.length; i++) {
-        // Check if currency code == given one.
-        Currency current = currencies.elementAt(i);
-        if (current.code == currencyCode) {
-          currencyName = current.name;
-
-          // Get full name using json and then get alpha2 code.
-          for (int i = 0; i < countryJsonList.length; i++) {
-            String iterateValue = countryJsonList.values
-                .elementAt(i)
-                .toString()
-                .trim()
-                .toLowerCase();
-            String toCompareValue = currencyName.trim().toLowerCase();
-            if (iterateValue == toCompareValue) {
-              String countryName = countryJsonList.keys.elementAt(i);
-              Country countryObj =
-                  await CountryProvider.getCountryByFullname(countryName);
-              flagURL =
-                  'icons/flags/${countryObj.alpha2Code.toLowerCase().trim()}.png';
-              break;
-            }
-          }
-
-          isChecked = true;
-          break;
-        }
-
-        if (isChecked) break;
+        String countryCode =
+            eachMap['countryCode'].toString().trim().toLowerCase();
+        flagURL = 'icons/flags/$countryCode.png';
+        break;
       }
-
-      // breaking all loops as once we have all values, we don't have to iterate anymore.
-      if (isChecked) break;
     }
 
     final currencyBox = Hive.box(CommonsData.currencyListBox);
     final CurrencyListItem currencyListItem = CurrencyListItem(
       currencyCode: currencyCode,
-      currencyName: currencyName,
+      currencyName: countryName, // getting countryName for now.
       flagURL: flagURL,
     );
 
