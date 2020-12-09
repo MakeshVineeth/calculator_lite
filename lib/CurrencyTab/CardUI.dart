@@ -36,17 +36,18 @@ class _CardUIState extends State<CardUI> {
     String currencyNameFrom = fromCur.currencyName;
 
     final toBox = Hive.box(CommonsData.toBox);
-
-    print('tobox: ${toBox.length}');
     final CurrencyListItem toCur = toBox.getAt(widget.index);
-    print(toCur.currencyCode);
     String currencyNameTo = toCur.currencyName;
-    print(currencyNameTo);
 
-    return Card(
-      child: InkWell(
-        onTap: () {},
-        child: Text(currencyNameFrom),
+    return Expanded(
+      child: ListTile(
+        leading: Image.asset(
+          method == CommonsData.fromBox ? fromCur.flagURL : toCur.flagURL,
+          package: 'country_icons',
+        ),
+        title: Text(
+          method == CommonsData.fromBox ? currencyNameFrom : currencyNameTo,
+        ),
       ),
     );
   }

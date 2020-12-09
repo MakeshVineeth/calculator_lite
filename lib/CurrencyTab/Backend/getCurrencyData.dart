@@ -64,7 +64,7 @@ class CurrencyData {
 
         String countryCode =
             eachMap['countryCode'].toString().trim().toLowerCase();
-        flagURL = 'icons/flags/$countryCode.png';
+        flagURL = 'icons/flags/png/$countryCode.png';
         break;
       }
     }
