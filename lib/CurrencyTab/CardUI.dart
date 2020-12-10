@@ -13,9 +13,28 @@ class CardUI extends StatefulWidget {
 }
 
 class _CardUIState extends State<CardUI> {
+  Box fromBox;
+  Box toBox;
+
+  CurrencyListItem fromCur;
+  CurrencyListItem toCur;
+
+  String currencyNameFrom;
+  String currencyNameTo;
+  final TextEditingController controller = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+
+    fromBox = Hive.box(CommonsData.fromBox);
+    toBox = Hive.box(CommonsData.toBox);
+
+    fromCur = fromBox.getAt(this.widget.index);
+    toCur = toBox.getAt(widget.index);
+
+    currencyNameFrom = fromCur.currencyName;
+    currencyNameTo = toCur.currencyName;
   }
 
   @override
@@ -31,22 +50,23 @@ class _CardUIState extends State<CardUI> {
   }
 
   Widget buttonCurrency(String method) {
-    final fromBox = Hive.box(CommonsData.fromBox);
-    final CurrencyListItem fromCur = fromBox.getAt(widget.index);
-    String currencyNameFrom = fromCur.currencyName;
-
-    final toBox = Hive.box(CommonsData.toBox);
-    final CurrencyListItem toCur = toBox.getAt(widget.index);
-    String currencyNameTo = toCur.currencyName;
-
     return Expanded(
       child: ListTile(
-        leading: Image.asset(
-          method == CommonsData.fromBox ? fromCur.flagURL : toCur.flagURL,
-          package: 'country_icons',
+        title: Row(
+          children: [
+            Image.asset(
+              method == CommonsData.fromBox ? fromCur.flagURL : toCur.flagURL,
+              width: 40,
+              height: 40,
+              package: 'country_icons',
+            ),
+            Text(
+              method == CommonsData.fromBox ? currencyNameFrom : currencyNameTo,
+            ),
+          ],
         ),
-        title: Text(
-          method == CommonsData.fromBox ? currencyNameFrom : currencyNameTo,
+        subtitle: TextField(
+          controller: controller,
         ),
       ),
     );
