@@ -1,4 +1,4 @@
-import 'package:calculator_lite/Backend/focusEvent.dart';
+import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:auto_size_text_field/auto_size_text_field.dart';
@@ -51,7 +51,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
 
   void onStart(BuildContext context) {
     if (this.mounted) {
-      FocusEvent focusEvent = Provider.of(context);
+      CustomFocusEvents focusEvent = Provider.of(context);
 
       if (focusEvent.isFocused)
         myController.value = TextEditingValue(
@@ -60,7 +60,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
               TextPosition(offset: focusEvent.position),
             ));
       else {
-        FocusScope.of(context).unfocus();
+        focus.unfocus();
         myController.clear();
         myController.value = TextEditingValue(
           text: this.widget.calculationString?.join(),
@@ -72,15 +72,16 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   void onTapFunction(BuildContext context) {
     if (this.mounted) {
       TextSelection i = myController.selection;
-      int count = Provider.of<FocusEvent>(context, listen: false).getPosition(
-              start: i.start,
-              calculationString: this.widget.calculationString) ??
+      int count = Provider.of<CustomFocusEvents>(context, listen: false)
+              .getPosition(
+                  start: i.start,
+                  calculationString: this.widget.calculationString) ??
           i.end;
 
       TextSelection textSelection =
           TextSelection(baseOffset: count, extentOffset: count);
       myController.selection = textSelection;
-      Provider.of<FocusEvent>(context, listen: false).updateFocus();
+      Provider.of<CustomFocusEvents>(context, listen: false).updateFocus();
     }
   }
 

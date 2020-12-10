@@ -1,3 +1,4 @@
+import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
 import 'package:calculator_lite/UIElements/calcButtons.dart';
@@ -6,7 +7,6 @@ import 'package:calculator_lite/Backend/calcParser.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:calculator_lite/Backend/focusEvent.dart';
 
 class CalculatorTab extends StatefulWidget {
   @override
@@ -51,7 +51,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void displayToScreen(
       {@required String value,
       @required BuildContext context,
-      @required FocusEvent focus}) {
+      @required CustomFocusEvents focus}) {
     bool isFocused = focus.isFocused;
     setState(() {
       // First check for down or up arrow buttons
@@ -126,7 +126,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(rowData.length, (index) {
-          return Consumer<FocusEvent>(
+          return Consumer<CustomFocusEvents>(
             builder: (context, focus, child) {
               return CalcButtons(
                 rowData: rowData,
@@ -149,7 +149,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => FocusEvent(),
+      create: (context) => CustomFocusEvents(),
       child: Column(
         children: [
           Row(

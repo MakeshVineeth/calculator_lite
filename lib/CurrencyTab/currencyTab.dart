@@ -15,7 +15,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   @override
   void initState() {
     super.initState();
-    updateData();
+    // updateData();
   }
 
   @override
@@ -80,7 +80,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
   Widget widgetsData(AsyncSnapshot snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (!snapshot.hasError) {
-        
         return ValueListenableBuilder(
           valueListenable: Hive.box(CommonsData.fromBox).listenable(),
           builder: (context, fromBox, widget) => ListView.builder(

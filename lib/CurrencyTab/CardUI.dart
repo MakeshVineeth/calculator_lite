@@ -56,9 +56,12 @@ class _CardUIState extends State<CardUI> {
           children: [
             Image.asset(
               method == CommonsData.fromBox ? fromCur.flagURL : toCur.flagURL,
-              width: 40,
-              height: 40,
+              width: 38,
+              height: 38,
               package: 'country_icons',
+            ),
+            SizedBox(
+              width: 5,
             ),
             Text(
               method == CommonsData.fromBox ? currencyNameFrom : currencyNameTo,

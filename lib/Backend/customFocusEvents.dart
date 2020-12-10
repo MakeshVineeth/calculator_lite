@@ -2,7 +2,7 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:calculator_lite/Backend/calcParser.dart';
 
-class FocusEvent extends ChangeNotifier {
+class CustomFocusEvents extends ChangeNotifier {
   int position = 0;
 
   List<String> lists = 'sicotao⁻¹mngld'.split('');
