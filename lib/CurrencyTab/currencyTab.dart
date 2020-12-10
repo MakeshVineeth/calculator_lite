@@ -15,7 +15,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   @override
   void initState() {
     super.initState();
-    // updateData();
+    updateData();
   }
 
   @override
@@ -83,6 +83,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
         return ValueListenableBuilder(
           valueListenable: Hive.box(CommonsData.fromBox).listenable(),
           builder: (context, fromBox, widget) => ListView.builder(
+            physics:
+                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             itemCount: fromBox.length,
             itemBuilder: (context, index) => CardUI(index: index),
           ),
