@@ -71,8 +71,9 @@ class _CardUIState extends State<CardUI> {
           children: [
             Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Colors.grey[300])),
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: Colors.grey[300]),
+              ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Image.asset(
@@ -80,6 +81,7 @@ class _CardUIState extends State<CardUI> {
                       ? fromCur.flagURL
                       : toCur.flagURL,
                   width: 35,
+                  height: 20,
                   package: 'country_icons',
                   fit: BoxFit.fill,
                 ),

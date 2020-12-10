@@ -48,6 +48,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
             onPressed: () => addCurrencyCard(),
             icon: Icon(
               Icons.add_circle_rounded,
+              size: 35,
             ),
           ),
           Expanded(
