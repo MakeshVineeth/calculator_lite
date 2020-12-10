@@ -21,7 +21,9 @@ class _CardUIState extends State<CardUI> {
 
   String currencyNameFrom;
   String currencyNameTo;
-  final TextEditingController controller = TextEditingController();
+
+  final controllerFrom = TextEditingController();
+  final controllerTo = TextEditingController();
 
   @override
   void initState() {
@@ -69,7 +71,8 @@ class _CardUIState extends State<CardUI> {
           ],
         ),
         subtitle: TextField(
-          controller: controller,
+          controller:
+              method == CommonsData.fromBox ? controllerFrom : controllerTo,
         ),
       ),
     );

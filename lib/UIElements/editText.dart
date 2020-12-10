@@ -51,13 +51,13 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
 
   void onStart(BuildContext context) {
     if (this.mounted) {
-      CustomFocusEvents focusEvent = Provider.of(context);
+      CustomFocusEvents customFocusEvents = Provider.of(context);
 
-      if (focusEvent.isFocused)
+      if (customFocusEvents.isFocused)
         myController.value = TextEditingValue(
             text: this.widget.calculationString?.join(),
             selection: TextSelection.fromPosition(
-              TextPosition(offset: focusEvent.position),
+              TextPosition(offset: customFocusEvents.position),
             ));
       else {
         focus.unfocus();
