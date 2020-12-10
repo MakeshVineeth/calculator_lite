@@ -3,6 +3,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/getCurrencyData.dart';
 import 'package:calculator_lite/CurrencyTab/CardUI.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -12,6 +13,8 @@ class CurrencyTab extends StatefulWidget {
 }
 
 class _CurrencyTabState extends State<CurrencyTab> {
+  final _scrollController = new ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -75,6 +78,14 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
       final toBox = await Hive.openBox(CommonsData.toBox);
       toBox.add(list.getAt(t2));
+
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
     }
   }
 
@@ -84,6 +95,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
         return ValueListenableBuilder(
           valueListenable: Hive.box(CommonsData.fromBox).listenable(),
           builder: (context, fromBox, widget) => ListView.builder(
+            controller: _scrollController,
             physics:
                 BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             itemCount: fromBox.length,

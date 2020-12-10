@@ -81,7 +81,7 @@ class _CardUIState extends State<CardUI> {
                       ? fromCur.flagURL
                       : toCur.flagURL,
                   width: 35,
-                  height: 20,
+                  height: 25,
                   package: 'country_icons',
                   fit: BoxFit.fill,
                 ),
@@ -99,7 +99,7 @@ class _CardUIState extends State<CardUI> {
           ],
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: TextField(
             controller:
                 method == CommonsData.fromBox ? controllerFrom : controllerTo,
