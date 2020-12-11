@@ -68,7 +68,8 @@ class _CardUIState extends State<CardUI> {
       child: ListTile(
         title: Row(
           children: [
-            FlatButton.icon(
+            RaisedButton.icon(
+              elevation: 0,
               padding: EdgeInsets.symmetric(vertical: 12),
               shape: FixedValues.roundShapeLarge,
               onPressed: () {},
@@ -101,20 +102,24 @@ class _CardUIState extends State<CardUI> {
             )
           ],
         ),
-        subtitle: Card(
-          shape: FixedValues.roundShapeLarge,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: TextField(
-              controller:
-                  method == CommonsData.fromBox ? controllerFrom : controllerTo,
-              keyboardType:
-                  TextInputType.numberWithOptions(decimal: true, signed: true),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintStyle: TextStyle(color: Colors.grey[800]),
-                hintText: "0.00",
-                fillColor: Colors.white70,
+        subtitle: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Card(
+            shape: FixedValues.roundShapeLarge,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: TextField(
+                controller: method == CommonsData.fromBox
+                    ? controllerFrom
+                    : controllerTo,
+                keyboardType: TextInputType.numberWithOptions(
+                    decimal: true, signed: true),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.grey[800]),
+                  hintText: "0.00",
+                  fillColor: Colors.white70,
+                ),
               ),
             ),
           ),
