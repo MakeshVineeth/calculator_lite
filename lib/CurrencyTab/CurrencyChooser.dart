@@ -34,7 +34,13 @@ class CurrencyChooser extends StatelessWidget {
                 leading: FlagIcon(
                   flagURL: currencyListItem.flagURL,
                 ),
-                title: Text(currencyListItem.currencyName),
+                title: Text(
+                  currencyListItem.currencyName +
+                      ' (${currencyListItem.currencyCode})',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               );
             },
           ),

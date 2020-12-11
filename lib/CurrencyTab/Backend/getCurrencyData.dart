@@ -39,14 +39,13 @@ class CurrencyData {
         });
 
         // get list of all currencies and store it with Name, FlagURL, Code.
-        await Hive.openBox(CommonsData.currencyListBox);
+        Box box = await Hive.openBox(CommonsData.currencyListBox);
+        box.clear();
         allCurrencies.forEach((currencyCode) async {
           await writeCurrencyDetails(currencyCode, context);
         });
       }
-    } catch (e) {
-      print('Exception: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> writeCurrencyDetails(
