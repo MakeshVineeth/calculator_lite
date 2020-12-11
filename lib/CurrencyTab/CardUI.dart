@@ -1,6 +1,7 @@
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
+import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/material.dart';
@@ -77,22 +78,15 @@ class _CardUIState extends State<CardUI> {
                 CurrencyChooser.show(context: context);
               },
               icon: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey[300]),
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    method == CommonsData.fromBox
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.grey[300]),
+                  ),
+                  child: FlagIcon(
+                    flagURL: method == CommonsData.fromBox
                         ? fromCur.flagURL
                         : toCur.flagURL,
-                    width: 25,
-                    height: 25,
-                    package: 'country_icons',
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
+                  )),
               label: Text(
                 method == CommonsData.fromBox
                     ? currencyTitleFrom

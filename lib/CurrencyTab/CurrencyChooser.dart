@@ -1,5 +1,6 @@
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
+import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
@@ -30,14 +31,8 @@ class CurrencyChooser extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context, rootNavigator: true).pop();
                 },
-                leading: ClipOval(
-                  child: Image.asset(
-                    currencyListItem.flagURL,
-                    width: 25,
-                    height: 25,
-                    fit: BoxFit.fill,
-                    package: 'country_icons',
-                  ),
+                leading: FlagIcon(
+                  flagURL: currencyListItem.flagURL,
                 ),
                 title: Text(currencyListItem.currencyName),
               );
