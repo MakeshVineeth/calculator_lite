@@ -1,5 +1,6 @@
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
+import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +73,9 @@ class _CardUIState extends State<CardUI> {
               elevation: 0,
               padding: EdgeInsets.symmetric(vertical: 12),
               shape: FixedValues.roundShapeLarge,
-              onPressed: () {},
+              onPressed: () {
+                CurrencyChooser.show(context: context);
+              },
               icon: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
