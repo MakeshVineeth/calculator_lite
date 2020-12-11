@@ -54,6 +54,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
               size: 35,
             ),
           ),
+          SizedBox(
+            height: 10,
+          ),
           Expanded(
             child: FutureBuilder(
               future: runData(),

@@ -67,54 +67,55 @@ class _CardUIState extends State<CardUI> {
     return Expanded(
       child: ListTile(
         title: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: Colors.grey[300]),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Image.asset(
-                  method == CommonsData.fromBox
-                      ? fromCur.flagURL
-                      : toCur.flagURL,
-                  width: 35,
-                  height: 25,
-                  package: 'country_icons',
-                  fit: BoxFit.fill,
+            FlatButton.icon(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              shape: FixedValues.roundShapeLarge,
+              onPressed: () {},
+              icon: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey[300]),
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    method == CommonsData.fromBox
+                        ? fromCur.flagURL
+                        : toCur.flagURL,
+                    width: 25,
+                    height: 25,
+                    package: 'country_icons',
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text(
-              method == CommonsData.fromBox
-                  ? currencyTitleFrom
-                  : currencyTitleTo,
-              style: TextStyle(height: 1, fontWeight: FontWeight.w600),
-            ),
+              label: Text(
+                method == CommonsData.fromBox
+                    ? currencyTitleFrom
+                    : currencyTitleTo,
+                style: TextStyle(
+                  height: 1,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
           ],
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: TextField(
-            controller:
-                method == CommonsData.fromBox ? controllerFrom : controllerTo,
-            keyboardType:
-                TextInputType.numberWithOptions(decimal: true, signed: true),
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(
-                  const Radius.circular(10.0),
-                ),
+        subtitle: Card(
+          shape: FixedValues.roundShapeLarge,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: TextField(
+              controller:
+                  method == CommonsData.fromBox ? controllerFrom : controllerTo,
+              keyboardType:
+                  TextInputType.numberWithOptions(decimal: true, signed: true),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.grey[800]),
+                hintText: "0.00",
+                fillColor: Colors.white70,
               ),
-              filled: true,
-              hintStyle: TextStyle(color: Colors.grey[800]),
-              hintText: "0.00",
-              fillColor: Colors.white70,
             ),
           ),
         ),
