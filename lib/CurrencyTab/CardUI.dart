@@ -47,26 +47,23 @@ class _CardUIState extends State<CardUI> {
   Widget buttonCurrency(String method) {
     return Expanded(
       child: ValueListenableBuilder(
-        valueListenable: Hive.box(method).listenable(),
-        builder: (context, data, child) {
-          Box box = data;
+        valueListenable: Hive.box(method).listenable(keys: [widget.index]),
+        builder: (BuildContext context, Box data, Widget child) {
           CurrencyListItem currencyListItem =
-              box.values.elementAt(widget.index);
+              data.values.elementAt(widget.index);
 
           return ListTile(
             title: Row(
               children: [
                 RaisedButton.icon(
                   elevation: 0,
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: FixedValues.roundShapeLarge,
-                  onPressed: () {
-                    CurrencyChooser.show(
-                      context: context,
-                      index: widget.index,
-                      method: method,
-                    );
-                  },
+                  onPressed: () => CurrencyChooser.show(
+                    context: context,
+                    index: widget.index,
+                    method: method,
+                  ),
                   icon: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -77,7 +74,7 @@ class _CardUIState extends State<CardUI> {
                       )),
                   label: Text(
                     currencyListItem.currencyCode,
-                    style: TextStyle(
+                    style: const TextStyle(
                       height: 1,
                       fontWeight: FontWeight.w600,
                     ),
@@ -96,7 +93,9 @@ class _CardUIState extends State<CardUI> {
                         ? controllerFrom
                         : controllerTo,
                     keyboardType: TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
+                      decimal: true,
+                      signed: true,
+                    ),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintStyle: TextStyle(color: Colors.grey[800]),

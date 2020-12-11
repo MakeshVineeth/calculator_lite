@@ -35,7 +35,6 @@ class CurrencyChooser extends StatelessWidget {
                 shape: FixedValues.roundShapeLarge,
                 onTap: () {
                   Box box = Hive.box(method);
-
                   box.putAt(boxIndex, currencyListItem);
                   Navigator.of(context, rootNavigator: true).pop();
                 },
