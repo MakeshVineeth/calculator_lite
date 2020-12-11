@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class FlagIcon extends StatelessWidget {
   final flagURL;
 
-  const FlagIcon({this.flagURL});
+  const FlagIcon({@required this.flagURL});
 
   @override
   Widget build(BuildContext context) {

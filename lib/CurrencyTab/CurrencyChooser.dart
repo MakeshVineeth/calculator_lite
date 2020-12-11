@@ -10,6 +10,11 @@ import 'package:hive/hive.dart';
 class CurrencyChooser extends StatelessWidget {
   final Box listBoxes = Hive.box(CommonsData.currencyListBox);
 
+  final boxIndex;
+  final method;
+
+  CurrencyChooser({@required this.boxIndex, @required this.method});
+
   @override
   Widget build(BuildContext context) {
     return FadeScale(
@@ -29,6 +34,9 @@ class CurrencyChooser extends StatelessWidget {
               return ListTile(
                 shape: FixedValues.roundShapeLarge,
                 onTap: () {
+                  Box box = Hive.box(method);
+
+                  box.putAt(boxIndex, currencyListItem);
                   Navigator.of(context, rootNavigator: true).pop();
                 },
                 leading: FlagIcon(
@@ -49,9 +57,16 @@ class CurrencyChooser extends StatelessWidget {
     );
   }
 
-  static void show({@required BuildContext context}) {
-    showBlurDialog(
-      child: CurrencyChooser(),
+  static void show({
+    @required BuildContext context,
+    @required int index,
+    @required String method,
+  }) async {
+    await showBlurDialog(
+      child: CurrencyChooser(
+        boxIndex: index,
+        method: method,
+      ),
       context: context,
     );
   }
