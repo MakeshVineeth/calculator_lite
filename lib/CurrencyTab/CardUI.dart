@@ -2,7 +2,6 @@ import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
 import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
-import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -62,16 +61,14 @@ class _CardUIState extends State<CardUI> {
                     index: widget.index,
                     method: method,
                   ),
-                  icon: FadeThis(
-                    child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.grey[300]),
-                        ),
-                        child: FlagIcon(
-                          flagURL: currencyListItem.flagURL,
-                        )),
-                  ),
+                  icon: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.grey[300]),
+                      ),
+                      child: FlagIcon(
+                        flagURL: currencyListItem.flagURL,
+                      )),
                   label: Text(
                     currencyListItem.currencyCode,
                     style: const TextStyle(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:octo_image/octo_image.dart';
 
 class FlagIcon extends StatelessWidget {
   final flagURL;
@@ -7,13 +8,17 @@ class FlagIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipOval(
-      child: Image.asset(
+    return OctoImage.fromSet(
+      fit: BoxFit.fill,
+      width: 25,
+      height: 25,
+      image: AssetImage(
         flagURL,
-        width: 25,
-        height: 25,
-        fit: BoxFit.fill,
         package: 'country_icons',
+      ),
+      octoSet: OctoSet.circleAvatar(
+        backgroundColor: Colors.transparent,
+        text: Text(''),
       ),
     );
   }
