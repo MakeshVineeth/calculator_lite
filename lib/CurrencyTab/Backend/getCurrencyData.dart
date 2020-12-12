@@ -39,17 +39,19 @@ class CurrencyData {
         });
 
         // get list of all currencies and store it with Name, FlagURL, Code.
-        Box box = await Hive.openBox(CommonsData.currencyListBox);
-        box.clear();
-        allCurrencies.forEach((currencyCode) async {
-          await writeCurrencyDetails(currencyCode, context);
-        });
+        for (int count = 0; count < allCurrencies.length; count++)
+          await writeCurrencyDetails(
+              currencyCode: allCurrencies.elementAt(count),
+              context: context,
+              keyIndex: count);
       }
     } catch (e) {}
   }
 
   Future<void> writeCurrencyDetails(
-      String currencyCode, BuildContext context) async {
+      {@required String currencyCode,
+      @required BuildContext context,
+      @required int keyIndex}) async {
     String flagURL;
     String countryName;
 
@@ -75,7 +77,7 @@ class CurrencyData {
       flagURL: flagURL,
     );
 
-    currencyBox.add(currencyListItem);
+    currencyBox.put(keyIndex, currencyListItem);
   }
 
   Future<void> insertData(String currency, String currentBaseUrl) async {
