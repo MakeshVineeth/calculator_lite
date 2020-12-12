@@ -4,6 +4,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/getCurrencyData.dart';
 import 'package:calculator_lite/CurrencyTab/CardUI.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -97,12 +98,24 @@ class _CurrencyTabState extends State<CurrencyTab> {
       if (!snapshot.hasError) {
         return ValueListenableBuilder(
           valueListenable: Hive.box(CommonsData.fromBox).listenable(),
-          builder: (context, fromBox, widget) => ListView.builder(
-            controller: _scrollController,
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            itemCount: fromBox.length,
-            itemBuilder: (context, index) => CardUI(index: index),
+          builder: (context, fromBox, widget) => AnimationLimiter(
+            child: ListView.builder(
+              controller: _scrollController,
+              physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              itemCount: fromBox.length,
+              itemBuilder: (context, index) =>
+                  AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 800),
+                      child: SlideAnimation(
+                        horizontalOffset: 50.0,
+                        child: FadeInAnimation(
+                          duration: const Duration(milliseconds: 800),
+                          child: CardUI(index: index),
+                        ),
+                      )),
+            ),
           ),
         );
       } else

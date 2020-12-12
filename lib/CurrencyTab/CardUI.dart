@@ -24,20 +24,18 @@ class _CardUIState extends State<CardUI> {
 
   @override
   Widget build(BuildContext context) {
-    return FadeThis(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-        child: Card(
-          elevation: 2,
-          shape: FixedValues.roundShapeLarge,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                buttonCurrency(CommonsData.fromBox),
-                buttonCurrency(CommonsData.toBox),
-              ],
-            ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+      child: Card(
+        elevation: 2,
+        shape: FixedValues.roundShapeLarge,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              buttonCurrency(CommonsData.fromBox),
+              buttonCurrency(CommonsData.toBox),
+            ],
           ),
         ),
       ),
@@ -64,14 +62,16 @@ class _CardUIState extends State<CardUI> {
                     index: widget.index,
                     method: method,
                   ),
-                  icon: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.grey[300]),
-                      ),
-                      child: FlagIcon(
-                        flagURL: currencyListItem.flagURL,
-                      )),
+                  icon: FadeThis(
+                    child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.grey[300]),
+                        ),
+                        child: FlagIcon(
+                          flagURL: currencyListItem.flagURL,
+                        )),
+                  ),
                   label: Text(
                     currencyListItem.currencyCode,
                     style: const TextStyle(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hive/hive.dart';
 
 class CurrencyChooser extends StatelessWidget {
@@ -23,33 +24,45 @@ class CurrencyChooser extends StatelessWidget {
         content: Container(
           height: MediaQuery.of(context).size.height / 1.5,
           width: MediaQuery.of(context).size.width / 2,
-          child: ListView.builder(
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            itemCount: listBoxes.values.length,
-            itemBuilder: (context, index) {
-              CurrencyListItem currencyListItem =
-                  listBoxes.values.elementAt(index);
+          child: AnimationLimiter(
+            child: ListView.builder(
+              physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              itemCount: listBoxes.values.length,
+              itemBuilder: (context, index) {
+                CurrencyListItem currencyListItem =
+                    listBoxes.values.elementAt(index);
 
-              return ListTile(
-                shape: FixedValues.roundShapeLarge,
-                onTap: () {
-                  Box box = Hive.box(method);
-                  box.putAt(boxIndex, currencyListItem);
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                leading: FlagIcon(
-                  flagURL: currencyListItem.flagURL,
-                ),
-                title: Text(
-                  currencyListItem.currencyName +
-                      ' (${currencyListItem.currencyCode})',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                return AnimationConfiguration.staggeredList(
+                  position: index,
+                  duration: const Duration(milliseconds: 400),
+                  child: SlideAnimation(
+                    verticalOffset: 50.0,
+                    child: FadeInAnimation(
+                      duration: const Duration(milliseconds: 500),
+                      child: ListTile(
+                        shape: FixedValues.roundShapeLarge,
+                        onTap: () {
+                          Box box = Hive.box(method);
+                          box.putAt(boxIndex, currencyListItem);
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        leading: FlagIcon(
+                          flagURL: currencyListItem.flagURL,
+                        ),
+                        title: Text(
+                          currencyListItem.currencyName +
+                              ' (${currencyListItem.currencyCode})',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
