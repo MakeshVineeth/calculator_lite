@@ -15,7 +15,7 @@ import 'dart:io' show Platform;
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 
 void main() async {
-  await Hive.initFlutter();
+  await Hive.initFlutter('hiveUserData');
   Hive.registerAdapter(CurrencyListItemAdapter());
 
   runApp(BottomNavBar());

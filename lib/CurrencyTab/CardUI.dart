@@ -61,14 +61,9 @@ class _CardUIState extends State<CardUI> {
                     index: widget.index,
                     method: method,
                   ),
-                  icon: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.grey[300]),
-                      ),
-                      child: FlagIcon(
-                        flagURL: currencyListItem.flagURL,
-                      )),
+                  icon: FlagIcon(
+                    flagURL: currencyListItem.flagURL,
+                  ),
                   label: Text(
                     currencyListItem.currencyCode,
                     style: const TextStyle(

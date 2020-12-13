@@ -8,17 +8,22 @@ class FlagIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OctoImage.fromSet(
-      fit: BoxFit.fill,
-      width: 25,
-      height: 25,
-      image: AssetImage(
-        flagURL,
-        package: 'country_icons',
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey[300]),
       ),
-      octoSet: OctoSet.circleAvatar(
-        backgroundColor: Colors.transparent,
-        text: Text(''),
+      child: OctoImage(
+        fit: BoxFit.fill,
+        width: 25,
+        height: 25,
+        image: AssetImage(
+          flagURL,
+          package: 'country_icons',
+        ),
+        imageBuilder: OctoImageTransformer.circleAvatar(),
+        placeholderBuilder:
+            OctoPlaceholder.circularProgressIndicator(),
       ),
     );
   }
