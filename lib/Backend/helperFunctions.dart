@@ -190,5 +190,5 @@ class HelperFunctions {
     return isMultiple;
   }
 
-  bool isInteger(num value) => value is int || value == value.roundToDouble();
+  bool isInteger(num value) => value is int || value == value?.roundToDouble();
 }

@@ -1,3 +1,4 @@
+import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 
 class CardUI extends StatefulWidget {
   final int index;
@@ -74,33 +76,70 @@ class _CardUIState extends State<CardUI> {
                 )
               ],
             ),
-            subtitle: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Card(
-                shape: FixedValues.roundShapeLarge,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextFormField(
-                    controller: method == CommonsData.fromBox
-                        ? controllerFrom
-                        : controllerTo,
-                    keyboardType: TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: true,
-                    ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(color: Colors.grey[800]),
-                      hintText: "0.00",
-                      fillColor: Colors.white70,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            subtitle: getTextField(method),
           );
         },
       ),
     );
   }
+
+  final HelperFunctions helperFunctions = HelperFunctions();
+  void handleFromText(String from) {
+    from = from.replaceAll(',', '');
+
+    if (!from.endsWith('.')) {
+      double val = double.tryParse(from);
+      if (val != null && helperFunctions.isInteger(val))
+        from = formatCurrency.format(val);
+    }
+
+    controllerFrom.text = from;
+    controllerFrom.selection = controllerFrom.selection.copyWith(
+      baseOffset: from.length,
+      extentOffset: from.length,
+    );
+  }
+
+  final formatCurrency = new NumberFormat.currency(
+    decimalDigits: 0,
+    symbol: '',
+    locale: 'en_US',
+  );
+
+  Widget getTextField(String method) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Card(
+        shape: FixedValues.roundShapeLarge,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: TextFormField(
+            controller:
+                method == CommonsData.fromBox ? controllerFrom : controllerTo,
+            keyboardType: TextInputType.numberWithOptions(
+              decimal: true,
+              signed: true,
+            ),
+            style: textFieldStyle(context),
+            onChanged: (str) => handleFromText(str),
+            readOnly: (method == CommonsData.fromBox) ? false : true,
+            showCursor: true,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintStyle: TextStyle(
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w600,
+              ),
+              hintText: "0.00",
+              fillColor: Colors.white70,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  TextStyle textFieldStyle(BuildContext context) => TextStyle(
+    fontWeight: FontWeight.w600,
+  );
 }

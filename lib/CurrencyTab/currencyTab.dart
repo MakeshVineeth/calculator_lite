@@ -49,13 +49,18 @@ class _CurrencyTabState extends State<CurrencyTab> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Card(
-            child: MaterialButton(
-              onPressed: () {
-                _formKey.currentState.reset();
-              },
-              child: Icon(
-                Icons.clear_all_outlined,
-              ),
+            child: Row(
+              children: [
+                Text('Last Updated:'),
+                MaterialButton(
+                  onPressed: () {
+                    _formKey.currentState.reset();
+                  },
+                  child: Icon(
+                    Icons.clear_all_outlined,
+                  ),
+                ),
+              ],
             ),
           ),
           IconButton(

@@ -3,8 +3,9 @@ import 'package:octo_image/octo_image.dart';
 
 class FlagIcon extends StatelessWidget {
   final flagURL;
+  final sizeInt = 25.0;
 
-  const FlagIcon({@required this.flagURL});
+  FlagIcon({@required this.flagURL});
 
   @override
   Widget build(BuildContext context) {
@@ -15,15 +16,14 @@ class FlagIcon extends StatelessWidget {
       ),
       child: OctoImage(
         fit: BoxFit.fill,
-        width: 25,
-        height: 25,
+        width: sizeInt,
+        height: sizeInt,
         image: AssetImage(
           flagURL,
           package: 'country_icons',
         ),
         imageBuilder: OctoImageTransformer.circleAvatar(),
-        placeholderBuilder:
-            OctoPlaceholder.circularProgressIndicator(),
+        placeholderBuilder: OctoPlaceholder.circularProgressIndicator(),
       ),
     );
   }
