@@ -46,8 +46,18 @@ class _CurrencyTabState extends State<CurrencyTab> {
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Card(
+            child: MaterialButton(
+              onPressed: () {
+                _formKey.currentState.reset();
+              },
+              child: Icon(
+                Icons.clear_all_outlined,
+              ),
+            ),
+          ),
           IconButton(
             onPressed: () => addCurrencyCard(),
             icon: Icon(
@@ -93,28 +103,33 @@ class _CurrencyTabState extends State<CurrencyTab> {
     }
   }
 
+  final _formKey = GlobalKey<FormState>();
+
   Widget widgetsData(AsyncSnapshot snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (!snapshot.hasError) {
-        return ValueListenableBuilder(
-          valueListenable: Hive.box(CommonsData.fromBox).listenable(),
-          builder: (context, fromBox, widget) => AnimationLimiter(
-            child: ListView.builder(
-              controller: _scrollController,
-              physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
-              itemCount: fromBox.length,
-              itemBuilder: (context, index) =>
-                  AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 800),
-                      child: SlideAnimation(
-                        horizontalOffset: 50.0,
-                        child: FadeInAnimation(
-                          duration: const Duration(milliseconds: 800),
-                          child: CardUI(index: index),
-                        ),
-                      )),
+        return Form(
+          key: _formKey,
+          child: ValueListenableBuilder(
+            valueListenable: Hive.box(CommonsData.fromBox).listenable(),
+            builder: (context, fromBox, widget) => AnimationLimiter(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
+                itemCount: fromBox.length,
+                itemBuilder: (context, index) =>
+                    AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(milliseconds: 800),
+                        child: SlideAnimation(
+                          horizontalOffset: 50.0,
+                          child: FadeInAnimation(
+                            duration: const Duration(milliseconds: 800),
+                            child: CardUI(index: index),
+                          ),
+                        )),
+              ),
             ),
           ),
         );

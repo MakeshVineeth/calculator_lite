@@ -80,7 +80,7 @@ class _CardUIState extends State<CardUI> {
                 shape: FixedValues.roundShapeLarge,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
+                  child: TextFormField(
                     controller: method == CommonsData.fromBox
                         ? controllerFrom
                         : controllerTo,
