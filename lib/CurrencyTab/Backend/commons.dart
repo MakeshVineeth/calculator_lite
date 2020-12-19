@@ -1,9 +1,9 @@
 class CommonsData {
   static const remoteUrl = 'http://api.frankfurter.app/latest';
-  static const currencyListBox = 'currenciesList';
+  static const currencyListBox = 'currencies';
 
-  static const fromBox = 'fromBox';
-  static const toBox = 'ToBox';
-  static const updatedDateBox = 'updatedDate';
+  static const fromBox = 'from_box';
+  static const toBox = 'to_box';
+  static const updatedDateBox = 'updated_date';
   static const updatedDateKey = 'date';
 }

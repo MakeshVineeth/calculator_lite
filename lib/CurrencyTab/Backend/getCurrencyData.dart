@@ -67,14 +67,14 @@ class CurrencyData {
       }
     }
 
-    final currencyBox = Hive.box(CommonsData.currencyListBox);
+    final currencyBox = await Hive.openBox(CommonsData.currencyListBox);
     final CurrencyListItem currencyListItem = CurrencyListItem(
       currencyCode: currencyCode,
       currencyName: countryName, // getting countryName for now.
       flagURL: flagURL,
     );
 
-    currencyBox.put(keyIndex, currencyListItem);
+    await currencyBox.put(keyIndex, currencyListItem);
   }
 
   Future<void> insertData(String currency, String currentBaseUrl) async {

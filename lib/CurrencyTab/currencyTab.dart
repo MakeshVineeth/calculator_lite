@@ -17,25 +17,17 @@ class _CurrencyTabState extends State<CurrencyTab> {
   final _scrollController = new ScrollController();
 
   @override
-  void initState() {
-    super.initState();
-    updateData();
-  }
-
-  @override
   void dispose() {
-    Hive.close();
     super.dispose();
+    Hive.close();
   }
 
   int n = 0;
 
-  void updateData() async {
+  Future<void> runData() async {
     CurrencyData currencyData = CurrencyData();
     await currencyData.getRemoteData(context);
-  }
 
-  Future<void> runData() async {
     await Hive.openBox(CommonsData.fromBox);
     await Hive.openBox(CommonsData.toBox);
     await Hive.openBox(CommonsData.currencyListBox);
@@ -76,7 +68,12 @@ class _CurrencyTabState extends State<CurrencyTab> {
           Expanded(
             child: FutureBuilder(
               future: runData(),
-              builder: (context, snapshot) => widgetsData(snapshot),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done)
+                  return widgetsData(snapshot);
+                else
+                  return Center(child: CircularProgressIndicator());
+              },
             ),
           )
         ],
@@ -85,7 +82,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   void addCurrencyCard() async {
-    final list = Hive.box(CommonsData.currencyListBox);
+    final list = await Hive.openBox(CommonsData.currencyListBox);
     if (list.length > 0) {
       Random random = Random();
 
@@ -93,10 +90,10 @@ class _CurrencyTabState extends State<CurrencyTab> {
       int t2 = random.nextInt(list.length);
 
       final fromBox = await Hive.openBox(CommonsData.fromBox);
-      fromBox.add(list.getAt(t1));
+      await fromBox.add(list.getAt(t1));
 
       final toBox = await Hive.openBox(CommonsData.toBox);
-      toBox.add(list.getAt(t2));
+      await toBox.add(list.getAt(t2));
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
@@ -113,10 +110,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
   Widget widgetsData(AsyncSnapshot snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (!snapshot.hasError) {
+        final box = Hive.box(CommonsData.fromBox);
         return Form(
           key: _formKey,
           child: ValueListenableBuilder(
-            valueListenable: Hive.box(CommonsData.fromBox).listenable(),
+            valueListenable: box.listenable(),
             builder: (context, fromBox, widget) => AnimationLimiter(
               child: ListView.builder(
                 controller: _scrollController,
@@ -141,6 +139,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
       } else
         return Text('Error'); // for error receiving.
     } else
-      return CircularProgressIndicator();
+      return Center(child: CircularProgressIndicator());
   }
 }

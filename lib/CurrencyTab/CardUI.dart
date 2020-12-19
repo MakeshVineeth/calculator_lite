@@ -20,84 +20,91 @@ class CardUI extends StatefulWidget {
 }
 
 class _CardUIState extends State<CardUI> {
-  final controllerFrom = TextEditingController();
+  static final initialValue = '1.0';
+  final controllerFrom = TextEditingController(text: initialValue);
   final controllerTo = TextEditingController();
 
   Future<void> openBoxes() async {
-    final Box fromBox = Hive.box(CommonsData.fromBox);
+    final Box fromBox = await Hive.openBox(CommonsData.fromBox);
     CurrencyListItem base = fromBox.getAt(widget.index);
     await Hive.openBox(base.currencyCode);
 
-    final Box toBox = Hive.box(CommonsData.toBox);
+    final Box toBox = await Hive.openBox(CommonsData.toBox);
     CurrencyListItem to = toBox.getAt(widget.index);
     await Hive.openBox(to.currencyCode);
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: openBoxes(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-            child: Card(
-              elevation: 2,
-              shape: FixedValues.roundShapeLarge,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    buttonCurrency(CommonsData.fromBox),
-                    buttonCurrency(CommonsData.toBox),
-                  ],
-                ),
-              ),
-            ),
-          );
-        } else
-          return CircularProgressIndicator();
-      },
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+      child: Card(
+        elevation: 2,
+        shape: FixedValues.roundShapeLarge,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              buttonCurrency(CommonsData.fromBox),
+              buttonCurrency(CommonsData.toBox),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   Widget buttonCurrency(String method) {
-    return Expanded(
-      child: ValueListenableBuilder(
-        valueListenable: Hive.box(method).listenable(keys: [widget.index]),
-        builder: (BuildContext context, Box data, Widget child) {
-          CurrencyListItem currencyListItem =
-              data.values.elementAt(widget.index);
+    return FutureBuilder(
+      future: openBoxes(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done)
+          return Expanded(
+            child: ValueListenableBuilder(
+              valueListenable:
+                  Hive.box(method).listenable(keys: [widget.index]),
+              builder: (BuildContext context, Box data, Widget child) {
+                CurrencyListItem currencyListItem =
+                    data.values.elementAt(widget.index);
 
-          return ListTile(
-            title: Row(
-              children: [
-                RaisedButton.icon(
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: FixedValues.roundShapeLarge,
-                  onPressed: () => CurrencyChooser.show(
-                    context: context,
-                    index: widget.index,
-                    method: method,
+                return ListTile(
+                  title: Row(
+                    children: [
+                      RaisedButton.icon(
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: FixedValues.roundShapeLarge,
+                        onPressed: () => CurrencyChooser.show(
+                          context: context,
+                          index: widget.index,
+                          method: method,
+                        ),
+                        icon: FlagIcon(
+                          flagURL: currencyListItem.flagURL,
+                        ),
+                        label: Text(
+                          currencyListItem.currencyCode,
+                          style: const TextStyle(
+                            height: 1,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  icon: FlagIcon(
-                    flagURL: currencyListItem.flagURL,
-                  ),
-                  label: Text(
-                    currencyListItem.currencyCode,
-                    style: const TextStyle(
-                      height: 1,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                )
-              ],
+                  subtitle: getTextField(method),
+                );
+              },
             ),
-            subtitle: getTextField(method),
           );
-        },
-      ),
+        else
+          return Center(child: CircularProgressIndicator());
+      },
     );
   }
 
