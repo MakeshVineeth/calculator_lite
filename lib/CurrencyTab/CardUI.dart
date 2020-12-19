@@ -23,23 +23,41 @@ class _CardUIState extends State<CardUI> {
   final controllerFrom = TextEditingController();
   final controllerTo = TextEditingController();
 
+  Future<void> openBoxes() async {
+    final Box fromBox = Hive.box(CommonsData.fromBox);
+    CurrencyListItem base = fromBox.getAt(widget.index);
+    await Hive.openBox(base.currencyCode);
+
+    final Box toBox = Hive.box(CommonsData.toBox);
+    CurrencyListItem to = toBox.getAt(widget.index);
+    await Hive.openBox(to.currencyCode);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-      child: Card(
-        elevation: 2,
-        shape: FixedValues.roundShapeLarge,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              buttonCurrency(CommonsData.fromBox),
-              buttonCurrency(CommonsData.toBox),
-            ],
-          ),
-        ),
-      ),
+    return FutureBuilder(
+      future: openBoxes(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+            child: Card(
+              elevation: 2,
+              shape: FixedValues.roundShapeLarge,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    buttonCurrency(CommonsData.fromBox),
+                    buttonCurrency(CommonsData.toBox),
+                  ],
+                ),
+              ),
+            ),
+          );
+        } else
+          return CircularProgressIndicator();
+      },
     );
   }
 
@@ -84,20 +102,34 @@ class _CardUIState extends State<CardUI> {
   }
 
   final HelperFunctions helperFunctions = HelperFunctions();
-  void handleFromText(String from) {
-    from = from.replaceAll(',', '');
+  void handleFromText(String from, String method) {
+    if (method == CommonsData.fromBox) {
+      from = from.replaceAll(',', '');
 
-    if (!from.endsWith('.')) {
-      double val = double.tryParse(from);
-      if (val != null && helperFunctions.isInteger(val))
-        from = formatCurrency.format(val);
+      if (!from.endsWith('.')) {
+        double val = double.tryParse(from);
+        if (val != null && helperFunctions.isInteger(val))
+          from = formatCurrency.format(val);
+      }
+
+      controllerFrom.text = from;
+      controllerFrom.selection = controllerFrom.selection.copyWith(
+        baseOffset: from.length,
+        extentOffset: from.length,
+      );
+
+      double toVal =
+          double.tryParse(controllerFrom.text.replaceAll(',', '').trim());
+      CurrencyListItem cur = Hive.box(CommonsData.fromBox).getAt(widget.index);
+      CurrencyListItem curTo = Hive.box(CommonsData.toBox).getAt(widget.index);
+
+      final Box baseBox = Hive.box(cur.currencyCode);
+
+      String exchange = baseBox.get(curTo.currencyCode);
+      double rate = double?.tryParse(exchange) ?? 0.0;
+
+      if (toVal != null) controllerTo.text = (toVal * rate).toString();
     }
-
-    controllerFrom.text = from;
-    controllerFrom.selection = controllerFrom.selection.copyWith(
-      baseOffset: from.length,
-      extentOffset: from.length,
-    );
   }
 
   final formatCurrency = new NumberFormat.currency(
@@ -121,7 +153,7 @@ class _CardUIState extends State<CardUI> {
               signed: true,
             ),
             style: textFieldStyle(context),
-            onChanged: (str) => handleFromText(str),
+            onChanged: (str) => handleFromText(str, method),
             readOnly: (method == CommonsData.fromBox) ? false : true,
             showCursor: true,
             decoration: InputDecoration(
@@ -140,6 +172,6 @@ class _CardUIState extends State<CardUI> {
   }
 
   TextStyle textFieldStyle(BuildContext context) => TextStyle(
-    fontWeight: FontWeight.w600,
-  );
+        fontWeight: FontWeight.w600,
+      );
 }

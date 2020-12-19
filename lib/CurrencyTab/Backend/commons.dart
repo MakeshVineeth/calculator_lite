@@ -1,5 +1,5 @@
 class CommonsData {
-  static const remoteUrl = 'api.frankfurter.app/latest';
+  static const remoteUrl = 'http://api.frankfurter.app/latest';
   static const currencyListBox = 'currenciesList';
 
   static const fromBox = 'fromBox';
