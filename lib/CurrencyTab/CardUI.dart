@@ -31,44 +31,36 @@ class _CardUIState extends State<CardUI> {
   CurrencyListItem toCur;
   double exchangeRate = 0.0;
 
-  String placeholder = 'Loading...';
-  String currentRateStr = 'Loading currency data...';
-  bool loaded = false;
+  String placeholder = '0.00';
+  String currentRateStr = '';
 
   Future<void> openBoxes() async {
-    fromCur = fromBox.getAt(widget.index);
-    await Hive.openBox(fromCur.currencyCode);
+    try {
+      fromCur = fromBox.getAt(widget.index);
+      await Hive.openBox(fromCur.currencyCode);
 
-    toCur = toBox.getAt(widget.index);
-    await Hive.openBox(toCur.currencyCode);
-  }
+      toCur = toBox.getAt(widget.index);
+      await Hive.openBox(toCur.currencyCode);
 
-  @override
-  void initState() {
-    super.initState();
-    openBoxes().whenComplete(() {
       updateExchange();
-    });
+    } catch (e) {}
   }
 
   void updateExchange() {
-    fromCur = fromBox.getAt(widget.index);
-    toCur = toBox.getAt(widget.index);
+    try {
+      fromCur = fromBox.getAt(widget.index);
+      toCur = toBox.getAt(widget.index);
 
-    if (fromCur.currencyCode == toCur.currencyCode)
-      exchangeRate = 1.0;
-    else {
-      final Box baseBox = Hive.box(fromCur.currencyCode);
-      exchangeRate = baseBox.get(toCur.currencyCode);
-    }
+      if (fromCur.currencyCode == toCur.currencyCode)
+        exchangeRate = 1.0;
+      else {
+        final Box baseBox = Hive.box(fromCur.currencyCode);
+        exchangeRate = baseBox.get(toCur.currencyCode);
+      }
 
-    if (mounted)
-      setState(() {
-        loaded = true;
-        placeholder = '0.00';
-        currentRateStr =
-            '1 ${fromCur.currencyCode} = $exchangeRate ${toCur.currencyCode}.';
-      });
+      currentRateStr =
+          '1 ${fromCur.currencyCode} = $exchangeRate ${toCur.currencyCode}.';
+    } catch (e) {}
   }
 
   @override
@@ -78,25 +70,37 @@ class _CardUIState extends State<CardUI> {
       child: Card(
         elevation: 2,
         shape: FixedValues.roundShapeLarge,
-        child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    buttonCurrency(CommonsData.fromBox),
-                    buttonCurrency(CommonsData.toBox),
-                    popUpMenuCustom(),
-                  ],
-                ),
-                Text(
-                  currentRateStr,
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            )),
+        child: FutureBuilder(
+          future: openBoxes(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done)
+              return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          buttonCurrency(CommonsData.fromBox),
+                          buttonCurrency(CommonsData.toBox),
+                          popUpMenuCustom(),
+                        ],
+                      ),
+                      Text(
+                        currentRateStr,
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ));
+            else
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: 150.0,
+                child: Center(child: Text('Loading...')),
+              );
+          },
+        ),
       ),
     );
   }
@@ -222,7 +226,6 @@ class _CardUIState extends State<CardUI> {
               decimal: true,
               signed: true,
             ),
-            enabled: loaded,
             style: textFieldStyle(context),
             onChanged: (str) => handleFromText(str, method),
             readOnly: (method == CommonsData.fromBox) ? false : true,
