@@ -101,8 +101,10 @@ class FixedValues {
   static const String appLegalese =
       'Make faster calculations, display latest currencies, endless history scrolling.';
 
+  static BorderRadius large = BorderRadius.circular(20.0);
+
   static RoundedRectangleBorder roundShapeLarge = RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(20.0),
+    borderRadius: large,
   );
 
   static RoundedRectangleBorder roundShapeBtns = RoundedRectangleBorder(

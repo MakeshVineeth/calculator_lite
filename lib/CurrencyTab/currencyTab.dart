@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:calculator_lite/fixedValues.dart';
 
 class CurrencyTab extends StatefulWidget {
   @override
@@ -15,6 +16,9 @@ class CurrencyTab extends StatefulWidget {
 
 class _CurrencyTabState extends State<CurrencyTab> {
   final _scrollController = new ScrollController();
+  String lastUpdated = '';
+  String src = '';
+  String status = '';
 
   @override
   void dispose() {
@@ -27,32 +31,61 @@ class _CurrencyTabState extends State<CurrencyTab> {
   Future<void> runData() async {
     CurrencyData currencyData = CurrencyData();
     await currencyData.getRemoteData(context);
-
     await Hive.openBox(CommonsData.fromBox);
     await Hive.openBox(CommonsData.toBox);
     await Hive.openBox(CommonsData.currencyListBox);
+    await Hive.openBox(CommonsData.updatedDateBox);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Card(
-            child: Row(
-              children: [
-                Text('Last Updated:'),
-                MaterialButton(
-                  onPressed: () {
-                    _formKey.currentState.reset();
-                  },
-                  child: Icon(
-                    Icons.clear_all_outlined,
-                  ),
+            shape: FixedValues.roundShapeLarge,
+            child: InkWell(
+              borderRadius: FixedValues.large,
+              onTap: () {},
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Last Updated: ' + lastUpdated,
+                            style: statusStyle(),
+                          ),
+                          Text(
+                            'Status: ' + status,
+                            style: statusStyle(),
+                          ),
+                          Text(
+                            'Source: ' + src,
+                            style: statusStyle(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    MaterialButton(
+                      shape: FixedValues.roundShapeBtns,
+                      onPressed: () {
+                        _formKey.currentState.reset();
+                      },
+                      child: Icon(
+                        Icons.clear_all_outlined,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
           IconButton(
@@ -104,6 +137,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
       });
     }
   }
+
+  TextStyle statusStyle() => TextStyle(
+        fontWeight: FontWeight.w600,
+        height: 1.7,
+      );
 
   final _formKey = GlobalKey<FormState>();
 

@@ -22,17 +22,27 @@ class CardUI extends StatefulWidget {
 class _CardUIState extends State<CardUI> {
   final controllerFrom = TextEditingController();
   final controllerTo = TextEditingController();
-  String placeholder = 'Loading';
+
+  final Box fromBox = Hive.box(CommonsData.fromBox);
+  final Box toBox = Hive.box(CommonsData.toBox);
+
+  CurrencyListItem fromCur;
+  CurrencyListItem toCur;
+  double exchangeRate = 0.0;
+
+  String placeholder = 'Loading...';
+  String currentRateStr = 'Loading currency data...';
   bool loaded = false;
 
   Future<void> openBoxes() async {
-    final Box fromBox = Hive.box(CommonsData.fromBox);
-    CurrencyListItem base = fromBox.getAt(widget.index);
-    await Hive.openBox(base.currencyCode);
+    fromCur = fromBox.getAt(widget.index);
+    await Hive.openBox(fromCur.currencyCode);
 
-    final Box toBox = Hive.box(CommonsData.toBox);
-    CurrencyListItem to = toBox.getAt(widget.index);
-    await Hive.openBox(to.currencyCode);
+    toCur = toBox.getAt(widget.index);
+    await Hive.openBox(toCur.currencyCode);
+
+    final Box baseBox = Hive.box(fromCur.currencyCode);
+    exchangeRate = baseBox.get(toCur.currencyCode);
   }
 
   @override
@@ -43,6 +53,8 @@ class _CardUIState extends State<CardUI> {
         setState(() {
           loaded = true;
           placeholder = '0.00';
+          currentRateStr =
+              '1 ${fromCur.currencyCode} = $exchangeRate ${toCur.currencyCode}.';
         });
     });
   }
@@ -56,10 +68,27 @@ class _CardUIState extends State<CardUI> {
         shape: FixedValues.roundShapeLarge,
         child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
+            child: Column(
               children: [
-                buttonCurrency(CommonsData.fromBox),
-                buttonCurrency(CommonsData.toBox),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    buttonCurrency(CommonsData.fromBox),
+                    buttonCurrency(CommonsData.toBox),
+                    IconButton(
+                      onPressed: () {
+                        fromBox.deleteAt(widget.index);
+                        toBox.deleteAt(widget.index);
+                      },
+                      icon: Icon(Icons.more_vert_rounded),
+                    )
+                  ],
+                ),
+                Text(
+                  currentRateStr,
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
               ],
             )),
       ),
@@ -125,14 +154,13 @@ class _CardUIState extends State<CardUI> {
 
       double toVal =
           double.tryParse(controllerFrom.text.replaceAll(',', '').trim());
-      CurrencyListItem cur = Hive.box(CommonsData.fromBox).getAt(widget.index);
-      CurrencyListItem curTo = Hive.box(CommonsData.toBox).getAt(widget.index);
+      fromCur = fromBox.getAt(widget.index);
+      toCur = toBox.getAt(widget.index);
 
-      final Box baseBox = Hive.box(cur.currencyCode);
+      final Box baseBox = Hive.box(fromCur.currencyCode);
+      exchangeRate = baseBox.get(toCur.currencyCode);
 
-      double rate = baseBox.get(curTo.currencyCode);
-
-      if (toVal != null) controllerTo.text = (toVal * rate).toString();
+      if (toVal != null) controllerTo.text = (toVal * exchangeRate).toString();
     }
   }
 
