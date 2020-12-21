@@ -20,16 +20,17 @@ class CardUI extends StatefulWidget {
 }
 
 class _CardUIState extends State<CardUI> {
-  static final initialValue = '1.0';
-  final controllerFrom = TextEditingController(text: initialValue);
+  final controllerFrom = TextEditingController();
   final controllerTo = TextEditingController();
+  String placeholder = 'Loading';
+  bool loaded = false;
 
   Future<void> openBoxes() async {
-    final Box fromBox = await Hive.openBox(CommonsData.fromBox);
+    final Box fromBox = Hive.box(CommonsData.fromBox);
     CurrencyListItem base = fromBox.getAt(widget.index);
     await Hive.openBox(base.currencyCode);
 
-    final Box toBox = await Hive.openBox(CommonsData.toBox);
+    final Box toBox = Hive.box(CommonsData.toBox);
     CurrencyListItem to = toBox.getAt(widget.index);
     await Hive.openBox(to.currencyCode);
   }
@@ -37,6 +38,13 @@ class _CardUIState extends State<CardUI> {
   @override
   void initState() {
     super.initState();
+    openBoxes().whenComplete(() {
+      if (mounted)
+        setState(() {
+          loaded = true;
+          placeholder = '0.00';
+        });
+    });
   }
 
   @override
@@ -47,64 +55,54 @@ class _CardUIState extends State<CardUI> {
         elevation: 2,
         shape: FixedValues.roundShapeLarge,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              buttonCurrency(CommonsData.fromBox),
-              buttonCurrency(CommonsData.toBox),
-            ],
-          ),
-        ),
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                buttonCurrency(CommonsData.fromBox),
+                buttonCurrency(CommonsData.toBox),
+              ],
+            )),
       ),
     );
   }
 
   Widget buttonCurrency(String method) {
-    return FutureBuilder(
-      future: openBoxes(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done)
-          return Expanded(
-            child: ValueListenableBuilder(
-              valueListenable:
-                  Hive.box(method).listenable(keys: [widget.index]),
-              builder: (BuildContext context, Box data, Widget child) {
-                CurrencyListItem currencyListItem =
-                    data.values.elementAt(widget.index);
+    return Expanded(
+      child: ValueListenableBuilder(
+        valueListenable: Hive.box(method).listenable(keys: [widget.index]),
+        builder: (BuildContext context, Box data, Widget child) {
+          CurrencyListItem currencyListItem =
+              data.values.elementAt(widget.index);
 
-                return ListTile(
-                  title: Row(
-                    children: [
-                      RaisedButton.icon(
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: FixedValues.roundShapeLarge,
-                        onPressed: () => CurrencyChooser.show(
-                          context: context,
-                          index: widget.index,
-                          method: method,
-                        ),
-                        icon: FlagIcon(
-                          flagURL: currencyListItem.flagURL,
-                        ),
-                        label: Text(
-                          currencyListItem.currencyCode,
-                          style: const TextStyle(
-                            height: 1,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      )
-                    ],
+          return ListTile(
+            title: Row(
+              children: [
+                RaisedButton.icon(
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: FixedValues.roundShapeLarge,
+                  onPressed: () => CurrencyChooser.show(
+                    context: context,
+                    index: widget.index,
+                    method: method,
                   ),
-                  subtitle: getTextField(method),
-                );
-              },
+                  icon: FlagIcon(
+                    flagURL: currencyListItem.flagURL,
+                  ),
+                  label: Text(
+                    currencyListItem.currencyCode,
+                    style: const TextStyle(
+                      height: 1,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              ],
             ),
+            subtitle: getTextField(method),
           );
-        else
-          return Center(child: CircularProgressIndicator());
-      },
+        },
+      ),
     );
   }
 
@@ -132,8 +130,7 @@ class _CardUIState extends State<CardUI> {
 
       final Box baseBox = Hive.box(cur.currencyCode);
 
-      String exchange = baseBox.get(curTo.currencyCode);
-      double rate = double?.tryParse(exchange) ?? 0.0;
+      double rate = baseBox.get(curTo.currencyCode);
 
       if (toVal != null) controllerTo.text = (toVal * rate).toString();
     }
@@ -159,6 +156,7 @@ class _CardUIState extends State<CardUI> {
               decimal: true,
               signed: true,
             ),
+            enabled: loaded,
             style: textFieldStyle(context),
             onChanged: (str) => handleFromText(str, method),
             readOnly: (method == CommonsData.fromBox) ? false : true,
@@ -169,7 +167,7 @@ class _CardUIState extends State<CardUI> {
                 color: Colors.grey[800],
                 fontWeight: FontWeight.w600,
               ),
-              hintText: "0.00",
+              hintText: placeholder,
               fillColor: Colors.white70,
             ),
           ),

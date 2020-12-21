@@ -39,6 +39,8 @@ class CurrencyData {
               context: context,
               keyIndex: count);
       }
+    } on DioError catch (e) {
+      print('Exception: ' + e.toString());
     } catch (e) {
       print('Exception: ' + e.toString());
     }
@@ -85,18 +87,20 @@ class CurrencyData {
       if (response != null) {
         Map data = Map<String, dynamic>.from(response.data);
         Map rates = data['rates'] as Map;
-
+        /*
         for (MapEntry each in rates.entries) {
           String key = each.key.toString();
           String val = each.value.toString();
 
           await box.put(key, val);
-        }
+        }*/
+
+        await box.putAll(rates);
       }
+    } on DioError catch (e) {
+      print('Dio Error: ' + e.toString());
     } catch (e) {
       print('Exception: ' + e.toString());
     }
-
-    await box.close();
   }
 }

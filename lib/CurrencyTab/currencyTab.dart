@@ -82,17 +82,17 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   void addCurrencyCard() async {
-    final list = await Hive.openBox(CommonsData.currencyListBox);
+    final list = Hive.box(CommonsData.currencyListBox);
     if (list.length > 0) {
       Random random = Random();
 
       int t1 = random.nextInt(list.length);
       int t2 = random.nextInt(list.length);
 
-      final fromBox = await Hive.openBox(CommonsData.fromBox);
+      final fromBox = Hive.box(CommonsData.fromBox);
       await fromBox.add(list.getAt(t1));
 
-      final toBox = await Hive.openBox(CommonsData.toBox);
+      final toBox = Hive.box(CommonsData.toBox);
       await toBox.add(list.getAt(t2));
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -123,15 +123,16 @@ class _CurrencyTabState extends State<CurrencyTab> {
                 itemCount: fromBox.length,
                 itemBuilder: (context, index) =>
                     AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(milliseconds: 800),
-                        child: SlideAnimation(
-                          horizontalOffset: 50.0,
-                          child: FadeInAnimation(
-                            duration: const Duration(milliseconds: 800),
-                            child: CardUI(index: index),
-                          ),
-                        )),
+                  position: index,
+                  duration: const Duration(milliseconds: 800),
+                  child: SlideAnimation(
+                    horizontalOffset: 50.0,
+                    child: FadeInAnimation(
+                      duration: const Duration(milliseconds: 800),
+                      child: CardUI(index: index),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
