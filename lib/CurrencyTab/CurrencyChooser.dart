@@ -69,7 +69,7 @@ class CurrencyChooser extends StatelessWidget {
     );
   }
 
-  static void show({
+  static Future<void> show({
     @required BuildContext context,
     @required int index,
     @required String method,

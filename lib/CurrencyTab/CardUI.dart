@@ -20,8 +20,9 @@ class CardUI extends StatefulWidget {
 }
 
 class _CardUIState extends State<CardUI> {
-  final controllerFrom = TextEditingController();
-  final controllerTo = TextEditingController();
+  static String initial = '';
+  final controllerFrom = TextEditingController(text: initial);
+  final controllerTo = TextEditingController(text: initial);
 
   final Box fromBox = Hive.box(CommonsData.fromBox);
   final Box toBox = Hive.box(CommonsData.toBox);
@@ -40,23 +41,34 @@ class _CardUIState extends State<CardUI> {
 
     toCur = toBox.getAt(widget.index);
     await Hive.openBox(toCur.currencyCode);
-
-    final Box baseBox = Hive.box(fromCur.currencyCode);
-    exchangeRate = baseBox.get(toCur.currencyCode);
   }
 
   @override
   void initState() {
     super.initState();
     openBoxes().whenComplete(() {
-      if (mounted)
-        setState(() {
-          loaded = true;
-          placeholder = '0.00';
-          currentRateStr =
-              '1 ${fromCur.currencyCode} = $exchangeRate ${toCur.currencyCode}.';
-        });
+      updateExchange();
     });
+  }
+
+  void updateExchange() {
+    fromCur = fromBox.getAt(widget.index);
+    toCur = toBox.getAt(widget.index);
+
+    if (fromCur.currencyCode == toCur.currencyCode)
+      exchangeRate = 1.0;
+    else {
+      final Box baseBox = Hive.box(fromCur.currencyCode);
+      exchangeRate = baseBox.get(toCur.currencyCode);
+    }
+
+    if (mounted)
+      setState(() {
+        loaded = true;
+        placeholder = '0.00';
+        currentRateStr =
+            '1 ${fromCur.currencyCode} = $exchangeRate ${toCur.currencyCode}.';
+      });
   }
 
   @override
@@ -76,13 +88,7 @@ class _CardUIState extends State<CardUI> {
                   children: [
                     buttonCurrency(CommonsData.fromBox),
                     buttonCurrency(CommonsData.toBox),
-                    IconButton(
-                      onPressed: () {
-                        fromBox.deleteAt(widget.index);
-                        toBox.deleteAt(widget.index);
-                      },
-                      icon: Icon(Icons.more_vert_rounded),
-                    )
+                    popUpMenuCustom(),
                   ],
                 ),
                 Text(
@@ -98,7 +104,7 @@ class _CardUIState extends State<CardUI> {
   Widget buttonCurrency(String method) {
     return Expanded(
       child: ValueListenableBuilder(
-        valueListenable: Hive.box(method).listenable(keys: [widget.index]),
+        valueListenable: Hive.box(method).listenable(),
         builder: (BuildContext context, Box data, Widget child) {
           CurrencyListItem currencyListItem =
               data.values.elementAt(widget.index);
@@ -110,11 +116,14 @@ class _CardUIState extends State<CardUI> {
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: FixedValues.roundShapeLarge,
-                  onPressed: () => CurrencyChooser.show(
-                    context: context,
-                    index: widget.index,
-                    method: method,
-                  ),
+                  onPressed: () async {
+                    await CurrencyChooser.show(
+                      context: context,
+                      index: widget.index,
+                      method: method,
+                    );
+                    updateExchange();
+                  },
                   icon: FlagIcon(
                     flagURL: currencyListItem.flagURL,
                   ),
@@ -154,13 +163,11 @@ class _CardUIState extends State<CardUI> {
 
       double toVal =
           double.tryParse(controllerFrom.text.replaceAll(',', '').trim());
-      fromCur = fromBox.getAt(widget.index);
-      toCur = toBox.getAt(widget.index);
 
-      final Box baseBox = Hive.box(fromCur.currencyCode);
-      exchangeRate = baseBox.get(toCur.currencyCode);
-
-      if (toVal != null) controllerTo.text = (toVal * exchangeRate).toString();
+      if (toVal != null)
+        controllerTo.text = (toVal * exchangeRate).toString();
+      else
+        controllerTo.clear();
     }
   }
 
@@ -169,6 +176,37 @@ class _CardUIState extends State<CardUI> {
     symbol: '',
     locale: 'en_US',
   );
+
+  Widget popUpMenuCustom() {
+    return PopupMenuButton(
+      icon: Icon(Icons.more_vert),
+      shape: FixedValues.roundShapeBtns,
+      itemBuilder: (context) => <PopupMenuEntry>[
+        PopupMenuItem(
+          enabled: false,
+          value: 1,
+          child: MaterialButton(
+            onPressed: () {
+              fromBox.deleteAt(widget.index);
+              toBox.deleteAt(widget.index);
+              Navigator.pop(context);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 14.0,
+              ),
+              child: Text(
+                'Remove',
+                style: FixedValues.semiBoldStyle,
+              ),
+            ),
+            shape: FixedValues.roundShapeBtns,
+          ),
+        ),
+      ],
+      onSelected: (val) {},
+    );
+  }
 
   Widget getTextField(String method) {
     return Padding(

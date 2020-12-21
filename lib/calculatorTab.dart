@@ -27,11 +27,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
     getCurrentMetrics();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void getCurrentMetrics() async {
     final prefs = await SharedPreferences.getInstance();
     final current = prefs.getString('metrics') ?? 'RAD';

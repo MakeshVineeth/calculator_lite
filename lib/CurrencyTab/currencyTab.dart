@@ -79,8 +79,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
                       onPressed: () {
                         _formKey.currentState.reset();
                       },
-                      child: Icon(
-                        Icons.clear_all_outlined,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.clear_all_outlined,
+                        ),
                       ),
                     ),
                   ],
@@ -140,7 +143,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   TextStyle statusStyle() => TextStyle(
         fontWeight: FontWeight.w600,
-        height: 1.7,
+        height: 1.8,
       );
 
   final _formKey = GlobalKey<FormState>();
