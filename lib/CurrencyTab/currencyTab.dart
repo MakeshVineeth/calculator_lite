@@ -77,7 +77,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
                     MaterialButton(
                       shape: FixedValues.roundShapeBtns,
                       onPressed: () {
-                        _formKey.currentState.reset();
+                        setState(() {
+                          _formKey.currentState.reset();
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
