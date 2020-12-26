@@ -88,9 +88,11 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+    FocusScope.of(context).unfocus();
+    if (mounted)
+      setState(() {
+        _currentIndex = index;
+      });
   }
 
   void setFlatStatusBar() {

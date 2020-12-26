@@ -92,7 +92,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
             ),
           ),
           IconButton(
-            onPressed: () => addCurrencyCard(),
+            onPressed: () async => await addCurrencyCard(),
             iconSize: 30,
             icon: Icon(Icons.add_circle_rounded),
           ),
@@ -102,17 +102,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
           Expanded(
             child: FutureBuilder(
               future: runData(),
-              builder: (context, snapshot) {
-                return AnimatedCrossFade(
-                  crossFadeState:
-                      (snapshot.connectionState == ConnectionState.done)
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond,
-                  duration: CommonsData.dur1,
-                  firstChild: widgetsData(snapshot),
-                  secondChild: Center(child: CircularProgressIndicator()),
-                );
-              },
+              builder: (context, snapshot) => widgetsData(snapshot),
             ),
           )
         ],
@@ -120,7 +110,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
     );
   }
 
-  void addCurrencyCard() async {
+  Future<void> addCurrencyCard() async {
     final list = Hive.box(CommonsData.currencyListBox);
     if (list.length > 0) {
       Random random = Random();
@@ -151,34 +141,31 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Widget widgetsData(AsyncSnapshot snapshot) => AnimatedCrossFade(
-        crossFadeState: snapshot.connectionState == ConnectionState.done
-            ? CrossFadeState.showFirst
-            : CrossFadeState.showSecond,
-        duration: CommonsData.dur1,
-        secondChild: Center(
-          child: CircularProgressIndicator(),
-        ),
-        firstChild: Form(
-          key: _formKey,
-          child: ValueListenableBuilder(
-            valueListenable: Hive.box(CommonsData.toBox).listenable(),
-            builder: (context, fromBox, widget) => AnimationLimiter(
-              child: ListView.builder(
-                controller: _scrollController,
-                physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                itemCount: fromBox.length,
-                itemBuilder: (context, index) =>
-                    AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: CommonsData.dur1,
-                  child: SlideAnimation(
-                    horizontalOffset: 50.0,
-                    child: FadeInAnimation(
-                      duration: CommonsData.dur1,
-                      child: CardUI(index: index),
-                    ),
+  Widget widgetsData(AsyncSnapshot snapshot) {
+    if (snapshot.connectionState == ConnectionState.done) {
+      final Box toBox = Hive.box(CommonsData.toBox);
+
+      return Form(
+        key: _formKey,
+        child: ValueListenableBuilder(
+          valueListenable: toBox.listenable(),
+          builder: (context, fromBox, widget) => AnimationLimiter(
+            child: ListView.builder(
+              addAutomaticKeepAlives: true,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              controller: _scrollController,
+              physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              itemCount: fromBox.length,
+              itemBuilder: (context, index) =>
+                  AnimationConfiguration.staggeredList(
+                position: index,
+                duration: CommonsData.dur1,
+                child: SlideAnimation(
+                  horizontalOffset: 50.0,
+                  child: FadeInAnimation(
+                    duration: CommonsData.dur1,
+                    child: CardUI(index: index),
                   ),
                 ),
               ),
@@ -186,4 +173,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
           ),
         ),
       );
+    } else
+      return Center(child: CircularProgressIndicator());
+  }
 }

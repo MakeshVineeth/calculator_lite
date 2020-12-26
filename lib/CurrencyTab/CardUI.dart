@@ -18,7 +18,7 @@ class CardUI extends StatefulWidget {
   _CardUIState createState() => _CardUIState();
 }
 
-class _CardUIState extends State<CardUI> {
+class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
   static String initial = '';
   final controllerFrom = TextEditingController(text: initial);
   final controllerTo = TextEditingController(text: initial);
@@ -69,6 +69,7 @@ class _CardUIState extends State<CardUI> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
       child: Card(
@@ -133,6 +134,8 @@ class _CardUIState extends State<CardUI> {
                 setState(() {
                   updateExchange();
                 });
+
+                handleFromText(controllerFrom.text, CommonsData.fromBox);
               },
               icon: FlagIcon(
                 flagURL: currencyListItem.flagURL,
@@ -194,15 +197,13 @@ class _CardUIState extends State<CardUI> {
           enabled: false,
           value: 1,
           child: MaterialButton(
-            onPressed: () {
-              fromBox.deleteAt(widget.index);
-              toBox.deleteAt(widget.index);
+            onPressed: () async {
               Navigator.pop(context);
+              await fromBox.deleteAt(widget.index);
+              await toBox.deleteAt(widget.index);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 14.0,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
               child: Text(
                 'Remove',
                 style: FixedValues.semiBoldStyle,
@@ -212,7 +213,9 @@ class _CardUIState extends State<CardUI> {
           ),
         ),
       ],
-      onSelected: (val) {},
+      onSelected: (val) {
+        FocusScope.of(context).unfocus();
+      },
     );
   }
 
@@ -252,4 +255,7 @@ class _CardUIState extends State<CardUI> {
   TextStyle textFieldStyle(BuildContext context) => TextStyle(
         fontWeight: FontWeight.w600,
       );
+
+  @override
+  bool get wantKeepAlive => true;
 }

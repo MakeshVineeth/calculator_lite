@@ -16,6 +16,8 @@ class CurrencyChooser extends StatelessWidget {
 
   CurrencyChooser({@required this.boxIndex, @required this.method});
 
+  final Duration _duration = const Duration(milliseconds: 300);
+
   @override
   Widget build(BuildContext context) {
     return FadeScale(
@@ -26,6 +28,7 @@ class CurrencyChooser extends StatelessWidget {
           width: MediaQuery.of(context).size.width / 2,
           child: AnimationLimiter(
             child: ListView.builder(
+              addAutomaticKeepAlives: true,
               physics: BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               itemCount: listBoxes.values.length,
@@ -35,16 +38,18 @@ class CurrencyChooser extends StatelessWidget {
 
                 return AnimationConfiguration.staggeredList(
                   position: index,
-                  duration: const Duration(milliseconds: 400),
+                  duration: _duration,
                   child: SlideAnimation(
                     verticalOffset: 20.0,
                     child: FadeInAnimation(
-                      duration: const Duration(milliseconds: 500),
+                      duration: _duration,
                       child: ListTile(
                         shape: FixedValues.roundShapeLarge,
-                        onTap: () {
+                        onTap: () async {
                           Box box = Hive.box(method);
-                          box.putAt(boxIndex, currencyListItem);
+                          await box.putAt(boxIndex, currencyListItem);
+                          await Hive.openBox(currencyListItem.currencyCode);
+                          FocusScope.of(context).unfocus();
                           Navigator.of(context, rootNavigator: true).pop();
                         },
                         leading: FlagIcon(
