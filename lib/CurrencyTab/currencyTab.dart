@@ -27,9 +27,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   int n = 0;
+  CurrencyData currencyData = CurrencyData();
 
   Future<void> runData() async {
-    CurrencyData currencyData = CurrencyData();
     await currencyData.getRemoteData(context);
     await Hive.openBox(CommonsData.fromBox);
     await Hive.openBox(CommonsData.toBox);
@@ -151,7 +151,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   Widget widgetsData(AsyncSnapshot snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (!snapshot.hasError) {
-        final box = Hive.box(CommonsData.fromBox);
+        final box = Hive.box(CommonsData.toBox);
         return Form(
           key: _formKey,
           child: ValueListenableBuilder(

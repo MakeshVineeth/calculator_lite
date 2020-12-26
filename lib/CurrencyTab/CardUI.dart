@@ -7,7 +7,6 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 class CardUI extends StatefulWidget {
@@ -43,7 +42,9 @@ class _CardUIState extends State<CardUI> {
       await Hive.openBox(toCur.currencyCode);
 
       updateExchange();
-    } catch (e) {}
+    } catch (e) {
+      print('Exception openBoxes: ' + e.toString());
+    }
   }
 
   void updateExchange() {
@@ -55,12 +56,15 @@ class _CardUIState extends State<CardUI> {
         exchangeRate = 1.0;
       else {
         final Box baseBox = Hive.box(fromCur.currencyCode);
-        exchangeRate = baseBox.get(toCur.currencyCode);
+        var value = baseBox.get(toCur.currencyCode);
+        exchangeRate = (value is int) ? value.ceilToDouble() : value;
       }
 
       currentRateStr =
           '1 ${fromCur.currencyCode} = $exchangeRate ${toCur.currencyCode}.';
-    } catch (e) {}
+    } catch (e) {
+      print('Exception updateExchange: ' + e.toString());
+    }
   }
 
   @override
@@ -97,7 +101,11 @@ class _CardUIState extends State<CardUI> {
               return Container(
                 width: MediaQuery.of(context).size.width,
                 height: 150.0,
-                child: Center(child: Text('Loading...')),
+                child: Center(
+                    child: Icon(
+                  Icons.cached_rounded,
+                  color: Theme.of(context).primaryColor,
+                )),
               );
           },
         ),
@@ -106,44 +114,42 @@ class _CardUIState extends State<CardUI> {
   }
 
   Widget buttonCurrency(String method) {
-    return Expanded(
-      child: ValueListenableBuilder(
-        valueListenable: Hive.box(method).listenable(),
-        builder: (BuildContext context, Box data, Widget child) {
-          CurrencyListItem currencyListItem =
-              data.values.elementAt(widget.index);
+    final Box box = Hive.box(method);
+    CurrencyListItem currencyListItem = box.values.elementAt(widget.index);
 
-          return ListTile(
-            title: Row(
-              children: [
-                RaisedButton.icon(
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: FixedValues.roundShapeLarge,
-                  onPressed: () async {
-                    await CurrencyChooser.show(
-                      context: context,
-                      index: widget.index,
-                      method: method,
-                    );
-                    updateExchange();
-                  },
-                  icon: FlagIcon(
-                    flagURL: currencyListItem.flagURL,
-                  ),
-                  label: Text(
-                    currencyListItem.currencyCode,
-                    style: const TextStyle(
-                      height: 1,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                )
-              ],
-            ),
-            subtitle: getTextField(method),
-          );
-        },
+    return Expanded(
+      child: ListTile(
+        title: Row(
+          children: [
+            RaisedButton.icon(
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: FixedValues.roundShapeLarge,
+              onPressed: () async {
+                await CurrencyChooser.show(
+                  context: context,
+                  index: widget.index,
+                  method: method,
+                );
+
+                setState(() {
+                  updateExchange();
+                });
+              },
+              icon: FlagIcon(
+                flagURL: currencyListItem.flagURL,
+              ),
+              label: Text(
+                currencyListItem.currencyCode,
+                style: const TextStyle(
+                  height: 1,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          ],
+        ),
+        subtitle: getTextField(method),
       ),
     );
   }

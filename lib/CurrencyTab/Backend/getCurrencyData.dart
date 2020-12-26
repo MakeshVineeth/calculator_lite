@@ -8,18 +8,46 @@ import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 class CurrencyData {
   Dio dio = Dio();
 
-  Future<void> getRemoteData(BuildContext context) async {
+  Future<String> getRemoteData(BuildContext context) async {
     try {
+      DateTime now = DateTime.now();
+      bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
+
+      if (checkDateBox) {
+        final Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
+
+        String lastChecked = dateBox.get(CommonsData.lastDateChecked);
+        DateTime lastCheckedDate = DateTime.tryParse(lastChecked) ?? null;
+
+        if (lastCheckedDate != null &&
+            lastCheckedDate.year == now.year &&
+            lastCheckedDate.day == now.day &&
+            lastCheckedDate.month == now.month) return CommonsData.successToken;
+      }
+
       Response _getBaseData =
           await dio.get(CommonsData.remoteUrl); // EUR by default.
 
       if (_getBaseData != null) {
         Map _baseJson = Map<String, dynamic>.from(_getBaseData.data);
 
-        // Sets the newly updated date.
+        // Gets the newly updated date online.
         String updatedDate = _baseJson['date'];
-        Box lastUpdate = await Hive.openBox(CommonsData.updatedDateBox);
-        lastUpdate.put(CommonsData.updatedDateKey, updatedDate);
+        if (checkDateBox) {
+          final Box dateBox = Hive.box(CommonsData.updatedDateBox);
+          String dateStr = dateBox.get(CommonsData.updatedDateKey);
+          DateTime dateTimeObj = DateTime.tryParse(dateStr) ?? null;
+          DateTime online = DateTime.tryParse(updatedDate) ?? null;
+
+          if (dateTimeObj != null &&
+              dateTimeObj.year == online.year &&
+              dateTimeObj.day == online.day &&
+              dateTimeObj.month == online.month) {
+            await dateBox.put(CommonsData.lastDateChecked,
+                '${now.year}-${now.month}-${now.day}');
+            return CommonsData.successToken;
+          }
+        }
 
         // get a list of all currencies.
         Map _ratesListBase = _baseJson['rates'];
@@ -29,7 +57,11 @@ class CurrencyData {
 
         for (String currentBase in allCurrencies) {
           String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
-          await insertData(currentBase, currentBaseUrl);
+          await insertData(
+              currency: currentBase,
+              currentBaseUrl: currentBaseUrl,
+              jsonData:
+                  (currentBase.toLowerCase() == 'eur') ? _baseJson : null);
         }
 
         // get list of all currencies and store it with Name, FlagURL, Code.
@@ -38,11 +70,24 @@ class CurrencyData {
               currencyCode: allCurrencies.elementAt(count),
               context: context,
               keyIndex: count);
+
+        Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
+        await dateBox.put(CommonsData.updatedDateKey, updatedDate);
+        await dateBox.put(
+            CommonsData.lastDateChecked, '${now.year}-${now.month}-${now.day}');
+
+        return CommonsData.successToken;
       }
+
+      // For response null.
+      else
+        return CommonsData.errorToken;
     } on DioError catch (e) {
       print('Exception: ' + e.toString());
+      return e.toString();
     } catch (e) {
-      print('Exception: ' + e.toString());
+      print('Exception getRemoteData: ' + e.toString());
+      return e.toString();
     }
   }
 
@@ -79,28 +124,35 @@ class CurrencyData {
     await currencyBox.put(keyIndex, currencyListItem);
   }
 
-  Future<void> insertData(String currency, String currentBaseUrl) async {
+  Future<String> insertData(
+      {@required String currency,
+      @required String currentBaseUrl,
+      Map jsonData}) async {
     final box = await Hive.openBox(currency.toLowerCase());
     try {
+      // if jsonData not null, meaning this currency data already exists, no need to get response again.
+      if (jsonData != null) {
+        Map rates = jsonData['rates'] as Map;
+        await box.putAll(rates);
+        return CommonsData.successToken;
+      }
+
       Response response = await dio.get(currentBaseUrl);
 
       if (response != null) {
         Map data = Map<String, dynamic>.from(response.data);
         Map rates = data['rates'] as Map;
-        /*
-        for (MapEntry each in rates.entries) {
-          String key = each.key.toString();
-          String val = each.value.toString();
-
-          await box.put(key, val);
-        }*/
 
         await box.putAll(rates);
-      }
+        return CommonsData.successToken;
+      } else
+        return CommonsData.errorToken;
     } on DioError catch (e) {
       print('Dio Error: ' + e.toString());
+      return CommonsData.errorToken;
     } catch (e) {
       print('Exception: ' + e.toString());
+      return CommonsData.errorToken;
     }
   }
 }
