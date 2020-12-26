@@ -37,7 +37,7 @@ class CurrencyChooser extends StatelessWidget {
                   position: index,
                   duration: const Duration(milliseconds: 400),
                   child: SlideAnimation(
-                    verticalOffset: 50.0,
+                    verticalOffset: 20.0,
                     child: FadeInAnimation(
                       duration: const Duration(milliseconds: 500),
                       child: ListTile(

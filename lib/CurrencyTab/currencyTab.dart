@@ -93,10 +93,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
           ),
           IconButton(
             onPressed: () => addCurrencyCard(),
-            icon: Icon(
-              Icons.add_circle_rounded,
-              size: 35,
-            ),
+            iconSize: 30,
+            icon: Icon(Icons.add_circle_rounded),
           ),
           SizedBox(
             height: 10,
@@ -165,11 +163,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
                 itemBuilder: (context, index) =>
                     AnimationConfiguration.staggeredList(
                   position: index,
-                  duration: const Duration(milliseconds: 800),
+                  duration: CommonsData.dur1,
                   child: SlideAnimation(
                     horizontalOffset: 50.0,
                     child: FadeInAnimation(
-                      duration: const Duration(milliseconds: 800),
+                      duration: CommonsData.dur1,
                       child: CardUI(index: index),
                     ),
                   ),
@@ -179,7 +177,10 @@ class _CurrencyTabState extends State<CurrencyTab> {
           ),
         );
       } else
-        return Text('Error'); // for error receiving.
+        return Center(
+            child: Text(
+          'An Error has Occurred.',
+        )); // for error receiving.
     } else
       return Center(child: CircularProgressIndicator());
   }

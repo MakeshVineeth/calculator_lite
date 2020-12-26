@@ -6,6 +6,7 @@ import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
@@ -78,34 +79,40 @@ class _CardUIState extends State<CardUI> {
           future: openBoxes(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done)
-              return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          buttonCurrency(CommonsData.fromBox),
-                          buttonCurrency(CommonsData.toBox),
-                          popUpMenuCustom(),
-                        ],
-                      ),
-                      Text(
-                        currentRateStr,
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ));
+              return FadeInAnimation(
+                duration: CommonsData.dur1,
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            buttonCurrency(CommonsData.fromBox),
+                            buttonCurrency(CommonsData.toBox),
+                            popUpMenuCustom(),
+                          ],
+                        ),
+                        Text(
+                          currentRateStr,
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    )),
+              );
             else
-              return Container(
-                width: MediaQuery.of(context).size.width,
-                height: 150.0,
-                child: Center(
-                    child: Icon(
-                  Icons.cached_rounded,
-                  color: Theme.of(context).primaryColor,
-                )),
+              return FadeInAnimation(
+                duration: CommonsData.dur1,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 145.0,
+                  child: Center(
+                      child: Icon(
+                    Icons.cached_rounded,
+                    color: Theme.of(context).primaryColor,
+                  )),
+                ),
               );
           },
         ),

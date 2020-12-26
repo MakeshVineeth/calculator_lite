@@ -17,12 +17,11 @@ class CurrencyData {
         final Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
 
         String lastChecked = dateBox.get(CommonsData.lastDateChecked);
-        DateTime lastCheckedDate = DateTime.tryParse(lastChecked) ?? null;
+        DateTime lastCheckedDate = DateTime.tryParse(lastChecked);
 
         if (lastCheckedDate != null &&
-            lastCheckedDate.year == now.year &&
-            lastCheckedDate.day == now.day &&
-            lastCheckedDate.month == now.month) return CommonsData.successToken;
+            lastCheckedDate.difference(now).inHours <= 3)
+          return CommonsData.successToken;
       }
 
       Response _getBaseData =
@@ -36,15 +35,14 @@ class CurrencyData {
         if (checkDateBox) {
           final Box dateBox = Hive.box(CommonsData.updatedDateBox);
           String dateStr = dateBox.get(CommonsData.updatedDateKey);
-          DateTime dateTimeObj = DateTime.tryParse(dateStr) ?? null;
-          DateTime online = DateTime.tryParse(updatedDate) ?? null;
+          DateTime dateTimeObj = DateTime.tryParse(dateStr);
+          DateTime online = DateTime.tryParse(updatedDate);
 
           if (dateTimeObj != null &&
               dateTimeObj.year == online.year &&
               dateTimeObj.day == online.day &&
               dateTimeObj.month == online.month) {
-            await dateBox.put(CommonsData.lastDateChecked,
-                '${now.year}-${now.month}-${now.day}');
+            await dateBox.put(CommonsData.lastDateChecked, now.toString());
             return CommonsData.successToken;
           }
         }
@@ -73,8 +71,7 @@ class CurrencyData {
 
         Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
         await dateBox.put(CommonsData.updatedDateKey, updatedDate);
-        await dateBox.put(
-            CommonsData.lastDateChecked, '${now.year}-${now.month}-${now.day}');
+        await dateBox.put(CommonsData.lastDateChecked, now.toString());
 
         return CommonsData.successToken;
       }

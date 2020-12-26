@@ -193,7 +193,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
-            shape: FixedValues.roundShapeLarge,
           ),
           onPressed: changeMetrics,
           child: Text(

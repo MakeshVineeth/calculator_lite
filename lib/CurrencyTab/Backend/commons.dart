@@ -13,4 +13,6 @@ class CommonsData {
   static const retryString = 'Retrying...';
   static const progressToken = 'Downloading...';
   static const checkingStr = 'Checking...';
+
+  static final Duration dur1 = const Duration(milliseconds: 800);
 }

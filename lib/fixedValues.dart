@@ -64,6 +64,7 @@ class FixedValues {
       scaffoldBackgroundColor: background,
       bottomAppBarColor: background,
       backgroundColor: background,
+      iconTheme: IconThemeData(color: foreground),
       appBarTheme: AppBarTheme(
           brightness: brightness,
           centerTitle: true,
@@ -84,9 +85,11 @@ class FixedValues {
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(background),
           foregroundColor: MaterialStateProperty.all(foreground),
+          shape: MaterialStateProperty.all(roundShapeLarge),
           elevation: isLight
               ? MaterialStateProperty.all(2.0)
               : MaterialStateProperty.all(20.0),
+          overlayColor: MaterialStateProperty.all(Colors.grey[100]),
         ),
       ),
     );
