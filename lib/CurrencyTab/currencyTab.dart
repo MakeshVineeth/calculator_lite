@@ -103,10 +103,15 @@ class _CurrencyTabState extends State<CurrencyTab> {
             child: FutureBuilder(
               future: runData(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done)
-                  return widgetsData(snapshot);
-                else
-                  return Center(child: CircularProgressIndicator());
+                return AnimatedCrossFade(
+                  crossFadeState:
+                      (snapshot.connectionState == ConnectionState.done)
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
+                  duration: CommonsData.dur1,
+                  firstChild: widgetsData(snapshot),
+                  secondChild: Center(child: CircularProgressIndicator()),
+                );
               },
             ),
           )
@@ -146,14 +151,18 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Widget widgetsData(AsyncSnapshot snapshot) {
-    if (snapshot.connectionState == ConnectionState.done) {
-      if (!snapshot.hasError) {
-        final box = Hive.box(CommonsData.toBox);
-        return Form(
+  Widget widgetsData(AsyncSnapshot snapshot) => AnimatedCrossFade(
+        crossFadeState: snapshot.connectionState == ConnectionState.done
+            ? CrossFadeState.showFirst
+            : CrossFadeState.showSecond,
+        duration: CommonsData.dur1,
+        secondChild: Center(
+          child: CircularProgressIndicator(),
+        ),
+        firstChild: Form(
           key: _formKey,
           child: ValueListenableBuilder(
-            valueListenable: box.listenable(),
+            valueListenable: Hive.box(CommonsData.toBox).listenable(),
             builder: (context, fromBox, widget) => AnimationLimiter(
               child: ListView.builder(
                 controller: _scrollController,
@@ -175,13 +184,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
               ),
             ),
           ),
-        );
-      } else
-        return Center(
-            child: Text(
-          'An Error has Occurred.',
-        )); // for error receiving.
-    } else
-      return Center(child: CircularProgressIndicator());
-  }
+        ),
+      );
 }

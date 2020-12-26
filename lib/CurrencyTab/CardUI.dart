@@ -6,14 +6,13 @@ import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 class CardUI extends StatefulWidget {
   final int index;
 
-  CardUI({@required this.index});
+  const CardUI({@required this.index});
 
   @override
   _CardUIState createState() => _CardUIState();
@@ -77,44 +76,36 @@ class _CardUIState extends State<CardUI> {
         shape: FixedValues.roundShapeLarge,
         child: FutureBuilder(
           future: openBoxes(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done)
-              return FadeInAnimation(
-                duration: CommonsData.dur1,
-                child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
+          builder: (context, snapshot) => AnimatedCrossFade(
+            crossFadeState: snapshot.connectionState == ConnectionState.done
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            duration: CommonsData.dur1,
+            firstChild: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            buttonCurrency(CommonsData.fromBox),
-                            buttonCurrency(CommonsData.toBox),
-                            popUpMenuCustom(),
-                          ],
-                        ),
-                        Text(
-                          currentRateStr,
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
+                        buttonCurrency(CommonsData.fromBox),
+                        buttonCurrency(CommonsData.toBox),
+                        popUpMenuCustom(),
                       ],
-                    )),
-              );
-            else
-              return FadeInAnimation(
-                duration: CommonsData.dur1,
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 145.0,
-                  child: Center(
-                      child: Icon(
-                    Icons.cached_rounded,
-                    color: Theme.of(context).primaryColor,
-                  )),
-                ),
-              );
-          },
+                    ),
+                    Text(
+                      currentRateStr,
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                )),
+            secondChild: Container(
+              width: MediaQuery.of(context).size.width,
+              height: 135.0,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          ),
         ),
       ),
     );
