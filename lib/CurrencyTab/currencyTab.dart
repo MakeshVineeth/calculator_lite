@@ -30,56 +30,63 @@ class _CurrencyTabState extends State<CurrencyTab> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Card(
-            shape: FixedValues.roundShapeLarge,
-            child: InkWell(
-              borderRadius: FixedValues.large,
-              onTap: () {},
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: UpdateColumn(),
-                    ),
-                    MaterialButton(
-                      shape: FixedValues.roundShapeBtns,
-                      onPressed: () {
-                        setState(() {
-                          _formKey.currentState.reset();
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.clear_all_outlined,
-                        ),
+      child: FutureBuilder(
+        future: copyData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done)
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Card(
+                  shape: FixedValues.roundShapeLarge,
+                  child: InkWell(
+                    borderRadius: FixedValues.large,
+                    onTap: () {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: UpdateColumn(),
+                          ),
+                          MaterialButton(
+                            shape: FixedValues.roundShapeBtns,
+                            onPressed: () {
+                              setState(() {
+                                _formKey.currentState.reset();
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                Icons.clear_all_outlined,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-          IconButton(
-            onPressed: () async => await addCurrencyCard(),
-            iconSize: 30,
-            icon: Icon(Icons.add_circle_rounded),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: FutureBuilder(
-              future: copyData(),
-              builder: (context, snapshot) => widgetsData(snapshot),
-            ),
-          )
-        ],
+                IconButton(
+                  onPressed: () async => await addCurrencyCard(),
+                  iconSize: 30,
+                  icon: Icon(Icons.add_circle_rounded),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                  child: widgetsData(),
+                )
+              ],
+            );
+          else
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+        },
       ),
     );
   }
@@ -110,39 +117,36 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Widget widgetsData(AsyncSnapshot snapshot) {
-    if (snapshot.connectionState == ConnectionState.done) {
-      final Box toBox = Hive.box(CommonsData.toBox);
+  Widget widgetsData() {
+    final Box toBox = Hive.box(CommonsData.toBox);
 
-      return Form(
-        key: _formKey,
-        child: ValueListenableBuilder(
-          valueListenable: toBox.listenable(),
-          builder: (context, fromBox, widget) => AnimationLimiter(
-            child: ListView.builder(
-              addAutomaticKeepAlives: true,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              controller: _scrollController,
-              physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
-              itemCount: fromBox.length,
-              itemBuilder: (context, index) =>
-                  AnimationConfiguration.staggeredList(
-                position: index,
-                duration: CommonsData.dur1,
-                child: SlideAnimation(
-                  horizontalOffset: 50.0,
-                  child: FadeInAnimation(
-                    duration: CommonsData.dur1,
-                    child: CardUI(index: index),
-                  ),
+    return Form(
+      key: _formKey,
+      child: ValueListenableBuilder(
+        valueListenable: toBox.listenable(),
+        builder: (context, fromBox, widget) => AnimationLimiter(
+          child: ListView.builder(
+            addAutomaticKeepAlives: true,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            controller: _scrollController,
+            physics:
+                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            itemCount: fromBox.length,
+            itemBuilder: (context, index) =>
+                AnimationConfiguration.staggeredList(
+              position: index,
+              duration: CommonsData.dur1,
+              child: SlideAnimation(
+                horizontalOffset: 50.0,
+                child: FadeInAnimation(
+                  duration: CommonsData.dur1,
+                  child: CardUI(index: index),
                 ),
               ),
             ),
           ),
         ),
-      );
-    } else
-      return Center(child: CircularProgressIndicator());
+      ),
+    );
   }
 }
