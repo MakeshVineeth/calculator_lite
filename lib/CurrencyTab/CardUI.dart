@@ -6,6 +6,7 @@ import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
@@ -82,25 +83,41 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,
             duration: CommonsData.dur1,
-            firstChild: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        buttonCurrency(CommonsData.fromBox),
-                        buttonCurrency(CommonsData.toBox),
-                        popUpMenuCustom(),
-                      ],
-                    ),
-                    Text(
-                      currentRateStr,
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                )),
+            firstChild: Slidable(
+              actionPane: SlidableDrawerActionPane(),
+              secondaryActions: [
+                ClipRRect(
+                  borderRadius: FixedValues.large,
+                  child: SlideAction(
+                    onTap: () async {
+                      await fromBox.deleteAt(widget.index);
+                      await toBox.deleteAt(widget.index);
+                      FocusScope.of(context).unfocus();
+                    },
+                    closeOnTap: true,
+                    child: Icon(Icons.delete_outline),
+                  ),
+                ),
+              ],
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          buttonCurrency(CommonsData.fromBox),
+                          buttonCurrency(CommonsData.toBox),
+                        ],
+                      ),
+                      Text(
+                        currentRateStr,
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  )),
+            ),
             secondChild: Container(
               width: MediaQuery.of(context).size.width,
               height: 135.0,
@@ -187,37 +204,6 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
     symbol: '',
     locale: 'en_US',
   );
-
-  Widget popUpMenuCustom() {
-    return PopupMenuButton(
-      icon: Icon(Icons.more_vert),
-      shape: FixedValues.roundShapeBtns,
-      itemBuilder: (context) => <PopupMenuEntry>[
-        PopupMenuItem(
-          enabled: false,
-          value: 1,
-          child: MaterialButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await fromBox.deleteAt(widget.index);
-              await toBox.deleteAt(widget.index);
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-              child: Text(
-                'Remove',
-                style: FixedValues.semiBoldStyle,
-              ),
-            ),
-            shape: FixedValues.roundShapeBtns,
-          ),
-        ),
-      ],
-      onSelected: (val) {
-        FocusScope.of(context).unfocus();
-      },
-    );
-  }
 
   Widget getTextField(String method) {
     return Padding(
