@@ -26,6 +26,7 @@ dependencies:
     sdk: flutter
   angles: ^1.2.1
   animations: ^1.1.2
+  archive: ^2.0.13
   auto_size_text_field: ^0.1.6
   country_icons: ^1.1.1
   decimal: ^0.3.5

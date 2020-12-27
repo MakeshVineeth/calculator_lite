@@ -1,7 +1,8 @@
 import 'dart:math';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
-import 'package:calculator_lite/CurrencyTab/Backend/getCurrencyData.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/copyData.dart';
 import 'package:calculator_lite/CurrencyTab/CardUI.dart';
+import 'package:calculator_lite/CurrencyTab/updateColumn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -16,9 +17,6 @@ class CurrencyTab extends StatefulWidget {
 
 class _CurrencyTabState extends State<CurrencyTab> {
   final _scrollController = new ScrollController();
-  String lastUpdated = '';
-  String src = '';
-  String status = '';
 
   @override
   void dispose() {
@@ -27,15 +25,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   int n = 0;
-  CurrencyData currencyData = CurrencyData();
-
-  Future<void> runData() async {
-    await currencyData.getRemoteData(context);
-    await Hive.openBox(CommonsData.fromBox);
-    await Hive.openBox(CommonsData.toBox);
-    await Hive.openBox(CommonsData.currencyListBox);
-    await Hive.openBox(CommonsData.updatedDateBox);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,24 +44,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Last Updated: ' + lastUpdated,
-                            style: statusStyle(),
-                          ),
-                          Text(
-                            'Status: ' + status,
-                            style: statusStyle(),
-                          ),
-                          Text(
-                            'Source: ' + src,
-                            style: statusStyle(),
-                          ),
-                        ],
-                      ),
+                      child: UpdateColumn(),
                     ),
                     MaterialButton(
                       shape: FixedValues.roundShapeBtns,
@@ -103,7 +75,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
           ),
           Expanded(
             child: FutureBuilder(
-              future: runData(),
+              future: copyData(),
               builder: (context, snapshot) => widgetsData(snapshot),
             ),
           )
@@ -135,11 +107,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
       });
     }
   }
-
-  TextStyle statusStyle() => TextStyle(
-        fontWeight: FontWeight.w600,
-        height: 1.8,
-      );
 
   final _formKey = GlobalKey<FormState>();
 
