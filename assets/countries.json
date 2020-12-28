@@ -82,12 +82,12 @@
                 "continentName": "South America"
             },
             {
-                "countryCode": "AS",
-                "countryName": "America",
+                "countryCode": "US",
+                "countryName": "United States",
                 "currencyCode": "USD",
-                "population": "57881",
-                "capital": "Pago Pago",
-                "continentName": "Oceania"
+                "population": "310232863",
+                "capital": "Washington",
+                "continentName": "North America"
             },
             {
                 "countryCode": "AT",
@@ -1856,14 +1856,6 @@
                 "population": "0",
                 "capital": "",
                 "continentName": "Oceania"
-            },
-            {
-                "countryCode": "US",
-                "countryName": "United States",
-                "currencyCode": "USD",
-                "population": "310232863",
-                "capital": "Washington",
-                "continentName": "North America"
             },
             {
                 "countryCode": "UY",

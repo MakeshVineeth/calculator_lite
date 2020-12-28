@@ -9,10 +9,11 @@ class CommonsData {
   static const lastDateChecked = 'last_checked';
 
   static const successToken = 'Updated!';
-  static const errorToken = 'Failed';
-  static const retryString = 'Retrying...';
-  static const progressToken = 'Downloading...';
+  static const errorToken = 'Failed.';
+  static const retryString = 'Retrying..';
+  static const progressToken = 'Downloading..';
   static const checkingStr = 'Checking...';
+  static const upToDate = 'Up to date.';
 
   static final Duration dur1 = const Duration(milliseconds: 800);
 }

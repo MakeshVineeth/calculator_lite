@@ -8,66 +8,31 @@ import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 class CurrencyData {
   Dio dio = Dio();
 
-  Future<String> getRemoteData(BuildContext context) async {
+  Future<String> getRemoteData(
+      {@required BuildContext context, @required Map baseJson}) async {
     try {
-      DateTime now = DateTime.now();
-      bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
+      // get a list of all currencies.
+      Map _ratesListBase = baseJson['rates'];
+      List<String> allCurrencies = _ratesListBase.keys.toList();
 
-      Response _getBaseData =
-          await dio.get(CommonsData.remoteUrl); // EUR by default.
+      // for each currency, store it's values in separate boxes. Each currency is used as base.
 
-      if (_getBaseData != null) {
-        Map _baseJson = Map<String, dynamic>.from(_getBaseData.data);
-
-        // Gets the newly updated date online.
-        String updatedDate = _baseJson['date'];
-        if (checkDateBox) {
-          final Box dateBox = Hive.box(CommonsData.updatedDateBox);
-          String dateStr = dateBox.get(CommonsData.updatedDateKey);
-          DateTime dateTimeObj = DateTime.tryParse(dateStr);
-          DateTime online = DateTime.tryParse(updatedDate);
-
-          if (dateTimeObj != null &&
-              dateTimeObj.year == online.year &&
-              dateTimeObj.day == online.day &&
-              dateTimeObj.month == online.month) {
-            await dateBox.put(CommonsData.lastDateChecked, now.toString());
-            return CommonsData.successToken;
-          }
-        }
-
-        // get a list of all currencies.
-        Map _ratesListBase = _baseJson['rates'];
-        List<String> allCurrencies = _ratesListBase.keys.toList();
-
-        // for each currency, store it's values in separate boxes. Each currency is used as base.
-
-        for (String currentBase in allCurrencies) {
-          String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
-          await insertData(
-              currency: currentBase,
-              currentBaseUrl: currentBaseUrl,
-              jsonData:
-                  (currentBase.toLowerCase() == 'eur') ? _baseJson : null);
-        }
-
-        // get list of all currencies and store it with Name, FlagURL, Code.
-        for (int count = 0; count < allCurrencies.length; count++)
-          await writeCurrencyDetails(
-              currencyCode: allCurrencies.elementAt(count),
-              context: context,
-              keyIndex: count);
-
-        Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
-        await dateBox.put(CommonsData.updatedDateKey, updatedDate);
-        await dateBox.put(CommonsData.lastDateChecked, now.toString());
-
-        return CommonsData.successToken;
+      for (String currentBase in allCurrencies) {
+        String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
+        await insertData(
+            currency: currentBase,
+            currentBaseUrl: currentBaseUrl,
+            jsonData: (currentBase.toLowerCase() == 'eur') ? baseJson : null);
       }
 
-      // For response null.
-      else
-        return CommonsData.errorToken;
+      // get list of all currencies and store it with Name, FlagURL, Code.
+      for (int count = 0; count < allCurrencies.length; count++)
+        await writeCurrencyDetails(
+            currencyCode: allCurrencies.elementAt(count),
+            context: context,
+            keyIndex: count);
+
+      return CommonsData.successToken;
     } on DioError catch (e) {
       print('Exception: ' + e.toString());
       return e.toString();
