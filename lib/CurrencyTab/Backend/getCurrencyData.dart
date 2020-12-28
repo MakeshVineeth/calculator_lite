@@ -13,17 +13,6 @@ class CurrencyData {
       DateTime now = DateTime.now();
       bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
 
-      if (checkDateBox) {
-        final Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
-
-        String lastChecked = dateBox.get(CommonsData.lastDateChecked);
-        DateTime lastCheckedDate = DateTime.tryParse(lastChecked);
-
-        if (lastCheckedDate != null &&
-            lastCheckedDate.difference(now).inHours <= 3)
-          return CommonsData.successToken;
-      }
-
       Response _getBaseData =
           await dio.get(CommonsData.remoteUrl); // EUR by default.
 
