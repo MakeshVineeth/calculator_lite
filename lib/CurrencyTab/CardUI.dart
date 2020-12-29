@@ -148,9 +148,10 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
                   method: method,
                 );
 
-                setState(() {
-                  updateExchange();
-                });
+                if (mounted)
+                  setState(() {
+                    updateExchange();
+                  });
 
                 handleFromText(controllerFrom.text, CommonsData.fromBox);
               },

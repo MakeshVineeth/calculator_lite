@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:flutter/cupertino.dart';
 import 'commons.dart';
 import 'package:hive/hive.dart';
@@ -7,6 +8,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 
 class CurrencyData {
   Dio dio = Dio();
+  HelperFunctions helperFunctions = HelperFunctions();
 
   Future<String> getRemoteData(
       {@required BuildContext context, @required Map baseJson}) async {
@@ -47,16 +49,21 @@ class CurrencyData {
       @required BuildContext context,
       @required int keyIndex}) async {
     String flagURL;
-    String countryName;
+    String currencyName;
 
-    String localJson = await DefaultAssetBundle.of(context)
+    String countryJson = await DefaultAssetBundle.of(context)
         .loadString('assets/countries.json');
-    Map data = json.decode(localJson);
+    Map data = json.decode(countryJson);
     List mapsList = data['countries']['country'];
+
+    String currencyJson = await DefaultAssetBundle.of(context)
+        .loadString('assets/currencies.json');
+    Map currencyMap = json.decode(currencyJson);
 
     for (Map eachMap in mapsList) {
       if (eachMap['currencyCode'] == currencyCode) {
-        countryName = eachMap['countryName'];
+        currencyName = currencyMap[currencyCode]['name'];
+        currencyName = helperFunctions.normalizeName(currencyName);
 
         String countryCode =
             eachMap['countryCode'].toString().trim().toLowerCase();
@@ -68,7 +75,7 @@ class CurrencyData {
     final currencyBox = await Hive.openBox(CommonsData.currencyListBox);
     final CurrencyListItem currencyListItem = CurrencyListItem(
       currencyCode: currencyCode,
-      currencyName: countryName, // getting countryName for now.
+      currencyName: currencyName,
       flagURL: flagURL,
     );
 

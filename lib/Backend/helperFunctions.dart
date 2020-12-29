@@ -191,4 +191,9 @@ class HelperFunctions {
   }
 
   bool isInteger(num value) => value is int || value == value?.roundToDouble();
+
+  String normalizeName(String name) => name
+      .split(' ')
+      .map((str) => '${str[0].toUpperCase()}${str.substring(1)}')
+      .join(' ');
 }
