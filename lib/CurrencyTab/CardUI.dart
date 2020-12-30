@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 class CardUI extends StatefulWidget {
@@ -30,6 +31,7 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
   CurrencyListItem fromCur;
   CurrencyListItem toCur;
   double exchangeRate = 0.0;
+  Box fromCurBox;
 
   String placeholder = '0.00';
   String currentRateStr = '';
@@ -37,15 +39,18 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
   Future<void> openBoxes() async {
     try {
       fromCur = fromBox.getAt(widget.index);
-      await Hive.openBox(fromCur.currencyCode);
-
       toCur = toBox.getAt(widget.index);
-      await Hive.openBox(toCur.currencyCode);
+      fromCurBox = await Hive.openBox(fromCur.currencyCode.toLowerCase());
 
       updateExchange();
     } catch (e) {
       print('Exception openBoxes: ' + e.toString());
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   void updateExchange() {
@@ -56,8 +61,8 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
       if (fromCur.currencyCode == toCur.currencyCode)
         exchangeRate = 1.0;
       else {
-        final Box baseBox = Hive.box(fromCur.currencyCode);
-        var value = baseBox.get(toCur.currencyCode);
+        fromCurBox = Hive.box(fromCur.currencyCode.toLowerCase());
+        var value = fromCurBox.get(toCur.currencyCode);
         exchangeRate = (value is int) ? value.ceilToDouble() : value;
       }
 
@@ -78,61 +83,64 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
         shape: FixedValues.roundShapeLarge,
         child: FutureBuilder(
           future: openBoxes(),
-          builder: (context, snapshot) => AnimatedCrossFade(
-            crossFadeState: snapshot.connectionState == ConnectionState.done
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            duration: CommonsData.dur1,
-            firstChild: Slidable(
-              actionPane: SlidableDrawerActionPane(),
-              secondaryActions: [
-                ClipRRect(
-                  borderRadius: FixedValues.large,
-                  child: SlideAction(
-                    onTap: () async {
-                      await fromBox.deleteAt(widget.index);
-                      await toBox.deleteAt(widget.index);
-                      FocusScope.of(context).unfocus();
-                    },
-                    closeOnTap: true,
-                    child: Icon(Icons.delete_outline),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done)
+              return Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                secondaryActions: [
+                  ClipRRect(
+                    borderRadius: FixedValues.large,
+                    child: SlideAction(
+                      onTap: () async {
+                        await fromBox.deleteAt(widget.index);
+                        await toBox.deleteAt(widget.index);
+                        FocusScope.of(context).unfocus();
+                      },
+                      closeOnTap: true,
+                      child: Icon(Icons.delete_outline),
+                    ),
                   ),
-                ),
-              ],
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          buttonCurrency(CommonsData.fromBox),
-                          buttonCurrency(CommonsData.toBox),
-                        ],
-                      ),
-                      Text(
-                        currentRateStr,
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  )),
-            ),
-            secondChild: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 135.0,
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          ),
+                ],
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            buttonCurrency(CommonsData.fromBox),
+                            buttonCurrency(CommonsData.toBox),
+                          ],
+                        ),
+                        ValueListenableBuilder(
+                          valueListenable: fromCurBox.listenable(),
+                          builder: (context, data, child) => currentRateInfo(),
+                        ),
+                      ],
+                    )),
+              );
+            else
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: 135.0,
+                child: Center(child: CircularProgressIndicator()),
+              );
+          },
         ),
       ),
     );
   }
 
-  Widget buttonCurrency(String method) {
-    final Box box = Hive.box(method);
-    CurrencyListItem currencyListItem = box.values.elementAt(widget.index);
+  Widget currentRateInfo() {
+    updateExchange();
+    return Text(
+      currentRateStr,
+      style: TextStyle(fontWeight: FontWeight.w600),
+    );
+  }
 
+  Widget buttonCurrency(String method) {
     return Expanded(
       child: ListTile(
         title: Row(
@@ -156,10 +164,12 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
                 handleFromText(controllerFrom.text, CommonsData.fromBox);
               },
               icon: FlagIcon(
-                flagURL: currencyListItem.flagURL,
+                flagURL: isFromMethod(method) ? fromCur.flagURL : toCur.flagURL,
               ),
               label: Text(
-                currencyListItem.currencyCode,
+                isFromMethod(method)
+                    ? fromCur.currencyCode
+                    : toCur.currencyCode,
                 style: const TextStyle(
                   height: 1,
                   fontWeight: FontWeight.w600,
@@ -173,9 +183,11 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
     );
   }
 
+  bool isFromMethod(String method) => method == CommonsData.fromBox;
+
   final HelperFunctions helperFunctions = HelperFunctions();
   void handleFromText(String from, String method) {
-    if (method == CommonsData.fromBox) {
+    if (isFromMethod(method)) {
       from = from.replaceAll(',', '');
 
       if (!from.endsWith('.')) {
@@ -206,38 +218,35 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
     locale: 'en_US',
   );
 
-  Widget getTextField(String method) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Card(
-        shape: FixedValues.roundShapeLarge,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: TextFormField(
-            controller:
-                method == CommonsData.fromBox ? controllerFrom : controllerTo,
-            keyboardType: TextInputType.numberWithOptions(
-              decimal: true,
-              signed: true,
-            ),
-            style: textFieldStyle(context),
-            onChanged: (str) => handleFromText(str, method),
-            readOnly: (method == CommonsData.fromBox) ? false : true,
-            showCursor: true,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintStyle: TextStyle(
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w600,
+  Widget getTextField(String method) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Card(
+          shape: FixedValues.roundShapeLarge,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: TextFormField(
+              controller: isFromMethod(method) ? controllerFrom : controllerTo,
+              keyboardType: TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
               ),
-              hintText: placeholder,
-              fillColor: Colors.white70,
+              style: textFieldStyle(context),
+              onChanged: (str) => handleFromText(str, method),
+              readOnly: isFromMethod(method) ? false : true,
+              showCursor: true,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintStyle: TextStyle(
+                  color: Colors.grey[800],
+                  fontWeight: FontWeight.w600,
+                ),
+                hintText: placeholder,
+                fillColor: Colors.white70,
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   TextStyle textFieldStyle(BuildContext context) => TextStyle(
         fontWeight: FontWeight.w600,

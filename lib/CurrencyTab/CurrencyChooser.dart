@@ -48,7 +48,8 @@ class CurrencyChooser extends StatelessWidget {
                         onTap: () async {
                           Box box = Hive.box(method);
                           await box.putAt(boxIndex, currencyListItem);
-                          await Hive.openBox(currencyListItem.currencyCode);
+                          await Hive.openBox(
+                              currencyListItem.currencyCode.toLowerCase());
                           FocusScope.of(context).unfocus();
                           Navigator.of(context, rootNavigator: true).pop();
                         },
@@ -60,6 +61,7 @@ class CurrencyChooser extends StatelessWidget {
                               ' (${currencyListItem.currencyCode})',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
+                            fontSize: 13.5,
                           ),
                         ),
                       ),

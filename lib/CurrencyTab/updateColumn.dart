@@ -1,6 +1,7 @@
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/getCurrencyData.dart';
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -110,9 +111,8 @@ class _UpdateColumnState extends State<UpdateColumn> {
     String day = dateTime.day.toString();
     String month = dateTime.month.toString();
     String year = dateTime.year.toString();
-    String hour = (dateTime.hour == 0) ? '00' : dateTime.hour.toString();
-    String minute = (dateTime.minute == 0) ? '00' : dateTime.minute.toString();
-    String lastUpdated = '$day-$month-$year $hour:$minute';
+    String time = DateFormat.Hm().format(dateTime);
+    String lastUpdated = '$day-$month-$year $time';
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -145,6 +145,6 @@ class _UpdateColumnState extends State<UpdateColumn> {
   TextStyle statusStyle() => TextStyle(
         fontWeight: FontWeight.w600,
         height: 1.8,
-        fontSize: 13,
+        fontSize: 13.5,
       );
 }
