@@ -117,6 +117,16 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   final _formKey = GlobalKey<FormState>();
 
+  Future<void> delete(int index) async {
+    final fromBox = Hive.box(CommonsData.fromBox);
+    final toBox = Hive.box(CommonsData.toBox);
+
+    Future.delayed(const Duration(milliseconds: 350), () async {
+      await fromBox.deleteAt(index);
+      await toBox.deleteAt(index);
+    });
+  }
+
   Widget widgetsData() {
     final Box toBox = Hive.box(CommonsData.toBox);
 
@@ -140,7 +150,10 @@ class _CurrencyTabState extends State<CurrencyTab> {
                 horizontalOffset: 50.0,
                 child: FadeInAnimation(
                   duration: CommonsData.dur1,
-                  child: CardUI(index: index),
+                  child: CardUI(
+                    index: index,
+                    deleteFunction: delete,
+                  ),
                 ),
               ),
             ),

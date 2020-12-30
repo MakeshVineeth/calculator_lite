@@ -13,8 +13,9 @@ import 'package:intl/intl.dart';
 
 class CardUI extends StatefulWidget {
   final int index;
+  final Function deleteFunction;
 
-  const CardUI({@required this.index});
+  const CardUI({@required this.index, @required this.deleteFunction});
 
   @override
   _CardUIState createState() => _CardUIState();
@@ -73,60 +74,74 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
     }
   }
 
+  double opacity = 1.0;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-      child: Card(
-        elevation: 2,
-        shape: FixedValues.roundShapeLarge,
-        child: FutureBuilder(
-          future: openBoxes(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done)
-              return Slidable(
-                actionPane: SlidableDrawerActionPane(),
-                secondaryActions: [
-                  ClipRRect(
-                    borderRadius: FixedValues.large,
-                    child: SlideAction(
-                      onTap: () async {
-                        await fromBox.deleteAt(widget.index);
-                        await toBox.deleteAt(widget.index);
-                        FocusScope.of(context).unfocus();
-                      },
-                      closeOnTap: true,
-                      child: Icon(Icons.delete_outline),
+    return AnimatedOpacity(
+      opacity: opacity,
+      onEnd: () {
+        opacity = 1.0;
+      },
+      duration: const Duration(milliseconds: 300),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+        child: Card(
+          elevation: 2,
+          shape: FixedValues.roundShapeLarge,
+          child: FutureBuilder(
+            future: openBoxes(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  opacity != 0.0)
+                return Slidable(
+                  actionPane: SlidableDrawerActionPane(),
+                  secondaryActions: [
+                    ClipRRect(
+                      borderRadius: FixedValues.large,
+                      child: SlideAction(
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          widget.deleteFunction(widget.index);
+                          if (mounted)
+                            setState(() {
+                              opacity = 0.0;
+                            });
+                        },
+                        closeOnTap: true,
+                        child: Icon(Icons.delete_outline),
+                      ),
                     ),
-                  ),
-                ],
-                child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            buttonCurrency(CommonsData.fromBox),
-                            buttonCurrency(CommonsData.toBox),
-                          ],
-                        ),
-                        ValueListenableBuilder(
-                          valueListenable: fromCurBox.listenable(),
-                          builder: (context, data, child) => currentRateInfo(),
-                        ),
-                      ],
-                    )),
-              );
-            else
-              return Container(
-                width: MediaQuery.of(context).size.width,
-                height: 135.0,
-                child: Center(child: CircularProgressIndicator()),
-              );
-          },
+                  ],
+                  child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              buttonCurrency(CommonsData.fromBox),
+                              buttonCurrency(CommonsData.toBox),
+                            ],
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: fromCurBox.listenable(),
+                            builder: (context, data, child) =>
+                                currentRateInfo(),
+                          ),
+                        ],
+                      )),
+                );
+              else
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 135.0,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+            },
+          ),
         ),
       ),
     );
