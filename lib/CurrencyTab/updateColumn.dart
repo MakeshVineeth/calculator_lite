@@ -19,7 +19,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 5), () => updateInitial());
+    Future.delayed(const Duration(seconds: 10), () => updateInitial());
   }
 
   void updateInitial() async {

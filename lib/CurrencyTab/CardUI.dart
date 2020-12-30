@@ -134,6 +134,10 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
 
   Widget currentRateInfo() {
     updateExchange();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => handleFromText(controllerFrom.text, CommonsData.fromBox));
+
     return Text(
       currentRateStr,
       style: TextStyle(fontWeight: FontWeight.w600),
