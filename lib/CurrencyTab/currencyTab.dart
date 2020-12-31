@@ -4,6 +4,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/copyData.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CardUI.dart';
 import 'package:calculator_lite/CurrencyTab/updateColumn.dart';
+import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
@@ -42,44 +43,46 @@ class _CurrencyTabState extends State<CurrencyTab> {
         future: process(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done)
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Card(
-                  shape: FixedValues.roundShapeLarge,
-                  child: InkWell(
-                    borderRadius: FixedValues.large,
-                    onTap: () {},
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          Expanded(child: UpdateColumn()),
-                          MaterialButton(
-                            shape: FixedValues.roundShapeBtns,
-                            onPressed: () => resetForm(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Icon(Icons.clear_all_outlined),
+            return FadeThis(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Card(
+                    shape: FixedValues.roundShapeLarge,
+                    child: InkWell(
+                      borderRadius: FixedValues.large,
+                      onTap: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          children: [
+                            Expanded(child: UpdateColumn()),
+                            MaterialButton(
+                              shape: FixedValues.roundShapeBtns,
+                              onPressed: () => resetForm(),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(Icons.clear_all_outlined),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () => addCurrencyCard(),
-                  iconSize: 30,
-                  icon: Icon(Icons.add_circle_rounded),
-                ),
-                SizedBox(height: 10),
-                Expanded(child: widgetsData())
-              ],
+                  IconButton(
+                    onPressed: () => addCurrencyCard(),
+                    iconSize: 30,
+                    icon: Icon(Icons.add_circle_rounded),
+                  ),
+                  SizedBox(height: 10),
+                  Expanded(child: widgetsData())
+                ],
+              ),
             );
           else
-            return Center(child: CircularProgressIndicator());
+            return FadeThis(child: Center(child: CircularProgressIndicator()));
         },
       ),
     );

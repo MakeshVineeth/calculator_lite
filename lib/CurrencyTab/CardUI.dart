@@ -85,13 +85,10 @@ class _CardUIState extends State<CardUI> {
 
   @override
   Widget build(BuildContext context) {
-    return LimitedBox(
-      maxHeight: 150,
-      child: Card(
-        elevation: 2,
-        shape: FixedValues.roundShapeLarge,
-        child: slidable(),
-      ),
+    return Card(
+      elevation: 2,
+      shape: FixedValues.roundShapeLarge,
+      child: slidable(),
     );
   }
 
@@ -119,25 +116,30 @@ class _CardUIState extends State<CardUI> {
                   buttonCurrency(CommonsData.toBox),
                 ],
               ),
-              Expanded(child: buttonToolTipInfo()),
+              buttonToolTipInfo(),
             ],
           ),
         ),
       );
 
   void delete() {
-    FocusScope.of(context).unfocus();
-    fromBox.deleteAt(widget.index);
-    toBox.deleteAt(widget.index);
-    AnimatedList.of(context).removeItem(
-        widget.index,
-        (context, animation) => FadeTransition(
-              opacity: animation,
-              child: CardUI(
-                index: widget.index,
-                remove: true,
-              ),
-            ));
+    Future.delayed(const Duration(milliseconds: 200), () {
+      FocusScope.of(context).unfocus();
+      fromBox.deleteAt(widget.index);
+      toBox.deleteAt(widget.index);
+      AnimatedList.of(context).removeItem(
+          widget.index,
+          (context, animation) => SizeTransition(
+                sizeFactor: animation,
+                child: FadeTransition(
+                  opacity: animation,
+                  child: CardUI(
+                    index: widget.index,
+                    remove: true,
+                  ),
+                ),
+              ));
+    });
   }
 
   Widget buttonToolTipInfo() {
