@@ -101,6 +101,7 @@ class FixedValues {
   static const Duration transitionDuration = const Duration(milliseconds: 100);
   static const String appName = 'Calculator Lite';
   static const String appVersion = '1.0.0';
+  static const String logo = 'logo.png';
   static const String appLegalese =
       'Make faster calculations, display latest currencies, endless history scrolling.';
 

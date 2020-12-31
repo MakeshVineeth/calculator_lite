@@ -15,5 +15,5 @@ class CommonsData {
   static const checkingStr = 'Checking...';
   static const upToDate = 'Up to date.';
 
-  static final Duration dur1 = const Duration(milliseconds: 800);
+  static final Duration dur1 = const Duration(milliseconds: 600);
 }

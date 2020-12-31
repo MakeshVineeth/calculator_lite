@@ -123,22 +123,23 @@ class _CardUIState extends State<CardUI> {
       );
 
   void delete() {
-    Future.delayed(const Duration(milliseconds: 200), () {
+    Future.delayed(CommonsData.dur1, () {
       FocusScope.of(context).unfocus();
       fromBox.deleteAt(widget.index);
       toBox.deleteAt(widget.index);
       AnimatedList.of(context).removeItem(
-          widget.index,
-          (context, animation) => SizeTransition(
-                sizeFactor: animation,
-                child: FadeTransition(
-                  opacity: animation,
-                  child: CardUI(
-                    index: widget.index,
-                    remove: true,
-                  ),
-                ),
-              ));
+        widget.index,
+        (context, animation) => SizeTransition(
+          sizeFactor: animation,
+          child: FadeTransition(
+            opacity: animation,
+            child: CardUI(
+              index: widget.index,
+              remove: true,
+            ),
+          ),
+        ),
+      );
     });
   }
 

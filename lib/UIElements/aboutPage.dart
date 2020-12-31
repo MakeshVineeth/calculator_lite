@@ -79,7 +79,7 @@ class AboutPage extends StatelessWidget {
 
   Widget applicationIconImg() {
     return Image(
-      image: AssetImage('assets/Calculator-Icon-512.png'),
+      image: AssetImage('assets/' + FixedValues.logo),
       width: 30,
     );
   }

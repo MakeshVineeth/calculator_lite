@@ -104,15 +104,17 @@ class _CurrencyTabState extends State<CurrencyTab> {
       await toBox.add(toCur);
 
       int index = fromBox.length;
-      _animListKey.currentState.insertItem(index - 1);
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: CommonsData.dur1,
           curve: Curves.easeOut,
         );
       });
+
+      _animListKey.currentState
+          .insertItem(index - 1, duration: CommonsData.dur1);
     }
   }
 

@@ -57,7 +57,7 @@ flutter_rename_app:
 flutter_icons:
   android: "ic_launcher"
   ios: true
-  image_path: "assets/Calculator-Icon-512.png"
+  image_path: "assets/logo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
