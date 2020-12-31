@@ -3,7 +3,6 @@ import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
 import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
-import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,13 +41,19 @@ class _CardUIState extends State<CardUI> {
 
   final HelperFunctions helperFunctions = HelperFunctions();
 
-  Future<void> openBoxes() async {
+  @override
+  void initState() {
+    super.initState();
+    openBoxes();
+  }
+
+  void openBoxes() {
     try {
       if (widget.remove) return;
 
       fromCur = fromBox.getAt(widget.index);
       toCur = toBox.getAt(widget.index);
-      fromCurBox = await Hive.openBox(fromCur.currencyCode.toLowerCase());
+      fromCurBox = Hive.box(fromCur.currencyCode.toLowerCase());
 
       updateExchange();
     } catch (e) {
@@ -78,58 +83,56 @@ class _CardUIState extends State<CardUI> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: openBoxes(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
-            !widget.remove)
-          return FadeThis(
-            child: Slidable(
-              actionPane: SlidableDrawerActionPane(),
-              secondaryActions: [
-                ClipRRect(
-                  borderRadius: FixedValues.large,
-                  child: SlideAction(
-                    onTap: () => delete(),
-                    closeOnTap: true,
-                    child: Icon(Icons.delete_outline),
-                  ),
-                ),
-              ],
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          buttonCurrency(CommonsData.fromBox),
-                          buttonCurrency(CommonsData.toBox),
-                        ],
-                      ),
-                      Expanded(
-                        child: ValueListenableBuilder(
-                          valueListenable: fromCurBox.listenable(),
-                          builder: (context, data, child) =>
-                              currentRateInfo(),
-                        ),
-                      ),
-                    ],
-                  )),
-            ),
-          );
-        else
-          return Center(
-              child: FadeThis(child: CircularProgressIndicator()));
-      },
+    return LimitedBox(
+      maxHeight: 150,
+      child: Card(
+        elevation: 2,
+        shape: FixedValues.roundShapeLarge,
+        child: (widget.remove) ? loader : slidable(),
+      ),
     );
   }
 
-  void delete() async {
+  final loader = Center(
+    child: CircularProgressIndicator(),
+  );
+
+  Widget slidable() => Slidable(
+        actionPane: SlidableDrawerActionPane(),
+        secondaryActions: [
+          ClipRRect(
+            borderRadius: FixedValues.large,
+            child: SlideAction(
+              onTap: () => delete(),
+              closeOnTap: true,
+              child: Icon(Icons.delete_outline),
+            ),
+          ),
+        ],
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    buttonCurrency(CommonsData.fromBox),
+                    buttonCurrency(CommonsData.toBox),
+                  ],
+                ),
+                ValueListenableBuilder(
+                  valueListenable: fromCurBox.listenable(),
+                  builder: (context, data, child) => currentRateInfo(),
+                ),
+              ],
+            )),
+      );
+
+  void delete() {
     FocusScope.of(context).unfocus();
-    await fromBox.deleteAt(widget.index);
-    await toBox.deleteAt(widget.index);
+    fromBox.deleteAt(widget.index);
+    toBox.deleteAt(widget.index);
     AnimatedList.of(context).removeItem(
         widget.index,
         (context, animation) => FadeTransition(
@@ -153,6 +156,21 @@ class _CardUIState extends State<CardUI> {
     );
   }
 
+  void displayCurrencyChooser(String method) async {
+    await CurrencyChooser.show(
+      context: context,
+      index: widget.index,
+      method: method,
+    );
+
+    if (mounted)
+      setState(() {
+        updateExchange();
+      });
+
+    handleFromText(controllerFrom.text, CommonsData.fromBox);
+  }
+
   Widget buttonCurrency(String method) {
     return Expanded(
       child: ListTile(
@@ -162,20 +180,7 @@ class _CardUIState extends State<CardUI> {
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: FixedValues.roundShapeLarge,
-              onPressed: () async {
-                await CurrencyChooser.show(
-                  context: context,
-                  index: widget.index,
-                  method: method,
-                );
-
-                if (mounted)
-                  setState(() {
-                    updateExchange();
-                  });
-
-                handleFromText(controllerFrom.text, CommonsData.fromBox);
-              },
+              onPressed: () => displayCurrencyChooser(method),
               icon: FlagIcon(
                 flagURL: isFromMethod(method) ? fromCur.flagURL : toCur.flagURL,
               ),

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copyData.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CardUI.dart';
 import 'package:calculator_lite/CurrencyTab/updateColumn.dart';
 import 'package:flutter/material.dart';
@@ -81,15 +82,20 @@ class _CurrencyTabState extends State<CurrencyTab> {
     );
   }
 
-  Future<void> addCurrencyCard() async {
+  void addCurrencyCard() async {
     final list = Hive.box(CommonsData.currencyListBox);
     if (list.length > 0) {
       Random random = Random();
 
       int t1 = random.nextInt(list.length);
       int t2 = random.nextInt(list.length);
-      await fromBox.add(list.getAt(t1));
-      await toBox.add(list.getAt(t2));
+
+      CurrencyListItem fromCur = list.getAt(t1);
+      CurrencyListItem toCur = list.getAt(t2);
+      await Hive.openBox(fromCur.currencyCode.toLowerCase());
+
+      await fromBox.add(fromCur);
+      await toBox.add(toCur);
 
       int index = fromBox.length;
       _animListKey.currentState.insertItem(index - 1);
@@ -130,14 +136,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
                 .drive(myTween),
             child: FadeTransition(
               opacity: animation,
-              child: LimitedBox(
-                maxHeight: 150,
-                child: Card(
-                  shape: FixedValues.roundShapeLarge,
-                  elevation: 2,
-                  child: CardUI(index: index),
-                ),
-              ),
+              child: CardUI(index: index),
             ),
           ),
         ),

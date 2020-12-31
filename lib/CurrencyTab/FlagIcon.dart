@@ -30,6 +30,8 @@ class _FlagIconState extends State<FlagIcon>
           widget.flagURL,
           package: 'country_icons',
         ),
+        errorBuilder: OctoError.circleAvatar(
+            backgroundColor: Colors.transparent, text: Text('')),
         imageBuilder: OctoImageTransformer.circleAvatar(),
         placeholderBuilder: OctoPlaceholder.circularProgressIndicator(),
       ),
