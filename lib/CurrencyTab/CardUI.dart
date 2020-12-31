@@ -13,8 +13,9 @@ import 'package:intl/intl.dart';
 
 class CardUI extends StatefulWidget {
   final int index;
+  final bool remove;
 
-  const CardUI({@required this.index});
+  const CardUI({@required this.index, this.remove = false});
 
   @override
   _CardUIState createState() => _CardUIState();
@@ -42,6 +43,8 @@ class _CardUIState extends State<CardUI> {
 
   Future<void> openBoxes() async {
     try {
+      if (widget.remove) return;
+
       fromCur = fromBox.getAt(widget.index);
       toCur = toBox.getAt(widget.index);
       fromCurBox = await Hive.openBox(fromCur.currencyCode.toLowerCase());
@@ -76,51 +79,54 @@ class _CardUIState extends State<CardUI> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-      child: Card(
-        elevation: 2,
-        shape: FixedValues.roundShapeLarge,
-        child: FutureBuilder(
-          future: openBoxes(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done)
-              return Slidable(
-                actionPane: SlidableDrawerActionPane(),
-                secondaryActions: [
-                  ClipRRect(
-                    borderRadius: FixedValues.large,
-                    child: SlideAction(
-                      onTap: () => delete(),
-                      closeOnTap: true,
-                      child: Icon(Icons.delete_outline),
+      child: LimitedBox(
+        maxHeight: 150,
+        child: Card(
+          elevation: 2,
+          shape: FixedValues.roundShapeLarge,
+          child: FutureBuilder(
+            future: openBoxes(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  !widget.remove)
+                return Slidable(
+                  actionPane: SlidableDrawerActionPane(),
+                  secondaryActions: [
+                    ClipRRect(
+                      borderRadius: FixedValues.large,
+                      child: SlideAction(
+                        onTap: () => delete(),
+                        closeOnTap: true,
+                        child: Icon(Icons.delete_outline),
+                      ),
                     ),
-                  ),
-                ],
-                child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            buttonCurrency(CommonsData.fromBox),
-                            buttonCurrency(CommonsData.toBox),
-                          ],
-                        ),
-                        ValueListenableBuilder(
-                          valueListenable: fromCurBox.listenable(),
-                          builder: (context, data, child) => currentRateInfo(),
-                        ),
-                      ],
-                    )),
-              );
-            else
-              return Container(
-                width: MediaQuery.of(context).size.width,
-                height: 135.0,
-                child: Center(child: CircularProgressIndicator()),
-              );
-          },
+                  ],
+                  child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              buttonCurrency(CommonsData.fromBox),
+                              buttonCurrency(CommonsData.toBox),
+                            ],
+                          ),
+                          Expanded(
+                            child: ValueListenableBuilder(
+                              valueListenable: fromCurBox.listenable(),
+                              builder: (context, data, child) =>
+                                  currentRateInfo(),
+                            ),
+                          ),
+                        ],
+                      )),
+                );
+              else
+                return Center(child: CircularProgressIndicator());
+            },
+          ),
         ),
       ),
     );
@@ -131,7 +137,14 @@ class _CardUIState extends State<CardUI> {
     await fromBox.deleteAt(widget.index);
     await toBox.deleteAt(widget.index);
     AnimatedList.of(context).removeItem(
-        widget.index, (context, animation) => CardUI(index: widget.index));
+        widget.index,
+        (context, animation) => FadeTransition(
+              opacity: animation,
+              child: CardUI(
+                index: widget.index,
+                remove: true,
+              ),
+            ));
   }
 
   Widget currentRateInfo() {

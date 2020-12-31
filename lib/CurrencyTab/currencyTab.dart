@@ -113,6 +113,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
     });
   }
 
+  final myTween =
+      Tween<Offset>(begin: const Offset(1, 0), end: const Offset(0, 0));
+
   Widget widgetsData() => Form(
         key: _formKey,
         child: AnimatedList(
@@ -121,7 +124,14 @@ class _CurrencyTabState extends State<CurrencyTab> {
           initialItemCount: fromBox.length,
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-          itemBuilder: (context, index, animation) => CardUI(index: index),
+          itemBuilder: (context, index, animation) => SlideTransition(
+            position: CurvedAnimation(parent: animation, curve: Curves.easeIn)
+                .drive(myTween),
+            child: FadeTransition(
+              opacity: animation,
+              child: CardUI(index: index),
+            ),
+          ),
         ),
       );
 }
