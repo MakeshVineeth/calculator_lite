@@ -14,7 +14,6 @@ class _UpdateColumnState extends State<UpdateColumn> {
   String src = 'FrankFurter API';
   String status = 'None';
   CurrencyData currencyData = CurrencyData();
-  Dio dio = Dio();
 
   @override
   void initState() {
@@ -42,8 +41,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
         status = CommonsData.checkingStr;
       });
 
-      Response getBaseData =
-          await dio.get(CommonsData.remoteUrl); // EUR by default.
+      Response getBaseData = await CommonsData.getResponse(
+          CommonsData.remoteUrl); // EUR by default.
+
+      if (getBaseData == null) return;
 
       Map baseJson = Map<String, dynamic>.from(getBaseData.data);
 

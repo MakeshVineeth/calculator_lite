@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 class CommonsData {
   static const remoteUrl = 'https://api.frankfurter.app/latest';
   static const currencyListBox = 'currencies';
@@ -16,4 +18,14 @@ class CommonsData {
   static const upToDate = 'Up to date.';
 
   static final Duration dur1 = const Duration(milliseconds: 600);
+
+  static Future<Response> getResponse(url) async {
+    Dio dio = Dio();
+    try {
+      return await dio.get(url);
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
 }

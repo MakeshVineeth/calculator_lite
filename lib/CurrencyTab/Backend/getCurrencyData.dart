@@ -7,7 +7,6 @@ import 'package:dio/dio.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 
 class CurrencyData {
-  Dio dio = Dio();
   HelperFunctions helperFunctions = HelperFunctions();
 
   Future<String> getRemoteData(
@@ -95,7 +94,7 @@ class CurrencyData {
         return CommonsData.successToken;
       }
 
-      Response response = await dio.get(currentBaseUrl);
+      Response response = await CommonsData.getResponse(currentBaseUrl);
 
       if (response != null) {
         Map data = Map<String, dynamic>.from(response.data);

@@ -104,6 +104,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
       await toBox.add(toCur);
 
       int index = fromBox.length;
+      _animListKey.currentState
+          .insertItem(index - 1, duration: CommonsData.dur1);
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
@@ -112,9 +114,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
           curve: Curves.easeOut,
         );
       });
-
-      _animListKey.currentState
-          .insertItem(index - 1, duration: CommonsData.dur1);
     }
   }
 
