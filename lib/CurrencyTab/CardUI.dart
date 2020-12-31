@@ -3,6 +3,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
 import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
+import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -77,58 +78,51 @@ class _CardUIState extends State<CardUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-      child: LimitedBox(
-        maxHeight: 150,
-        child: Card(
-          elevation: 2,
-          shape: FixedValues.roundShapeLarge,
-          child: FutureBuilder(
-            future: openBoxes(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done &&
-                  !widget.remove)
-                return Slidable(
-                  actionPane: SlidableDrawerActionPane(),
-                  secondaryActions: [
-                    ClipRRect(
-                      borderRadius: FixedValues.large,
-                      child: SlideAction(
-                        onTap: () => delete(),
-                        closeOnTap: true,
-                        child: Icon(Icons.delete_outline),
-                      ),
-                    ),
-                  ],
-                  child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
+    return FutureBuilder(
+      future: openBoxes(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            !widget.remove)
+          return FadeThis(
+            child: Slidable(
+              actionPane: SlidableDrawerActionPane(),
+              secondaryActions: [
+                ClipRRect(
+                  borderRadius: FixedValues.large,
+                  child: SlideAction(
+                    onTap: () => delete(),
+                    closeOnTap: true,
+                    child: Icon(Icons.delete_outline),
+                  ),
+                ),
+              ],
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              buttonCurrency(CommonsData.fromBox),
-                              buttonCurrency(CommonsData.toBox),
-                            ],
-                          ),
-                          Expanded(
-                            child: ValueListenableBuilder(
-                              valueListenable: fromCurBox.listenable(),
-                              builder: (context, data, child) =>
-                                  currentRateInfo(),
-                            ),
-                          ),
+                          buttonCurrency(CommonsData.fromBox),
+                          buttonCurrency(CommonsData.toBox),
                         ],
-                      )),
-                );
-              else
-                return Center(child: CircularProgressIndicator());
-            },
-          ),
-        ),
-      ),
+                      ),
+                      Expanded(
+                        child: ValueListenableBuilder(
+                          valueListenable: fromCurBox.listenable(),
+                          builder: (context, data, child) =>
+                              currentRateInfo(),
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+          );
+        else
+          return Center(
+              child: FadeThis(child: CircularProgressIndicator()));
+      },
     );
   }
 

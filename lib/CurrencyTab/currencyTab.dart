@@ -124,12 +124,20 @@ class _CurrencyTabState extends State<CurrencyTab> {
           initialItemCount: fromBox.length,
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
           itemBuilder: (context, index, animation) => SlideTransition(
             position: CurvedAnimation(parent: animation, curve: Curves.easeIn)
                 .drive(myTween),
             child: FadeTransition(
               opacity: animation,
-              child: CardUI(index: index),
+              child: LimitedBox(
+                maxHeight: 150,
+                child: Card(
+                  shape: FixedValues.roundShapeLarge,
+                  elevation: 2,
+                  child: CardUI(index: index),
+                ),
+              ),
             ),
           ),
         ),
