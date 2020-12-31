@@ -23,6 +23,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
     await copyData();
     fromBox = Hive.box(CommonsData.fromBox);
     toBox = Hive.box(CommonsData.toBox);
+
+    for (CurrencyListItem item in fromBox.values)
+      await Hive.openBox(item.currencyCode.toLowerCase());
   }
 
   @override

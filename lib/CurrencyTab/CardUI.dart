@@ -62,6 +62,8 @@ class _CardUIState extends State<CardUI> {
   }
 
   void updateExchange() {
+    if (widget.remove) return;
+
     try {
       fromCur = fromBox.getAt(widget.index);
       toCur = toBox.getAt(widget.index);
@@ -88,14 +90,10 @@ class _CardUIState extends State<CardUI> {
       child: Card(
         elevation: 2,
         shape: FixedValues.roundShapeLarge,
-        child: (widget.remove) ? loader : slidable(),
+        child: slidable(),
       ),
     );
   }
-
-  final loader = Center(
-    child: CircularProgressIndicator(),
-  );
 
   Widget slidable() => Slidable(
         actionPane: SlidableDrawerActionPane(),
@@ -110,23 +108,21 @@ class _CardUIState extends State<CardUI> {
           ),
         ],
         child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    buttonCurrency(CommonsData.fromBox),
-                    buttonCurrency(CommonsData.toBox),
-                  ],
-                ),
-                ValueListenableBuilder(
-                  valueListenable: fromCurBox.listenable(),
-                  builder: (context, data, child) => currentRateInfo(),
-                ),
-              ],
-            )),
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  buttonCurrency(CommonsData.fromBox),
+                  buttonCurrency(CommonsData.toBox),
+                ],
+              ),
+              Expanded(child: buttonToolTipInfo()),
+            ],
+          ),
+        ),
       );
 
   void delete() {
@@ -142,6 +138,16 @@ class _CardUIState extends State<CardUI> {
                 remove: true,
               ),
             ));
+  }
+
+  Widget buttonToolTipInfo() {
+    if (!widget.remove)
+      return ValueListenableBuilder(
+        valueListenable: fromCurBox.listenable(),
+        builder: (context, data, child) => currentRateInfo(),
+      );
+    else
+      return currentRateInfo();
   }
 
   Widget currentRateInfo() {
@@ -182,12 +188,14 @@ class _CardUIState extends State<CardUI> {
               shape: FixedValues.roundShapeLarge,
               onPressed: () => displayCurrencyChooser(method),
               icon: FlagIcon(
-                flagURL: isFromMethod(method) ? fromCur.flagURL : toCur.flagURL,
+                flagURL:
+                    isFromMethod(method) ? fromCur?.flagURL : toCur?.flagURL,
               ),
               label: Text(
-                isFromMethod(method)
-                    ? fromCur.currencyCode
-                    : toCur.currencyCode,
+                (isFromMethod(method)
+                        ? fromCur?.currencyCode
+                        : toCur?.currencyCode) ??
+                    '',
                 style: const TextStyle(
                   height: 1,
                   fontWeight: FontWeight.w600,

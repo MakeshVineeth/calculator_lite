@@ -22,7 +22,11 @@ class _FlagIconState extends State<FlagIcon>
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.grey[300]),
       ),
-      child: OctoImage(
+      child: (widget.flagURL != null) ? image() : CircularProgressIndicator(),
+    );
+  }
+
+  Widget image() => OctoImage(
         fit: BoxFit.fill,
         width: sizeInt,
         height: sizeInt,
@@ -30,13 +34,9 @@ class _FlagIconState extends State<FlagIcon>
           widget.flagURL,
           package: 'country_icons',
         ),
-        errorBuilder: OctoError.circleAvatar(
-            backgroundColor: Colors.transparent, text: Text('')),
         imageBuilder: OctoImageTransformer.circleAvatar(),
         placeholderBuilder: OctoPlaceholder.circularProgressIndicator(),
-      ),
-    );
-  }
+      );
 
   @override
   bool get wantKeepAlive => true;
