@@ -5,9 +5,7 @@ import 'package:calculator_lite/CurrencyTab/CardUI.dart';
 import 'package:calculator_lite/CurrencyTab/updateColumn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:calculator_lite/fixedValues.dart';
 
 class CurrencyTab extends StatefulWidget {
@@ -17,6 +15,14 @@ class CurrencyTab extends StatefulWidget {
 
 class _CurrencyTabState extends State<CurrencyTab> {
   final _scrollController = new ScrollController();
+  Box fromBox;
+  Box toBox;
+
+  Future<void> process() async {
+    await copyData();
+    fromBox = Hive.box(CommonsData.fromBox);
+    toBox = Hive.box(CommonsData.toBox);
+  }
 
   @override
   void dispose() {
@@ -24,14 +30,12 @@ class _CurrencyTabState extends State<CurrencyTab> {
     Hive.close();
   }
 
-  int n = 0;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: FutureBuilder(
-        future: copyData(),
+        future: process(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done)
             return Column(
@@ -47,21 +51,13 @@ class _CurrencyTabState extends State<CurrencyTab> {
                       padding: const EdgeInsets.all(12.0),
                       child: Row(
                         children: [
-                          Expanded(
-                            child: UpdateColumn(),
-                          ),
+                          Expanded(child: UpdateColumn()),
                           MaterialButton(
                             shape: FixedValues.roundShapeBtns,
-                            onPressed: () {
-                              setState(() {
-                                _formKey.currentState.reset();
-                              });
-                            },
+                            onPressed: () => resetForm(),
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.clear_all_outlined,
-                              ),
+                              child: Icon(Icons.clear_all_outlined),
                             ),
                           ),
                         ],
@@ -70,22 +66,16 @@ class _CurrencyTabState extends State<CurrencyTab> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () async => await addCurrencyCard(),
+                  onPressed: () => addCurrencyCard(),
                   iconSize: 30,
                   icon: Icon(Icons.add_circle_rounded),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Expanded(
-                  child: widgetsData(),
-                )
+                SizedBox(height: 10),
+                Expanded(child: widgetsData())
               ],
             );
           else
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            return Center(child: CircularProgressIndicator());
         },
       ),
     );
@@ -98,12 +88,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
       int t1 = random.nextInt(list.length);
       int t2 = random.nextInt(list.length);
-
-      final fromBox = Hive.box(CommonsData.fromBox);
       await fromBox.add(list.getAt(t1));
-
-      final toBox = Hive.box(CommonsData.toBox);
       await toBox.add(list.getAt(t2));
+
+      int index = fromBox.length;
+      _animListKey.currentState.insertItem(index - 1);
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
@@ -116,50 +105,23 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  final _animListKey = GlobalKey<AnimatedListState>();
 
-  Future<void> delete(int index) async {
-    final fromBox = Hive.box(CommonsData.fromBox);
-    final toBox = Hive.box(CommonsData.toBox);
-
-    Future.delayed(const Duration(milliseconds: 350), () async {
-      await fromBox.deleteAt(index);
-      await toBox.deleteAt(index);
+  void resetForm() {
+    setState(() {
+      _formKey.currentState.reset();
     });
   }
 
-  Widget widgetsData() {
-    final Box toBox = Hive.box(CommonsData.toBox);
-
-    return Form(
-      key: _formKey,
-      child: ValueListenableBuilder(
-        valueListenable: toBox.listenable(),
-        builder: (context, fromBox, widget) => AnimationLimiter(
-          child: ListView.builder(
-            addAutomaticKeepAlives: true,
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            controller: _scrollController,
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            itemCount: fromBox.length,
-            itemBuilder: (context, index) =>
-                AnimationConfiguration.staggeredList(
-              position: index,
-              duration: CommonsData.dur1,
-              child: SlideAnimation(
-                horizontalOffset: 50.0,
-                child: FadeInAnimation(
-                  duration: CommonsData.dur1,
-                  child: CardUI(
-                    index: index,
-                    deleteFunction: delete,
-                  ),
-                ),
-              ),
-            ),
-          ),
+  Widget widgetsData() => Form(
+        key: _formKey,
+        child: AnimatedList(
+          key: _animListKey,
+          controller: _scrollController,
+          initialItemCount: fromBox.length,
+          physics:
+              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          itemBuilder: (context, index, animation) => CardUI(index: index),
         ),
-      ),
-    );
-  }
+      );
 }

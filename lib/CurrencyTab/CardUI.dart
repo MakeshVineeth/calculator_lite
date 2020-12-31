@@ -13,15 +13,14 @@ import 'package:intl/intl.dart';
 
 class CardUI extends StatefulWidget {
   final int index;
-  final Function deleteFunction;
 
-  const CardUI({@required this.index, @required this.deleteFunction});
+  const CardUI({@required this.index});
 
   @override
   _CardUIState createState() => _CardUIState();
 }
 
-class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
+class _CardUIState extends State<CardUI> {
   static String initial = '';
   final controllerFrom = TextEditingController(text: initial);
   final controllerTo = TextEditingController(text: initial);
@@ -37,6 +36,10 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
   String placeholder = '0.00';
   String currentRateStr = '';
 
+  bool isFromMethod(String method) => method == CommonsData.fromBox;
+
+  final HelperFunctions helperFunctions = HelperFunctions();
+
   Future<void> openBoxes() async {
     try {
       fromCur = fromBox.getAt(widget.index);
@@ -47,11 +50,6 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
     } catch (e) {
       print('Exception openBoxes: ' + e.toString());
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   void updateExchange() {
@@ -74,77 +72,66 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  double opacity = 1.0;
-
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    return AnimatedOpacity(
-      opacity: opacity,
-      onEnd: () {
-        opacity = 1.0;
-      },
-      duration: const Duration(milliseconds: 300),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-        child: Card(
-          elevation: 2,
-          shape: FixedValues.roundShapeLarge,
-          child: FutureBuilder(
-            future: openBoxes(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done &&
-                  opacity != 0.0)
-                return Slidable(
-                  actionPane: SlidableDrawerActionPane(),
-                  secondaryActions: [
-                    ClipRRect(
-                      borderRadius: FixedValues.large,
-                      child: SlideAction(
-                        onTap: () {
-                          FocusScope.of(context).unfocus();
-                          widget.deleteFunction(widget.index);
-                          if (mounted)
-                            setState(() {
-                              opacity = 0.0;
-                            });
-                        },
-                        closeOnTap: true,
-                        child: Icon(Icons.delete_outline),
-                      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+      child: Card(
+        elevation: 2,
+        shape: FixedValues.roundShapeLarge,
+        child: FutureBuilder(
+          future: openBoxes(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done)
+              return Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                secondaryActions: [
+                  ClipRRect(
+                    borderRadius: FixedValues.large,
+                    child: SlideAction(
+                      onTap: () => delete(),
+                      closeOnTap: true,
+                      child: Icon(Icons.delete_outline),
                     ),
-                  ],
-                  child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              buttonCurrency(CommonsData.fromBox),
-                              buttonCurrency(CommonsData.toBox),
-                            ],
-                          ),
-                          ValueListenableBuilder(
-                            valueListenable: fromCurBox.listenable(),
-                            builder: (context, data, child) =>
-                                currentRateInfo(),
-                          ),
-                        ],
-                      )),
-                );
-              else
-                return Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 135.0,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-            },
-          ),
+                  ),
+                ],
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            buttonCurrency(CommonsData.fromBox),
+                            buttonCurrency(CommonsData.toBox),
+                          ],
+                        ),
+                        ValueListenableBuilder(
+                          valueListenable: fromCurBox.listenable(),
+                          builder: (context, data, child) => currentRateInfo(),
+                        ),
+                      ],
+                    )),
+              );
+            else
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: 135.0,
+                child: Center(child: CircularProgressIndicator()),
+              );
+          },
         ),
       ),
     );
+  }
+
+  void delete() async {
+    FocusScope.of(context).unfocus();
+    await fromBox.deleteAt(widget.index);
+    await toBox.deleteAt(widget.index);
+    AnimatedList.of(context).removeItem(
+        widget.index, (context, animation) => CardUI(index: widget.index));
   }
 
   Widget currentRateInfo() {
@@ -202,9 +189,6 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
     );
   }
 
-  bool isFromMethod(String method) => method == CommonsData.fromBox;
-
-  final HelperFunctions helperFunctions = HelperFunctions();
   void handleFromText(String from, String method) {
     if (isFromMethod(method)) {
       from = from.replaceAll(',', '');
@@ -231,7 +215,7 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  final formatCurrency = new NumberFormat.currency(
+  final formatCurrency = NumberFormat.currency(
     decimalDigits: 0,
     symbol: '',
     locale: 'en_US',
@@ -267,10 +251,6 @@ class _CardUIState extends State<CardUI> with AutomaticKeepAliveClientMixin {
         ),
       );
 
-  TextStyle textFieldStyle(BuildContext context) => TextStyle(
-        fontWeight: FontWeight.w600,
-      );
-
-  @override
-  bool get wantKeepAlive => true;
+  TextStyle textFieldStyle(BuildContext context) =>
+      TextStyle(fontWeight: FontWeight.w600);
 }

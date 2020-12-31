@@ -33,7 +33,6 @@ dependencies:
   dio: ^3.0.10
   flutter_animator: ^2.1.0
   flutter_slidable: ^0.5.7
-  flutter_staggered_animations: ^0.1.2
   flutter_statusbarcolor: ^0.2.3
   hive: ^1.4.4+1
   hive_flutter: ^0.3.1

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:hive/hive.dart';
 
 class CurrencyChooser extends StatelessWidget {
@@ -16,8 +15,6 @@ class CurrencyChooser extends StatelessWidget {
 
   CurrencyChooser({@required this.boxIndex, @required this.method});
 
-  final Duration _duration = const Duration(milliseconds: 300);
-
   @override
   Widget build(BuildContext context) {
     return FadeScale(
@@ -26,50 +23,37 @@ class CurrencyChooser extends StatelessWidget {
         content: Container(
           height: MediaQuery.of(context).size.height / 1.4,
           width: MediaQuery.of(context).size.width,
-          child: AnimationLimiter(
-            child: ListView.builder(
-              addAutomaticKeepAlives: true,
-              physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
-              itemCount: listBoxes.values.length,
-              itemBuilder: (context, index) {
-                CurrencyListItem currencyListItem =
-                    listBoxes.values.elementAt(index);
-
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: _duration,
-                  child: SlideAnimation(
-                    verticalOffset: 20.0,
-                    child: FadeInAnimation(
-                      duration: _duration,
-                      child: ListTile(
-                        shape: FixedValues.roundShapeLarge,
-                        onTap: () async {
-                          Box box = Hive.box(method);
-                          await box.putAt(boxIndex, currencyListItem);
-                          await Hive.openBox(
-                              currencyListItem.currencyCode.toLowerCase());
-                          FocusScope.of(context).unfocus();
-                          Navigator.of(context, rootNavigator: true).pop();
-                        },
-                        leading: FlagIcon(
-                          flagURL: currencyListItem.flagURL,
-                        ),
-                        title: Text(
-                          currencyListItem.currencyName +
-                              ' (${currencyListItem.currencyCode})',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13.5,
-                          ),
-                        ),
-                      ),
-                    ),
+          child: ListView.builder(
+            addAutomaticKeepAlives: true,
+            physics:
+                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            itemCount: listBoxes.values.length,
+            itemBuilder: (context, index) {
+              CurrencyListItem currencyListItem =
+                  listBoxes.values.elementAt(index);
+              return ListTile(
+                shape: FixedValues.roundShapeLarge,
+                onTap: () async {
+                  Box box = Hive.box(method);
+                  await box.putAt(boxIndex, currencyListItem);
+                  await Hive.openBox(
+                      currencyListItem.currencyCode.toLowerCase());
+                  FocusScope.of(context).unfocus();
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                leading: FlagIcon(
+                  flagURL: currencyListItem.flagURL,
+                ),
+                title: Text(
+                  currencyListItem.currencyName +
+                      ' (${currencyListItem.currencyCode})',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13.5,
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
