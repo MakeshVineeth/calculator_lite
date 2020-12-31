@@ -20,11 +20,21 @@ class CommonsData {
   static final Duration dur1 = const Duration(milliseconds: 600);
 
   static Future<Response> getResponse(url) async {
-    Dio dio = Dio();
+    int timeOut = 5000;
+
+    final options = BaseOptions(
+        baseUrl: remoteUrl,
+        connectTimeout: timeOut,
+        receiveTimeout: timeOut,
+        sendTimeout: timeOut);
+
+    Dio dio = Dio(options);
+
     try {
       return await dio.get(url);
-    } catch (e) {
-      print(e);
+    } on DioError catch (_) {
+      return null;
+    } catch (_) {
       return null;
     }
   }
