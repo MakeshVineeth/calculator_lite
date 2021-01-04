@@ -3,6 +3,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copyData.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CardUI.dart';
+import 'package:calculator_lite/CurrencyTab/resetFormProvider.dart';
 import 'package:calculator_lite/CurrencyTab/updateColumn.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   final _scrollController = new ScrollController();
   Box fromBox;
   Box toBox;
+  final resetFormProvider = ResetFormProvider();
 
   Future<void> process() async {
     await copyData();
@@ -60,7 +62,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
                             Expanded(child: UpdateColumn()),
                             MaterialButton(
                               shape: FixedValues.roundShapeBtns,
-                              onPressed: () => resetForm(),
+                              onPressed: () => resetForm(context),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Icon(Icons.clear_all_outlined),
@@ -120,10 +122,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
   final _formKey = GlobalKey<FormState>();
   final _animListKey = GlobalKey<AnimatedListState>();
 
-  void resetForm() {
-    setState(() {
-      _formKey.currentState.reset();
-    });
+  void resetForm(BuildContext buildContext) {
+    resetFormProvider.reset(true);
   }
 
   final myTween =
@@ -143,7 +143,10 @@ class _CurrencyTabState extends State<CurrencyTab> {
                 .drive(myTween),
             child: FadeTransition(
               opacity: animation,
-              child: CardUI(index: index),
+              child: CardUI(
+                index: index,
+                resetFormProvider: resetFormProvider,
+              ),
             ),
           ),
         ),

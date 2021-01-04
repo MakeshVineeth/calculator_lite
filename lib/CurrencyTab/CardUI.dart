@@ -3,6 +3,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
 import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
+import 'package:calculator_lite/CurrencyTab/resetFormProvider.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,12 @@ import 'package:intl/intl.dart';
 class CardUI extends StatefulWidget {
   final int index;
   final bool remove;
+  final ResetFormProvider resetFormProvider;
 
-  const CardUI({@required this.index, this.remove = false});
+  const CardUI(
+      {@required this.index,
+      this.remove = false,
+      @required this.resetFormProvider});
 
   @override
   _CardUIState createState() => _CardUIState();
@@ -45,6 +50,11 @@ class _CardUIState extends State<CardUI> {
   void initState() {
     super.initState();
     openBoxes();
+
+    widget.resetFormProvider.addListener(() {
+      controllerFrom.text = '';
+      controllerTo.text = '';
+    });
   }
 
   void openBoxes() {
@@ -136,6 +146,7 @@ class _CardUIState extends State<CardUI> {
             child: CardUI(
               index: widget.index,
               remove: true,
+              resetFormProvider: widget.resetFormProvider,
             ),
           ),
         ),
@@ -244,35 +255,37 @@ class _CardUIState extends State<CardUI> {
     locale: 'en_US',
   );
 
-  Widget getTextField(String method) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Card(
-          shape: FixedValues.roundShapeLarge,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: TextFormField(
-              controller: isFromMethod(method) ? controllerFrom : controllerTo,
-              keyboardType: TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
+  Widget getTextField(String method) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Card(
+        shape: FixedValues.roundShapeLarge,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: TextFormField(
+            controller: isFromMethod(method) ? controllerFrom : controllerTo,
+            keyboardType: TextInputType.numberWithOptions(
+              decimal: true,
+              signed: true,
+            ),
+            style: textFieldStyle(context),
+            onChanged: (str) => handleFromText(str, method),
+            readOnly: isFromMethod(method) ? false : true,
+            showCursor: true,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintStyle: TextStyle(
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w600,
               ),
-              style: textFieldStyle(context),
-              onChanged: (str) => handleFromText(str, method),
-              readOnly: isFromMethod(method) ? false : true,
-              showCursor: true,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintStyle: TextStyle(
-                  color: Colors.grey[800],
-                  fontWeight: FontWeight.w600,
-                ),
-                hintText: placeholder,
-                fillColor: Colors.white70,
-              ),
+              hintText: placeholder,
+              fillColor: Colors.white70,
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 
   TextStyle textFieldStyle(BuildContext context) =>
       TextStyle(fontWeight: FontWeight.w600);
