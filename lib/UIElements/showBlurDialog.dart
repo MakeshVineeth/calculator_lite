@@ -21,8 +21,8 @@ class _BlurredWindowState extends State<BlurredWindow> {
 
     setState(() {
       _currentOpacity = 1;
-      _currentChild = BackdropFilter(
-        filter: ImageFilter.blur(
+      _currentChild = ImageFiltered(
+        imageFilter: ImageFilter.blur(
             sigmaX: FixedValues.sigmaLevel, sigmaY: FixedValues.sigmaLevel),
         child: widget.child,
       );
