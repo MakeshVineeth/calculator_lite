@@ -23,6 +23,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   List<String> calculationString = [];
   double mainValue;
   String currentMetric;
+  Timer timer;
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       {@required String value,
       @required BuildContext context,
       @required CustomFocusEvents focus}) {
+    if (timer != null && timer.isActive) timer.cancel();
     bool isFocused = focus.isFocused;
     setState(() {
       // First check for down or up arrow buttons
@@ -114,7 +116,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
           calcParser.addToExpression(value) ?? calculationString;
     mainValue = calcParser.getValue();
 
-    Timer(Duration(seconds: 5), () {
+    timer = Timer(Duration(seconds: 5), () {
       if (Hive.isBoxOpen(CommonsHistory.historyBox)) {
         final Box box = Hive.box(CommonsHistory.historyBox);
         HistoryItem historyItem = HistoryItem(

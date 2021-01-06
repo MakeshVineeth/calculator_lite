@@ -17,7 +17,7 @@ class CommonsData {
   static const checkingStr = 'Checking...';
   static const upToDate = 'Up to date.';
 
-  static final Duration dur1 = const Duration(milliseconds: 600);
+  static final Duration dur1 = const Duration(milliseconds: 500);
 
   static Future<Response> getResponse(url) async {
     int timeOut = 5000;

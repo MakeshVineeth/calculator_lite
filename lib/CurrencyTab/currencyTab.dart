@@ -127,7 +127,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   final myTween =
-      Tween<Offset>(begin: const Offset(1, 0), end: const Offset(0, 0));
+      Tween<Offset>(begin: const Offset(0.3, 0), end: const Offset(0, 0));
 
   Widget widgetsData() => Form(
         key: _formKey,

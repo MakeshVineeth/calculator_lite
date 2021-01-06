@@ -31,38 +31,40 @@ class _HistoryCardState extends State<HistoryCard>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return ListTile(
-      title: Text(historyItem.title),
-      isThreeLine: true,
-      subtitle: Column(
-        children: [
-          Row(
-            children: [
-              Text('Exp'),
-              Expanded(
-                child: TextField(
-                  readOnly: true,
-                  showCursor: true,
-                  controller: exp,
-                  decoration: InputDecoration(border: InputBorder.none),
+    return Card(
+      child: ListTile(
+        title: Text(historyItem.title),
+        isThreeLine: true,
+        subtitle: Column(
+          children: [
+            Row(
+              children: [
+                Text('Exp'),
+                Expanded(
+                  child: TextField(
+                    readOnly: true,
+                    showCursor: true,
+                    controller: exp,
+                    decoration: InputDecoration(border: InputBorder.none),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text('Value'),
-              Expanded(
-                child: TextField(
-                  readOnly: true,
-                  showCursor: true,
-                  controller: value,
-                  decoration: InputDecoration(border: InputBorder.none),
+              ],
+            ),
+            Row(
+              children: [
+                Text('Value'),
+                Expanded(
+                  child: TextField(
+                    readOnly: true,
+                    showCursor: true,
+                    controller: value,
+                    decoration: InputDecoration(border: InputBorder.none),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
