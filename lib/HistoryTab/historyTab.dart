@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'commonsHistory.dart';
 
 class HistoryTab extends StatefulWidget {
   @override
@@ -7,12 +9,12 @@ class HistoryTab extends StatefulWidget {
 
 class _HistoryTabState extends State<HistoryTab> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container();
+    return FutureBuilder(
+      future: Hive.openBox(CommonsHistory.historyBox),
+      builder: (context, AsyncSnapshot data) {
+        return Container();
+      },
+    );
   }
 }
