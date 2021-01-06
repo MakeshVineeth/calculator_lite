@@ -1,5 +1,5 @@
 import 'package:calculator_lite/CurrencyTab/currencyTab.dart';
-import 'package:calculator_lite/historyTab.dart';
+import 'package:calculator_lite/HistoryTab/historyTab.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';

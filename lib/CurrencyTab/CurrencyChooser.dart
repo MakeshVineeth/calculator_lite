@@ -47,10 +47,7 @@ class CurrencyChooser extends StatelessWidget {
                 title: Text(
                   currencyListItem.currencyName +
                       ' (${currencyListItem.currencyCode})',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13.5,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               );
             },
