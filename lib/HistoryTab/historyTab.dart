@@ -1,3 +1,4 @@
+import 'package:calculator_lite/HistoryTab/historyCard.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'commonsHistory.dart';
@@ -13,7 +14,15 @@ class _HistoryTabState extends State<HistoryTab> {
     return FutureBuilder(
       future: Hive.openBox(CommonsHistory.historyBox),
       builder: (context, AsyncSnapshot data) {
-        return Container();
+        if (data.connectionState == ConnectionState.done) {
+          final Box box = data.data;
+          return ListView(
+            shrinkWrap: true,
+            children:
+                List.generate(box.length, (index) => HistoryCard(index: index)),
+          );
+        } else
+          return CircularProgressIndicator();
       },
     );
   }

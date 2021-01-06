@@ -39,16 +39,26 @@ class _HistoryCardState extends State<HistoryCard>
           Row(
             children: [
               Text('Exp'),
-              TextField(
-                controller: exp,
+              Expanded(
+                child: TextField(
+                  readOnly: true,
+                  showCursor: true,
+                  controller: exp,
+                  decoration: InputDecoration(border: InputBorder.none),
+                ),
               ),
             ],
           ),
           Row(
             children: [
               Text('Value'),
-              TextField(
-                controller: value,
+              Expanded(
+                child: TextField(
+                  readOnly: true,
+                  showCursor: true,
+                  controller: value,
+                  decoration: InputDecoration(border: InputBorder.none),
+                ),
               ),
             ],
           ),

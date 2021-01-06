@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
@@ -5,6 +7,8 @@ import 'package:calculator_lite/UIElements/calcButtons.dart';
 import 'package:calculator_lite/UIElements/showSlideUp.dart';
 import 'package:calculator_lite/Backend/calcParser.dart';
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:hive/hive.dart';
+import 'HistoryTab/historyItem.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
@@ -109,6 +113,21 @@ class _CalculatorTabState extends State<CalculatorTab> {
       calculationString =
           calcParser.addToExpression(value) ?? calculationString;
     mainValue = calcParser.getValue();
+
+    Timer(Duration(seconds: 5), () {
+      if (Hive.isBoxOpen(CommonsHistory.historyBox)) {
+        final Box box = Hive.box(CommonsHistory.historyBox);
+        HistoryItem historyItem = HistoryItem(
+          expression: calculationString.join(),
+          value: mainValue.toString(),
+          dateTime: DateTime.now(),
+          title: DateTime.now().toString(),
+          metrics: currentMetric,
+        );
+        box.add(historyItem);
+        print('Done');
+      }
+    });
   }
 
   Widget calcRows(List rowData, int index) {
