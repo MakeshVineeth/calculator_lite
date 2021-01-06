@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'commonsHistory.dart';
 import 'historyItem.dart';
+import 'package:calculator_lite/fixedValues.dart';
 
 class HistoryCard extends StatefulWidget {
   final int index;
@@ -31,41 +32,40 @@ class _HistoryCardState extends State<HistoryCard>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Card(
-      child: ListTile(
-        title: Text(historyItem.title),
-        isThreeLine: true,
-        subtitle: Column(
-          children: [
-            Row(
-              children: [
-                Text('Exp'),
-                Expanded(
-                  child: TextField(
-                    readOnly: true,
-                    showCursor: true,
-                    controller: exp,
-                    decoration: InputDecoration(border: InputBorder.none),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text('Value'),
-                Expanded(
-                  child: TextField(
-                    readOnly: true,
-                    showCursor: true,
-                    controller: value,
-                    decoration: InputDecoration(border: InputBorder.none),
-                  ),
-                ),
-              ],
-            ),
-          ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        elevation: 2,
+        shape: FixedValues.roundShapeLarge,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(historyItem.title),
+              itemRow('Expression:', exp),
+              itemRow('Value:', value),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget itemRow(String heading, TextEditingController textEditingController) {
+    return Row(
+      children: [
+        Text(heading),
+        SizedBox(width: 10),
+        Flexible(
+          child: TextField(
+            readOnly: true,
+            showCursor: true,
+            controller: textEditingController,
+            decoration: InputDecoration(border: InputBorder.none),
+          ),
+        ),
+      ],
     );
   }
 

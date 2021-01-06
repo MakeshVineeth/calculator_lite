@@ -16,10 +16,11 @@ class _HistoryTabState extends State<HistoryTab> {
       builder: (context, AsyncSnapshot data) {
         if (data.connectionState == ConnectionState.done) {
           final Box box = data.data;
-          return ListView(
-            shrinkWrap: true,
-            children:
-                List.generate(box.length, (index) => HistoryCard(index: index)),
+          return ListView.builder(
+            physics:
+                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            itemCount: box.length,
+            itemBuilder: (context, index) => HistoryCard(index: index),
           );
         } else
           return CircularProgressIndicator();
