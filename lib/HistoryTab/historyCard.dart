@@ -4,33 +4,14 @@ import 'commonsHistory.dart';
 import 'historyItem.dart';
 import 'package:calculator_lite/fixedValues.dart';
 
-class HistoryCard extends StatefulWidget {
+class HistoryCard extends StatelessWidget {
   final int index;
-
   HistoryCard({@required this.index});
-
-  @override
-  _HistoryCardState createState() => _HistoryCardState();
-}
-
-class _HistoryCardState extends State<HistoryCard>
-    with AutomaticKeepAliveClientMixin {
   final Box historyBox = Hive.box(CommonsHistory.historyBox);
-  HistoryItem historyItem;
-  TextEditingController exp;
-  TextEditingController value;
-
-  @override
-  void initState() {
-    super.initState();
-    historyItem = historyBox.getAt(widget.index);
-    exp = TextEditingController(text: historyItem.expression);
-    value = TextEditingController(text: historyItem.value);
-  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    HistoryItem historyItem = historyBox.getAt(index);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -42,9 +23,18 @@ class _HistoryCardState extends State<HistoryCard>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(historyItem.title),
-              itemRow('Expression:', exp),
-              itemRow('Value:', value),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3),
+                child: Text(
+                  historyItem.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              itemRow(heading: 'EXP:', text: historyItem.expression),
+              itemRow(heading: 'VAL:', text: historyItem.value),
             ],
           ),
         ),
@@ -52,23 +42,30 @@ class _HistoryCardState extends State<HistoryCard>
     );
   }
 
-  Widget itemRow(String heading, TextEditingController textEditingController) {
-    return Row(
-      children: [
-        Text(heading),
-        SizedBox(width: 10),
-        Flexible(
-          child: TextField(
-            readOnly: true,
-            showCursor: true,
-            controller: textEditingController,
-            decoration: InputDecoration(border: InputBorder.none),
+  Widget itemRow({@required String heading, @required text}) => Card(
+        elevation: 0.7,
+        shape: FixedValues.roundShapeLarge,
+        child: ListTile(
+          leading: Text(
+            heading,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
+          title: Text(
+            text,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          trailing: IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.copy_rounded,
+              size: 20,
+            ),
           ),
         ),
-      ],
-    );
-  }
-
-  @override
-  bool get wantKeepAlive => true;
+      );
 }

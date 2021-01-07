@@ -32,6 +32,12 @@ class _CalculatorTabState extends State<CalculatorTab> {
     getCurrentMetrics();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    if (timer != null) timer.cancel();
+  }
+
   void getCurrentMetrics() async {
     final prefs = await SharedPreferences.getInstance();
     final current = prefs.getString('metrics') ?? 'RAD';
@@ -119,15 +125,17 @@ class _CalculatorTabState extends State<CalculatorTab> {
     timer = Timer(Duration(seconds: 5), () {
       if (Hive.isBoxOpen(CommonsHistory.historyBox)) {
         final Box box = Hive.box(CommonsHistory.historyBox);
-        HistoryItem historyItem = HistoryItem(
-          expression: calculationString.join(),
-          value: mainValue.toString(),
-          dateTime: DateTime.now(),
-          title: DateTime.now().toString(),
-          metrics: currentMetric,
-        );
-        box.add(historyItem);
-        print('Done');
+
+        if (calculationString.length > 0 && mainValue != null) {
+          HistoryItem historyItem = HistoryItem(
+            expression: calculationString.join(),
+            value: mainValue.toString(),
+            dateTime: DateTime.now(),
+            title: DateTime.now().toString(),
+            metrics: currentMetric,
+          );
+          box.add(historyItem);
+        }
       }
     });
   }
