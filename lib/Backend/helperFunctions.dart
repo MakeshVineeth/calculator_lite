@@ -2,6 +2,7 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:angles/angles.dart';
 import 'dart:math' as math;
 import 'package:decimal/decimal.dart';
+import 'package:intl/intl.dart';
 
 class HelperFunctions {
   List<String> operations = [
@@ -196,4 +197,12 @@ class HelperFunctions {
       .split(' ')
       .map((str) => '${str[0].toUpperCase()}${str.substring(1)}')
       .join(' ');
+
+  String getDate(DateTime dateTime) {
+    String t1 = DateFormat.Hm().format(dateTime);
+    String t2 = DateFormat('dd/MM/y').format(dateTime);
+    String date = '$t2 $t1';
+
+    return date;
+  }
 }

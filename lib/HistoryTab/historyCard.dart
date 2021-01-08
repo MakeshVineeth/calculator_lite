@@ -3,15 +3,19 @@ import 'package:hive/hive.dart';
 import 'commonsHistory.dart';
 import 'historyItem.dart';
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/Backend/helperFunctions.dart';
 
 class HistoryCard extends StatelessWidget {
   final int index;
   HistoryCard({@required this.index});
   final Box historyBox = Hive.box(CommonsHistory.historyBox);
+  final HelperFunctions _helperFunctions = HelperFunctions();
 
   @override
   Widget build(BuildContext context) {
     HistoryItem historyItem = historyBox.getAt(index);
+    String date = _helperFunctions.getDate(historyItem.dateTime);
+    String title = historyItem.title;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -27,7 +31,7 @@ class HistoryCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3),
                 child: Text(
-                  historyItem.title,
+                  title,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                   ),
@@ -35,6 +39,17 @@ class HistoryCard extends StatelessWidget {
               ),
               itemRow(heading: 'EXP:', text: historyItem.expression),
               itemRow(heading: 'VAL:', text: historyItem.value),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3),
+                alignment: Alignment.centerRight,
+                child: Text(
+                  date,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

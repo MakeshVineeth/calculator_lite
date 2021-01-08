@@ -11,6 +11,7 @@ import 'package:hive/hive.dart';
 import 'HistoryTab/historyItem.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class CalculatorTab extends StatefulWidget {
   @override
@@ -127,11 +128,12 @@ class _CalculatorTabState extends State<CalculatorTab> {
         final Box box = Hive.box(CommonsHistory.historyBox);
 
         if (calculationString.length > 0 && mainValue != null) {
+          DateTime now = DateTime.now();
           HistoryItem historyItem = HistoryItem(
             expression: calculationString.join(),
             value: mainValue.toString(),
-            dateTime: DateTime.now(),
-            title: DateTime.now().toString(),
+            dateTime: now,
+            title: DateFormat.yMMMMd('en_US').add_Hm().format(now),
             metrics: currentMetric,
           );
           box.add(historyItem);

@@ -1,9 +1,9 @@
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/getCurrencyData.dart';
 import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:calculator_lite/Backend/helperFunctions.dart';
 
 class UpdateColumn extends StatefulWidget {
   @override
@@ -14,6 +14,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
   String src = 'FrankFurter API';
   String status = 'None';
   CurrencyData currencyData = CurrencyData();
+  HelperFunctions _helperFunctions = HelperFunctions();
 
   @override
   void initState() {
@@ -37,9 +38,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
             lastCheckedDate.difference(now).inDays == 0) return;
       }
 
-      setState(() {
-        status = CommonsData.checkingStr;
-      });
+      if (mounted)
+        setState(() {
+          status = CommonsData.checkingStr;
+        });
 
       Response getBaseData = await CommonsData.getResponse(
           CommonsData.remoteUrl); // EUR by default.
@@ -62,16 +64,18 @@ class _UpdateColumnState extends State<UpdateColumn> {
             dateTimeObj.month == online.month) {
           await dateBox.put(CommonsData.lastDateChecked, now.toString());
 
-          setState(() {
-            status = CommonsData.upToDate;
-          });
+          if (mounted)
+            setState(() {
+              status = CommonsData.upToDate;
+            });
           return;
         }
       }
 
-      setState(() {
-        status = CommonsData.progressToken;
-      });
+      if (mounted)
+        setState(() {
+          status = CommonsData.progressToken;
+        });
 
       String result = await currencyData.getRemoteData(
           context: context, baseJson: baseJson);
@@ -82,16 +86,18 @@ class _UpdateColumnState extends State<UpdateColumn> {
         await dateBox.put(CommonsData.lastDateChecked, now.toString());
       }
 
-      setState(() {
-        status = result;
-      });
+      if (mounted)
+        setState(() {
+          status = result;
+        });
 
       if (result == CommonsData.errorToken) {
         Future.delayed(const Duration(seconds: 2), () {
-          setState(() {
-            status = CommonsData.retryString;
-            Future.delayed(const Duration(seconds: 1), () => updateInitial());
-          });
+          if (mounted)
+            setState(() {
+              status = CommonsData.retryString;
+              Future.delayed(const Duration(seconds: 1), () => updateInitial());
+            });
         });
       }
     }
@@ -109,18 +115,16 @@ class _UpdateColumnState extends State<UpdateColumn> {
     DateTime dateTime = DateTime.tryParse(
         Hive.box(CommonsData.updatedDateBox).get(CommonsData.lastDateChecked));
 
-    String day = dateTime.day.toString();
-    String month = dateTime.month.toString();
-    String year = dateTime.year.toString();
-    String time = DateFormat.Hm().format(dateTime);
-    String lastUpdated = '$day-$month-$year $time';
+    String lastUpdated = _helperFunctions.getDate(dateTime);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         textDetail(title: 'Last Checked: ', value: lastUpdated),
+        SizedBox(height: 5),
         textDetail(title: 'Status: ', value: status),
+        SizedBox(height: 5),
         textDetail(title: 'Source: ', value: src),
       ],
     );
@@ -145,7 +149,6 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
   TextStyle statusStyle() => TextStyle(
         fontWeight: FontWeight.w600,
-        height: 1.8,
         fontSize: 13.5,
       );
 }
