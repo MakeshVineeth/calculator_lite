@@ -47,6 +47,7 @@ class HistoryCard extends StatelessWidget {
                   date,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
+                    fontSize: 13.5,
                   ),
                 ),
               ),
@@ -57,30 +58,32 @@ class HistoryCard extends StatelessWidget {
     );
   }
 
-  Widget itemRow({@required String heading, @required text}) => Card(
-        elevation: 0.7,
-        shape: FixedValues.roundShapeLarge,
-        child: ListTile(
-          leading: Text(
-            heading,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
+  Widget itemRow({@required String heading, @required text}) => Expanded(
+      child: Card(
+          elevation: 0.7,
+          shape: FixedValues.roundShapeLarge,
+          child: ListTile(
+            leading: Text(
+              heading,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
             ),
-          ),
-          title: Text(
-            text,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
+            title: Text(
+              text,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          trailing: IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.copy_rounded,
-              size: 20,
+            trailing: IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.copy_rounded,
+                size: 20,
+              ),
             ),
           ),
         ),
-      );
+  );
 }

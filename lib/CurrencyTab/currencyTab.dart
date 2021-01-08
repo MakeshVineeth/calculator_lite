@@ -122,9 +122,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   final _formKey = GlobalKey<FormState>();
   final _animListKey = GlobalKey<AnimatedListState>();
 
-  void resetForm(BuildContext buildContext) {
-    resetFormProvider.reset(true);
-  }
+  void resetForm(BuildContext buildContext) => resetFormProvider.reset(true);
 
   final myTween =
       Tween<Offset>(begin: const Offset(0.3, 0), end: const Offset(0, 0));

@@ -95,6 +95,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
       // Code for =
       else if (value.contains('=')) {
         // Incomplete for now.
+
+        addToHistory();
         calculationString.clear();
         calculationString.add(mainValue.toString());
       }
@@ -123,30 +125,31 @@ class _CalculatorTabState extends State<CalculatorTab> {
           calcParser.addToExpression(value) ?? calculationString;
     mainValue = calcParser.getValue();
 
-    timer = Timer(Duration(seconds: 5), () {
-      if (Hive.isBoxOpen(CommonsHistory.historyBox)) {
-        final Box box = Hive.box(CommonsHistory.historyBox);
+    timer = Timer(Duration(seconds: 5), () => addToHistory());
+  }
 
-        if (calculationString.length > 0 && mainValue != null) {
-          DateTime now = DateTime.now();
-          HistoryItem historyItem = HistoryItem(
-            expression: calculationString.join(),
-            value: mainValue.toString(),
-            dateTime: now,
-            title: DateFormat.yMMMMd('en_US').add_Hm().format(now),
-            metrics: currentMetric,
-          );
-          box.add(historyItem);
-        }
+  void addToHistory() {
+    if (Hive.isBoxOpen(CommonsHistory.historyBox)) {
+      final Box box = Hive.box(CommonsHistory.historyBox);
+
+      if (calculationString.length > 0 && mainValue != null) {
+        DateTime now = DateTime.now();
+        HistoryItem historyItem = HistoryItem(
+          expression: calculationString.join(),
+          value: mainValue.toString(),
+          dateTime: now,
+          title: 'Titled, ' + DateFormat.yMMMMd('en_US').add_Hm().format(now),
+          metrics: currentMetric,
+        );
+        box.add(historyItem);
       }
-    });
+    }
   }
 
   Widget calcRows(List rowData, int index) {
     bool isCornerRows = false;
-    if (index == 0) {
-      isCornerRows = true;
-    }
+    if (index == 0) isCornerRows = true;
+
     return Expanded(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
