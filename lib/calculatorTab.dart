@@ -138,7 +138,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
           expression: calculationString.join(),
           value: mainValue.toString(),
           dateTime: now,
-          title: 'Titled, ' + DateFormat.yMMMMd('en_US').add_Hm().format(now),
+          title: 'Titled, ' + DateFormat.yMMMMd('en_US').add_Hms().format(now),
           metrics: currentMetric,
         );
         box.add(historyItem);
