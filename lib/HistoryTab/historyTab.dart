@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'commonsHistory.dart';
-import 'historyMenu.dart';
+import 'package:calculator_lite/UIElements/showSlideUp.dart';
 
 class HistoryTab extends StatefulWidget {
   @override
@@ -18,8 +18,7 @@ class _HistoryTabState extends State<HistoryTab> {
         Container(
           alignment: Alignment.centerRight,
           child: IconButton(
-              icon: Icon(Icons.more_vert_rounded),
-              onPressed: () => showHistoryMenu(context)),
+              icon: Icon(Icons.more_vert_rounded), onPressed: () => menuShow()),
         ),
         FutureBuilder(
           future: Hive.openBox(CommonsHistory.historyBox),
@@ -32,6 +31,11 @@ class _HistoryTabState extends State<HistoryTab> {
         ),
       ],
     );
+  }
+
+  void menuShow() {
+    Map<String, Function> menuList = {'Clear All': () {}};
+    showSlideUp(context: context, menuList: menuList);
   }
 
   Widget listWidget(final Box box) => ValueListenableBuilder(

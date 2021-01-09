@@ -12,6 +12,10 @@ import 'HistoryTab/historyItem.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:calculator_lite/UIElements/aboutPage.dart';
+import 'package:calculator_lite/UIElements/themeChooser.dart';
+import 'package:flutter/services.dart';
+import 'dart:io' show Platform, exit;
 
 class CalculatorTab extends StatefulWidget {
   @override
@@ -25,6 +29,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   double mainValue;
   String currentMetric;
   Timer timer;
+  var _androidAppRetain = MethodChannel("android_app_exit");
 
   @override
   void initState() {
@@ -209,10 +214,25 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   Widget popUpDotMenu() {
+    Map<String, Function> menuList = {
+      'About': () => AboutPage.showAboutDialogFunc(context),
+      'Change Theme': () => PopThemeChooser.showThemeChooser(context),
+      'Exit': () {
+        if (Platform.isAndroid)
+          _androidAppRetain.invokeMethod("sendToBackground");
+        else if (!Platform.isIOS)
+          exit(
+              0); // Not allowed on IOS as it's against Apple Human Interface guidelines to exit the app programmatically.
+      }
+    };
+
     return Container(
       alignment: Alignment.centerRight,
       child: IconButton(
-        onPressed: () => showSlideUp(context),
+        onPressed: () => showSlideUp(
+          context: context,
+          menuList: menuList,
+        ),
         icon: Icon(
           Icons.more_vert,
         ),

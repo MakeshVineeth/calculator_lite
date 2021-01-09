@@ -1,15 +1,10 @@
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixedValues.dart';
-import 'package:calculator_lite/UIElements/aboutPage.dart';
-import 'package:calculator_lite/UIElements/themeChooser.dart';
-import 'package:flutter/services.dart';
-import 'dart:io' show Platform, exit;
 
-var _androidAppRetain = MethodChannel("android_app_exit");
-
-void showSlideUp(BuildContext context) {
-  List<String> menuList = ['About', 'Change Theme', 'Exit'];
+void showSlideUp(
+    {@required BuildContext context,
+    @required Map<String, Function> menuList}) {
   double height = MediaQuery.of(context).size.height;
 
   slideDialog.showSlideDialog(
@@ -28,9 +23,9 @@ void showSlideUp(BuildContext context) {
           itemBuilder: (context, index) => buttonDesigned(
             function: () {
               Navigator.of(context, rootNavigator: true).pop();
-              popUpFunction(index, context);
+              menuList.entries.elementAt(index).value();
             },
-            text: menuList[index],
+            text: menuList.entries.elementAt(index).key,
             context: context,
           ),
         ),
@@ -68,22 +63,3 @@ Widget buttonDesigned(
         ),
       ),
     );
-
-void popUpFunction(int value, BuildContext context) {
-  switch (value) {
-    case 0:
-      AboutPage.showAboutDialogFunc(context);
-      break;
-    case 1:
-      PopThemeChooser.showThemeChooser(context);
-      break;
-    default:
-      {
-        if (Platform.isAndroid)
-          _androidAppRetain.invokeMethod("sendToBackground");
-        else if (!Platform.isIOS)
-          exit(
-              0); // Not allowed on IOS as it's against Apple Human Interface guidelines to exit the app programmatically.
-      }
-  }
-}
