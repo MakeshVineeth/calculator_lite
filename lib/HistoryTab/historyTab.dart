@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'commonsHistory.dart';
+import 'historyMenu.dart';
 
 class HistoryTab extends StatefulWidget {
   @override
@@ -16,8 +17,9 @@ class _HistoryTabState extends State<HistoryTab> {
       children: [
         Container(
           alignment: Alignment.centerRight,
-          child:
-              IconButton(icon: Icon(Icons.more_vert_rounded), onPressed: () {}),
+          child: IconButton(
+              icon: Icon(Icons.more_vert_rounded),
+              onPressed: () => showHistoryMenu(context)),
         ),
         FutureBuilder(
           future: Hive.openBox(CommonsHistory.historyBox),
@@ -35,7 +37,7 @@ class _HistoryTabState extends State<HistoryTab> {
   Widget listWidget(final Box box) => ValueListenableBuilder(
         valueListenable: Hive.box(CommonsHistory.historyBox).listenable(),
         builder: (context, listener, child) => Expanded(
-                  child: ListView.builder(
+          child: ListView.builder(
             physics:
                 BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             itemCount: box.length,

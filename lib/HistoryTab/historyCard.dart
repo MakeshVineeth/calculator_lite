@@ -37,8 +37,12 @@ class HistoryCard extends StatelessWidget {
                   ),
                 ),
               ),
-              itemRow(heading: 'EXP:', text: historyItem.expression),
-              itemRow(heading: 'VAL:', text: historyItem.value),
+              itemRow(
+                  heading: 'EXP:',
+                  text: historyItem.expression,
+                  context: context),
+              itemRow(
+                  heading: 'VAL:', text: historyItem.value, context: context),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3),
@@ -46,9 +50,11 @@ class HistoryCard extends StatelessWidget {
                 child: Text(
                   date,
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13.5,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[350]
+                          : Colors.grey[700]),
                 ),
               ),
             ],
@@ -58,8 +64,12 @@ class HistoryCard extends StatelessWidget {
     );
   }
 
-  Widget itemRow({@required String heading, @required text}) => Expanded(
-      child: Card(
+  Widget itemRow(
+          {@required String heading,
+          @required text,
+          @required BuildContext context}) =>
+      Expanded(
+        child: Card(
           elevation: 0.7,
           shape: FixedValues.roundShapeLarge,
           child: ListTile(
@@ -68,6 +78,7 @@ class HistoryCard extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
+                color: Theme.of(context).primaryColor,
               ),
             ),
             title: Text(
@@ -81,9 +92,10 @@ class HistoryCard extends StatelessWidget {
               icon: Icon(
                 Icons.copy_rounded,
                 size: 20,
+                color: Theme.of(context).primaryColor,
               ),
             ),
           ),
         ),
-  );
+      );
 }

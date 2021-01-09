@@ -24,36 +24,34 @@ void showSlideUp(BuildContext context) {
             thickness: 1,
           ),
           itemCount: menuList.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
-              child: TextButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
-                ),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  popUpFunction(index, context);
-                },
-                child: IgnorePointer(
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Center(
-                      child: Text(
-                        menuList[index],
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                          letterSpacing: 0.5,
-                        ),
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+            child: TextButton(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+              ),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                popUpFunction(index, context);
+              },
+              child: IgnorePointer(
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Center(
+                    child: Text(
+                      menuList[index],
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
     ),
