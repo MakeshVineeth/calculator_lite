@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'commonsHistory.dart';
 import 'package:calculator_lite/UIElements/showSlideUp.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 
 class HistoryTab extends StatefulWidget {
   @override
@@ -33,10 +34,13 @@ class _HistoryTabState extends State<HistoryTab> {
     );
   }
 
-  void menuShow() {
-    Map<String, Function> menuList = {'Clear All': () {}};
-    showSlideUp(context: context, menuList: menuList);
-  }
+  Map<String, Function> menuList = {
+    'Clear All': () => Future.delayed(
+        CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
+    'Export': () {},
+  };
+
+  void menuShow() => showSlideUp(context: context, menuList: menuList);
 
   Widget listWidget(final Box box) => ValueListenableBuilder(
         valueListenable: Hive.box(CommonsHistory.historyBox).listenable(),

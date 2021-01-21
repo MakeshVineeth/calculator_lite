@@ -6,6 +6,7 @@ import 'historyItem.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/UIElements/slidePanelItem.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 
 class HistoryCard extends StatelessWidget {
   final int index;
@@ -81,8 +82,8 @@ class HistoryCard extends StatelessWidget {
     );
   }
 
-  void delete() => Future.delayed(
-      const Duration(milliseconds: 550), () => historyBox.deleteAt(index));
+  void delete() =>
+      Future.delayed(CommonsData.dur1, () => historyBox.deleteAt(index));
 
   Widget itemRow(
           {@required String heading,

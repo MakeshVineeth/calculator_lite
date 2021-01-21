@@ -120,6 +120,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
         }
       }
     });
+
+    timer = Timer(Duration(seconds: 5), () => addToHistory());
   }
 
   void runCalcParser(String value) {
@@ -129,8 +131,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
       calculationString =
           calcParser.addToExpression(value) ?? calculationString;
     mainValue = calcParser.getValue();
-
-    timer = Timer(Duration(seconds: 5), () => addToHistory());
   }
 
   void addToHistory() {
