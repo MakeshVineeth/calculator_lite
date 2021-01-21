@@ -31,10 +31,11 @@ class HistoryCard extends StatelessWidget {
             SlidePanelItem(
               function: () {},
               icon: Icons.edit_outlined,
-              light: Colors.green,
+              light: Colors.green[400],
             ),
             SlidePanelItem(
-              function: () {},
+              function: () => Future.delayed(const Duration(milliseconds: 550),
+                  () => historyBox.deleteAt(index)),
               icon: Icons.delete_outline,
             ),
           ],
