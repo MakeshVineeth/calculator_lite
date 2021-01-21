@@ -81,10 +81,16 @@ class HistoryCard extends StatelessWidget {
                 color: Theme.of(context).primaryColor,
               ),
             ),
-            title: Text(
-              text,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
+            title: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics()),
+              child: Text(
+                text,
+                maxLines: 1,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             trailing: IconButton(
