@@ -16,7 +16,6 @@ class PopThemeChooser extends StatelessWidget {
           style: FixedValues.semiBoldStyle,
         ),
         content: ThemeButtons(),
-        elevation: 20.0, // Little Shadows
         shape: FixedValues.roundShapeLarge,
       ),
     );

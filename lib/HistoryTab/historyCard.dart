@@ -34,8 +34,7 @@ class HistoryCard extends StatelessWidget {
               light: Colors.green[400],
             ),
             SlidePanelItem(
-              function: () => Future.delayed(const Duration(milliseconds: 550),
-                  () => historyBox.deleteAt(index)),
+              function: () => delete(),
               icon: Icons.delete_outline,
             ),
           ],
@@ -81,6 +80,9 @@ class HistoryCard extends StatelessWidget {
       ),
     );
   }
+
+  void delete() => Future.delayed(
+      const Duration(milliseconds: 550), () => historyBox.deleteAt(index));
 
   Widget itemRow(
           {@required String heading,
