@@ -11,6 +11,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:calculator_lite/UIElements/slidePanelItem.dart';
 
 class CardUI extends StatefulWidget {
   final int index;
@@ -105,13 +106,9 @@ class _CardUIState extends State<CardUI> {
   Widget slidable() => Slidable(
         actionPane: SlidableDrawerActionPane(),
         secondaryActions: [
-          ClipRRect(
-            borderRadius: FixedValues.large,
-            child: SlideAction(
-              onTap: () => delete(),
-              closeOnTap: true,
-              child: Icon(Icons.delete_outline),
-            ),
+          SlidePanelItem(
+            function: delete,
+            icon: Icons.delete_outline,
           ),
         ],
         child: Padding(
