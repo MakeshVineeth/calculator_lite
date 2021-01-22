@@ -58,6 +58,13 @@ class _CardUIState extends State<CardUI> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    controllerFrom.dispose();
+    controllerTo.dispose();
+  }
+
   void openBoxes() {
     try {
       if (widget.remove) return;

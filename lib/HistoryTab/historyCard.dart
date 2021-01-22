@@ -1,3 +1,4 @@
+import 'package:calculator_lite/HistoryTab/editWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
@@ -30,7 +31,13 @@ class HistoryCard extends StatelessWidget {
           actionPane: SlidableDrawerActionPane(),
           secondaryActions: [
             SlidePanelItem(
-              function: () {},
+              function: () => showDialog(
+                context: context,
+                builder: (context) => EditWidget(
+                  index: index,
+                  title: title,
+                ),
+              ),
               icon: Icons.edit_outlined,
               light: Colors.green[400],
             ),

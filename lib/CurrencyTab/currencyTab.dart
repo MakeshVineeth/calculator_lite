@@ -34,6 +34,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   @override
   void dispose() {
     super.dispose();
+    _scrollController.dispose();
     Hive.close();
   }
 
