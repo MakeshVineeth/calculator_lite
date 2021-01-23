@@ -39,6 +39,7 @@ dependencies:
   math_expressions: ^2.0.1
   octo_image: ^0.3.0
   path_provider: ^1.6.24
+  permission_handler: ^5.0.1+1
   provider: ^4.3.2+2
   shared_preferences: ^0.5.10
   slide_popup_dialog: ^0.0.2

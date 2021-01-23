@@ -8,6 +8,7 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/UIElements/slidePanelItem.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 
 class HistoryCard extends StatelessWidget {
   final int index;
@@ -19,7 +20,8 @@ class HistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     HistoryItem historyItem = historyBox.getAt(index);
-    String date = _helperFunctions.getDate(historyItem.dateTime);
+    DateTime dateObj = historyItem.dateTime;
+    String date = _helperFunctions.getDate(dateObj);
     String title = historyItem.title;
 
     return Padding(
@@ -31,11 +33,12 @@ class HistoryCard extends StatelessWidget {
           actionPane: SlidableDrawerActionPane(),
           secondaryActions: [
             SlidePanelItem(
-              function: () => showDialog(
+              function: () => showBlurDialog(
                 context: context,
-                builder: (context) => EditWidget(
+                child: EditWidget(
                   index: index,
                   title: title,
+                  date: dateObj,
                 ),
               ),
               icon: Icons.edit_outlined,

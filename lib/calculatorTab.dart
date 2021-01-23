@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 import 'HistoryTab/historyItem.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
+import 'HistoryTab/Backend/historyFunctions.dart';
 import 'package:calculator_lite/UIElements/aboutPage.dart';
 import 'package:calculator_lite/UIElements/themeChooser.dart';
 import 'package:flutter/services.dart';
@@ -143,7 +143,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
           expression: calculationString.join(),
           value: mainValue.toString(),
           dateTime: now,
-          title: 'Titled, ' + DateFormat.yMMMMd('en_US').add_Hms().format(now),
+          title: getFormattedTitle(now),
           metrics: currentMetric,
         );
         box.add(historyItem);
