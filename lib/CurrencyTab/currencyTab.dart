@@ -4,6 +4,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/copyData.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CardUI.dart';
 import 'package:calculator_lite/CurrencyTab/resetFormProvider.dart';
+import 'package:calculator_lite/CurrencyTab/smallToolBtn.dart';
 import 'package:calculator_lite/CurrencyTab/updateColumn.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:flutter/material.dart';
@@ -53,24 +54,27 @@ class _CurrencyTabState extends State<CurrencyTab> {
                 children: [
                   Card(
                     shape: FixedValues.roundShapeLarge,
-                    child: InkWell(
-                      borderRadius: FixedValues.large,
-                      onTap: () {},
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          children: [
-                            Expanded(child: UpdateColumn()),
-                            MaterialButton(
-                              shape: FixedValues.roundShapeBtns,
-                              onPressed: () => resetForm(context),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(Icons.clear_all_outlined),
-                              ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: UpdateColumn(),
+                          ),
+                          Expanded(
+                            child: SmallToolBtn(
+                              function: () => resetForm(context),
+                              icon: Icons.clear_all_outlined,
                             ),
-                          ],
-                        ),
+                          ),
+                          Expanded(
+                            child: SmallToolBtn(
+                              function: () {},
+                              icon: Icons.expand_more_outlined,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
