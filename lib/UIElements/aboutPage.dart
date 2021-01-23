@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'package:calculator_lite/UIElements/dialogTextBtn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:calculator_lite/fixedValues.dart';
@@ -14,11 +15,8 @@ class AboutPage extends StatelessWidget {
         shape: FixedValues.roundShapeLarge,
         buttonPadding: EdgeInsets.all(10),
         actions: [
-          TextButton(
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
-            ),
-            onPressed: () => showLicensePage(
+          DialogTextBtn(
+            function: () => showLicensePage(
                 context: context,
                 applicationName: FixedValues.appName,
                 applicationVersion: FixedValues.appVersion,
@@ -27,16 +25,7 @@ class AboutPage extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: applicationIconImg(),
                 )),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                'VIEW LICENSES',
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            title: 'VIEW LICENSES',
           ),
         ],
         content: SingleChildScrollView(
@@ -55,7 +44,7 @@ class AboutPage extends StatelessWidget {
                   children: [
                     Text(
                       FixedValues.appName,
-                      style: appTitleStyle,
+                      style: FixedValues.appTitleStyle,
                     ),
                     Text(
                       FixedValues.appVersion,
@@ -83,12 +72,6 @@ class AboutPage extends StatelessWidget {
       width: 30,
     );
   }
-
-  final TextStyle appTitleStyle = TextStyle(
-    fontWeight: FontWeight.w600,
-    fontSize: 25,
-    height: 1,
-  );
 
   final TextStyle appLegaleseStyle = TextStyle(
       // any styles

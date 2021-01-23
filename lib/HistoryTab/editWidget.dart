@@ -1,4 +1,5 @@
 import 'package:calculator_lite/HistoryTab/commonsHistory.dart';
+import 'package:calculator_lite/UIElements/dialogTextBtn.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _EditWidgetState extends State<EditWidget> {
     return FadeScale(
       child: AlertDialog(
         shape: FixedValues.roundShapeLarge,
-        title: Text('Change Title'),
+        title: Text('Change Title', style: FixedValues.appTitleStyle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -56,25 +57,8 @@ class _EditWidgetState extends State<EditWidget> {
           ],
         ),
         actions: [
-          MaterialButton(
-            shape: FixedValues.roundShapeLarge,
-            onPressed: () => changeTitle(true),
-            child: Text(
-              'DEFAULT',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-          MaterialButton(
-            shape: FixedValues.roundShapeLarge,
-            onPressed: () => changeTitle(false),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                'OK',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
+          DialogTextBtn(function: () => changeTitle(true), title: 'DEFAULT'),
+          DialogTextBtn(function: () => changeTitle(false), title: 'OK'),
         ],
       ),
     );

@@ -114,4 +114,10 @@ class FixedValues {
   static RoundedRectangleBorder roundShapeBtns = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(30.0),
   );
+
+  static final TextStyle appTitleStyle = TextStyle(
+    fontWeight: FontWeight.w600,
+    fontSize: 25,
+    height: 1,
+  );
 }
