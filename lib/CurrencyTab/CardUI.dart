@@ -200,10 +200,13 @@ class _CardUIState extends State<CardUI> {
       child: ListTile(
         title: Row(
           children: [
-            RaisedButton.icon(
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: FixedValues.roundShapeLarge,
+            ElevatedButton.icon(
+              style: ButtonStyle(
+                elevation: MaterialStateProperty.all(0),
+                padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(vertical: 12)),
+                shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+              ),
               onPressed: () => displayCurrencyChooser(method),
               icon: FlagIcon(
                 flagURL:

@@ -37,10 +37,15 @@ class _CalcButtonsState extends State<CalcButtons> {
           Expanded(
             child: Container(
               margin: EdgeInsets.all(5.0),
-              child: RaisedButton(
-                elevation: Theme.of(context).brightness == Brightness.light
-                    ? 2.0
-                    : 5.0,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  elevation: MaterialStateProperty.all(
+                    Theme.of(context).brightness == Brightness.light
+                        ? 2.0
+                        : 5.0,
+                  ),
+                  shape: MaterialStateProperty.all(FixedValues.roundShapeBtns),
+                ),
                 onPressed: this.widget.displayFunction,
                 child: IgnorePointer(
                   child: FadeThis(
@@ -50,7 +55,6 @@ class _CalcButtonsState extends State<CalcButtons> {
                     ),
                   ),
                 ),
-                shape: FixedValues.roundShapeBtns,
               ),
             ),
           ),
