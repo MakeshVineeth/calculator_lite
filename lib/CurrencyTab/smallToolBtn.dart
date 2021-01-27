@@ -14,7 +14,7 @@ class SmallToolBtn extends StatelessWidget {
       onPressed: () => function(),
       child: Padding(
         padding: const EdgeInsets.all(3.0),
-        child: Icon(icon),
+        child: Center(child: Icon(icon)),
       ),
     );
   }

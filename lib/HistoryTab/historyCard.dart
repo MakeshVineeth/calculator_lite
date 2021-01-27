@@ -104,14 +104,19 @@ class HistoryCard extends StatelessWidget {
           elevation: 0.7,
           shape: FixedValues.roundShapeLarge,
           child: ListTile(
-            leading: Text(
-              heading,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-                color: Theme.of(context).primaryColor,
-                letterSpacing: 0.5,
-              ),
+            leading: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  heading,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Theme.of(context).primaryColor,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ),
             title: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -123,13 +128,18 @@ class HistoryCard extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
-            trailing: IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.copy_rounded,
-                size: 20,
-                color: Theme.of(context).primaryColor,
-              ),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.copy_rounded,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

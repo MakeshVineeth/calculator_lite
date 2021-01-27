@@ -7,6 +7,7 @@ import 'package:calculator_lite/CurrencyTab/resetFormProvider.dart';
 import 'package:calculator_lite/CurrencyTab/smallToolBtn.dart';
 import 'package:calculator_lite/CurrencyTab/updateColumn.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
+import 'package:calculator_lite/UIElements/showSlideUp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
@@ -59,7 +60,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
                       child: Row(
                         children: [
                           Expanded(
-                            flex: 5,
+                            flex: 4,
                             child: UpdateColumn(),
                           ),
                           Expanded(
@@ -70,7 +71,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
                           ),
                           Expanded(
                             child: SmallToolBtn(
-                              function: () {},
+                              function: () => popCurBtns(),
                               icon: Icons.expand_more_outlined,
                             ),
                           ),
@@ -93,6 +94,14 @@ class _CurrencyTabState extends State<CurrencyTab> {
         },
       ),
     );
+  }
+
+  void popCurBtns() {
+    Map<String, Function> menuList = {
+      'Delete All': () {},
+    };
+
+    showSlideUp(context: context, menuList: menuList);
   }
 
   void addCurrencyCard() async {

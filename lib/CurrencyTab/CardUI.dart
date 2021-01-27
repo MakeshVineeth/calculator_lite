@@ -204,7 +204,7 @@ class _CardUIState extends State<CardUI> {
               style: ButtonStyle(
                 elevation: MaterialStateProperty.all(0),
                 padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(vertical: 12)),
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 5)),
                 shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
               ),
               onPressed: () => displayCurrencyChooser(method),
@@ -217,9 +217,10 @@ class _CardUIState extends State<CardUI> {
                         ? fromCur?.currencyCode
                         : toCur?.currencyCode) ??
                     '',
-                style: const TextStyle(
+                style: TextStyle(
                   height: 1,
                   fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.button.color,
                 ),
               ),
             )
