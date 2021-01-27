@@ -110,6 +110,7 @@ class HistoryCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
                 color: Theme.of(context).primaryColor,
+                letterSpacing: 0.5,
               ),
             ),
             title: SingleChildScrollView(
@@ -119,9 +120,7 @@ class HistoryCard extends StatelessWidget {
               child: Text(
                 text,
                 maxLines: 1,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             trailing: IconButton(
