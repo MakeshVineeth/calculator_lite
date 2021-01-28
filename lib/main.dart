@@ -40,11 +40,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     setThemeFunction(themeMode);
   }
 
-  void setThemeFunction(ThemeMode themeMode) {
-    setState(() {
-      setTheme = themeMode;
-    });
-  }
+  void setThemeFunction(ThemeMode themeMode) =>
+      setState(() => setTheme = themeMode);
 
   @override
   void initState() {
@@ -83,7 +80,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
     'History': Icons.history_outlined
   };
 
-  List<Widget> availableWidgets = <Widget>[
+  List<Widget> availableWidgets = [
     CurrencyTab(),
     CalculatorTab(),
     HistoryTab()
@@ -91,10 +88,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
 
   void _onItemTapped(int index) {
     FocusScope.of(context).unfocus();
-    if (mounted)
-      setState(() {
-        _currentIndex = index;
-      });
+    if (mounted) setState(() => _currentIndex = index);
   }
 
   void setFlatStatusBar() {
@@ -124,9 +118,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      setFlatStatusBar();
-    }
+    if (state == AppLifecycleState.resumed) setFlatStatusBar();
   }
 
   @override
@@ -145,12 +137,12 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
         unselectedLabelStyle: FixedValues.semiBoldStyle,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
-        items: List.generate(e.length, (index) {
-          return BottomNavClass(
-            title: e.keys.elementAt(index),
-            icon: e.values.elementAt(index),
-          ).returnNavItems();
-        }),
+        items: List.generate(
+            e.length,
+            (index) => BottomNavClass(
+                  title: e.keys.elementAt(index),
+                  icon: e.values.elementAt(index),
+                ).returnNavItems()),
         onTap: _onItemTapped,
       ),
     );

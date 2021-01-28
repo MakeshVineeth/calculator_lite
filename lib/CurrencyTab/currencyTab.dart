@@ -98,7 +98,24 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   void popCurBtns() {
     Map<String, Function> menuList = {
-      'Delete All': () {},
+      'Delete All': () {
+        fromBox.clear();
+        toBox.clear();
+        for (int i = 0; i <= fromBox.length - 1; i++) {
+          _animListKey.currentState.removeItem(0,
+              (BuildContext context, Animation<double> animation) => SizeTransition(
+              sizeFactor: animation,
+              child: FadeTransition(
+                opacity: animation,
+                child: CardUI(
+                  index: 0,
+                  remove: true,
+                  resetFormProvider: resetFormProvider,
+                ),
+              ),
+            ));
+        }
+      },
     };
 
     showSlideUp(context: context, menuList: menuList);

@@ -77,11 +77,12 @@ class HistoryCard extends StatelessWidget {
                   child: Text(
                     date,
                     style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey[350]
-                            : Colors.grey[700]),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[350]
+                          : Colors.grey[700],
+                    ),
                   ),
                 ),
               ],

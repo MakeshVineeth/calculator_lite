@@ -43,9 +43,7 @@ class _ThemeButtonsState extends State<ThemeButtons> {
   void getCurrentThemeStat() async {
     final prefs = await SharedPreferences.getInstance();
     final theme = prefs.getString('theme') ?? 'System Default';
-    setState(() {
-      _currentThemeString = theme;
-    });
+    setState(() => _currentThemeString = theme);
   }
 
   @override
@@ -78,9 +76,7 @@ class _ThemeButtonsState extends State<ThemeButtons> {
   }
 
   void setTheme(var val) async {
-    setState(() {
-      _currentThemeString = val;
-    });
+    setState(() => _currentThemeString = val);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('theme', _currentThemeString);
     ThemeMode themeMode = MiniThemeFunctions.parseTheme(_currentThemeString);
