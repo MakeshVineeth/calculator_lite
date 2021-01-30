@@ -4,8 +4,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/updateListen.dart';
 
 class UpdateColumn extends StatefulWidget {
+  final UpdateListen updateListen;
+
+  UpdateColumn({@required this.updateListen});
+
   @override
   _UpdateColumnState createState() => _UpdateColumnState();
 }
@@ -20,14 +25,15 @@ class _UpdateColumnState extends State<UpdateColumn> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 10), () => updateInitial());
+    widget.updateListen.addListener(() => updateInitial(force: true));
   }
 
-  void updateInitial() async {
+  void updateInitial({bool force = false}) async {
     try {
       DateTime now = DateTime.now();
       bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
 
-      if (checkDateBox) {
+      if (checkDateBox && !force) {
         final Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
 
         String lastChecked = dateBox.get(CommonsData.lastDateChecked);

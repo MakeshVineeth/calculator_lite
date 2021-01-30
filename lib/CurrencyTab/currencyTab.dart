@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/updateListen.dart';
 
 class CurrencyTab extends StatefulWidget {
   @override
@@ -23,6 +24,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   Box fromBox;
   Box toBox;
   final resetFormProvider = ResetFormProvider();
+  final UpdateListen updateListen = UpdateListen();
 
   Future<void> process() async {
     await copyData();
@@ -61,7 +63,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
                         children: [
                           Expanded(
                             flex: 4,
-                            child: UpdateColumn(),
+                            child: UpdateColumn(
+                              updateListen: updateListen,
+                            ),
                           ),
                           Expanded(
                             child: SmallToolBtn(
@@ -98,22 +102,25 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   void popCurBtns() {
     Map<String, Function> menuList = {
+      'Update Now': () => updateListen.update(),
       'Delete All': () {
         fromBox.clear();
         toBox.clear();
         for (int i = 0; i <= fromBox.length - 1; i++) {
-          _animListKey.currentState.removeItem(0,
-              (BuildContext context, Animation<double> animation) => SizeTransition(
-              sizeFactor: animation,
-              child: FadeTransition(
-                opacity: animation,
-                child: CardUI(
-                  index: 0,
-                  remove: true,
-                  resetFormProvider: resetFormProvider,
-                ),
-              ),
-            ));
+          _animListKey.currentState.removeItem(
+              0,
+              (BuildContext context, Animation<double> animation) =>
+                  SizeTransition(
+                    sizeFactor: animation,
+                    child: FadeTransition(
+                      opacity: animation,
+                      child: CardUI(
+                        index: 0,
+                        remove: true,
+                        resetFormProvider: resetFormProvider,
+                      ),
+                    ),
+                  ));
         }
       },
     };
