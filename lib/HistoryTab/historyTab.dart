@@ -25,9 +25,10 @@ class _HistoryTabState extends State<HistoryTab> {
         FutureBuilder(
           future: Hive.openBox(CommonsHistory.historyBox),
           builder: (context, AsyncSnapshot data) {
-            if (data.connectionState == ConnectionState.done)
-              return listWidget(data.data);
-            else
+            if (data.connectionState == ConnectionState.done) {
+              final Box box = data.data;
+              return listWidget(box);
+            } else
               return Center(child: CircularProgressIndicator());
           },
         ),
@@ -48,15 +49,20 @@ class _HistoryTabState extends State<HistoryTab> {
 
   Widget listWidget(final Box box) => ValueListenableBuilder(
         valueListenable: Hive.box(CommonsHistory.historyBox).listenable(),
-        builder: (context, listener, child) => Expanded(
-          child: ListView.builder(
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            itemCount: box.length,
-            itemExtent: 200,
-            cacheExtent: 2000,
-            itemBuilder: (context, index) => HistoryCard(index: index),
-          ),
-        ),
+        builder: (context, Box listener, child) {
+          if (listener.isNotEmpty)
+            return Expanded(
+              child: ListView.builder(
+                physics: BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
+                itemCount: listener.length,
+                itemExtent: 200,
+                cacheExtent: 2000,
+                itemBuilder: (context, index) => HistoryCard(index: index),
+              ),
+            );
+          else
+            return Expanded(child: Center(child: Text('Empty')));
+        },
       );
 }
