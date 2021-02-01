@@ -9,6 +9,7 @@ import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/UIElements/slidePanelItem.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
+import 'package:flutter/services.dart';
 
 class HistoryCard extends StatelessWidget {
   final int index;
@@ -16,6 +17,7 @@ class HistoryCard extends StatelessWidget {
 
   final Box historyBox = Hive.box(CommonsHistory.historyBox);
   final HelperFunctions _helperFunctions = HelperFunctions();
+  final snackBar = SnackBar(content: Text('Copied to Clipboard!'));
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +135,9 @@ class HistoryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () => Clipboard.setData(ClipboardData(text: text))
+                      .then((_) =>
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar)),
                   icon: Icon(
                     Icons.copy_rounded,
                     size: 20,
