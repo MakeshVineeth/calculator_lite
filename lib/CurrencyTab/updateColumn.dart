@@ -30,6 +30,9 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
   void updateInitial({bool force = false}) async {
     try {
+      if (widget.updateListen.inProgress) return;
+      widget.updateListen.inProgress = true;
+
       DateTime now = DateTime.now();
       bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
 
@@ -41,7 +44,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
         if (lastCheckedDate != null &&
             lastCheckedDate.difference(now).inHours >= -3 &&
-            lastCheckedDate.difference(now).inDays == 0) return;
+            lastCheckedDate.difference(now).inDays == 0) {
+          widget.updateListen.inProgress = false;
+          return;
+        }
       }
 
       if (mounted)
@@ -52,7 +58,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
       Response getBaseData = await CommonsData.getResponse(
           CommonsData.remoteUrl); // EUR by default.
 
-      if (getBaseData == null) return;
+      if (getBaseData == null) {
+        widget.updateListen.inProgress = false;
+        return;
+      }
 
       Map baseJson = Map<String, dynamic>.from(getBaseData.data);
 
@@ -74,7 +83,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
             setState(() {
               status = CommonsData.upToDate;
             });
-          return;
+          {
+            widget.updateListen.inProgress = false;
+            return;
+          }
         }
       }
 
@@ -110,8 +122,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
     // on network error
     on DioError catch (e) {
+      widget.updateListen.inProgress = false;
       print('Exception: ' + e.toString());
     } catch (e) {
+      widget.updateListen.inProgress = false;
       print('Exception: ' + e.toString());
     }
   }
