@@ -1,3 +1,4 @@
+import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:charcode/charcode.dart' as charcode;
 import 'package:calculator_lite/UIElements/editText.dart';
@@ -42,11 +43,6 @@ class _DisplayScreenState extends State<DisplayScreen> {
   final myController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     myController.dispose();
     super.dispose();
@@ -83,7 +79,12 @@ class _DisplayScreenState extends State<DisplayScreen> {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                     ),
-                    style: mainValueStyle(),
+                    style: mainValueStyle.copyWith(
+                      fontSize:
+                          HelperFunctions().isLandScape(context) ? 30 : 45.0,
+                    ),
+                    scrollPhysics: AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics()),
                   ),
                 ],
               ),
@@ -102,9 +103,8 @@ class _DisplayScreenState extends State<DisplayScreen> {
     }
   }
 
-  TextStyle mainValueStyle() => TextStyle(
-        fontSize: 45.0,
-        letterSpacing: 1.0,
-        fontWeight: FontWeight.w800,
-      );
+  TextStyle mainValueStyle = TextStyle(
+    letterSpacing: 1.0,
+    fontWeight: FontWeight.w800,
+  );
 }

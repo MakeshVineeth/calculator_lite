@@ -1,4 +1,5 @@
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
+import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:auto_size_text_field/auto_size_text_field.dart';
@@ -14,11 +15,6 @@ class TextFieldCalc extends StatefulWidget {
 class _TextFieldCalcState extends State<TextFieldCalc> {
   final myController = TextEditingController();
   final focus = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -42,10 +38,13 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       minLines: 1,
       maxLines: 2,
       minFontSize: 30,
+      maxFontSize: HelperFunctions().isLandScape(context) ? 30 : 60,
       focusNode: focus,
       showCursor: true,
       onChanged: (text) {},
       onTap: () => onTapFunction(context),
+      scrollPhysics:
+          AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
     );
   }
 

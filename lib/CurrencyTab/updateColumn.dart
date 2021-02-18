@@ -126,9 +126,12 @@ class _UpdateColumnState extends State<UpdateColumn> {
       print('Exception: ' + e.toString());
     } catch (e) {
       widget.updateListen.inProgress = false;
-      setState(() {
-        status = CommonsData.errorToken;
-      });
+
+      if (mounted)
+        setState(() {
+          status = CommonsData.errorToken;
+        });
+
       print('Exception: ' + e.toString());
     }
   }
@@ -144,34 +147,49 @@ class _UpdateColumnState extends State<UpdateColumn> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        textDetail(title: 'Last Checked: ', value: lastUpdated),
+        textDetail(
+            title: 'Last Checked: ', value: lastUpdated, context: context),
         SizedBox(height: 5),
-        textDetail(title: 'Status: ', value: status),
+        textDetail(title: 'Status: ', value: status, context: context),
         SizedBox(height: 5),
-        textDetail(title: 'Source: ', value: src),
+        textDetail(title: 'Source: ', value: src, context: context),
       ],
     );
   }
 
-  Widget textDetail({@required String title, @required String value}) => Row(
-        children: [
-          Text(
-            title,
-            style: statusStyle(),
-          ),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: Text(
-              value,
-              style: statusStyle(),
-              key: UniqueKey(),
-            ),
-          ),
-        ],
-      );
+  Widget textDetail(
+      {@required String title,
+      @required String value,
+      @required BuildContext context}) {
+    Color _default = Theme.of(context).textTheme.button.color;
 
-  TextStyle statusStyle() => TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 13.5,
-      );
+    if (value == CommonsData.errorToken) _default = Colors.redAccent;
+
+    if (value == CommonsData.successToken || value == CommonsData.upToDate)
+      _default = Colors.green;
+
+    return Row(
+      children: [
+        Text(
+          title,
+          style: statusStyle,
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: Text(
+            value,
+            style: statusStyle.copyWith(
+              color: _default,
+            ),
+            key: UniqueKey(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  TextStyle statusStyle = TextStyle(
+    fontWeight: FontWeight.w600,
+    fontSize: 13.5,
+  );
 }

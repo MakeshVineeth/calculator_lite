@@ -136,7 +136,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
         ),
       ),
       bottomNavigationBar: SizedBox(
-        height: _helperFunctions.isLandScape(context) ? 40 : 55,
+        height: _helperFunctions.isLandScape(context) ? 40 : 58,
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           selectedLabelStyle: FixedValues.semiBoldStyle,

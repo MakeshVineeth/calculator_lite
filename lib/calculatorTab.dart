@@ -256,7 +256,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
         padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
+            padding: EdgeInsets.all(5.0),
           ),
           onPressed: changeMetrics,
           child: Text(
