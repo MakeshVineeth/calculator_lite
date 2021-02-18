@@ -172,7 +172,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
           controller: _scrollController,
           initialItemCount: fromBox.length,
           physics:
-              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
           itemBuilder: (context, index, animation) => SlideTransition(
             position: CurvedAnimation(parent: animation, curve: Curves.easeIn)

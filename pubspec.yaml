@@ -36,6 +36,7 @@ dependencies:
   flutter_statusbarcolor: ^0.2.3
   hive: ^1.4.4+1
   hive_flutter: ^0.3.1
+  intl: ^0.17.0
   math_expressions: ^2.0.1
   octo_image: ^0.3.0
   path_provider: ^1.6.24

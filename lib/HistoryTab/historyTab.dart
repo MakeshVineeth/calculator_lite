@@ -53,8 +53,8 @@ class _HistoryTabState extends State<HistoryTab> {
           if (listener.isNotEmpty)
             return Expanded(
               child: ListView.builder(
-                physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
+                physics: AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics()),
                 itemCount: listener.length,
                 itemExtent: 200,
                 cacheExtent: 2000,

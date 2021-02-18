@@ -28,6 +28,14 @@ class DisplayScreen extends StatefulWidget {
 
     return valueStr.replaceAll(infinity, infinitySymbol);
   }
+
+  static bool isDoubleValid(double val) {
+    if (val == null) return false;
+
+    if (val.isNaN) return false;
+
+    return true;
+  }
 }
 
 class _DisplayScreenState extends State<DisplayScreen> {
@@ -88,7 +96,7 @@ class _DisplayScreenState extends State<DisplayScreen> {
 
   void runInitial() {
     if (this.mounted) {
-      widget.mainValue != null
+      DisplayScreen.isDoubleValid(widget.mainValue)
           ? myController.text = DisplayScreen.formatNumber(widget.mainValue)
           : myController.clear();
     }

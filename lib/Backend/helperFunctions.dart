@@ -2,6 +2,7 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:angles/angles.dart';
 import 'dart:math' as math;
 import 'package:decimal/decimal.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 class HelperFunctions {
@@ -204,5 +205,9 @@ class HelperFunctions {
     String date = '$t2 $t1';
 
     return date;
+  }
+
+  bool isLandScape(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.landscape;
   }
 }

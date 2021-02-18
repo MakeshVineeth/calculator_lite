@@ -50,6 +50,22 @@ class FixedValues {
     [pi, cubeRoot, capChar, squareChar]
   ];
 
+  static List horizontalLayout = [
+    ['eˣ', '𝟏𝟬ˣ', invButton, 'e', '%', 'C', backSpaceChar, divisionChar],
+    [7, 8, 9, multiplyChar, 'sin', 'cos', 'tan', cubeChar],
+    [4, 5, 6, minus, 'ln', 'log', 'mod', reciprocalChar],
+    [1, 2, 3, '+', '(', ')', '!', root],
+    [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar]
+  ];
+
+  static List horizontalLayoutInverse = [
+    ['eˣ', '𝟏𝟬ˣ', invButton, 'e', '%', 'C', backSpaceChar, divisionChar],
+    [7, 8, 9, multiplyChar, 'sin⁻¹', 'cos⁻¹', 'tan⁻¹', cubeChar],
+    [4, 5, 6, minus, 'ln', 'log', 'mod', reciprocalChar],
+    [1, 2, 3, '+', '(', ')', '!', root],
+    [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar]
+  ];
+
   static ThemeData getTotalData(Brightness brightness) {
     bool isLight = brightness == Brightness.light;
     Color foreground = isLight ? Colors.red : Colors.yellow;

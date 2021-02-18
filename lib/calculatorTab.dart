@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:calculator_lite/Backend/helperFunctions.dart';
+
 import 'HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';
@@ -30,11 +32,19 @@ class _CalculatorTabState extends State<CalculatorTab> {
   String currentMetric;
   Timer timer;
   var _androidAppRetain = MethodChannel("android_app_exit");
+  final HelperFunctions _helperFunctions = HelperFunctions();
 
   @override
   void initState() {
     super.initState();
-    _currentChild = buildCalcRows(FixedValues.rowSimple);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
+        ? FixedValues.horizontalLayout
+        : FixedValues.rowSimple);
     getCurrentMetrics();
   }
 
@@ -99,11 +109,11 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
       // Code for =
       else if (value.contains('=')) {
-        // Incomplete for now.
-
-        addToHistory();
-        calculationString.clear();
-        calculationString.add(mainValue.toString());
+        if (DisplayScreen.isDoubleValid(mainValue)) {
+          addToHistory();
+          calculationString.clear();
+          calculationString.add(mainValue.toString());
+        }
       }
 
       // at last
@@ -199,7 +209,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
             mainValue: mainValue,
           ),
           Expanded(
-            flex: 3,
+            flex: _helperFunctions.isLandScape(context) ? 6 : 3,
             child: Padding(
               padding: const EdgeInsets.all(5.0),
               child: AnimatedSwitcher(
@@ -294,13 +304,17 @@ class _CalculatorTabState extends State<CalculatorTab> {
     // For upper arrow.
     else if (value.contains(FixedValues.upperArrow)) {
       if (secondPageFlip)
-        _currentChild = buildCalcRows(FixedValues.rowInverse);
+        _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
+            ? FixedValues.horizontalLayoutInverse
+            : FixedValues.rowInverse);
       else
         _currentChild = buildCalcRows(FixedValues.rowExtras);
     }
 
     // For down arrow.
     else
-      _currentChild = buildCalcRows(FixedValues.rowSimple);
+      _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
+          ? FixedValues.horizontalLayout
+          : FixedValues.rowSimple);
   }
 }

@@ -126,6 +126,9 @@ class _UpdateColumnState extends State<UpdateColumn> {
       print('Exception: ' + e.toString());
     } catch (e) {
       widget.updateListen.inProgress = false;
+      setState(() {
+        status = CommonsData.errorToken;
+      });
       print('Exception: ' + e.toString());
     }
   }
