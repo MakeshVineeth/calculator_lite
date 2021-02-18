@@ -70,6 +70,9 @@ class FixedValues {
     bool isLight = brightness == Brightness.light;
     Color foreground = isLight ? Colors.red : Colors.yellow;
     Color background = isLight ? Colors.white : Colors.grey[900];
+
+    Color backgroundScaffold = isLight ? background : Colors.black;
+
     return ThemeData(
       brightness: brightness,
       primaryColor:
@@ -77,10 +80,14 @@ class FixedValues {
       primarySwatch: foreground,
       accentColor: foreground,
       buttonColor: background,
-      scaffoldBackgroundColor: background,
-      bottomAppBarColor: background,
-      backgroundColor: background,
+      scaffoldBackgroundColor: backgroundScaffold,
+      bottomAppBarColor: backgroundScaffold,
+      backgroundColor: backgroundScaffold,
       iconTheme: IconThemeData(color: foreground),
+      cardTheme: CardTheme(
+        color: background,
+        elevation: isLight ? 2.0 : 20.0,
+      ),
       appBarTheme: AppBarTheme(
           brightness: brightness,
           centerTitle: true,
@@ -95,7 +102,7 @@ class FixedValues {
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ))),
-      canvasColor: background,
+      canvasColor: backgroundScaffold,
       applyElevationOverlayColor: !isLight,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
@@ -105,7 +112,8 @@ class FixedValues {
           elevation: isLight
               ? MaterialStateProperty.all(2.0)
               : MaterialStateProperty.all(20.0),
-          overlayColor: MaterialStateProperty.all(Colors.grey[100]),
+          overlayColor: MaterialStateProperty.all(
+              isLight ? Colors.grey[100] : Colors.black12),
         ),
       ),
     );

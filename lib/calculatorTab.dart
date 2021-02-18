@@ -308,13 +308,13 @@ class _CalculatorTabState extends State<CalculatorTab> {
             ? FixedValues.horizontalLayoutInverse
             : FixedValues.rowInverse);
       else
-        _currentChild = buildCalcRows(FixedValues.rowExtras);
+        _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
+            ? FixedValues.horizontalLayout
+            : FixedValues.rowExtras);
     }
 
     // For down arrow.
     else
-      _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
-          ? FixedValues.horizontalLayout
-          : FixedValues.rowSimple);
+      _currentChild = buildCalcRows(FixedValues.rowSimple);
   }
 }
