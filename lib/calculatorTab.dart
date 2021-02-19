@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
-
+import 'package:calculator_lite/features/privacy_mode.dart';
 import 'HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';
@@ -227,6 +227,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
     Map<String, Function> menuList = {
       'About': () => AboutPage.showAboutDialogFunc(context),
       'Change Theme': () => PopThemeChooser.showThemeChooser(context),
+      'Secure Mode': () =>
+          showDialog(context: context, builder: (context) => PrivacyDialog()),
       'Exit': () {
         if (Platform.isAndroid)
           _androidAppRetain.invokeMethod("sendToBackground");

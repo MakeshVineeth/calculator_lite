@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:calculator_lite/UIElements/dialogTextBtn.dart';
+import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:calculator_lite/fixedValues.dart';
@@ -40,6 +41,7 @@ class AboutPage extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       FixedValues.appName,
@@ -54,18 +56,35 @@ class AboutPage extends StatelessWidget {
                       style: appLegaleseStyle,
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      children: [
-                        ButtonLinks(
-                          title: 'Play Store',
-                          backgroundColor: Color(0xff078C30),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics()),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width / 1.5,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ButtonLinks(
+                              title: 'Play Store',
+                              icon: Icons.shop_outlined,
+                              backgroundColor: Color(0xff078C30),
+                              function: () => launchUrl(
+                                  url:
+                                      'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite'),
+                            ),
+                            SizedBox(width: 5),
+                            ButtonLinks(
+                              title: 'GitHub',
+                              icon: Icons.code_outlined,
+                              backgroundColor: Color(0xff24292E),
+                              function: () => launchUrl(
+                                  url:
+                                      'https://github.com/MakeshVineeth/calculator_lite'),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 10),
-                        ButtonLinks(
-                          title: 'GitHub',
-                          backgroundColor: Color(0xff24292E),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),

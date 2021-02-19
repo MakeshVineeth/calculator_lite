@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "BROWSABLE",
         "Btns",
         "Fullname",
         "LEHV",
@@ -11,7 +12,8 @@
         "mngld",
         "ndash",
         "reimplement",
-        "uarr"
+        "uarr",
+        "windowmanager"
     ],
     "cSpell.ignoreWords": [
         "mngl",
