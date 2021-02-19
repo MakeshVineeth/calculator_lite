@@ -4,7 +4,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
 import 'commonsHistory.dart';
 import 'historyItem.dart';
-import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/UIElements/slidePanelItem.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
@@ -29,8 +28,6 @@ class HistoryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        elevation: 2,
-        shape: FixedValues.roundShapeLarge,
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
           secondaryActions: [
@@ -104,8 +101,6 @@ class HistoryCard extends StatelessWidget {
           @required BuildContext context}) =>
       Expanded(
         child: Card(
-          elevation: 0.7,
-          shape: FixedValues.roundShapeLarge,
           child: ListTile(
             leading: Column(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -4,7 +4,6 @@ import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
 import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
 import 'package:calculator_lite/CurrencyTab/resetFormProvider.dart';
-import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -104,8 +103,6 @@ class _CardUIState extends State<CardUI> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
-      shape: FixedValues.roundShapeLarge,
       child: slidable(),
     );
   }
@@ -205,7 +202,6 @@ class _CardUIState extends State<CardUI> {
                 elevation: MaterialStateProperty.all(0),
                 padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 5)),
-                shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
               ),
               onPressed: () => displayCurrencyChooser(method),
               icon: FlagIcon(
@@ -267,7 +263,6 @@ class _CardUIState extends State<CardUI> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Card(
-        shape: FixedValues.roundShapeLarge,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: TextFormField(
@@ -289,6 +284,8 @@ class _CardUIState extends State<CardUI> {
               hintText: placeholder,
               fillColor: Colors.white70,
             ),
+            scrollPhysics:
+                AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           ),
         ),
       ),

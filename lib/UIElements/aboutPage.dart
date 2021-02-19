@@ -6,6 +6,7 @@ import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
+import 'buttons_links.dart';
 
 class AboutPage extends StatelessWidget {
   @override
@@ -13,7 +14,7 @@ class AboutPage extends StatelessWidget {
     return FadeScale(
       child: AlertDialog(
         shape: FixedValues.roundShapeLarge,
-        buttonPadding: EdgeInsets.all(10),
+        buttonPadding: const EdgeInsets.all(10.0),
         actions: [
           DialogTextBtn(
             function: () => showLicensePage(
@@ -35,9 +36,7 @@ class AboutPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               applicationIconImg(),
-              SizedBox(
-                width: 10,
-              ),
+              SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,12 +48,24 @@ class AboutPage extends StatelessWidget {
                     Text(
                       FixedValues.appVersion,
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    SizedBox(height: 20),
                     Text(
                       FixedValues.appLegalese,
                       style: appLegaleseStyle,
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        ButtonLinks(
+                          title: 'Play Store',
+                          backgroundColor: Color(0xff078C30),
+                        ),
+                        SizedBox(width: 10),
+                        ButtonLinks(
+                          title: 'GitHub',
+                          backgroundColor: Color(0xff24292E),
+                        ),
+                      ],
                     ),
                   ],
                 ),
