@@ -2,6 +2,7 @@ import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/CurrencyTab/currencyTab.dart';
 import 'package:calculator_lite/HistoryTab/historyTab.dart';
 import 'package:calculator_lite/calculatorTab.dart';
+import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';
@@ -15,6 +16,7 @@ import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'dart:io' show Platform;
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'HistoryTab/historyItem.dart';
+import 'package:calculator_lite/screens/privacy_policy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +62,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
         themeMode: setTheme,
         theme: FixedValues.getTotalData(Brightness.light),
         darkTheme: FixedValues.getTotalData(Brightness.dark),
-        home: ScaffoldHome(),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => ScaffoldHome(),
+          '/privacy': (context) => PrivacyPolicy(),
+        },
       ),
     );
   }
@@ -111,7 +117,15 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   @override
   void initState() {
     super.initState();
+    doInitialTasks();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void doInitialTasks() async {
+    if (Platform.isAndroid) {
+      bool _disabled = await getPrefs('privacy', true);
+      setSecure(_disabled);
+    }
   }
 
   @override

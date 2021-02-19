@@ -55,7 +55,7 @@ class AboutPage extends StatelessWidget {
                       FixedValues.appLegalese,
                       style: appLegaleseStyle,
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 15),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       physics: AlwaysScrollableScrollPhysics(

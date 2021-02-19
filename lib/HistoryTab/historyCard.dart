@@ -101,6 +101,9 @@ class HistoryCard extends StatelessWidget {
           @required BuildContext context}) =>
       Expanded(
         child: Card(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Theme.of(context).scaffoldBackgroundColor
+              : Colors.black45,
           child: ListTile(
             leading: Column(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -19,7 +19,7 @@ class ButtonLinks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ElevatedButton.icon(
+      child: TextButton.icon(
         icon: Icon(
           icon,
           color: iconColor,

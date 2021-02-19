@@ -18,11 +18,12 @@ class RadioTileCustom extends StatelessWidget {
   Widget build(BuildContext context) {
     return RadioListTile(
       value: value,
-      title: Text(title),
-      dense: true,
+      title: Text(
+        title,
+        style: FixedValues.semiBoldStyle,
+      ),
       groupValue: groupValue,
-      shape: FixedValues.roundShapeBtns,
-      controlAffinity: ListTileControlAffinity.leading,
+      shape: FixedValues.roundShapeLarge,
       onChanged: (val) => function(),
     );
   }

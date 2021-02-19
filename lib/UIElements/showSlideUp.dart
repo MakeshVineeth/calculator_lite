@@ -6,6 +6,9 @@ void showSlideUp(
     {@required BuildContext context,
     @required Map<String, Function> menuList}) {
   slideDialog.showSlideDialog(
+    backgroundColor: Theme.of(context).brightness == Brightness.light
+        ? Theme.of(context).scaffoldBackgroundColor
+        : Colors.grey[900],
     context: context,
     child: Expanded(
       child: ListView.separated(

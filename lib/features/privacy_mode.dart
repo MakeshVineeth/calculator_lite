@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/custom_radio.dart';
 import 'package:calculator_lite/fixedValues.dart';
@@ -28,39 +30,45 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Privacy Mode'),
-      shape: FixedValues.roundShapeBtns,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RadioTileCustom(
-            value: false,
-            groupValue: _disabled,
-            title: 'Enable',
-            function: _doTask,
-          ),
-          RadioTileCustom(
-            value: true,
-            groupValue: _disabled,
-            title: 'Disable',
-            function: _doTask,
-          ),
-        ],
+    return FadeScale(
+      child: AlertDialog(
+        title: Text(
+          'Privacy Mode',
+          style: FixedValues.semiBoldStyle,
+        ),
+        shape: FixedValues.roundShapeLarge,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioTileCustom(
+              value: false,
+              groupValue: _disabled,
+              title: 'Enable',
+              function: _doTask,
+            ),
+            RadioTileCustom(
+              value: true,
+              groupValue: _disabled,
+              title: 'Disable',
+              function: _doTask,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   void _doTask() async {
     try {
-      if (mounted)
-        setState(() {
-          _disabled = !_disabled;
-        });
+      if (Platform.isAndroid) {
+        if (mounted)
+          setState(() {
+            _disabled = !_disabled;
+          });
 
-      await setPrefs('privacy', _disabled);
-      await setSecure(_disabled);
+        await setPrefs('privacy', _disabled);
+        await setSecure(_disabled);
+      }
     } catch (e) {}
   }
 }

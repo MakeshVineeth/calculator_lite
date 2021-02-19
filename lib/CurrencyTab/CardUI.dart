@@ -263,6 +263,9 @@ class _CardUIState extends State<CardUI> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Card(
+        color: Theme.of(context).brightness == Brightness.light
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Colors.black45,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: TextFormField(
@@ -278,7 +281,9 @@ class _CardUIState extends State<CardUI> {
             decoration: InputDecoration(
               border: InputBorder.none,
               hintStyle: TextStyle(
-                color: Colors.grey[800],
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey[800]
+                    : Colors.grey,
                 fontWeight: FontWeight.w600,
               ),
               hintText: placeholder,
