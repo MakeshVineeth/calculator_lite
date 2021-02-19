@@ -33,7 +33,7 @@ class ButtonLinks extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0))),
           overlayColor: MaterialStateProperty.all(Colors.white10),
           padding: MaterialStateProperty.all(
-              const EdgeInsets.symmetric(vertical: 10.0)),
+              const EdgeInsets.symmetric(vertical: 12.0)),
         ),
         label: Text(
           title,

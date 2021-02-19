@@ -20,6 +20,8 @@ class _FadeThisState extends State<FadeScale>
       duration: _duration,
     );
 
+    _controller.forward();
+
     super.initState();
   }
 
@@ -31,7 +33,6 @@ class _FadeThisState extends State<FadeScale>
 
   @override
   Widget build(BuildContext context) {
-    _controller.forward();
     return AnimatedBuilder(
       animation: _controller,
       builder: (BuildContext context, Widget child) => FadeScaleTransition(

@@ -27,6 +27,8 @@ class _FadeThisState extends State<FadeThis>
       end: 1.0,
     ).animate(_controller);
 
+    _controller.forward();
+
     super.initState();
   }
 
@@ -38,7 +40,6 @@ class _FadeThisState extends State<FadeThis>
 
   @override
   Widget build(BuildContext context) {
-    _controller.forward();
     return FadeTransition(
       opacity: _animation,
       child: this.widget.child,
