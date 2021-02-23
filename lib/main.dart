@@ -3,7 +3,6 @@ import 'package:calculator_lite/CurrencyTab/currencyTab.dart';
 import 'package:calculator_lite/HistoryTab/historyTab.dart';
 import 'package:calculator_lite/calculatorTab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
@@ -23,9 +22,7 @@ void main() async {
   await Hive.initFlutter('hiveUserData');
   Hive.registerAdapter(CurrencyListItemAdapter());
   Hive.registerAdapter(HistoryItemAdapter());
-
   runApp(BottomNavBar());
-  GestureBinding.instance.resamplingEnabled = true;
 }
 
 class BottomNavBar extends StatefulWidget {
