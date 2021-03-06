@@ -106,15 +106,11 @@ class FixedValues {
       canvasColor: backgroundScaffold,
       applyElevationOverlayColor: brightness == Brightness.dark,
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(background),
-          foregroundColor: MaterialStateProperty.all(foreground),
-          shape: MaterialStateProperty.all(roundShapeBtns),
-          elevation: isLight
-              ? MaterialStateProperty.all(2.0)
-              : MaterialStateProperty.all(10.0),
-          overlayColor: MaterialStateProperty.all(
-              isLight ? Colors.grey[100] : Colors.black12),
+        style: ElevatedButton.styleFrom(
+          primary: background,
+          onPrimary: foreground,
+          shape: roundShapeBtns,
+          elevation: isLight ? 2.0 : 10.0,
         ),
       ),
     );
