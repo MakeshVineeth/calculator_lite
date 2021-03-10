@@ -32,7 +32,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   double mainValue;
   String currentMetric;
   Timer timer;
-  var _androidAppRetain = MethodChannel("android_app_exit");
+  final MethodChannel _androidAppRetain = MethodChannel("kotlin.flutter.dev");
   final HelperFunctions _helperFunctions = HelperFunctions();
 
   @override
