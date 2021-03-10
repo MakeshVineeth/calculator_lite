@@ -1,5 +1,6 @@
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/CurrencyTab/currencyTab.dart';
+import 'package:calculator_lite/Export_Screen/export_screen.dart';
 import 'package:calculator_lite/HistoryTab/historyTab.dart';
 import 'package:calculator_lite/calculatorTab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
@@ -63,6 +64,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         routes: {
           '/': (context) => ScaffoldHome(),
           '/privacy': (context) => PrivacyPolicy(),
+          '/export': (context) => ExportScreen(),
         },
       ),
     );

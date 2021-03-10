@@ -1,4 +1,3 @@
-import 'package:calculator_lite/HistoryTab/Backend/export_function.dart';
 import 'package:calculator_lite/HistoryTab/historyCard.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -36,16 +35,17 @@ class _HistoryTabState extends State<HistoryTab> {
     );
   }
 
-  Map<String, Function> menuList = {
-    'Clear All': () => Future.delayed(
-        CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
-    'Export': () {
-      ExportFunction exportFunction = ExportFunction();
-      exportFunction.export();
-    },
-  };
+  getMenuList() {
+    Map<String, Function> menuList = {
+      'Clear All': () => Future.delayed(
+          CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
+      'Export': () => Navigator.pushNamed(context, '/export'),
+    };
 
-  void menuShow() => showSlideUp(context: context, menuList: menuList);
+    return menuList;
+  }
+
+  void menuShow() => showSlideUp(context: context, menuList: getMenuList());
 
   Widget listWidget(final Box box) => ValueListenableBuilder(
         valueListenable: Hive.box(CommonsHistory.historyBox).listenable(),

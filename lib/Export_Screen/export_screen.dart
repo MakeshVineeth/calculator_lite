@@ -58,7 +58,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Export Data'),
+        title: Text('Export'),
         shape: CustomThemes.appBarShape,
       ),
       body: Center(
@@ -82,7 +82,7 @@ class _ExportScreenState extends State<ExportScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Progress Report',
+                              'Export History',
                               style: TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold,
@@ -113,39 +113,15 @@ class _ExportScreenState extends State<ExportScreen> {
                                     ButtonCustom(
                                       text: 'Share',
                                       function: () => exportEvent(),
-                                      buttonColor:
-                                          Theme.of(context).brightness ==
-                                                  Brightness.light
-                                              ? Colors.white
-                                              : Theme.of(context)
-                                                  .textTheme
-                                                  .button
-                                                  .color,
                                     ),
                                     if (snapshot.data) // Checks if OS SDK26+
                                       ButtonCustom(
                                         text: 'Save',
                                         function: () => exportEvent(save: true),
-                                        buttonColor:
-                                            Theme.of(context).brightness ==
-                                                    Brightness.light
-                                                ? Colors.white
-                                                : Theme.of(context)
-                                                    .textTheme
-                                                    .button
-                                                    .color,
                                       ),
                                     ButtonCustom(
                                       text: 'Clear',
                                       function: () => clearStatus(),
-                                      buttonColor:
-                                          Theme.of(context).brightness ==
-                                                  Brightness.light
-                                              ? Colors.white
-                                              : Theme.of(context)
-                                                  .textTheme
-                                                  .button
-                                                  .color,
                                     ),
                                   ],
                                 ),
