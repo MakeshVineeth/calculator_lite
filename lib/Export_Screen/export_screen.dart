@@ -219,7 +219,8 @@ class _ExportScreenState extends State<ExportScreen> {
         data.forEach((HistoryItem element) {
           DateTime from = getDateTime(_dateFrom.text);
           DateTime to = getDateTime(_dateTo.text);
-          DateTime val = element.dateTime;
+          DateTime val = getDateTime(
+              DateFormat(CommonStrings.dateFormat).format(element.dateTime));
 
           if (to.compareTo(val) == 0 ||
               from.compareTo(val) == 0 ||
