@@ -211,14 +211,12 @@ class _ExportScreenState extends State<ExportScreen> {
       bool isValid = _formKey.currentState.validate();
       setStatus(isLoading: true);
       final Box history = Hive.box(CommonsHistory.historyBox);
-      List<HistoryItem> data = history.values.toList();
+      List<HistoryItem> data = [...history.values.toList()];
 
       if (isValid && data.isNotEmpty) {
         List<Map<String, String>> allData = [];
 
-        data.forEach((element) {
-          Map<String, String> eachRow = {};
-
+        data.forEach((HistoryItem element) {
           DateTime from = getDateTime(_dateFrom.text);
           DateTime to = getDateTime(_dateTo.text);
           DateTime val = element.dateTime;
@@ -226,14 +224,14 @@ class _ExportScreenState extends State<ExportScreen> {
           if (to.compareTo(val) == 0 ||
               from.compareTo(val) == 0 ||
               from.isBefore(val) && to.isAfter(val)) {
-            eachRow.addAll({
+            Map<String, String> eachHistoryItem = {
               CommonStrings.dateTitle: getFormattedTitle(element.dateTime),
               CommonStrings.expTextTitle: element.expression,
               CommonStrings.valTextTile: element.value,
               CommonStrings.historyTitle: element.title
-            });
+            };
 
-            allData.add(eachRow);
+            allData.add(eachHistoryItem);
           }
         });
 
@@ -270,6 +268,7 @@ class _ExportScreenState extends State<ExportScreen> {
       else
         setStatus(text: 'Unable to Proceed!', isError: true);
     } catch (e) {
+      print('Error: $e');
       setStatus(text: 'Unable to Proceed!', isError: true);
     }
   }
