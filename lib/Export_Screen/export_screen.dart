@@ -211,7 +211,7 @@ class _ExportScreenState extends State<ExportScreen> {
       bool isValid = _formKey.currentState.validate();
       setStatus(isLoading: true);
       final Box history = Hive.box(CommonsHistory.historyBox);
-      List<HistoryItem> data = [...history.values.toList()];
+      final List<HistoryItem> data = [...history.values.toList()];
 
       if (isValid && data.isNotEmpty) {
         List<Map<String, String>> allData = [];
@@ -225,7 +225,7 @@ class _ExportScreenState extends State<ExportScreen> {
           if (to.compareTo(val) == 0 ||
               from.compareTo(val) == 0 ||
               from.isBefore(val) && to.isAfter(val)) {
-            Map<String, String> eachHistoryItem = {
+            final Map<String, String> eachHistoryItem = {
               CommonStrings.dateTitle: getFormattedTitle(element.dateTime),
               CommonStrings.expTextTitle: element.expression,
               CommonStrings.valTextTile: element.value,
