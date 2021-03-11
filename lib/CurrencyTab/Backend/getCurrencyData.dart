@@ -34,12 +34,9 @@ class CurrencyData {
             keyIndex: count);
 
       return CommonsData.successToken;
-    } on DioError catch (e) {
-      print('Exception: ' + e.toString());
-      return e.toString();
     } catch (e) {
       print('Exception getRemoteData: ' + e.toString());
-      return e.toString();
+      return CommonsData.errorToken;
     }
   }
 
@@ -104,9 +101,6 @@ class CurrencyData {
         return CommonsData.successToken;
       } else
         return CommonsData.errorToken;
-    } on DioError catch (e) {
-      print('Dio Error: ' + e.toString());
-      return CommonsData.errorToken;
     } catch (e) {
       print('Exception: ' + e.toString());
       return CommonsData.errorToken;

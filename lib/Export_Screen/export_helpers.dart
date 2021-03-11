@@ -10,11 +10,3 @@ Future<bool> isAboveOreo() async {
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   return androidInfo.version.sdkInt >= 26;
 }
-
-// Some helper function to get date in another format.
-String neatDate(String date) {
-  DateTime dateTime = DateFormat.yMMMMd('en_US').add_Hm().parse(date);
-  return dateTime != null
-      ? DateFormat.yMMMMd('en_US').add_jm().format(dateTime)
-      : '--';
-}

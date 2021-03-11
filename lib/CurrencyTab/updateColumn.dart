@@ -50,18 +50,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
         }
       }
 
-      if (mounted)
-        setState(() {
-          status = CommonsData.checkingStr;
-        });
+      if (mounted) setState(() => status = CommonsData.checkingStr);
 
       Response getBaseData = await CommonsData.getResponse(
           CommonsData.remoteUrl); // EUR by default.
-
-      if (getBaseData == null) {
-        widget.updateListen.inProgress = false;
-        return;
-      }
 
       Map baseJson = Map<String, dynamic>.from(getBaseData.data);
 
@@ -79,10 +71,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
             dateTimeObj.month == online.month) {
           await dateBox.put(CommonsData.lastDateChecked, now.toString());
 
-          if (mounted)
-            setState(() {
-              status = CommonsData.upToDate;
-            });
+          if (mounted) setState(() => status = CommonsData.upToDate);
           {
             widget.updateListen.inProgress = false;
             return;
@@ -90,13 +79,12 @@ class _UpdateColumnState extends State<UpdateColumn> {
         }
       }
 
-      if (mounted)
-        setState(() {
-          status = CommonsData.progressToken;
-        });
+      if (mounted) setState(() => status = CommonsData.progressToken);
 
       String result = await currencyData.getRemoteData(
-          context: context, baseJson: baseJson);
+        context: context,
+        baseJson: baseJson,
+      );
 
       if (result == CommonsData.successToken) {
         Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
@@ -104,11 +92,9 @@ class _UpdateColumnState extends State<UpdateColumn> {
         await dateBox.put(CommonsData.lastDateChecked, now.toString());
       }
 
-      if (mounted)
-        setState(() {
-          status = result;
-        });
+      if (mounted) setState(() => status = result);
 
+      // Retry if an error has occurred.
       if (result == CommonsData.errorToken) {
         Future.delayed(const Duration(seconds: 2), () {
           if (mounted)
@@ -118,20 +104,9 @@ class _UpdateColumnState extends State<UpdateColumn> {
             });
         });
       }
-    }
-
-    // on network error
-    on DioError catch (e) {
-      widget.updateListen.inProgress = false;
-      print('Exception: ' + e.toString());
     } catch (e) {
       widget.updateListen.inProgress = false;
-
-      if (mounted)
-        setState(() {
-          status = CommonsData.errorToken;
-        });
-
+      if (mounted) setState(() => status = CommonsData.errorToken);
       print('Exception: ' + e.toString());
     }
   }

@@ -150,7 +150,7 @@ class _ExportScreenState extends State<ExportScreen> {
   String generateFileName() {
     DateTime now = DateTime.now();
     String date = DateFormat(CommonStrings.dateFormat).format(now);
-    String time = DateFormat('H_m_s').format(now);
+    String time = DateFormat('H_m_ss').format(now);
     return 'History_' + date + '_$time';
   }
 
@@ -219,18 +219,19 @@ class _ExportScreenState extends State<ExportScreen> {
           DateTime from = getDateTime(_dateFrom.text);
           DateTime to = getDateTime(_dateTo.text);
 
-          String neatDateStr =
+          String formattedDate =
               DateFormat(CommonStrings.dateFormat).format(element.dateTime);
-          DateTime val = getDateTime(neatDateStr);
+          DateTime val = getDateTime(formattedDate);
 
           if (to.compareTo(val) == 0 ||
               from.compareTo(val) == 0 ||
               from.isBefore(val) && to.isAfter(val)) {
             final Map<String, String> eachHistoryItem = {
-              CommonStrings.dateTitle: neatDateStr,
+              CommonStrings.historyTitle: element.title,
+              CommonStrings.dateTitle:
+                  DateFormat.yMMMMd('en_US').add_jm().format(element.dateTime),
               CommonStrings.expTextTitle: element.expression,
               CommonStrings.valTextTile: element.value,
-              CommonStrings.historyTitle: element.title
             };
 
             allData.add(eachHistoryItem);

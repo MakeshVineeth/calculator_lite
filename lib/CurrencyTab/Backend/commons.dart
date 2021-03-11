@@ -11,22 +11,22 @@ class CommonsData {
   static const lastDateChecked = 'last_checked';
 
   static const successToken = 'Updated!';
-  static const errorToken = 'Failed.';
+  static const errorToken = 'Failed';
   static const retryString = 'Retrying..';
   static const progressToken = 'Downloading..';
   static const checkingStr = 'Checking...';
-  static const upToDate = 'Up to date.';
+  static const upToDate = 'Up to date';
 
   static final Duration dur1 = const Duration(milliseconds: 500);
+  static final int timeOut = 5000;
 
   static Future<Response> getResponse(url) async {
-    int timeOut = 5000;
-
     final options = BaseOptions(
-        baseUrl: remoteUrl,
-        connectTimeout: timeOut,
-        receiveTimeout: timeOut,
-        sendTimeout: timeOut);
+      baseUrl: remoteUrl,
+      connectTimeout: timeOut,
+      receiveTimeout: timeOut,
+      sendTimeout: timeOut,
+    );
 
     Dio dio = Dio(options);
 
