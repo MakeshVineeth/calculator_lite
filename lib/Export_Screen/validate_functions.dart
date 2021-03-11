@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'common_strings.dart';
+import 'export_commons.dart';
 
 String emptyValidator(TextEditingController controller) =>
     controller.text.isEmpty ? 'Type a proper value.' : null;

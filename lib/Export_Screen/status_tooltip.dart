@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'loader.dart';
 
 class StatusToolTip extends StatelessWidget {
   final String status;
@@ -26,7 +25,7 @@ class StatusToolTip extends StatelessWidget {
             (isLoading) ? CrossFadeState.showFirst : CrossFadeState.showSecond,
         firstChild: Padding(
           padding: const EdgeInsets.all(5.0),
-          child: Loader(isLight: forceLight),
+          child: CircularProgressIndicator(),
         ),
         secondChild: Text(
           status,

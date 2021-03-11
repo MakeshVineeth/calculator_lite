@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'common_strings.dart';
-import 'helper_methods.dart';
+import 'export_commons.dart';
+import 'export_helpers.dart';
 import 'export_method.dart';
-import 'custom_themes.dart';
+import 'export_theming.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'buttonCustom.dart';
 import 'date_field_custom.dart';
-import 'loader.dart';
 import 'status_tooltip.dart';
 import 'dart:io' show File, Platform;
 import 'package:share/share.dart';
@@ -141,7 +140,7 @@ class _ExportScreenState extends State<ExportScreen> {
                   ),
                 );
               else
-                return Loader(isLight: true);
+                return CircularProgressIndicator();
             },
           ),
         ),
@@ -212,7 +211,7 @@ class _ExportScreenState extends State<ExportScreen> {
       bool isValid = _formKey.currentState.validate();
       setStatus(isLoading: true);
       final Box history = Hive.box(CommonsHistory.historyBox);
-      List<HistoryItem> data = history.values;
+      List<HistoryItem> data = history.values.toList();
 
       if (isValid && data.isNotEmpty) {
         List<Map<String, String>> allData = [];

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'common_strings.dart';
+import 'export_commons.dart';
 import 'validate_functions.dart';
 import 'text_field_custom.dart';
 import 'package:intl/intl.dart';
