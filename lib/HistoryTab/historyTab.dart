@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'commonsHistory.dart';
 import 'package:calculator_lite/UIElements/showSlideUp.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+import 'dart:io' show Platform;
 
 class HistoryTab extends StatefulWidget {
   @override
@@ -39,7 +40,9 @@ class _HistoryTabState extends State<HistoryTab> {
     Map<String, Function> menuList = {
       'Clear All': () => Future.delayed(
           CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
-      'Export': () => Navigator.pushNamed(context, '/export'),
+      'Export': () {
+        if (Platform.isAndroid) Navigator.pushNamed(context, '/export');
+      },
     };
 
     return menuList;
