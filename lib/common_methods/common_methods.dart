@@ -28,8 +28,6 @@ void launchUrl(
     bool forceWebView = false,
     bool enableJavaScript = false}) async {
   try {
-    if (await canLaunch(url))
-      await launch(url,
-          forceWebView: forceWebView, enableJavaScript: enableJavaScript);
+    launch(url, forceWebView: forceWebView, enableJavaScript: enableJavaScript);
   } catch (e) {}
 }

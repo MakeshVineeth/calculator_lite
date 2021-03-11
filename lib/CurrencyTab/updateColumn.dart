@@ -16,15 +16,19 @@ class UpdateColumn extends StatefulWidget {
 }
 
 class _UpdateColumnState extends State<UpdateColumn> {
-  String src = 'FrankFurter API';
+  final String src = 'FrankFurter API';
   String status = 'None';
-  CurrencyData currencyData = CurrencyData();
-  HelperFunctions _helperFunctions = HelperFunctions();
+  final CurrencyData currencyData = CurrencyData();
+  final HelperFunctions _helperFunctions = HelperFunctions();
+  static final int defaultTries = 1;
+  int triesLeft = defaultTries;
 
   @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 10), () => updateInitial());
+
+    // Check if Update now is clicked from other screen or widget.
     widget.updateListen.addListener(() => updateInitial(force: true));
   }
 
@@ -90,33 +94,40 @@ class _UpdateColumnState extends State<UpdateColumn> {
         Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
         await dateBox.put(CommonsData.updatedDateKey, updatedDate);
         await dateBox.put(CommonsData.lastDateChecked, now.toString());
+        if (mounted) setState(() => triesLeft = defaultTries);
       }
 
       if (mounted) setState(() => status = result);
-
-      // Retry if an error has occurred.
-      if (result == CommonsData.errorToken) {
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted)
-            setState(() {
-              status = CommonsData.retryString;
-              Future.delayed(const Duration(seconds: 1), () => updateInitial());
-            });
-        });
-      }
+      retryMethod(result);
     } catch (e) {
       widget.updateListen.inProgress = false;
       if (mounted) setState(() => status = CommonsData.errorToken);
-      print('Exception: ' + e.toString());
+      retryMethod(CommonsData.errorToken);
+    }
+  }
+
+  void retryMethod(String result) {
+    if (triesLeft == 0) return;
+
+    if (result == CommonsData.errorToken) {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted)
+          setState(() {
+            status = CommonsData.retryString;
+            if (triesLeft > 0) triesLeft -= 1;
+          });
+
+        Future.delayed(
+            const Duration(seconds: 1), () => updateInitial(force: true));
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    DateTime dateTime = DateTime.tryParse(
+    final DateTime dateTime = DateTime.tryParse(
         Hive.box(CommonsData.updatedDateBox).get(CommonsData.lastDateChecked));
-
-    String lastUpdated = _helperFunctions.getDate(dateTime);
+    final String lastUpdated = _helperFunctions.getDate(dateTime);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
