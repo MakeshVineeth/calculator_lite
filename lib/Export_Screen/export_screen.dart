@@ -1,4 +1,3 @@
-import 'package:calculator_lite/HistoryTab/Backend/historyFunctions.dart';
 import 'package:calculator_lite/HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/HistoryTab/historyItem.dart';
 import 'package:flutter/material.dart';
