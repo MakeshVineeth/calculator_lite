@@ -1,5 +1,7 @@
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/getCurrencyData.dart';
+import 'package:calculator_lite/common_methods/common_methods.dart';
+import 'package:calculator_lite/fixedValues.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -16,7 +18,6 @@ class UpdateColumn extends StatefulWidget {
 }
 
 class _UpdateColumnState extends State<UpdateColumn> {
-  final String src = 'FrankFurter API';
   String status = 'None';
   final CurrencyData currencyData = CurrencyData();
   final HelperFunctions _helperFunctions = HelperFunctions();
@@ -138,7 +139,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
         SizedBox(height: 5),
         textDetail(title: 'Status: ', value: status, context: context),
         SizedBox(height: 5),
-        textDetail(title: 'Source: ', value: src, context: context),
+        srcLink(context: context),
       ],
     );
   }
@@ -168,6 +169,30 @@ class _UpdateColumnState extends State<UpdateColumn> {
               color: _default,
             ),
             key: UniqueKey(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget srcLink({@required BuildContext context}) {
+    return Row(
+      children: [
+        Text(
+          'Source: ',
+          style: statusStyle,
+        ),
+        InkWell(
+          onTap: () => launchUrl(url: CommonsData.remoteSource),
+          borderRadius: FixedValues.large,
+          child: Padding(
+            padding: const EdgeInsets.all(3.0),
+            child: Text(
+              CommonsData.remoteName,
+              style: statusStyle.copyWith(
+                decoration: TextDecoration.underline,
+              ),
+            ),
           ),
         ),
       ],

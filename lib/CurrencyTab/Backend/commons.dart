@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
 
 class CommonsData {
+  static const remoteName = 'FrankFurter API';
+  static const remoteSource = 'https://www.frankfurter.app';
   static const remoteUrl = 'https://api.frankfurter.app/latest';
-  static const currencyListBox = 'currencies';
 
+  static const currencyListBox = 'currencies';
   static const fromBox = 'from_box';
   static const toBox = 'to_box';
   static const updatedDateBox = 'updated_date';

@@ -7,8 +7,12 @@ import 'package:intl/intl.dart';
 class DateFieldCustom extends StatefulWidget {
   final TextEditingController dateController;
   final String dateText;
+  final bool ignoreValidation;
 
-  const DateFieldCustom({@required this.dateController, this.dateText});
+  const DateFieldCustom(
+      {@required this.dateController,
+      this.dateText,
+      this.ignoreValidation = false});
 
   @override
   _DateFieldCustomState createState() => _DateFieldCustomState();
@@ -25,6 +29,7 @@ class _DateFieldCustomState extends State<DateFieldCustom> {
             controller: widget.dateController,
             validate: checkDateFormat,
             textInputType: TextInputType.datetime,
+            ignoreValidation: widget.ignoreValidation,
           ),
         ),
         IconButton(

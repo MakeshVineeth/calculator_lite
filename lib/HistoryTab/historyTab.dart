@@ -65,7 +65,20 @@ class _HistoryTabState extends State<HistoryTab> {
               ),
             );
           else
-            return Expanded(child: Center(child: Text('Empty')));
+            return Expanded(
+              child: Center(
+                child: Text(
+                  'Your history will appear here.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.grey
+                        : Colors.amber.withOpacity(0.9),
+                  ),
+                ),
+              ),
+            );
         },
       );
 }

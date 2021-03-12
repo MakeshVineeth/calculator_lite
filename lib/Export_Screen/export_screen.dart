@@ -1,3 +1,4 @@
+import 'package:calculator_lite/Export_Screen/validate_functions.dart';
 import 'package:calculator_lite/HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/HistoryTab/historyItem.dart';
 import 'package:flutter/material.dart';
@@ -90,11 +91,13 @@ class _ExportScreenState extends State<ExportScreen> {
                             DateFieldCustom(
                               dateController: _dateFrom,
                               dateText: 'Date From',
+                              ignoreValidation: true,
                             ),
                             SizedBox(height: 12),
                             DateFieldCustom(
                               dateController: _dateTo,
                               dateText: 'Date To',
+                              ignoreValidation: true,
                             ),
                             Card(
                               color: Theme.of(context).scaffoldBackgroundColor,
@@ -216,16 +219,68 @@ class _ExportScreenState extends State<ExportScreen> {
         List<Map<String, String>> allData = [];
 
         data.forEach((HistoryItem element) {
-          DateTime from = getDateTime(_dateFrom.text);
-          DateTime to = getDateTime(_dateTo.text);
-
           String formattedDate =
               DateFormat(CommonStrings.dateFormat).format(element.dateTime);
           DateTime val = getDateTime(formattedDate);
 
-          if (to.compareTo(val) == 0 ||
-              from.compareTo(val) == 0 ||
-              from.isBefore(val) && to.isAfter(val)) {
+          bool case1 = checkDateFormat(_dateFrom) == null &&
+              checkDateFormat(_dateTo) == null;
+          bool case2 = checkDateFormat(_dateFrom) == null &&
+              checkDateFormat(_dateTo) != null;
+          bool case3 = checkDateFormat(_dateFrom) != null &&
+              checkDateFormat(_dateTo) == null;
+          bool case4 = checkDateFormat(_dateFrom) != null &&
+              checkDateFormat(_dateTo) != null;
+
+          if (case1) {
+            DateTime from = getDateTime(_dateFrom.text);
+            DateTime to = getDateTime(_dateTo.text);
+
+            if (to.compareTo(val) == 0 ||
+                from.compareTo(val) == 0 ||
+                from.isBefore(val) && to.isAfter(val)) {
+              final Map<String, String> eachHistoryItem = {
+                CommonStrings.historyTitle: element.title,
+                CommonStrings.dateTitle: DateFormat.yMMMMd('en_US')
+                    .add_jm()
+                    .format(element.dateTime),
+                CommonStrings.expTextTitle: element.expression,
+                CommonStrings.valTextTile: element.value,
+              };
+
+              allData.add(eachHistoryItem);
+            }
+          } else if (case2) {
+            DateTime from = getDateTime(_dateFrom.text);
+
+            if (from.compareTo(val) == 0 || from.isBefore(val)) {
+              final Map<String, String> eachHistoryItem = {
+                CommonStrings.historyTitle: element.title,
+                CommonStrings.dateTitle: DateFormat.yMMMMd('en_US')
+                    .add_jm()
+                    .format(element.dateTime),
+                CommonStrings.expTextTitle: element.expression,
+                CommonStrings.valTextTile: element.value,
+              };
+
+              allData.add(eachHistoryItem);
+            }
+          } else if (case3) {
+            DateTime to = getDateTime(_dateTo.text);
+
+            if (to.compareTo(val) == 0 || to.isAfter(val)) {
+              final Map<String, String> eachHistoryItem = {
+                CommonStrings.historyTitle: element.title,
+                CommonStrings.dateTitle: DateFormat.yMMMMd('en_US')
+                    .add_jm()
+                    .format(element.dateTime),
+                CommonStrings.expTextTitle: element.expression,
+                CommonStrings.valTextTile: element.value,
+              };
+
+              allData.add(eachHistoryItem);
+            }
+          } else if (case4) {
             final Map<String, String> eachHistoryItem = {
               CommonStrings.historyTitle: element.title,
               CommonStrings.dateTitle:

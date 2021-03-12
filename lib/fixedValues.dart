@@ -113,6 +113,11 @@ class FixedValues {
           elevation: isLight ? 2.0 : 10.0,
         ),
       ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          shape: roundShapeBtns,
+        ),
+      ),
     );
   }
 
