@@ -20,7 +20,7 @@ class CurrencyTab extends StatefulWidget {
 }
 
 class _CurrencyTabState extends State<CurrencyTab> {
-  final _scrollController = new ScrollController();
+  final _scrollController = ScrollController();
   Box fromBox;
   Box toBox;
   final resetFormProvider = ResetFormProvider();
