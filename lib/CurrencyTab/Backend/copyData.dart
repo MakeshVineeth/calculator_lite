@@ -14,15 +14,16 @@ class CopyData {
         await copy();
       else {
         String date = await readData();
+        String dateAsset =
+            await rootBundle.loadString('assets/updated_date.txt');
 
         if (date != null) {
           DateTime dateTime = DateTime.tryParse(date);
-
-          String dateAsset =
-              await rootBundle.loadString('assets/updated_date.txt');
           DateTime dateTimeAsset = DateTime.tryParse(dateAsset);
-
           if (dateTime.isBefore(dateTimeAsset)) await copy();
+        } else {
+          await copy();
+          await writeData(dateAsset);
         }
       }
 
