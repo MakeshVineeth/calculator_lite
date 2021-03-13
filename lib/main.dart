@@ -9,6 +9,7 @@ import 'package:calculator_lite/bottomNavClass.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
@@ -20,6 +21,7 @@ import 'package:calculator_lite/screens/privacy_policy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  InAppPurchaseConnection.enablePendingPurchases();
   await Hive.initFlutter('hiveUserData');
   Hive.registerAdapter(CurrencyListItemAdapter());
   Hive.registerAdapter(HistoryItemAdapter());

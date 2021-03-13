@@ -27,7 +27,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   final UpdateListen updateListen = UpdateListen();
 
   Future<void> process() async {
-    await copyData();
+    await CopyData().copyData;
     fromBox = Hive.box(CommonsData.fromBox);
     toBox = Hive.box(CommonsData.toBox);
 

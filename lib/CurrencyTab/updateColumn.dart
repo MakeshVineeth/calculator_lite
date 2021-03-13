@@ -1,4 +1,5 @@
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/copyData.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/getCurrencyData.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/fixedValues.dart';
@@ -95,6 +96,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
         Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
         await dateBox.put(CommonsData.updatedDateKey, updatedDate);
         await dateBox.put(CommonsData.lastDateChecked, now.toString());
+        await CopyData().writeData(updatedDate);
         if (mounted) setState(() => triesLeft = defaultTries);
       }
 

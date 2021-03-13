@@ -5,11 +5,44 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:archive/archive.dart';
 
-Future<String> copyData() async {
-  try {
-    bool check = await Hive.boxExists(CommonsData.currencyListBox);
+class CopyData {
+  Future<String> get copyData async {
+    try {
+      bool check = await Hive.boxExists(CommonsData.currencyListBox);
 
-    if (!check) {
+      if (!check)
+        await copy();
+      else {
+        String date = await readData();
+
+        if (date != null) {
+          DateTime dateTime = DateTime.tryParse(date);
+
+          String dateAsset =
+              await rootBundle.loadString('assets/updated_date.txt');
+          DateTime dateTimeAsset = DateTime.tryParse(dateAsset);
+
+          if (dateTime.isBefore(dateTimeAsset)) await copy();
+        }
+      }
+
+      await Hive.openBox(CommonsData.fromBox);
+      await Hive.openBox(CommonsData.toBox);
+      await Hive.openBox(CommonsData.currencyListBox);
+      await Hive.openBox(CommonsData.updatedDateBox);
+
+      return CommonsData.successToken;
+    }
+
+    // For exceptions
+    catch (e) {
+      print('Exception copyData: ' + e.toString());
+      return CommonsData.errorToken;
+    }
+  }
+
+  Future<void> copy() async {
+    try {
       String folderName = 'hiveUserData';
       String zipFileName = folderName + '.zip';
       ByteData zipContent = await rootBundle.load('assets/' + zipFileName);
@@ -34,19 +67,34 @@ Future<String> copyData() async {
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       }
-    }
-
-    await Hive.openBox(CommonsData.fromBox);
-    await Hive.openBox(CommonsData.toBox);
-    await Hive.openBox(CommonsData.currencyListBox);
-    await Hive.openBox(CommonsData.updatedDateBox);
-
-    return CommonsData.successToken;
+    } catch (e) {}
   }
 
-  // For exceptions
-  catch (e) {
-    print('Exception copyData: ' + e.toString());
-    return CommonsData.errorToken;
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/updated_date.txt');
+  }
+
+  Future<File> writeData(String text) async {
+    final file = await _localFile;
+    return file.writeAsString('$text');
+  }
+
+  Future<String> readData() async {
+    try {
+      final file = await _localFile;
+
+      if (file.existsSync())
+        return await file.readAsString();
+      else
+        return null;
+    } catch (e) {
+      return null;
+    }
   }
 }
