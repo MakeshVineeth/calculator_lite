@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
-import 'package:calculator_lite/features/privacy_mode.dart';
+import 'package:calculator_lite/features/secure_mode.dart';
 import 'HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';

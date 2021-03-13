@@ -49,6 +49,8 @@ class _EditWidgetState extends State<EditWidget> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: myController,
+                  scrollPhysics: AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics()),
                   style: TextStyle(fontWeight: FontWeight.w600),
                   decoration: InputDecoration(border: InputBorder.none),
                 ),

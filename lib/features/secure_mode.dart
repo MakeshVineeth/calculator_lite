@@ -33,7 +33,7 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
     return FadeScale(
       child: AlertDialog(
         title: Text(
-          'Privacy Mode',
+          'Secure Mode',
           style: FixedValues.semiBoldStyle,
         ),
         shape: FixedValues.roundShapeLarge,
