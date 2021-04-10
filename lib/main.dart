@@ -4,6 +4,7 @@ import 'package:calculator_lite/Export_Screen/export_screen.dart';
 import 'package:calculator_lite/HistoryTab/historyTab.dart';
 import 'package:calculator_lite/calculatorTab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
+import 'package:calculator_lite/payments/payments_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
@@ -64,7 +65,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         darkTheme: FixedValues.getTotalData(Brightness.dark),
         initialRoute: '/',
         routes: {
-          '/': (context) => ScaffoldHome(),
+          '/': (context) => PaymentsWrapper(child: ScaffoldHome()),
           '/privacy': (context) => PrivacyPolicy(),
           '/export': (context) => ExportScreen(),
         },
