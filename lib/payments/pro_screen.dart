@@ -12,12 +12,6 @@ class _ProScreenState extends State<ProScreen> {
   List<ProductDetails> _products = [];
 
   @override
-  void initState() {
-    super.initState();
-    _getProducts();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -28,34 +22,51 @@ class _ProScreenState extends State<ProScreen> {
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: Text(
-                    'Get More Features by unlocking the Pro version',
-                    style: FixedValues.semiBoldStyle,
-                  ),
-                ),
-                for (ProductDetails item in _products)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextButton(
-                        onPressed: () => _buyProduct(item),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(item.id),
+            child: FutureBuilder(
+              future: _getProducts(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done)
+                  return Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Get More Features by unlocking the Pro version',
+                          style: FixedValues.semiBoldStyle,
                         ),
                       ),
-                    ),
-                  ),
-              ],
+                      product(),
+                    ],
+                  );
+                else
+                  return Center(child: CircularProgressIndicator());
+              },
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget product() {
+    return Column(
+      children: List.generate(_products.length, (index) {
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton(
+              onPressed: () => _buyProduct(_products.elementAt(index)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(_products.elementAt(index).title +
+                    ' ' +
+                    _products.elementAt(index).price),
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 

@@ -88,7 +88,12 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
 
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     _purchases.addAll(purchaseDetailsList);
-    purchaseDetailsList.forEach((element) => _verifyPurchase(element));
+    purchaseDetailsList.forEach((element) async {
+      _verifyPurchase(element);
+      if (element.pendingCompletePurchase) {
+        await InAppPurchaseConnection.instance.completePurchase(element);
+      }
+    });
   }
 
   void _verifyPurchase(PurchaseDetails purchase) {
@@ -101,5 +106,6 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
   void _deliverPurchase(PurchaseDetails purchase) {
     // If verified, deliver it. A Separate Provider to unlock the features.
     _purchaseStatus.updateStatus(true);
+    _iap.completePurchase(purchase);
   }
 }
