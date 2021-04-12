@@ -1,6 +1,8 @@
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:provider/provider.dart';
 
 class ProScreen extends StatefulWidget {
   @override
@@ -10,9 +12,12 @@ class ProScreen extends StatefulWidget {
 class _ProScreenState extends State<ProScreen> {
   final Set<String> _kIds = {'plus1'};
   List<ProductDetails> _products = [];
+  PurchaseStatusProvider purchaseStatusProvider;
 
   @override
   Widget build(BuildContext context) {
+    purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Buy Pro Version'),
@@ -50,24 +55,27 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   Widget product() {
-    return Column(
-      children: List.generate(_products.length, (index) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
-              onPressed: () => _buyProduct(_products.elementAt(index)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(_products.elementAt(index).title +
-                    ' ' +
-                    _products.elementAt(index).price),
+    if (!purchaseStatusProvider.hasPurchased)
+      return Column(
+        children: List.generate(_products.length, (index) {
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                onPressed: () => _buyProduct(_products.elementAt(index)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(_products.elementAt(index).title +
+                      ' ' +
+                      _products.elementAt(index).price),
+                ),
               ),
             ),
-          ),
-        );
-      }),
-    );
+          );
+        }),
+      );
+    else
+      return Text('Purchased!');
   }
 
   Future<void> _getProducts() async {

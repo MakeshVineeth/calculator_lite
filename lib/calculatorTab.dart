@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/secure_mode.dart';
-import 'package:calculator_lite/payments/pro_screen.dart';
 import 'HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';
@@ -232,11 +231,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       'Secure Mode': () =>
           showDialog(context: context, builder: (context) => PrivacyDialog()),
       'Privacy Policy': () => Navigator.pushNamed(context, '/privacy'),
-      'Pro Version': () {
-        MaterialPageRoute _route =
-            MaterialPageRoute(builder: (context) => ProScreen());
-        Navigator.push(context, _route);
-      },
+      'Pro Version': () => Navigator.pushNamed(context, '/buy'),
       'Rate us on Play Store': () => launchUrl(
           url:
               'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite'),

@@ -5,6 +5,7 @@ import 'package:calculator_lite/HistoryTab/historyTab.dart';
 import 'package:calculator_lite/calculatorTab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/payments/payments_wrapper.dart';
+import 'package:calculator_lite/payments/pro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
@@ -57,18 +58,21 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     return ThemeChange(
       stateFunction: setThemeFunction,
-      child: MaterialApp(
-        title: 'Calculator Lite',
-        debugShowCheckedModeBanner: false,
-        themeMode: setTheme,
-        theme: FixedValues.getTotalData(Brightness.light),
-        darkTheme: FixedValues.getTotalData(Brightness.dark),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => PaymentsWrapper(child: ScaffoldHome()),
-          '/privacy': (context) => PrivacyPolicy(),
-          '/export': (context) => ExportScreen(),
-        },
+      child: PaymentsWrapper(
+        child: MaterialApp(
+          title: 'Calculator Lite',
+          debugShowCheckedModeBanner: false,
+          themeMode: setTheme,
+          theme: FixedValues.getTotalData(Brightness.light),
+          darkTheme: FixedValues.getTotalData(Brightness.dark),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => ScaffoldHome(),
+            '/privacy': (context) => PrivacyPolicy(),
+            '/export': (context) => ExportScreen(),
+            '/buy': (context) => ProScreen(),
+          },
+        ),
       ),
     );
   }
