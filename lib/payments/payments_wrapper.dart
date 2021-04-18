@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:calculator_lite/payments/common_purchase_strings.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -65,9 +66,10 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
       print('An Error has Occurred!');
     }
 
-    for (PurchaseDetails purchase in response.pastPurchases) {
+    _purchases.addAll(response.pastPurchases);
+
+    for (PurchaseDetails purchase in response.pastPurchases)
       _verifyPurchase(purchase);
-    }
   }
 
   // Returns purchase of specific product ID
@@ -88,6 +90,7 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
 
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     _purchases.addAll(purchaseDetailsList);
+
     purchaseDetailsList.forEach((element) async {
       _verifyPurchase(element);
       if (element.pendingCompletePurchase) {
@@ -97,8 +100,9 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
   }
 
   void _verifyPurchase(PurchaseDetails purchase) {
-    if (_hasPurchased(purchase.productID) != null ||
-        purchase.status == PurchaseStatus.purchased) {
+    if (_hasPurchased(purchase.productID) != null &&
+        purchase.status == PurchaseStatus.purchased &&
+        CommonPurchaseStrings.productIds.contains(purchase.productID)) {
       _deliverPurchase(purchase);
     }
   }

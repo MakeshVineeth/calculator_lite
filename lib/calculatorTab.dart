@@ -231,7 +231,9 @@ class _CalculatorTabState extends State<CalculatorTab> {
       'Secure Mode': () =>
           showDialog(context: context, builder: (context) => PrivacyDialog()),
       'Privacy Policy': () => Navigator.pushNamed(context, '/privacy'),
-      'Pro Version': () => Navigator.pushNamed(context, '/buy'),
+      'Pro Version': () {
+        if (Platform.isAndroid) Navigator.pushNamed(context, '/buy');
+      },
       'Rate us on Play Store': () => launchUrl(
           url:
               'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite'),

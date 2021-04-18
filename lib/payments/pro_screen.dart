@@ -1,4 +1,5 @@
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/payments/common_purchase_strings.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -10,7 +11,6 @@ class ProScreen extends StatefulWidget {
 }
 
 class _ProScreenState extends State<ProScreen> {
-  final Set<String> _kIds = {'plus1'};
   List<ProductDetails> _products = [];
   PurchaseStatusProvider purchaseStatusProvider;
 
@@ -65,9 +65,12 @@ class _ProScreenState extends State<ProScreen> {
                 onPressed: () => _buyProduct(_products.elementAt(index)),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(_products.elementAt(index).title +
-                      ' ' +
-                      _products.elementAt(index).price),
+                  child: Text(
+                    _products.elementAt(index).title +
+                        ' ' +
+                        _products.elementAt(index).price,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ),
@@ -75,12 +78,26 @@ class _ProScreenState extends State<ProScreen> {
         }),
       );
     else
-      return Text('Purchased!');
+      return Card(
+        child: InkWell(
+          borderRadius: FixedValues.large,
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 15),
+            child: Text(
+              'Already Purchased!',
+              style: FixedValues.semiBoldStyle,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
   }
 
   Future<void> _getProducts() async {
-    final ProductDetailsResponse response =
-        await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
+    final ProductDetailsResponse response = await InAppPurchaseConnection
+        .instance
+        .queryProductDetails(CommonPurchaseStrings.productIds);
 
     if (response.notFoundIDs.isNotEmpty) {
       print('Products not found!');
