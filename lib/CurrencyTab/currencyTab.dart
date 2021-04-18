@@ -8,11 +8,13 @@ import 'package:calculator_lite/CurrencyTab/smallToolBtn.dart';
 import 'package:calculator_lite/CurrencyTab/updateColumn.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:calculator_lite/UIElements/showSlideUp.dart';
+import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/updateListen.dart';
+import 'package:provider/provider.dart';
 
 class CurrencyTab extends StatefulWidget {
   @override
@@ -25,6 +27,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   Box toBox;
   final resetFormProvider = ResetFormProvider();
   final UpdateListen updateListen = UpdateListen();
+  PurchaseStatusProvider _purchaseStatusProvider;
 
   Future<void> process() async {
     await CopyData().copyData;
@@ -44,6 +47,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   @override
   Widget build(BuildContext context) {
+    _purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
+
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: FutureBuilder(
@@ -129,6 +134,13 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   void addCurrencyCard() async {
+    // Check for payment status. And allow not more than 7 currency cards.
+    bool paymentStatus = _purchaseStatusProvider.hasPurchased;
+
+    if (paymentStatus == false && fromBox.length > 7) {
+      return;
+    }
+
     final list = Hive.box(CommonsData.currencyListBox);
     if (list.length > 0) {
       Random random = Random();

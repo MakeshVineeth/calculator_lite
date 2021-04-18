@@ -41,9 +41,10 @@ class _ProScreenState extends State<ProScreen> {
                         child: Text(
                           'Get More Features by unlocking the Pro version',
                           style: FixedValues.semiBoldStyle,
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                      product(),
+                      loadProducts(),
                     ],
                   );
                 else
@@ -56,7 +57,7 @@ class _ProScreenState extends State<ProScreen> {
     );
   }
 
-  Widget product() {
+  Widget loadProducts() {
     if (!purchaseStatusProvider.hasPurchased && _products.isNotEmpty)
       return Column(
         children: List.generate(
@@ -65,21 +66,22 @@ class _ProScreenState extends State<ProScreen> {
         ),
       );
     else if (purchaseStatusProvider.hasPurchased)
-      return PurchaseToolTip(text: 'Already Purchased');
+      return PurchaseToolTip(text: CommonPurchaseStrings.paymentSuccess);
     else
-      return PurchaseToolTip(text: 'Unable to retrieve purchases/products!');
+      return PurchaseToolTip(text: CommonPurchaseStrings.paymentErrors);
   }
 
   Future<void> _getProducts() async {
-    final ProductDetailsResponse response = await InAppPurchaseConnection
-        .instance
-        .queryProductDetails(CommonPurchaseStrings.productIds);
+    try {
+      final ProductDetailsResponse response = await InAppPurchaseConnection
+          .instance
+          .queryProductDetails(CommonPurchaseStrings.productIds);
 
-    if (response.notFoundIDs.isNotEmpty) {
-      print('Products not found!');
+      if (response.notFoundIDs.isNotEmpty) return;
+
+      _products.addAll(response.productDetails);
+    } catch (e) {
       return;
     }
-
-    _products.addAll(response.productDetails);
   }
 }

@@ -31,8 +31,10 @@ class PurchaseButton extends StatelessWidget {
   }
 
   void _buyProduct(ProductDetails prod) {
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
-    InAppPurchaseConnection.instance
-        .buyNonConsumable(purchaseParam: purchaseParam);
+    try {
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+      InAppPurchaseConnection.instance
+          .buyNonConsumable(purchaseParam: purchaseParam);
+    } catch (e) {}
   }
 }
