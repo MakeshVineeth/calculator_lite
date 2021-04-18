@@ -58,24 +58,28 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     return ThemeChange(
       stateFunction: setThemeFunction,
-      child: PaymentsWrapper(
-        child: MaterialApp(
-          title: 'Calculator Lite',
-          debugShowCheckedModeBanner: false,
-          themeMode: setTheme,
-          theme: FixedValues.getTotalData(Brightness.light),
-          darkTheme: FixedValues.getTotalData(Brightness.dark),
-          initialRoute: '/',
-          routes: {
-            '/': (context) => ScaffoldHome(),
-            '/privacy': (context) => PrivacyPolicy(),
-            '/export': (context) => ExportScreen(),
-            '/buy': (context) => ProScreen(),
-          },
-        ),
-      ),
+      child: (Platform.isAndroid)
+          ? PaymentsWrapper(child: materialApp(setTheme))
+          : materialApp(setTheme),
     );
   }
+}
+
+Widget materialApp(final ThemeMode setTheme) {
+  return MaterialApp(
+    title: FixedValues.appName,
+    debugShowCheckedModeBanner: false,
+    themeMode: setTheme,
+    theme: FixedValues.getTotalData(Brightness.light),
+    darkTheme: FixedValues.getTotalData(Brightness.dark),
+    initialRoute: '/',
+    routes: {
+      '/': (context) => ScaffoldHome(),
+      '/privacy': (context) => PrivacyPolicy(),
+      '/export': (context) => ExportScreen(),
+      '/buy': (context) => ProScreen(),
+    },
+  );
 }
 
 class ScaffoldHome extends StatefulWidget {
