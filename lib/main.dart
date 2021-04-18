@@ -120,6 +120,12 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
         bool useWhiteForeground =
             (temp.brightness == Brightness.dark) ? true : false;
         FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
+
+        bool isLightTheme = Theme.of(context).brightness == Brightness.light;
+        FlutterStatusbarcolor.setNavigationBarColor(
+            isLightTheme ? Colors.white : Colors.black);
+        FlutterStatusbarcolor.setNavigationBarWhiteForeground(
+            useWhiteForeground);
       }
     } catch (e) {}
   }
