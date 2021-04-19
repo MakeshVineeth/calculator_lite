@@ -38,28 +38,31 @@ class _ProScreenState extends State<ProScreen> {
             child: FutureBuilder(
               future: _getProducts(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done)
+                if (snapshot.connectionState == ConnectionState.done) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Expanded(
-                        child: Text(
-                          'Unlock Everything',
-                          style: TextStyle(
-                            fontSize: 30.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                      Text(
+                        'Unlock Everything',
+                        style: TextStyle(
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      Expanded(
-                        flex: 3,
-                        child: bulletPoints(),
+                      Flexible(
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: FractionallySizedBox(
+                            heightFactor: 0.8,
+                            child: bulletPoints(),
+                          ),
+                        ),
                       ),
                       loadProducts(),
                     ],
                   );
-                else
+                } else
                   return Center(child: CircularProgressIndicator());
               },
             ),
@@ -72,32 +75,35 @@ class _ProScreenState extends State<ProScreen> {
   Widget bulletPoints() {
     return Column(
       children: List.generate(featuresList.length, (index) {
-        return Card(
-          elevation: Theme.of(context).brightness == Brightness.light
-              ? Theme.of(context).cardTheme.elevation
-              : 4,
-          child: InkWell(
-            onTap: () => {},
-            borderRadius: FixedValues.large,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                  ),
-                  SizedBox(width: 5.0),
-                  Flexible(
-                    child: Text(
-                      featuresList.elementAt(index),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15.5,
+        return Flexible(
+          child: Card(
+            elevation: Theme.of(context).brightness == Brightness.light
+                ? Theme.of(context).cardTheme.elevation
+                : 4,
+            child: InkWell(
+              onTap: () => {},
+              borderRadius: FixedValues.large,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                    ),
+                    SizedBox(width: 5.0),
+                    Expanded(
+                      child: Text(
+                        featuresList.elementAt(index),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15.5,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -124,14 +130,23 @@ class _ProScreenState extends State<ProScreen> {
   Future<void> _getProducts() async {
     try {
       _products.clear();
-      final ProductDetailsResponse response = await InAppPurchaseConnection
-          .instance
-          .queryProductDetails(CommonPurchaseStrings.productIds);
 
-      if (response.notFoundIDs.isNotEmpty) return;
+      InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
+      bool _iapAvailable = await _iap.isAvailable();
 
-      _products.addAll(response.productDetails);
+      if (_iapAvailable) {
+        final ProductDetailsResponse response = await InAppPurchaseConnection
+            .instance
+            .queryProductDetails(CommonPurchaseStrings.productIds);
+
+        if (!response.notFoundIDs.isNotEmpty)
+          _products.addAll(response.productDetails);
+        else
+          _products.clear();
+      } else
+        _products.clear();
     } catch (e) {
+      _products.clear();
       return;
     }
   }

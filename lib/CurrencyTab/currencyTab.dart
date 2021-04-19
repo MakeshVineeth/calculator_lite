@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copyData.dart';
@@ -137,7 +138,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
     // Check for payment status. And allow not more than 7 currency cards.
     bool paymentStatus = _purchaseStatusProvider.hasPurchased;
 
-    if (paymentStatus == false && fromBox.length >= 5) {
+    if ((paymentStatus == false && fromBox.length >= 5) && Platform.isAndroid) {
       Navigator.pushNamed(context, FixedValues.buyRoute);
       return;
     }

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 // Simple Provider for actual comparison for rest of the application features.
 class PurchaseStatusProvider extends ChangeNotifier {
