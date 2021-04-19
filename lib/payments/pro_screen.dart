@@ -15,6 +15,12 @@ class ProScreen extends StatefulWidget {
 class _ProScreenState extends State<ProScreen> {
   List<ProductDetails> _products = [];
   PurchaseStatusProvider purchaseStatusProvider;
+  final List<String> featuresList = [
+    'Support the Developer',
+    'Unlock the Export Feature',
+    'Add Unlimited Currency Cards',
+    'Enable/Disable Privacy Mode',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -22,27 +28,33 @@ class _ProScreenState extends State<ProScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Buy Pro Version'),
+        title: Text('Support Us'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(15.0),
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(15.0),
             child: FutureBuilder(
               future: _getProducts(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done)
                   return Column(
-                    mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Expanded(
                         child: Text(
-                          'Get More Features by unlocking the Pro version',
-                          style: FixedValues.semiBoldStyle,
+                          'Unlock Everything',
+                          style: TextStyle(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                           textAlign: TextAlign.center,
                         ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: bulletPoints(),
                       ),
                       loadProducts(),
                     ],
@@ -57,9 +69,47 @@ class _ProScreenState extends State<ProScreen> {
     );
   }
 
+  Widget bulletPoints() {
+    return Column(
+      children: List.generate(featuresList.length, (index) {
+        return Card(
+          elevation: Theme.of(context).brightness == Brightness.light
+              ? Theme.of(context).cardTheme.elevation
+              : 4,
+          child: InkWell(
+            onTap: () => {},
+            borderRadius: FixedValues.large,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                  ),
+                  SizedBox(width: 5.0),
+                  Flexible(
+                    child: Text(
+                      featuresList.elementAt(index),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
   Widget loadProducts() {
     if (!purchaseStatusProvider.hasPurchased && _products.isNotEmpty)
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(
           _products.length,
           (index) => PurchaseButton(products: _products, index: index),
@@ -73,6 +123,7 @@ class _ProScreenState extends State<ProScreen> {
 
   Future<void> _getProducts() async {
     try {
+      _products.clear();
       final ProductDetailsResponse response = await InAppPurchaseConnection
           .instance
           .queryProductDetails(CommonPurchaseStrings.productIds);

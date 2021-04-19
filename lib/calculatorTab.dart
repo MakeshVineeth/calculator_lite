@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/secure_mode.dart';
+import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   Timer timer;
   final MethodChannel _androidAppRetain = MethodChannel("kotlin.flutter.dev");
   final HelperFunctions _helperFunctions = HelperFunctions();
+  PurchaseStatusProvider _purchaseStatusProvider;
 
   @override
   void initState() {
@@ -193,6 +195,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   @override
   Widget build(BuildContext context) {
+    _purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
+
     return ChangeNotifierProvider(
       create: (context) => CustomFocusEvents(),
       child: Column(
@@ -228,11 +232,16 @@ class _CalculatorTabState extends State<CalculatorTab> {
     Map<String, Function> menuList = {
       'About': () => AboutPage.showAboutDialogFunc(context),
       'Change Theme': () => PopThemeChooser.showThemeChooser(context),
-      'Secure Mode': () =>
-          showDialog(context: context, builder: (context) => PrivacyDialog()),
+      'Secure Mode': () {
+        if (_purchaseStatusProvider.hasPurchased || Platform.isWindows)
+          showDialog(context: context, builder: (context) => PrivacyDialog());
+        else
+          Navigator.pushNamed(context, FixedValues.buyRoute);
+      },
       'Privacy Policy': () => Navigator.pushNamed(context, '/privacy'),
       'Pro Version': () {
-        if (Platform.isAndroid) Navigator.pushNamed(context, '/buy');
+        if (Platform.isAndroid)
+          Navigator.pushNamed(context, FixedValues.buyRoute);
       },
       'Rate us on Play Store': () => launchUrl(
           url:

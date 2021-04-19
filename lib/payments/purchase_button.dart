@@ -1,4 +1,3 @@
-import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -10,20 +9,21 @@ class PurchaseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return ElevatedButton(
+      onPressed: () => _buyProduct(products.elementAt(index)),
+      style: ElevatedButton.styleFrom(
+        primary: Colors.blueAccent,
+        onPrimary: Colors.white,
+        elevation: 10,
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextButton(
-          onPressed: () => _buyProduct(products.elementAt(index)),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              products.elementAt(index).title +
-                  ' ' +
-                  products.elementAt(index).price,
-              textAlign: TextAlign.center,
-              style: FixedValues.semiBoldStyle,
-            ),
+        padding: const EdgeInsets.all(15.0),
+        child: Text(
+          'Buy',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 25.0,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

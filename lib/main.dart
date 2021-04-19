@@ -77,7 +77,7 @@ Widget materialApp(final ThemeMode setTheme) {
       '/': (context) => ScaffoldHome(),
       '/privacy': (context) => PrivacyPolicy(),
       '/export': (context) => ExportScreen(),
-      '/buy': (context) => ProScreen(),
+      FixedValues.buyRoute: (context) => ProScreen(),
     },
   );
 }

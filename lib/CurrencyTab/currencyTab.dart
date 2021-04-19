@@ -137,7 +137,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
     // Check for payment status. And allow not more than 7 currency cards.
     bool paymentStatus = _purchaseStatusProvider.hasPurchased;
 
-    if (paymentStatus == false && fromBox.length > 7) {
+    if (paymentStatus == false && fromBox.length >= 5) {
+      Navigator.pushNamed(context, FixedValues.buyRoute);
       return;
     }
 

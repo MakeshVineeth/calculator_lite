@@ -26,6 +26,8 @@ class FixedValues {
       String.fromCharCodes([charcode.$sup3, charcode.$radic]);
   static String invButton = 'inv';
 
+  static String buyRoute = '/buy';
+
   static List rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
     [7, 8, 9, multiplyChar],
