@@ -70,11 +70,13 @@ class _ProScreenState extends State<ProScreen> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                SizedBox(height: 10),
                 Text(
-                  'Unlock Everything',
+                  'Get Premium Features',
                   style: TextStyle(
-                    fontSize: 30.0,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -154,7 +156,7 @@ class _ProScreenState extends State<ProScreen> {
             callback: () => _buyProduct(_products.elementAt(index)),
             fg: Colors.white,
             bg: Colors.blueAccent,
-            text: 'Just ' + _products.elementAt(index).price,
+            text: 'BUY ' + _products.elementAt(index).price,
           ),
         ),
       );
@@ -163,14 +165,14 @@ class _ProScreenState extends State<ProScreen> {
         callback: () => {},
         fg: Colors.white,
         bg: Colors.green,
-        text: 'Thank You',
+        text: 'Thank You 🙂',
       );
     else
       return PurchaseButton(
         callback: () => {},
         fg: Colors.white,
         bg: Colors.red,
-        text: 'Error',
+        text: 'Error 🙁',
       );
   }
 

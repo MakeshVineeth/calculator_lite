@@ -30,6 +30,7 @@ class PurchaseButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 25.0,
             fontWeight: FontWeight.bold,
+            letterSpacing: 1,
           ),
         ),
       ),
