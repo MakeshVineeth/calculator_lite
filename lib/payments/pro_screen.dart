@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
+import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/payments/common_purchase_strings.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
@@ -16,12 +17,18 @@ class ProScreen extends StatefulWidget {
 class _ProScreenState extends State<ProScreen> {
   List<ProductDetails> _products = [];
   PurchaseStatusProvider purchaseStatusProvider;
-  final List<String> featuresList = [
-    'Support the Developer',
-    'Unlock the Export Feature',
-    'Add Unlimited Currency Cards',
-    'Enable/Disable Privacy Mode',
-  ];
+  final Map<String, String> featuresList = {
+    'Support the Developer': 'A token of appreciation from your side :)',
+    'Unlock the Export Feature':
+        'Ability to export the history to a Microsoft supported Excel format.',
+    'Add Unlimited Currency Cards':
+        'In free version, you can add upto 5 currency cards. Remove this limit by purchasing the app.',
+    'Enable/Disable Privacy Mode':
+        'With Privacy Mode, you can disable/enable Screen recording and Screenshots within the app.',
+  };
+
+  // The In App Purchase plugin
+  InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +105,15 @@ class _ProScreenState extends State<ProScreen> {
                 ? Theme.of(context).cardTheme.elevation
                 : 4,
             child: InkWell(
-              onTap: () => {},
+              onTap: () => showBlurDialog(
+                context: context,
+                child: FadeScale(
+                  child: AlertDialog(
+                    content: Text(featuresList.values.elementAt(index)),
+                    shape: FixedValues.roundShapeLarge,
+                  ),
+                ),
+              ),
               borderRadius: FixedValues.large,
               child: Padding(
                 padding:
@@ -112,7 +127,7 @@ class _ProScreenState extends State<ProScreen> {
                     SizedBox(width: 5.0),
                     Expanded(
                       child: Text(
-                        featuresList.elementAt(index),
+                        featuresList.keys.elementAt(index),
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15.5,
@@ -139,7 +154,7 @@ class _ProScreenState extends State<ProScreen> {
             callback: () => _buyProduct(_products.elementAt(index)),
             fg: Colors.white,
             bg: Colors.blueAccent,
-            text: 'Buy @' + _products.elementAt(index).price,
+            text: 'Just ' + _products.elementAt(index).price,
           ),
         ),
       );
@@ -162,7 +177,6 @@ class _ProScreenState extends State<ProScreen> {
   void _buyProduct(ProductDetails prod) async {
     try {
       final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
-      InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
       bool _iapAvailable = await _iap.isAvailable();
 
       if (_iapAvailable) _iap.buyNonConsumable(purchaseParam: purchaseParam);
@@ -172,8 +186,6 @@ class _ProScreenState extends State<ProScreen> {
   Future<void> _getProducts() async {
     try {
       _products.clear();
-
-      InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
       bool _iapAvailable = await _iap.isAvailable();
 
       if (_iapAvailable) {

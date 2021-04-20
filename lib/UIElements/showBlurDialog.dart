@@ -55,7 +55,7 @@ class _BlurredWindowState extends State<BlurredWindow> {
   }
 }
 
-Future<Type> showBlurDialog(
+Future<void> showBlurDialog(
     {@required BuildContext context, @required Widget child}) {
   return showDialog(
     context: context,
