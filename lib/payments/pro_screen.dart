@@ -1,8 +1,9 @@
+import 'dart:io';
+
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/payments/common_purchase_strings.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:calculator_lite/payments/purchase_button.dart';
-import 'package:calculator_lite/payments/purchase_tooltip.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
@@ -35,41 +36,57 @@ class _ProScreenState extends State<ProScreen> {
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(15.0),
-            child: FutureBuilder(
-              future: _getProducts(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Unlock Everything',
-                        style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Flexible(
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: FractionallySizedBox(
-                            heightFactor: 0.8,
-                            child: bulletPoints(),
-                          ),
-                        ),
-                      ),
-                      loadProducts(),
-                    ],
-                  );
-                } else
-                  return Center(child: CircularProgressIndicator());
-              },
-            ),
+            child: checkPlatformWin(),
           ),
         ),
       ),
     );
+  }
+
+  Widget checkPlatformWin() {
+    if (!Platform.isAndroid)
+      return Center(
+        child: Card(
+            child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'Not Supported',
+            style: FixedValues.semiBoldStyle,
+          ),
+        )),
+      );
+    else
+      return FutureBuilder(
+        future: _getProducts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Unlock Everything',
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Flexible(
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: FractionallySizedBox(
+                      heightFactor: 0.8,
+                      child: bulletPoints(),
+                    ),
+                  ),
+                ),
+                loadProducts(),
+              ],
+            );
+          } else
+            return Center(child: CircularProgressIndicator());
+        },
+      );
   }
 
   Widget bulletPoints() {
@@ -118,13 +135,38 @@ class _ProScreenState extends State<ProScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(
           _products.length,
-          (index) => PurchaseButton(products: _products, index: index),
+          (index) => PurchaseButton(
+            callback: () => _buyProduct(_products.elementAt(index)),
+            fg: Colors.white,
+            bg: Colors.blueAccent,
+            text: 'Buy @' + _products.elementAt(index).price,
+          ),
         ),
       );
     else if (purchaseStatusProvider.hasPurchased)
-      return PurchaseToolTip(text: CommonPurchaseStrings.paymentSuccess);
+      return PurchaseButton(
+        callback: () => {},
+        fg: Colors.white,
+        bg: Colors.green,
+        text: 'Thank You',
+      );
     else
-      return PurchaseToolTip(text: CommonPurchaseStrings.paymentErrors);
+      return PurchaseButton(
+        callback: () => {},
+        fg: Colors.white,
+        bg: Colors.red,
+        text: 'Error',
+      );
+  }
+
+  void _buyProduct(ProductDetails prod) async {
+    try {
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+      InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
+      bool _iapAvailable = await _iap.isAvailable();
+
+      if (_iapAvailable) _iap.buyNonConsumable(purchaseParam: purchaseParam);
+    } catch (e) {}
   }
 
   Future<void> _getProducts() async {
