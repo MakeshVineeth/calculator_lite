@@ -30,9 +30,12 @@ class _ProScreenState extends State<ProScreen> {
   // The In App Purchase plugin
   InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
 
+  bool isPortrait = true;
+
   @override
   Widget build(BuildContext context) {
     purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
+    isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
       appBar: AppBar(
@@ -70,7 +73,7 @@ class _ProScreenState extends State<ProScreen> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 10),
+                SizedBox(height: isPortrait ? 10 : 5),
                 Text(
                   'Get Premium Features',
                   style: TextStyle(
@@ -84,12 +87,20 @@ class _ProScreenState extends State<ProScreen> {
                   child: Container(
                     alignment: Alignment.center,
                     child: FractionallySizedBox(
-                      heightFactor: 0.8,
+                      heightFactor: isPortrait ? 0.8 : 1,
                       child: bulletPoints(),
                     ),
                   ),
                 ),
                 loadProducts(),
+                SizedBox(height: 10),
+                Text(
+                  'Tip: Click on each feature card to learn more.',
+                  textAlign: TextAlign.center,
+                  style: FixedValues.semiBoldStyle.copyWith(
+                    fontSize: 13.5,
+                  ),
+                ),
               ],
             );
           } else

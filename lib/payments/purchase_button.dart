@@ -15,6 +15,9 @@ class PurchaseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+
     return ElevatedButton(
       onPressed: () => callback(),
       style: ElevatedButton.styleFrom(
@@ -23,12 +26,12 @@ class PurchaseButton extends StatelessWidget {
         elevation: 10,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: EdgeInsets.all(isPortrait ? 15.0 : 5.0),
         child: Text(
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 25.0,
+            fontSize: isPortrait ? 25.0 : 15.0,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
           ),
