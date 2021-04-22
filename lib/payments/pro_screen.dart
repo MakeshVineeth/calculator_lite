@@ -110,45 +110,43 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   Widget bulletPoints() {
-    return Column(
+    return ListView(
+      physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       children: List.generate(featuresList.length, (index) {
-        return Flexible(
-          child: Card(
-            elevation: Theme.of(context).brightness == Brightness.light
-                ? Theme.of(context).cardTheme.elevation
-                : 4,
-            child: InkWell(
-              onTap: () => showBlurDialog(
-                context: context,
-                child: FadeScale(
-                  child: AlertDialog(
-                    content: Text(featuresList.values.elementAt(index)),
-                    shape: FixedValues.roundShapeLarge,
-                  ),
+        return Card(
+          elevation: Theme.of(context).brightness == Brightness.light
+              ? Theme.of(context).cardTheme.elevation
+              : 4,
+          child: InkWell(
+            onTap: () => showBlurDialog(
+              context: context,
+              child: FadeScale(
+                child: AlertDialog(
+                  content: Text(featuresList.values.elementAt(index)),
+                  shape: FixedValues.roundShapeLarge,
                 ),
               ),
-              borderRadius: FixedValues.large,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                    ),
-                    SizedBox(width: 5.0),
-                    Expanded(
-                      child: Text(
-                        featuresList.keys.elementAt(index),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15.5,
-                        ),
+            ),
+            borderRadius: FixedValues.large,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                  ),
+                  SizedBox(width: 5.0),
+                  Expanded(
+                    child: Text(
+                      featuresList.keys.elementAt(index),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15.5,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -176,14 +174,14 @@ class _ProScreenState extends State<ProScreen> {
         callback: () => {},
         fg: Colors.white,
         bg: Colors.green,
-        text: 'Thank You 🙂',
+        text: CommonPurchaseStrings.paymentSuccess,
       );
     else
       return PurchaseButton(
         callback: () => {},
         fg: Colors.white,
         bg: Colors.red,
-        text: 'Error 🙁',
+        text: CommonPurchaseStrings.paymentErrors,
       );
   }
 

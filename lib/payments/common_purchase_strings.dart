@@ -1,5 +1,5 @@
 class CommonPurchaseStrings {
-  static final Set<String> productIds = {'plus1_test'};
-  static final String paymentSuccess = 'Already Purchased';
-  static final String paymentErrors = 'Unable to retrieve purchases/products!';
+  static final Set<String> productIds = {'pro_edition'};
+  static final String paymentSuccess = 'Thank You 🙂';
+  static final String paymentErrors = 'Error 🙁';
 }
