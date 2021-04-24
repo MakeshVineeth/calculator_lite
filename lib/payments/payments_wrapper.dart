@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:calculator_lite/payments/common_purchase_strings.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,15 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
       print('An Error has Occurred!');
     }
 
-    _purchases.addAll(response.pastPurchases);
+    for (PurchaseDetails purchase in response.pastPurchases) {
+      final pending = Platform.isIOS
+          ? purchase.pendingCompletePurchase
+          : !purchase.billingClientPurchase.isAcknowledged;
+
+      if (pending) InAppPurchaseConnection.instance.completePurchase(purchase);
+    }
+
+    _purchases = response.pastPurchases;
 
     for (PurchaseDetails purchase in response.pastPurchases)
       _verifyPurchase(purchase);
@@ -93,17 +102,44 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
 
     purchaseDetailsList.forEach((element) async {
       _verifyPurchase(element);
-      if (element.pendingCompletePurchase) {
+
+      final pending = Platform.isIOS
+          ? element.pendingCompletePurchase
+          : !element.billingClientPurchase.isAcknowledged;
+
+      if (pending)
         await InAppPurchaseConnection.instance.completePurchase(element);
-      }
     });
   }
 
   void _verifyPurchase(PurchaseDetails purchase) {
-    if (_hasPurchased(purchase.productID) != null &&
-        purchase.status == PurchaseStatus.purchased &&
-        CommonPurchaseStrings.productIds.contains(purchase.productID)) {
-      _deliverPurchase(purchase);
+    if (_hasPurchased(purchase.productID) != null) {
+      // Check if purchased the right product.
+      if (CommonPurchaseStrings.productIds.contains(purchase.productID)) {
+        // Now check the product status.
+
+        switch (purchase.status) {
+          case PurchaseStatus.purchased:
+            _deliverPurchase(purchase);
+            break;
+          case PurchaseStatus.error:
+            _purchaseStatus.changeStatusCheck(StatusCheck.Error);
+            break;
+          case PurchaseStatus.pending:
+            _purchaseStatus.changeStatusCheck(StatusCheck.Pending);
+            break;
+          default:
+            _purchaseStatus.changeStatusCheck(StatusCheck.Null);
+            break;
+        }
+      } else {
+        _purchaseStatus.changeStatusCheck(StatusCheck.Error);
+      }
+    }
+
+    // If a null is received.
+    else {
+      _purchaseStatus.changeStatusCheck(StatusCheck.Error);
     }
   }
 
