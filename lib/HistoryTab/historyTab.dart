@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:calculator_lite/HistoryTab/historyCard.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
@@ -47,6 +49,8 @@ class _HistoryTabState extends State<HistoryTab> {
       'Clear All': () => Future.delayed(
           CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
       'Export': () {
+        if (!Platform.isAndroid) return;
+
         if (_purchaseStatusProvider.hasPurchased)
           Navigator.pushNamed(context, '/export');
         else

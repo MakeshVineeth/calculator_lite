@@ -176,6 +176,13 @@ class _ProScreenState extends State<ProScreen> {
         bg: Colors.green,
         text: CommonPurchaseStrings.paymentSuccess,
       );
+    else if (purchaseStatusProvider.statusCheck == StatusCheck.Pending)
+      return PurchaseButton(
+        callback: () => {},
+        fg: Colors.white,
+        bg: Colors.blueAccent,
+        text: CommonPurchaseStrings.paymentPending,
+      );
     else
       return PurchaseButton(
         callback: () => {},

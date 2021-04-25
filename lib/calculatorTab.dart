@@ -239,7 +239,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
           Navigator.pushNamed(context, FixedValues.buyRoute);
       },
       'Privacy Policy': () => Navigator.pushNamed(context, '/privacy'),
-      'Pro Version': () => Navigator.pushNamed(context, FixedValues.buyRoute),
+      'Pro Version': () {
+        if (Platform.isAndroid)
+          Navigator.pushNamed(context, FixedValues.buyRoute);
+      },
       'Rate us on Play Store': () => launchUrl(
           url:
               'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite'),
