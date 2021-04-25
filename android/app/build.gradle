@@ -34,6 +34,7 @@ def keystoreProperties = new Properties()
 
 android {
     compileSdkVersion 30
+    ndkVersion "22.1.7171670"
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -49,6 +50,10 @@ android {
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+        }
     }
 
     signingConfigs {
