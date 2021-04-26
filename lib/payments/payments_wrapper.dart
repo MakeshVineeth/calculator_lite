@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:calculator_lite/payments/common_purchase_strings.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
@@ -67,13 +66,9 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
       print('An Error has Occurred!');
     }
 
-    for (PurchaseDetails purchase in response.pastPurchases) {
-      final pending = Platform.isIOS
-          ? purchase.pendingCompletePurchase
-          : !purchase.billingClientPurchase.isAcknowledged;
-
-      if (pending) InAppPurchaseConnection.instance.completePurchase(purchase);
-    }
+    for (PurchaseDetails purchase in response.pastPurchases)
+      if (purchase.pendingCompletePurchase)
+        InAppPurchaseConnection.instance.completePurchase(purchase);
 
     _purchases = response.pastPurchases;
 
@@ -103,11 +98,7 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
     purchaseDetailsList.forEach((element) async {
       _verifyPurchase(element);
 
-      final pending = Platform.isIOS
-          ? element.pendingCompletePurchase
-          : !element.billingClientPurchase.isAcknowledged;
-
-      if (pending)
+      if (element.pendingCompletePurchase)
         await InAppPurchaseConnection.instance.completePurchase(element);
     });
   }

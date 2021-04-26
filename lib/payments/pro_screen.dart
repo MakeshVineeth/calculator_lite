@@ -32,6 +32,14 @@ class _ProScreenState extends State<ProScreen> {
 
   bool isPortrait = true;
 
+  Future<void> _loadProductsFut;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProductsFut = _getProducts();
+  }
+
   @override
   Widget build(BuildContext context) {
     purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
@@ -67,7 +75,7 @@ class _ProScreenState extends State<ProScreen> {
       );
     else
       return FutureBuilder(
-        future: _getProducts(),
+        future: _loadProductsFut,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return Column(

@@ -230,7 +230,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   Widget popUpDotMenu() {
     Map<String, Function> menuList = {
-      'About': () => AboutPage.showAboutDialogFunc(context),
       'Change Theme': () => PopThemeChooser.showThemeChooser(context),
       'Secure Mode': () {
         if (_purchaseStatusProvider.hasPurchased || Platform.isWindows)
@@ -238,14 +237,15 @@ class _CalculatorTabState extends State<CalculatorTab> {
         else
           Navigator.pushNamed(context, FixedValues.buyRoute);
       },
-      'Privacy Policy': () => Navigator.pushNamed(context, '/privacy'),
-      'Pro Version': () {
+      'Get Pro Edition': () {
         if (Platform.isAndroid)
           Navigator.pushNamed(context, FixedValues.buyRoute);
       },
-      'Rate us on Play Store': () => launchUrl(
+      'Rate on Play Store ✨': () => launchUrl(
           url:
               'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite'),
+      'Privacy Policy': () => Navigator.pushNamed(context, '/privacy'),
+      'About': () => AboutPage.showAboutDialogFunc(context),
       'Exit': () {
         if (Platform.isAndroid)
           _androidAppRetain.invokeMethod("sendToBackground");
