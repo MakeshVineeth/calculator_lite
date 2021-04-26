@@ -110,7 +110,7 @@ class HelperFunctions {
   }
 
   double getDegValue(List<String> computerString, int index, double angle) {
-    final an = Angle.fromDegrees(angle);
+    final an = Angle.degrees(angle);
     double angleResult;
     switch (computerString[index]) {
       case 'cos(':
