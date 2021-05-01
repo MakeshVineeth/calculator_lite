@@ -29,7 +29,8 @@ void launchUrl(
     bool enableJavaScript = false}) async {
   try {
     final urlEncoded = Uri.encodeFull(url);
-    await launch(urlEncoded,
-        forceWebView: forceWebView, enableJavaScript: enableJavaScript);
+    if (await canLaunch(urlEncoded))
+      await launch(urlEncoded,
+          forceWebView: forceWebView, enableJavaScript: enableJavaScript);
   } catch (e) {}
 }

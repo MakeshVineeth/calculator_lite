@@ -244,7 +244,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
       'Rate on Play Store ✨': () => launchUrl(
           url:
               'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite'),
-      'Privacy Policy': () => Navigator.pushNamed(context, '/privacy'),
+      'Privacy Policy': () =>
+          launchUrl(url: 'https://makeshvineeth.github.io/privacy_policy/'),
       'About': () => AboutPage.showAboutDialogFunc(context),
       'Exit': () {
         if (Platform.isAndroid)
