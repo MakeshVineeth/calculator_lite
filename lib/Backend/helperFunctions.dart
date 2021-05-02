@@ -201,7 +201,7 @@ class HelperFunctions {
 
   String getDate(DateTime dateTime) {
     String t1 = DateFormat.Hm().format(dateTime);
-    String t2 = DateFormat('dd/MM/y').format(dateTime);
+    String t2 = DateFormat('yyyy-MM-dd').format(dateTime);
     String date = '$t2 $t1';
 
     return date;

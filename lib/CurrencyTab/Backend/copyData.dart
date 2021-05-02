@@ -10,13 +10,18 @@ class CopyData {
     try {
       bool check = await Hive.boxExists(CommonsData.currencyListBox);
 
+      // If box doesn't exist at all, then copy the data without checking last updated.
       if (!check)
         await copy();
       else {
+        // read updated_date.txt from app's doc dir.
         String date = await readData();
+
+        // read updated_date.txt from assets.
         String dateAsset =
             await rootBundle.loadString('assets/updated_date.txt');
 
+        // if not null, then date file exists, then copy all data by checking previous date.
         if (date != null) {
           DateTime dateTime = DateTime.tryParse(date);
           DateTime dateTimeAsset = DateTime.tryParse(dateAsset);
@@ -71,21 +76,25 @@ class CopyData {
     } catch (e) {}
   }
 
+  // Gets local path of app doc dir
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
   }
 
+  // Gets updated_date text file from App's Document Dir
   Future<File> get _localFile async {
     final path = await _localPath;
     return File('$path/updated_date.txt');
   }
 
+  // write text to updated_date.txt
   Future<File> writeData(String text) async {
     final file = await _localFile;
     return file.writeAsString('$text');
   }
 
+  // read data from updated date text
   Future<String> readData() async {
     try {
       final file = await _localFile;

@@ -96,6 +96,8 @@ class _UpdateColumnState extends State<UpdateColumn> {
         Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
         await dateBox.put(CommonsData.updatedDateKey, updatedDate);
         await dateBox.put(CommonsData.lastDateChecked, now.toString());
+
+        // writes the updated_date.txt in app's doc dir.
         await CopyData().writeData(updatedDate);
         if (mounted) setState(() => triesLeft = defaultTries);
       }
@@ -109,6 +111,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
     }
   }
 
+  // Retries in case of network issues.
   void retryMethod(String result) {
     if (triesLeft == 0) return;
 
