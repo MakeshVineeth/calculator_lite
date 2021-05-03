@@ -21,7 +21,6 @@ import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'dart:io' show Platform;
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'HistoryTab/historyItem.dart';
-import 'package:calculator_lite/screens/privacy_policy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,7 +79,6 @@ Widget materialApp(final ThemeMode setTheme) {
     initialRoute: '/',
     routes: {
       '/': (context) => ScaffoldHome(),
-      '/privacy': (context) => PrivacyPolicy(),
       '/export': (context) => ExportScreen(),
       FixedValues.buyRoute: (context) => ProScreen(),
     },

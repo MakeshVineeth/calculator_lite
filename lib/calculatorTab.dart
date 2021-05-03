@@ -246,7 +246,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
               'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite'),
       'Privacy Policy': () =>
           launchUrl(url: 'https://makeshvineeth.github.io/privacy_policy/'),
-      'About': () => AboutPage.showAboutDialogFunc(context),
+      'About Calculator Lite': () => AboutPage.showAboutDialogFunc(context),
       'Exit': () {
         if (Platform.isAndroid)
           _androidAppRetain.invokeMethod("sendToBackground");

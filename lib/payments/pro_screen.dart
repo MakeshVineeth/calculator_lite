@@ -20,11 +20,11 @@ class _ProScreenState extends State<ProScreen> {
   final Map<String, String> featuresList = {
     'Support the Developer': 'A token of appreciation from your side :)',
     'Unlock the Export Feature':
-        'Ability to export the history to a Microsoft supported Excel format.',
+        'Ability to export the history to a Microsoft supported Excel format (.xlsx)',
     'Add Unlimited Currency Cards':
         'In free version, you can add upto 5 currency cards. Remove this limit by purchasing the app.',
     'Enable/Disable Privacy Mode':
-        'With Privacy Mode, you can disable/enable Screen recording and Screenshots within the app.',
+        'With Privacy Mode, you can disable/enable Screen Recording and Screenshots within the app.',
   };
 
   // The In App Purchase plugin

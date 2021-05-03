@@ -131,7 +131,7 @@ class FixedValues {
   static const String appVersion = '1.0.0';
   static const String logo = 'logo.png';
   static const String appLegalese =
-      'Make faster calculations, display latest currencies, endless history scrolling.';
+      'An Open-Source Calculator that does all the calculations for you. No bloat, just the essentials: Calculator, History & Currency Tabs. Make faster calculations, display latest currencies, endless history scrolling.';
 
   static BorderRadius large = BorderRadius.circular(20.0);
 
