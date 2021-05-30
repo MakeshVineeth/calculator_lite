@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'commons.dart';
 import 'package:hive/hive.dart';
 import 'package:dio/dio.dart';
