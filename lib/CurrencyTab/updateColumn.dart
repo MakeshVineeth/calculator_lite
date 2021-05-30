@@ -61,6 +61,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
       Response getBaseData = await CommonsData.getResponse(
           CommonsData.remoteUrl); // EUR by default.
 
+      // Gets the base currency data to also get a database data for checking.
       Map baseJson = Map<String, dynamic>.from(getBaseData.data);
 
       // Gets the newly updated date online.

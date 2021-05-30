@@ -225,7 +225,7 @@ class _ProScreenState extends State<ProScreen> {
           _products.clear();
       } else
         _products.clear();
-    } catch (e) {
+    } catch (_) {
       _products.clear();
       return;
     }

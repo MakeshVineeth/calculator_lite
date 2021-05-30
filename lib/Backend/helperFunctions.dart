@@ -194,11 +194,6 @@ class HelperFunctions {
 
   bool isInteger(num value) => value is int || value == value?.roundToDouble();
 
-  String normalizeName(String name) => name
-      .split(' ')
-      .map((str) => '${str[0].toUpperCase()}${str.substring(1)}')
-      .join(' ');
-
   String getDate(DateTime dateTime) {
     String t1 = DateFormat.Hm().format(dateTime);
     String t2 = DateFormat('yyyy-MM-dd').format(dateTime);
@@ -207,7 +202,6 @@ class HelperFunctions {
     return date;
   }
 
-  bool isLandScape(BuildContext context) {
-    return MediaQuery.of(context).orientation == Orientation.landscape;
-  }
+  bool isLandScape(BuildContext context) =>
+      MediaQuery.of(context).orientation == Orientation.landscape;
 }

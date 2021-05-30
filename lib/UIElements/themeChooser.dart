@@ -29,7 +29,11 @@ class PopThemeChooser extends StatelessWidget {
   }
 }
 
-Map e = {'Light': 'Light', 'Dark': 'Dark', 'System Default': 'System Default'};
+Map<String, String> e = {
+  'Light': 'Light',
+  'Dark': 'Dark',
+  'System Default': 'System Default'
+};
 
 class ThemeButtons extends StatefulWidget {
   @override
@@ -55,6 +59,7 @@ class _ThemeButtonsState extends State<ThemeButtons> {
   @override
   Widget build(BuildContext context) {
     themeChange = ThemeChange.of(context);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: e.entries

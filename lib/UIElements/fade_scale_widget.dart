@@ -18,9 +18,7 @@ class _FadeThisState extends State<FadeScale>
     _controller = AnimationController(
       vsync: this,
       duration: _duration,
-    );
-
-    _controller.forward();
+    )..forward();
 
     super.initState();
   }

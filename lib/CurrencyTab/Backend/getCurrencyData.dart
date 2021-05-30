@@ -13,80 +13,94 @@ class CurrencyData {
       {@required BuildContext context, @required Map baseJson}) async {
     try {
       // get a list of all currencies.
-      Map _ratesListBase = baseJson['rates'];
+      Map<String, double> _ratesListBase = baseJson['rates'];
       List<String> allCurrencies = _ratesListBase.keys.toList();
 
       // for each currency, store it's values in separate boxes. Each currency is used as base.
+      List<Future<String>> futures = [
+        writeCurrencyDetails(currencyList: allCurrencies, context: context)
+      ];
 
       for (String currentBase in allCurrencies) {
         String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
-        await insertData(
-            currency: currentBase,
-            currentBaseUrl: currentBaseUrl,
-            jsonData: (currentBase.toLowerCase() == 'eur') ? baseJson : null);
+
+        futures.add(
+          insertData(
+              currency: currentBase,
+              currentBaseUrl: currentBaseUrl,
+              jsonData: (currentBase.toLowerCase() == 'eur') ? baseJson : null),
+        );
       }
 
-      // get list of all currencies and store it with Name, FlagURL, Code.
-      for (int count = 0; count < allCurrencies.length; count++)
-        await writeCurrencyDetails(
-            currencyCode: allCurrencies.elementAt(count),
-            context: context,
-            keyIndex: count);
-
+      await Future.wait(futures);
       return CommonsData.successToken;
     } catch (e) {
-      print('Exception getRemoteData: ' + e.toString());
       return CommonsData.errorToken;
     }
   }
 
-  Future<void> writeCurrencyDetails(
-      {@required String currencyCode,
-      @required BuildContext context,
-      @required int keyIndex}) async {
-    String flagURL;
-    String currencyName;
+  Future<String> writeCurrencyDetails({
+    @required List<String> currencyList,
+    @required BuildContext context,
+  }) async {
+    try {
+      // Load the countries json asset. Used for getting country code for flag icon.
+      String countryJson = await DefaultAssetBundle.of(context)
+          .loadString('assets/countries.json');
+      Map data = json.decode(countryJson);
+      List<Map<String, String>> countriesList = data['countries']['country'];
 
-    String countryJson = await DefaultAssetBundle.of(context)
-        .loadString('assets/countries.json');
-    Map data = json.decode(countryJson);
-    List mapsList = data['countries']['country'];
+      // Load the currencies json. Used for retrieving currency name.
+      Response response = await CommonsData.getResponse(
+          'https://api.frankfurter.app/currencies');
 
-    String currencyJson = await DefaultAssetBundle.of(context)
-        .loadString('assets/currencies.json');
-    Map currencyMap = json.decode(currencyJson);
+      if (response == null) return CommonsData.errorToken;
 
-    for (Map eachMap in mapsList) {
-      if (eachMap['currencyCode'] == currencyCode) {
-        currencyName = currencyMap[currencyCode]['name'];
-        currencyName = helperFunctions.normalizeName(currencyName);
+      Map<String, String> currencyMap = response.data;
 
-        String countryCode =
-            eachMap['countryCode'].toString().trim().toLowerCase();
-        flagURL = 'icons/flags/png/$countryCode.png';
-        break;
+      // Loop through all available currencies.
+      for (int keyIndex = 0; keyIndex < currencyList.length; keyIndex++) {
+        String currencyCode = currencyList.elementAt(keyIndex);
+        String flagURL;
+        String currencyName;
+
+        // Loop through all countries list and check if currency code is same.
+        for (Map<String, String> eachCountry in countriesList)
+          if (eachCountry['currencyCode'] == currencyCode) {
+            currencyName = currencyMap[currencyCode];
+
+            String countryCode = eachCountry['countryCode'].toLowerCase();
+            flagURL = 'icons/flags/png/$countryCode.png';
+            break;
+          }
+
+        final CurrencyListItem currencyListItem = CurrencyListItem(
+          currencyCode: currencyCode,
+          currencyName: currencyName,
+          flagURL: flagURL,
+        );
+
+        final currencyBox = await Hive.openBox(CommonsData.currencyListBox);
+        await currencyBox.put(keyIndex, currencyListItem);
       }
+
+      return CommonsData.successToken;
+    } catch (_) {
+      return CommonsData.errorToken;
     }
-
-    final currencyBox = await Hive.openBox(CommonsData.currencyListBox);
-    final CurrencyListItem currencyListItem = CurrencyListItem(
-      currencyCode: currencyCode,
-      currencyName: currencyName,
-      flagURL: flagURL,
-    );
-
-    await currencyBox.put(keyIndex, currencyListItem);
   }
 
-  Future<String> insertData(
-      {@required String currency,
-      @required String currentBaseUrl,
-      Map jsonData}) async {
-    final box = await Hive.openBox(currency.toLowerCase());
+  Future<String> insertData({
+    @required String currency,
+    @required String currentBaseUrl,
+    Map jsonData,
+  }) async {
     try {
+      final box = await Hive.openBox(currency.toLowerCase());
+
       // if jsonData not null, meaning this currency data already exists, no need to get response again.
       if (jsonData != null) {
-        Map rates = jsonData['rates'] as Map;
+        Map<String, double> rates = jsonData['rates'] as Map;
         await box.putAll(rates);
         return CommonsData.successToken;
       }
@@ -95,14 +109,13 @@ class CurrencyData {
 
       if (response != null) {
         Map data = Map<String, dynamic>.from(response.data);
-        Map rates = data['rates'] as Map;
+        Map<String, double> rates = data['rates'];
 
         await box.putAll(rates);
         return CommonsData.successToken;
       } else
         return CommonsData.errorToken;
-    } catch (e) {
-      print('Exception: ' + e.toString());
+    } catch (_) {
       return CommonsData.errorToken;
     }
   }

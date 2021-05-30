@@ -97,7 +97,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   double _iconSizeLandscape = 15.0;
   final HelperFunctions _helperFunctions = HelperFunctions();
 
-  Map e = {
+  Map<String, IconData> e = {
     'Currency': Icons.monetization_on_outlined,
     'Calculator': Icons.calculate_outlined,
     'History': Icons.history_outlined

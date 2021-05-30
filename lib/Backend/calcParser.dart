@@ -466,20 +466,21 @@ class CalcParser {
         }
       }
     }
-    computerStr = tempString.join();
 
     // Replace with strings that dart/math_exp package can understand.
-    computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
-    computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
-    computerStr = computerStr.replaceAll(FixedValues.minus, '-');
-    computerStr = computerStr.replaceAll(FixedValues.pi, math.pi.toString());
-    computerStr = computerStr.replaceAll(FixedValues.sup2, '^2');
-    computerStr = computerStr.replaceAll(FixedValues.sup3, '^3');
-    computerStr = computerStr.replaceAll('mod', '%');
-    computerStr = computerStr.replaceAll('log(', 'log(10,');
-    computerStr = computerStr.replaceAll('sin⁻¹(', 'arcsin(');
-    computerStr = computerStr.replaceAll('cos⁻¹(', 'arccos(');
-    computerStr = computerStr.replaceAll('tan⁻¹(', 'arctan(');
+    computerStr = tempString.join()
+      ..replaceAll(FixedValues.divisionChar, '/')
+      ..replaceAll(FixedValues.multiplyChar, '*')
+      ..replaceAll(FixedValues.minus, '-')
+      ..replaceAll(FixedValues.pi, math.pi.toString())
+      ..replaceAll(FixedValues.sup2, '^2')
+      ..replaceAll(FixedValues.sup3, '^3')
+      ..replaceAll('mod', '%')
+      ..replaceAll('log(', 'log(10,')
+      ..replaceAll('sin⁻¹(', 'arcsin(')
+      ..replaceAll('cos⁻¹(', 'arccos(')
+      ..replaceAll('tan⁻¹(', 'arctan(');
+
     return computerStr;
   }
 
