@@ -8,13 +8,13 @@ import 'package:dio/dio.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 
 class CurrencyData {
-  HelperFunctions helperFunctions = HelperFunctions();
+  final HelperFunctions helperFunctions = HelperFunctions();
 
   Future<String> getRemoteData(
       {@required BuildContext context, @required Map baseJson}) async {
     try {
-      // get a list of all currencies.
-      Map<String, double> _ratesListBase = baseJson['rates'];
+      // get a list of all currencies. Value must be dynamic as it can contain both ints and doubles.
+      Map<String, dynamic> _ratesListBase = baseJson['rates'];
       List<String> allCurrencies = _ratesListBase.keys.toList();
 
       // for each currency, store it's values in separate boxes. Each currency is used as base.
@@ -35,7 +35,7 @@ class CurrencyData {
 
       await Future.wait(futures);
       return CommonsData.successToken;
-    } catch (e) {
+    } catch (_) {
       return CommonsData.errorToken;
     }
   }
@@ -101,7 +101,7 @@ class CurrencyData {
 
       // if jsonData not null, meaning this currency data already exists, no need to get response again.
       if (jsonData != null) {
-        Map<String, double> rates = jsonData['rates'] as Map;
+        Map<String, dynamic> rates = jsonData['rates'];
         await box.putAll(rates);
         return CommonsData.successToken;
       }
@@ -110,7 +110,7 @@ class CurrencyData {
 
       if (response != null) {
         Map data = Map<String, dynamic>.from(response.data);
-        Map<String, double> rates = data['rates'];
+        Map<String, dynamic> rates = data['rates'];
 
         await box.putAll(rates);
         return CommonsData.successToken;

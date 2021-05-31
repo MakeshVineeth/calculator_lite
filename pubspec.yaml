@@ -23,7 +23,6 @@ dependencies:
   flutter_animator: ^3.1.1
   flutter_slidable: ^1.0.0-dev.2
   flutter_windowmanager: ^0.1.0
-  flutter_statusbarcolor_ns: ^0.3.0-nullsafety
   hive: ^2.0.4
   hive_flutter: ^1.0.0
   in_app_purchase: ^1.0.1
