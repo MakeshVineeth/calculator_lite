@@ -9,11 +9,10 @@ import 'export_commons.dart';
 import 'export_helpers.dart';
 import 'export_method.dart';
 import 'export_theming.dart';
-import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'buttonCustom.dart';
 import 'date_field_custom.dart';
 import 'status_tooltip.dart';
-import 'dart:io' show File, Platform;
+import 'dart:io' show File;
 import 'package:share/share.dart';
 import 'package:intl/intl.dart';
 
@@ -52,9 +51,6 @@ class _ExportScreenState extends State<ExportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isIOS || Platform.isAndroid)
-      FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Export'),

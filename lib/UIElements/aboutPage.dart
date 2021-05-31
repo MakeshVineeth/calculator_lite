@@ -1,10 +1,7 @@
-import 'dart:io' show Platform;
 import 'package:calculator_lite/UIElements/dialogTextBtn.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'package:calculator_lite/fixedValues.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'buttons_links.dart';
@@ -109,24 +106,10 @@ class AboutPage extends StatelessWidget {
 
   static void showAboutDialogFunc(BuildContext context) async {
     try {
-      ThemeData temp = Theme.of(context);
-
-      if (!(kIsWeb ||
-          Platform.isWindows ||
-          Platform.isLinux ||
-          Platform.isMacOS))
-        FlutterStatusbarcolor.setStatusBarColor(temp.backgroundColor);
-
       showBlurDialog(
         context: context,
         child: AboutPage(),
-      ).then((value) {
-        if (!(kIsWeb ||
-            Platform.isWindows ||
-            Platform.isLinux ||
-            Platform.isMacOS))
-          FlutterStatusbarcolor.setStatusBarColor(temp.backgroundColor);
-      });
-    } catch (e) {}
+      );
+    } catch (_) {}
   }
 }

@@ -10,7 +10,7 @@ import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';
-import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -93,20 +93,19 @@ class ScaffoldHome extends StatefulWidget {
   _ScaffoldHomeState createState() => _ScaffoldHomeState();
 }
 
-class _ScaffoldHomeState extends State<ScaffoldHome>
-    with WidgetsBindingObserver {
+class _ScaffoldHomeState extends State<ScaffoldHome> {
   int _currentIndex = 1;
-  double _landScapeFont = 10.0;
-  double _iconSizeLandscape = 15.0;
+  final double _landScapeFont = 10.0;
+  final double _iconSizeLandscape = 15.0;
   final HelperFunctions _helperFunctions = HelperFunctions();
 
-  Map<String, IconData> e = {
+  final Map<String, IconData> e = {
     'Currency': Icons.monetization_on_outlined,
     'Calculator': Icons.calculate_outlined,
     'History': Icons.history_outlined
   };
 
-  List<Widget> availableWidgets = [
+  final List<Widget> availableWidgets = [
     CurrencyTab(),
     CalculatorTab(),
     HistoryTab()
@@ -120,27 +119,24 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   void setFlatStatusBar() {
     try {
       if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-        // Must be executed every time the theme changes.
-        FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-        ThemeData temp = Theme.of(context);
-        bool useWhiteForeground =
-            (temp.brightness == Brightness.dark) ? true : false;
-        FlutterStatusbarcolor.setStatusBarWhiteForeground(useWhiteForeground);
-
         bool isLightTheme = Theme.of(context).brightness == Brightness.light;
-        FlutterStatusbarcolor.setNavigationBarColor(
-            isLightTheme ? Colors.white : Colors.black);
-        FlutterStatusbarcolor.setNavigationBarWhiteForeground(
-            useWhiteForeground);
+
+        SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: isLightTheme ? Colors.white : Colors.black,
+          statusBarIconBrightness:
+              isLightTheme ? Brightness.dark : Brightness.light,
+        );
+
+        SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
       }
-    } catch (e) {}
+    } catch (_) {}
   }
 
   @override
   void initState() {
     super.initState();
     doInitialTasks();
-    WidgetsBinding.instance.addObserver(this);
   }
 
   void doInitialTasks() async {
@@ -148,17 +144,6 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
       bool _disabled = await getPrefs('privacy', true);
       setSecure(_disabled);
     }
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) setFlatStatusBar();
   }
 
   @override
