@@ -7,12 +7,13 @@ import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/payments/payments_wrapper.dart';
 import 'package:calculator_lite/payments/pro_screen.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottomNavClass.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/fixedValues.dart';
@@ -24,7 +25,9 @@ import 'HistoryTab/historyItem.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  InAppPurchaseConnection.enablePendingPurchases();
+  if (defaultTargetPlatform == TargetPlatform.android)
+    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+
   await Hive.initFlutter('hiveUserData');
   Hive.registerAdapter(CurrencyListItemAdapter());
   Hive.registerAdapter(HistoryItemAdapter());

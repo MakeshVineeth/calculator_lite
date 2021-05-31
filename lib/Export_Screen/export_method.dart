@@ -35,23 +35,19 @@ class ExportExcel {
         );
       }
 
-      data.forEach((element) {
-        sheetObject.appendRow(element.values.toList());
-      });
+      data.forEach((element) => sheetObject.appendRow(element.values.toList()));
 
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path + '/${this.fileName}.xlsx';
 
-      List<int> dataInts = await excel.encode();
-      File file = File(tempPath);
-      file
+      List<int> dataInts = excel.encode();
+      File file = File(tempPath)
         ..createSync(recursive: true)
         ..writeAsBytesSync(dataInts);
 
       bool present = file.existsSync();
       return present ? tempPath : null;
-    } catch (e) {
-      print('Export Error: ' + e.toString());
+    } catch (_) {
       return null;
     }
   }

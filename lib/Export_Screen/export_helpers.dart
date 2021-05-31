@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 import 'export_commons.dart';
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io' show Platform;
 
 DateTime getDateTime(String dateText) =>

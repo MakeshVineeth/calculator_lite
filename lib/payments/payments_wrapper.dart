@@ -19,7 +19,7 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
   bool _available = false;
 
   // The In App Purchase plugin
-  InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
+  InAppPurchase _iap = InAppPurchase.instance;
 
   // Past purchases
   List<PurchaseDetails> _purchases = [];
@@ -47,33 +47,14 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
     _available = await _iap.isAvailable();
 
     if (_available) {
-      await _getPastPurchases();
+      await _iap.restorePurchases();
 
-      _subscription = _iap.purchaseUpdatedStream.listen(
+      _subscription = _iap.purchaseStream.listen(
         (purchaseDetailsList) => _listenToPurchaseUpdated(purchaseDetailsList),
         onDone: () => _subscription.cancel(),
         onError: (error) => print('Error!'),
       );
     }
-  }
-
-  // Gets past purchases
-  Future<void> _getPastPurchases() async {
-    final QueryPurchaseDetailsResponse response =
-        await _iap.queryPastPurchases();
-
-    if (response.error != null) {
-      print('An Error has Occurred!');
-    }
-
-    for (PurchaseDetails purchase in response.pastPurchases)
-      if (purchase.pendingCompletePurchase)
-        InAppPurchaseConnection.instance.completePurchase(purchase);
-
-    _purchases = response.pastPurchases;
-
-    for (PurchaseDetails purchase in response.pastPurchases)
-      _verifyPurchase(purchase);
   }
 
   // Returns purchase of specific product ID
@@ -92,15 +73,16 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
     );
   }
 
-  void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
+  Future<void> _listenToPurchaseUpdated(
+      List<PurchaseDetails> purchaseDetailsList) async {
     _purchases.addAll(purchaseDetailsList);
 
-    purchaseDetailsList.forEach((element) async {
-      _verifyPurchase(element);
+    for (var purchase in purchaseDetailsList) {
+      _verifyPurchase(purchase);
 
-      if (element.pendingCompletePurchase)
-        await InAppPurchaseConnection.instance.completePurchase(element);
-    });
+      if (purchase.pendingCompletePurchase)
+        await _iap.completePurchase(purchase);
+    }
   }
 
   void _verifyPurchase(PurchaseDetails purchase) {
@@ -110,6 +92,7 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
         // Now check the product status.
 
         switch (purchase.status) {
+          case PurchaseStatus.restored:
           case PurchaseStatus.purchased:
             _deliverPurchase(purchase);
             break;

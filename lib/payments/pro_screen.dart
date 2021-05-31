@@ -28,7 +28,7 @@ class _ProScreenState extends State<ProScreen> {
   };
 
   // The In App Purchase plugin
-  InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
+  InAppPurchase _iap = InAppPurchase.instance;
 
   bool isPortrait = true;
 
@@ -206,7 +206,7 @@ class _ProScreenState extends State<ProScreen> {
       bool _iapAvailable = await _iap.isAvailable();
 
       if (_iapAvailable) _iap.buyNonConsumable(purchaseParam: purchaseParam);
-    } catch (e) {}
+    } catch (_) {}
   }
 
   Future<void> _getProducts() async {
@@ -215,9 +215,8 @@ class _ProScreenState extends State<ProScreen> {
       bool _iapAvailable = await _iap.isAvailable();
 
       if (_iapAvailable) {
-        final ProductDetailsResponse response = await InAppPurchaseConnection
-            .instance
-            .queryProductDetails(CommonPurchaseStrings.productIds);
+        final ProductDetailsResponse response =
+            await _iap.queryProductDetails(CommonPurchaseStrings.productIds);
 
         if (!response.notFoundIDs.isNotEmpty)
           _products.addAll(response.productDetails);
