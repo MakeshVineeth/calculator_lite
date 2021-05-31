@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:math_expressions/math_expressions.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/UIElements/displayScreen.dart';
@@ -225,7 +226,7 @@ class CalcParser {
     }
 
     // Do nothing for exceptions.
-    catch (e) {}
+    catch (_) {}
   }
 
   void setSign() {
@@ -333,19 +334,19 @@ class CalcParser {
   }
 
   // This function called from CalcTab.dart after calling addToExpression.
-  double getValue() => evalFunction(calculationString);
+  Future<double> getValue() => compute(evalFunction, calculationString);
 
-  double evalFunction(List<String> calcStr) {
+  static double evalFunction(List<String> calcStr) {
     try {
       Parser p = Parser();
-      String comptStr = computerString(calcStr);
+      String comptStr = CalcParser().computerString(calcStr);
       Expression exp = p.parse(
           comptStr); // evalFunction is executed first, internally function asks for computerString.
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
 
       return eval;
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   }

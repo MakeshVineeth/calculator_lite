@@ -3,6 +3,7 @@ import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/secure_mode.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
+import 'package:flutter/foundation.dart';
 import 'HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
 import 'package:flutter/material.dart';
@@ -60,88 +61,92 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void getCurrentMetrics() async {
     final prefs = await SharedPreferences.getInstance();
     final current = prefs.getString('metrics') ?? 'RAD';
-
-    setState(() {
-      currentMetric = current;
-    });
+    setState(() => currentMetric = current);
   }
 
   void backSpaceBtn() {
     int len = calculationString.length;
-    if (len > 0) {
-      calculationString.removeAt(len - 1);
-    }
+    if (len > 0) setState(() => calculationString.removeAt(len - 1));
   }
 
-  void displayToScreen(
-      {@required String value,
-      @required BuildContext context,
-      @required CustomFocusEvents focus}) {
+  void displayToScreen({
+    @required String value,
+    @required BuildContext context,
+    @required CustomFocusEvents focus,
+  }) {
     if (timer != null && timer.isActive) timer.cancel();
     bool isFocused = focus.isFocused;
-    setState(() {
-      // First check for down or up arrow buttons
-      if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
-          .contains(value))
-        changeButtons(value);
 
-      // Clear button
-      else if (value.contains('C')) {
+    // First check for down or up arrow buttons
+    if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
+        .contains(value))
+      setState(() => changeButtons(value));
+
+    // Clear button
+    else if (value.contains('C')) {
+      setState(() {
         calculationString.clear();
         mainValue = null;
         if (isFocused) focus.clearData();
+      });
+    }
+
+    // Back button
+    else if (value.contains(FixedValues.backSpaceChar)) {
+      if (!isFocused) {
+        backSpaceBtn();
+
+        if (calculationString.length > 0)
+          runCalcParser(null); // Sending null as backSpaceChar is not a value.
+        else
+          setState(() => mainValue = 0);
+      } else {
+        setState(() => calculationString =
+            focus.removeBack(calculationString: calculationString) ??
+                calculationString);
+
+        runCalcParser(null);
       }
+    }
 
-      // Back button
-      else if (value.contains(FixedValues.backSpaceChar)) {
-        if (!isFocused) {
-          backSpaceBtn();
+    // Code for =
+    else if (value.contains('=')) {
+      if (DisplayScreen.isDoubleValid(mainValue)) {
+        addToHistory();
 
-          if (calculationString.length > 0)
-            runCalcParser(
-                null); // Sending null as backSpaceChar is not a value.
-          else
-            mainValue = 0;
-        } else {
-          calculationString =
-              focus.removeBack(calculationString: calculationString) ??
-                  calculationString;
-          runCalcParser(null);
-        }
-      }
-
-      // Code for =
-      else if (value.contains('=')) {
-        if (DisplayScreen.isDoubleValid(mainValue)) {
-          addToHistory();
+        setState(() {
           calculationString.clear();
           calculationString.add(mainValue.toString());
-        }
+        });
       }
+    }
 
-      // at last
+    // at last
+    else {
+      if (!isFocused)
+        runCalcParser(value);
       else {
-        if (!isFocused)
-          runCalcParser(value);
-        else {
-          calculationString = focus.getRegulatedString(
-                  calculationString: calculationString,
-                  currentMetric: currentMetric,
-                  value: value) ??
-              calculationString;
-          runCalcParser(null);
-        }
+        setState(() => calculationString = focus.getRegulatedString(
+                calculationString: calculationString,
+                currentMetric: currentMetric,
+                value: value) ??
+            calculationString);
+
+        runCalcParser(null);
       }
-    });
+    }
   }
 
-  void runCalcParser(String value) {
+  Future<void> runCalcParser(String value) async {
     CalcParser calcParser = CalcParser(
         calculationString: calculationString, currentMetric: currentMetric);
+
     if (value != null)
-      calculationString =
-          calcParser.addToExpression(value) ?? calculationString;
-    mainValue = calcParser.getValue();
+      setState(() => calculationString =
+          calcParser.addToExpression(value) ?? calculationString);
+
+    double getValue = await calcParser.getValue();
+    setState(() => mainValue = getValue);
 
     timer = Timer(Duration(seconds: 5), () => addToHistory());
   }
@@ -152,13 +157,14 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
       if (calculationString.length > 0 && mainValue != null) {
         DateTime now = DateTime.now();
-        HistoryItem historyItem = HistoryItem(
+        final HistoryItem historyItem = HistoryItem(
           expression: calculationString.join(),
           value: mainValue.toString(),
           dateTime: now,
           title: getFormattedTitle(now),
           metrics: currentMetric,
         );
+
         box.add(historyItem);
       }
     }
@@ -172,23 +178,21 @@ class _CalculatorTabState extends State<CalculatorTab> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: List.generate(rowData.length, (index) {
-          return Consumer<CustomFocusEvents>(
-            builder: (context, focus, child) {
-              return CalcButtons(
-                rowData: rowData,
-                index: index,
-                isCornerRows: isCornerRows,
-                displayFunction: () {
-                  displayToScreen(
-                      value: rowData[index].toString(),
-                      context: context,
-                      focus: focus);
-                },
-              );
-            },
-          );
-        }),
+        children: List.generate(
+          rowData.length,
+          (index) => Consumer<CustomFocusEvents>(
+            builder: (context, focus, child) => CalcButtons(
+              rowData: rowData,
+              index: index,
+              isCornerRows: isCornerRows,
+              displayFunction: () => displayToScreen(
+                value: rowData[index].toString(),
+                context: context,
+                focus: focus,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -270,33 +274,29 @@ class _CalculatorTabState extends State<CalculatorTab> {
     );
   }
 
-  Widget metricsButton() {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.all(5.0),
-          ),
-          onPressed: changeMetrics,
-          child: Text(
-            '$currentMetric',
-            style: TextStyle(
-              fontWeight: FontWeight.w600, //w600 is semi-bold.
+  Widget metricsButton() => Container(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.all(5.0),
+            ),
+            onPressed: changeMetrics,
+            child: Text(
+              '$currentMetric',
+              style: TextStyle(
+                fontWeight: FontWeight.w600, //w600 is semi-bold.
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
-  Widget buildCalcRows(List currentRow) {
-    return Column(
-      key: UniqueKey(),
-      children: List.generate(
-          currentRow.length, (index) => calcRows(currentRow[index], index)),
-    );
-  }
+  Widget buildCalcRows(List currentRow) => Column(
+        key: UniqueKey(),
+        children: List.generate(
+            currentRow.length, (index) => calcRows(currentRow[index], index)),
+      );
 
   void changeMetrics() async {
     setState(() {
