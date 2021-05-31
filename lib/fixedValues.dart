@@ -28,7 +28,7 @@ class FixedValues {
 
   static String buyRoute = '/buy';
 
-  static List rowSimple = [
+  static List<List<dynamic>> rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
     [7, 8, 9, multiplyChar],
     [4, 5, 6, minus],
@@ -36,7 +36,7 @@ class FixedValues {
     [changeSignChar, 0, decimalChar, '=']
   ];
 
-  static List rowExtras = [
+  static List<List<dynamic>> rowExtras = [
     [downArrow, invButton, 'e', '%'],
     ['sin', 'cos', 'tan', cubeChar],
     ['ln', 'log', 'mod', reciprocalChar],
@@ -44,7 +44,7 @@ class FixedValues {
     [pi, cubeRoot, capChar, squareChar]
   ];
 
-  static List rowInverse = [
+  static List<List<dynamic>> rowInverse = [
     [downArrow, invButton, 'e', '%'],
     ['sin⁻¹', 'cos⁻¹', 'tan⁻¹', cubeChar],
     ['eˣ', '𝟏𝟬ˣ', 'mod', reciprocalChar],
@@ -52,7 +52,7 @@ class FixedValues {
     [pi, cubeRoot, capChar, squareChar]
   ];
 
-  static List horizontalLayout = [
+  static List<List<dynamic>> horizontalLayout = [
     ['eˣ', '𝟏𝟬ˣ', invButton, 'e', '%', 'C', backSpaceChar, divisionChar],
     [7, 8, 9, multiplyChar, 'sin', 'cos', 'tan', cubeChar],
     [4, 5, 6, minus, 'ln', 'log', 'mod', reciprocalChar],
@@ -60,7 +60,7 @@ class FixedValues {
     [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar]
   ];
 
-  static List horizontalLayoutInverse = [
+  static List<List<dynamic>> horizontalLayoutInverse = [
     ['eˣ', '𝟏𝟬ˣ', invButton, 'e', '%', 'C', backSpaceChar, divisionChar],
     [7, 8, 9, multiplyChar, 'sin⁻¹', 'cos⁻¹', 'tan⁻¹', cubeChar],
     [4, 5, 6, minus, 'ln', 'log', 'mod', reciprocalChar],
@@ -72,7 +72,6 @@ class FixedValues {
     bool isLight = brightness == Brightness.light;
     Color foreground = isLight ? Colors.red : Colors.yellow;
     Color background = isLight ? Colors.white : Colors.grey[900];
-
     Color backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
@@ -134,7 +133,6 @@ class FixedValues {
       'An Open-Source Calculator that does all the calculations for you. No bloat, just the essentials: Calculator, History & Currency Tabs. Make faster calculations, display latest currencies, endless history scrolling.';
 
   static BorderRadius large = BorderRadius.circular(20.0);
-
   static RoundedRectangleBorder roundShapeLarge = RoundedRectangleBorder(
     borderRadius: large,
   );

@@ -58,12 +58,10 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
   }
 
   // Returns purchase of specific product ID
-  PurchaseDetails _hasPurchased(String productID) {
-    return _purchases.firstWhere(
-      (purchase) => purchase.productID == productID,
-      orElse: () => null,
-    );
-  }
+  PurchaseDetails _hasPurchased(String productID) => _purchases.firstWhere(
+        (purchase) => purchase.productID == productID,
+        orElse: () => null,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -80,41 +78,41 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
     for (var purchase in purchaseDetailsList) {
       _verifyPurchase(purchase);
 
-      if (purchase.pendingCompletePurchase)
-        await _iap.completePurchase(purchase);
+      if (purchase.pendingCompletePurchase) _iap.completePurchase(purchase);
     }
   }
 
   void _verifyPurchase(PurchaseDetails purchase) {
-    if (_hasPurchased(purchase.productID) != null) {
-      // Check if purchased the right product.
-      if (CommonPurchaseStrings.productIds.contains(purchase.productID)) {
-        // Now check the product status.
+    try {
+      if (_hasPurchased(purchase.productID) != null) {
+        // Check if purchased the right product.
+        if (CommonPurchaseStrings.productIds.contains(purchase.productID)) {
+          // Now check the product status.
 
-        switch (purchase.status) {
-          case PurchaseStatus.restored:
-          case PurchaseStatus.purchased:
-            _deliverPurchase(purchase);
-            break;
-          case PurchaseStatus.error:
-            _purchaseStatus.changeStatusCheck(StatusCheck.Error);
-            break;
-          case PurchaseStatus.pending:
-            _purchaseStatus.changeStatusCheck(StatusCheck.Pending);
-            break;
-          default:
-            _purchaseStatus.changeStatusCheck(StatusCheck.Null);
-            break;
+          switch (purchase.status) {
+            case PurchaseStatus.restored:
+            case PurchaseStatus.purchased:
+              _deliverPurchase(purchase);
+              break;
+            case PurchaseStatus.error:
+              _purchaseStatus.changeStatusCheck(StatusCheck.Error);
+              break;
+            case PurchaseStatus.pending:
+              _purchaseStatus.changeStatusCheck(StatusCheck.Pending);
+              break;
+            default:
+              _purchaseStatus.changeStatusCheck(StatusCheck.Null);
+              break;
+          }
+        } else {
+          _purchaseStatus.changeStatusCheck(StatusCheck.Error);
         }
-      } else {
-        _purchaseStatus.changeStatusCheck(StatusCheck.Error);
       }
-    }
 
-    // If a null is received.
-    else {
-      _purchaseStatus.changeStatusCheck(StatusCheck.Error);
-    }
+      // If a null is received.
+      else
+        _purchaseStatus.changeStatusCheck(StatusCheck.Error);
+    } catch (_) {}
   }
 
   void _deliverPurchase(PurchaseDetails purchase) {
