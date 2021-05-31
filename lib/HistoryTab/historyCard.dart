@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 
 class HistoryCard extends StatelessWidget {
   final int index;
+
   HistoryCard({@required this.index});
 
   final Box historyBox = Hive.box(CommonsHistory.historyBox);
@@ -29,25 +30,28 @@ class HistoryCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Card(
         child: Slidable(
-          actionPane: SlidableDrawerActionPane(),
-          secondaryActions: [
-            SlidePanelItem(
-              function: () => showBlurDialog(
-                context: context,
-                child: EditWidget(
-                  index: index,
-                  title: title,
-                  date: dateObj,
+          startActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            extentRatio: 0.25,
+            children: [
+              SlidePanelItem(
+                function: () => showBlurDialog(
+                  context: context,
+                  child: EditWidget(
+                    index: index,
+                    title: title,
+                    date: dateObj,
+                  ),
                 ),
+                icon: Icons.edit_outlined,
+                light: Colors.green[400],
               ),
-              icon: Icons.edit_outlined,
-              light: Colors.green[400],
-            ),
-            SlidePanelItem(
-              function: () => delete(),
-              icon: Icons.delete_outline,
-            ),
-          ],
+              SlidePanelItem(
+                function: () => delete(),
+                icon: Icons.delete_outline,
+              ),
+            ],
+          ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(

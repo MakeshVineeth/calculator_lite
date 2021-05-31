@@ -2,7 +2,7 @@ import 'dart:io' show Platform;
 import 'package:calculator_lite/UIElements/dialogTextBtn.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';

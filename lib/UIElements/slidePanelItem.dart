@@ -15,16 +15,13 @@ class SlidePanelItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: FixedValues.large,
-      child: SlideAction(
-        onTap: () => function(),
-        closeOnTap: true,
-        child: Icon(
-          icon,
-          color: (Theme.of(context).brightness == Brightness.light
-                  ? light
-                  : dark) ??
-              Theme.of(context).primaryColor,
-        ),
+      child: SlidableAction(
+        onPressed: (context) => function(),
+        autoClose: true,
+        icon: icon,
+        foregroundColor:
+            (Theme.of(context).brightness == Brightness.light ? light : dark) ??
+                Theme.of(context).primaryColor,
       ),
     );
   }

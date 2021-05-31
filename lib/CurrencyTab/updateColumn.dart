@@ -28,13 +28,13 @@ class _UpdateColumnState extends State<UpdateColumn> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 10), () => updateInitial());
+    Future.delayed(const Duration(seconds: 5), () => updateInitial());
 
     // Check if Update now is clicked from other screen or widget.
     widget.updateListen.addListener(() => updateInitial(force: true));
   }
 
-  void updateInitial({bool force = false}) async {
+  Future<void> updateInitial({bool force = false}) async {
     try {
       if (widget.updateListen.inProgress) return;
       widget.updateListen.inProgress = true;
@@ -42,6 +42,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
       DateTime now = DateTime.now();
       bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
 
+      // if force is enabled, skip date checking.
       if (checkDateBox && !force) {
         final Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
 
@@ -77,12 +78,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
             dateTimeObj.day == online.day &&
             dateTimeObj.month == online.month) {
           await dateBox.put(CommonsData.lastDateChecked, now.toString());
+          widget.updateListen.inProgress = false;
 
           if (mounted) setState(() => status = CommonsData.upToDate);
-          {
-            widget.updateListen.inProgress = false;
-            return;
-          }
+          return;
         }
       }
 
@@ -104,20 +103,28 @@ class _UpdateColumnState extends State<UpdateColumn> {
       }
 
       if (mounted) setState(() => status = result);
+      widget.updateListen.inProgress = false;
+
       retryMethod(result);
     } catch (e) {
       widget.updateListen.inProgress = false;
       if (mounted) setState(() => status = CommonsData.errorToken);
+
       retryMethod(CommonsData.errorToken);
     }
   }
 
   // Retries in case of network issues.
   void retryMethod(String result) {
-    if (triesLeft == 0) return;
+    // Keep track of no of tries
+    if (triesLeft == 0) {
+      widget.updateListen.inProgress = false;
+      return;
+    }
 
+    // Wait for 4 seconds and retry again.
     if (result == CommonsData.errorToken) {
-      Future.delayed(const Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 3), () {
         if (mounted)
           setState(() {
             status = CommonsData.retryString;
@@ -157,7 +164,6 @@ class _UpdateColumnState extends State<UpdateColumn> {
     Color _default = Theme.of(context).textTheme.button.color;
 
     if (value == CommonsData.errorToken) _default = Colors.redAccent;
-
     if (value == CommonsData.successToken || value == CommonsData.upToDate)
       _default = Colors.green;
 

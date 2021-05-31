@@ -9,7 +9,7 @@ import 'export_commons.dart';
 import 'export_helpers.dart';
 import 'export_method.dart';
 import 'export_theming.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'buttonCustom.dart';
 import 'date_field_custom.dart';
 import 'status_tooltip.dart';

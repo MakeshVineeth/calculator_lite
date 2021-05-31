@@ -14,28 +14,28 @@ dependencies:
   angles: ^2.1.0
   animations: ^2.0.0
   archive: ^3.1.2
-  auto_size_text_field: ^0.1.6
+  auto_size_text_field: ^0.1.7
   country_icons: ^2.0.2
-  decimal: ^1.0.0+1
+  decimal: ^1.1.0
   device_info_plus: ^1.0.1
   dio: ^4.0.0
   excel: ^2.0.0-null-safety-3
   flutter_animator: ^3.1.1
-  flutter_slidable: ^0.6.0
-  flutter_statusbarcolor: ^0.2.3
+  flutter_slidable: ^1.0.0-dev.2
   flutter_windowmanager: ^0.1.0
+  flutter_statusbarcolor_ns: ^0.3.0-nullsafety
   hive: ^2.0.4
   hive_flutter: ^1.0.0
   in_app_purchase: ^1.0.1
   intl: ^0.17.0
-  math_expressions: ^2.0.1
+  math_expressions: ^2.1.1
   octo_image: ^1.0.0+1
   path_provider: ^2.0.2
   provider: ^5.0.0
-  share: ^2.0.1
+  share: ^2.0.4
   shared_preferences: ^2.0.6
   slide_popup_dialog: ^0.0.2
-  url_launcher: ^6.0.3
+  url_launcher: ^6.0.4
 
 dev_dependencies:
   flutter_test:

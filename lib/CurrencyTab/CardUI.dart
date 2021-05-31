@@ -108,13 +108,17 @@ class _CardUIState extends State<CardUI> {
   }
 
   Widget slidable() => Slidable(
-        actionPane: SlidableDrawerActionPane(),
-        secondaryActions: [
-          SlidePanelItem(
-            function: delete,
-            icon: Icons.delete_outline,
-          ),
-        ],
+        startActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: 0.25,
+          children: [
+            SlidePanelItem(
+              function: delete,
+              icon: Icons.delete_outline,
+            ),
+          ],
+        ),
+
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
