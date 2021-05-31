@@ -9,7 +9,6 @@ import 'package:hive/hive.dart';
 
 class CurrencyChooser extends StatelessWidget {
   final Box listBoxes = Hive.box(CommonsData.currencyListBox);
-
   final boxIndex;
   final method;
 
@@ -25,25 +24,18 @@ class CurrencyChooser extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           child: ListView.builder(
             addAutomaticKeepAlives: true,
+            cacheExtent: 1000,
             physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             itemCount: listBoxes.values.length,
             itemBuilder: (context, index) {
-              CurrencyListItem currencyListItem =
+              final CurrencyListItem currencyListItem =
                   listBoxes.values.elementAt(index);
+
               return ListTile(
                 shape: FixedValues.roundShapeLarge,
-                onTap: () async {
-                  Box box = Hive.box(method);
-                  await box.putAt(boxIndex, currencyListItem);
-                  await Hive.openBox(
-                      currencyListItem.currencyCode.toLowerCase());
-                  FocusScope.of(context).unfocus();
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                leading: FlagIcon(
-                  flagURL: currencyListItem.flagURL,
-                ),
+                onTap: () => onTap(context, currencyListItem),
+                leading: FlagIcon(flagURL: currencyListItem.flagURL),
                 title: Text(
                   currencyListItem.currencyName +
                       ' (${currencyListItem.currencyCode})',
@@ -57,17 +49,24 @@ class CurrencyChooser extends StatelessWidget {
     );
   }
 
+  void onTap(BuildContext context, CurrencyListItem currencyListItem) async {
+    Box box = Hive.box(method);
+    await box.putAt(boxIndex, currencyListItem);
+    await Hive.openBox(currencyListItem.currencyCode.toLowerCase());
+    FocusScope.of(context).unfocus();
+    Navigator.of(context, rootNavigator: true).pop();
+  }
+
   static Future<void> show({
     @required BuildContext context,
     @required int index,
     @required String method,
-  }) async {
-    await showBlurDialog(
-      child: CurrencyChooser(
-        boxIndex: index,
-        method: method,
-      ),
-      context: context,
-    );
-  }
+  }) async =>
+      await showBlurDialog(
+        child: CurrencyChooser(
+          boxIndex: index,
+          method: method,
+        ),
+        context: context,
+      );
 }

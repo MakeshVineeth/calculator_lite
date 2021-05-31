@@ -33,8 +33,10 @@ class CurrencyData {
         );
       }
 
-      await Future.wait(futures);
-      return CommonsData.successToken;
+      List<String> results = await Future.wait<String>(futures);
+      return results.contains(CommonsData.errorToken)
+          ? CommonsData.errorToken
+          : CommonsData.successToken;
     } catch (_) {
       return CommonsData.errorToken;
     }
@@ -49,7 +51,8 @@ class CurrencyData {
       String countryJson = await DefaultAssetBundle.of(context)
           .loadString('assets/countries.json');
       Map data = json.decode(countryJson);
-      List<Map<String, String>> countriesList = data['countries']['country'];
+      List<dynamic> countriesList = data['countries']
+          ['country']; // Should be dynamic, else runtime errors.
 
       // Load the currencies json. Used for retrieving currency name.
       Response response = await CommonsData.getResponse(
@@ -57,7 +60,7 @@ class CurrencyData {
 
       if (response == null) return CommonsData.errorToken;
 
-      Map<String, String> currencyMap = response.data;
+      Map<String, String> currencyMap = Map<String, String>.from(response.data);
 
       // Loop through all available currencies.
       for (int keyIndex = 0; keyIndex < currencyList.length; keyIndex++) {
@@ -65,8 +68,9 @@ class CurrencyData {
         String flagURL;
         String currencyName;
 
-        // Loop through all countries list and check if currency code is same.
-        for (Map<String, String> eachCountry in countriesList)
+        for (int index = 0; index < countriesList.length; index++) {
+          Map<String, dynamic> eachCountry = countriesList[index];
+
           if (eachCountry['currencyCode'] == currencyCode) {
             currencyName = currencyMap[currencyCode];
 
@@ -74,6 +78,9 @@ class CurrencyData {
             flagURL = 'icons/flags/png/$countryCode.png';
             break;
           }
+        }
+
+        // Loop through all countries list and check if currency code is same.
 
         final CurrencyListItem currencyListItem = CurrencyListItem(
           currencyCode: currencyCode,
@@ -86,7 +93,8 @@ class CurrencyData {
       }
 
       return CommonsData.successToken;
-    } catch (_) {
+    } catch (e) {
+      print(e);
       return CommonsData.errorToken;
     }
   }
