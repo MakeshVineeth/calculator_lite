@@ -138,17 +138,30 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   Future<void> runCalcParser(String value) async {
+    if (value != null) {
+      List<String> str = await compute(getCalcStrIsolate, {
+        'calculationString': calculationString,
+        'value': value,
+        'currentMetric': currentMetric,
+      });
+
+      setState(() => calculationString = str ?? calculationString);
+    }
+
     CalcParser calcParser = CalcParser(
         calculationString: calculationString, currentMetric: currentMetric);
-
-    if (value != null)
-      setState(() => calculationString =
-          calcParser.addToExpression(value) ?? calculationString);
-
     double getValue = await calcParser.getValue();
     setState(() => mainValue = getValue);
 
     timer = Timer(Duration(seconds: 5), () => addToHistory());
+  }
+
+  static List<String> getCalcStrIsolate(Map<dynamic, dynamic> args) {
+    // Function to run in isolate.
+    CalcParser calcParser = CalcParser(
+        calculationString: args['calculationString'],
+        currentMetric: args['currentMetric']);
+    return calcParser?.addToExpression(args['value']);
   }
 
   void addToHistory() {
