@@ -30,9 +30,8 @@ class HistoryCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Card(
         child: Slidable(
-          startActionPane: ActionPane(
+          endActionPane: ActionPane(
             motion: const DrawerMotion(),
-            extentRatio: 0.25,
             children: [
               SlidePanelItem(
                 function: () => showBlurDialog(
@@ -45,10 +44,12 @@ class HistoryCard extends StatelessWidget {
                 ),
                 icon: Icons.edit_outlined,
                 light: Colors.green[400],
+                label: 'Edit',
               ),
               SlidePanelItem(
                 function: () => delete(),
                 icon: Icons.delete_outline,
+                label: 'Delete',
               ),
             ],
           ),
