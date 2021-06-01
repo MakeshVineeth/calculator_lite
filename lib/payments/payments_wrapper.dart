@@ -15,14 +15,8 @@ class PaymentsWrapper extends StatefulWidget {
 }
 
 class _PaymentsWrapperState extends State<PaymentsWrapper> {
-  // Is the API available on the device. Verified on init.
-  bool _available = false;
-
   // The In App Purchase plugin
   InAppPurchase _iap = InAppPurchase.instance;
-
-  // Past purchases
-  List<PurchaseDetails> _purchases = [];
 
   // Updates to purchases
   StreamSubscription<List<PurchaseDetails>> _subscription;
@@ -44,24 +38,17 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
 
   // Initialize data
   void _initialize() async {
-    _available = await _iap.isAvailable();
+    final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
 
-    if (_available) {
-      await _iap.restorePurchases();
+    _subscription = purchaseUpdated.listen(
+      (purchaseDetailsList) => _listenToPurchaseUpdated(purchaseDetailsList),
+      onDone: () => _subscription.cancel(),
+      onError: (error) => _purchaseStatus.changeStatusCheck(StatusCheck.Error),
+    );
 
-      _subscription = _iap.purchaseStream.listen(
-        (purchaseDetailsList) => _listenToPurchaseUpdated(purchaseDetailsList),
-        onDone: () => _subscription.cancel(),
-        onError: (error) => print('Error!'),
-      );
-    }
+    bool available = await _iap.isAvailable();
+    if (available) await _iap.restorePurchases(applicationUserName: null);
   }
-
-  // Returns purchase of specific product ID
-  PurchaseDetails _hasPurchased(String productID) => _purchases.firstWhere(
-        (purchase) => purchase.productID == productID,
-        orElse: () => null,
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -72,44 +59,39 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
   }
 
   Future<void> _listenToPurchaseUpdated(
-      List<PurchaseDetails> purchaseDetailsList) async {
-    _purchases.addAll(purchaseDetailsList);
+          List<PurchaseDetails> purchaseDetailsList) async =>
+      purchaseDetailsList.forEach((purchase) {
+        _verifyPurchase(purchase);
 
-    for (var purchase in purchaseDetailsList) {
-      _verifyPurchase(purchase);
-
-      if (purchase.pendingCompletePurchase) _iap.completePurchase(purchase);
-    }
-  }
+        if (purchase.pendingCompletePurchase) _iap.completePurchase(purchase);
+      });
 
   void _verifyPurchase(PurchaseDetails purchase) {
     try {
-      if (_hasPurchased(purchase.productID) != null) {
-        // Check if purchased the right product.
-        if (CommonPurchaseStrings.productIds.contains(purchase.productID)) {
-          // Now check the product status.
+      // Check if purchased the right product.
+      if (CommonPurchaseStrings.productIds.contains(purchase.productID)) {
+        // Now check the product status.
 
-          switch (purchase.status) {
-            case PurchaseStatus.restored:
-            case PurchaseStatus.purchased:
-              _deliverPurchase(purchase);
-              break;
-            case PurchaseStatus.error:
-              _purchaseStatus.changeStatusCheck(StatusCheck.Error);
-              break;
-            case PurchaseStatus.pending:
-              _purchaseStatus.changeStatusCheck(StatusCheck.Pending);
-              break;
-            default:
-              _purchaseStatus.changeStatusCheck(StatusCheck.Null);
-              break;
-          }
-        } else {
-          _purchaseStatus.changeStatusCheck(StatusCheck.Error);
+        switch (purchase.status) {
+          case PurchaseStatus.restored:
+            _deliverPurchase(purchase);
+            break;
+          case PurchaseStatus.purchased:
+            _deliverPurchase(purchase);
+            break;
+          case PurchaseStatus.error:
+            _purchaseStatus.changeStatusCheck(StatusCheck.Error);
+            break;
+          case PurchaseStatus.pending:
+            _purchaseStatus.changeStatusCheck(StatusCheck.Pending);
+            break;
+          default:
+            _purchaseStatus.changeStatusCheck(StatusCheck.Null);
+            break;
         }
       }
 
-      // If a null is received.
+      // If a null or any wrong productID is received.
       else
         _purchaseStatus.changeStatusCheck(StatusCheck.Error);
     } catch (_) {}

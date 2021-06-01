@@ -164,7 +164,7 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   Widget loadProducts() {
-    if (!purchaseStatusProvider.hasPurchased && _products.isNotEmpty)
+    if (_products.isNotEmpty && !purchaseStatusProvider.hasPurchased)
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(
