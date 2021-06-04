@@ -116,21 +116,24 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
     if (mounted) setState(() => _currentIndex = index);
   }
 
-  void setFlatStatusBar() {
-    try {
-      if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-        bool isLightTheme = Theme.of(context).brightness == Brightness.light;
+  SystemUiOverlayStyle setFlatStatusBar() {
+    SystemUiOverlayStyle _light = SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    );
 
-        SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: isLightTheme ? Colors.white : Colors.black,
-          statusBarIconBrightness:
-              isLightTheme ? Brightness.dark : Brightness.light,
-        );
+    SystemUiOverlayStyle _dark = SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    );
 
-        SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-      }
-    } catch (_) {}
+    bool isLightTheme = Theme.of(context).brightness == Brightness.light;
+    SystemChrome.setSystemUIOverlayStyle(isLightTheme ? _light : _dark);
+    return isLightTheme ? _light : _dark;
   }
 
   @override
@@ -148,35 +151,38 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
 
   @override
   Widget build(BuildContext context) {
-    setFlatStatusBar();
-    return Scaffold(
-      body: SafeArea(
-        child: FadeIndexedStack(
-          index: _currentIndex,
-          children: availableWidgets,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: setFlatStatusBar(),
+      child: Scaffold(
+        body: SafeArea(
+          child: FadeIndexedStack(
+            index: _currentIndex,
+            children: availableWidgets,
+          ),
         ),
-      ),
-      bottomNavigationBar: SizedBox(
-        height: _helperFunctions.isLandScape(context) ? 40 : 58,
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          selectedLabelStyle: FixedValues.semiBoldStyle,
-          unselectedLabelStyle: FixedValues.semiBoldStyle,
-          elevation: 0,
-          iconSize:
-              _helperFunctions.isLandScape(context) ? _iconSizeLandscape : 24.0,
-          selectedFontSize:
-              _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
-          unselectedFontSize:
-              _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
-          type: BottomNavigationBarType.fixed,
-          items: List.generate(
-              e.length,
-              (index) => BottomNavClass(
-                    title: e.keys.elementAt(index),
-                    icon: e.values.elementAt(index),
-                  ).returnNavItems()),
-          onTap: _onItemTapped,
+        bottomNavigationBar: SizedBox(
+          height: _helperFunctions.isLandScape(context) ? 40 : 58,
+          child: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            selectedLabelStyle: FixedValues.semiBoldStyle,
+            unselectedLabelStyle: FixedValues.semiBoldStyle,
+            elevation: 0,
+            iconSize: _helperFunctions.isLandScape(context)
+                ? _iconSizeLandscape
+                : 24.0,
+            selectedFontSize:
+                _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
+            unselectedFontSize:
+                _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
+            type: BottomNavigationBarType.fixed,
+            items: List.generate(
+                e.length,
+                (index) => BottomNavClass(
+                      title: e.keys.elementAt(index),
+                      icon: e.values.elementAt(index),
+                    ).returnNavItems()),
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );
