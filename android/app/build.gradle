@@ -52,7 +52,7 @@ android {
         versionName flutterVersionName
 
         ndk {
-                debugSymbolLevel 'SYMBOL_TABLE'
+                debugSymbolLevel 'FULL'
         }
     }
 
