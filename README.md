@@ -9,11 +9,11 @@ An Open-Source Calculator that does all the calculations for you. No bloat, just
 
 |                                     Calculator Tab                                     |                                   History Tab                                    |
 | :------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: |
-| <img src="assets/app_screenshots/CalculatorTab.png" alt="Calculator Tab" width="200"/> | <img src="assets/app_screenshots/HistoryTab.png" alt="History Tab" width="200"/> |
+| <img src="app_screenshots/CalculatorTab.png" alt="Calculator Tab" width="200"/> | <img src="app_screenshots/HistoryTab.png" alt="History Tab" width="200"/> |
 
 |                                    Currency Tab                                    |                                    Export Screen                                     |
 | :--------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: |
-| <img src="assets/app_screenshots/CurrencyTab.png" alt="Currency Tab" width="200"/> | <img src="assets/app_screenshots/ExportScreen.png" alt="Export Screen" width="200"/> |
+| <img src="app_screenshots/CurrencyTab.png" alt="Currency Tab" width="200"/> | <img src="app_screenshots/ExportScreen.png" alt="Export Screen" width="200"/> |
 
 
 Features
@@ -51,3 +51,4 @@ Credits
 * Icons made by [Pixel Buddha](https://www.flaticon.com/authors/pixel-buddha) from [www.flaticon.com](https://www.flaticon.com)
 * App Screenshots created with [MockUPhone](https://mockuphone.com).
 * Much Thanks to [Frankfurter](https://www.frankfurter.app) for the Currency API.
+* Google Play and the Google Play logo are trademarks of Google LLC.
