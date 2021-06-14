@@ -3,32 +3,39 @@ import 'package:charcode/charcode.dart' as charcode;
 
 class FixedValues {
   // Set Symbols from Flutter CharCode Library and Static to access across all files.
-  static String upperArrow = String.fromCharCode(charcode.$uarr);
-  static String downArrow = String.fromCharCode(charcode.$darr);
-  static String backSpaceChar = String.fromCharCode(charcode.$larr);
-  static String multiplyChar = String.fromCharCode(charcode.$x);
-  static String changeSignChar =
+  static final String upperArrow = String.fromCharCode(charcode.$uarr);
+  static final String downArrow = String.fromCharCode(charcode.$darr);
+  static final String backSpaceChar = String.fromCharCode(charcode.$larr);
+  static final String multiplyChar = String.fromCharCode(charcode.$x);
+  static final String changeSignChar =
       '\u207A/-'; // superscript + is not present in charcode library.
-  static String decimalChar = String.fromCharCode(charcode.$middot);
-  static String capChar = String.fromCharCode(charcode.$hat);
-  static String divisionChar = String.fromCharCode(charcode.$divide);
-  static String root = String.fromCharCode(charcode.$radic);
-  static String pi = String.fromCharCode(charcode.$pi);
-  static String sup2 = String.fromCharCode(charcode.$sup2);
-  static String sup3 = String.fromCharCode(charcode.$sup3);
-  static String squareChar = String.fromCharCode(charcode.$x) + sup2;
-  static String cubeChar = String.fromCharCode(charcode.$x) + sup3;
-  static String reciprocalChar = '⅟𝑥';
-  static String cubeRoot =
+  static final String decimalChar = String.fromCharCode(charcode.$middot);
+  static final String capChar = String.fromCharCode(charcode.$hat);
+  static final String divisionChar = String.fromCharCode(charcode.$divide);
+  static final String root = String.fromCharCode(charcode.$radic);
+  static final String pi = String.fromCharCode(charcode.$pi);
+  static final String sup2 = String.fromCharCode(charcode.$sup2);
+  static final String sup3 = String.fromCharCode(charcode.$sup3);
+  static final String squareChar = String.fromCharCode(charcode.$x) + sup2;
+  static final String cubeChar = String.fromCharCode(charcode.$x) + sup3;
+  static final String reciprocalChar = '⅟𝑥';
+  static final String cubeRoot =
       String.fromCharCodes([charcode.$sup3, charcode.$radic, charcode.$x]);
-  static String minus = String.fromCharCode(charcode.$ndash);
-  static String cubeRootSym =
+  static final String minus = String.fromCharCode(charcode.$ndash);
+  static final String cubeRootSym =
       String.fromCharCodes([charcode.$sup3, charcode.$radic]);
-  static String invButton = 'inv';
+  static final String invButton = 'inv';
+  static final String firstLaunchPref = 'first_launch';
 
-  static String buyRoute = '/buy';
+  static final String buyRoute = '/buy';
 
-  static List<List<dynamic>> rowSimple = [
+  // Links
+  static const faqUrl = 'https://makeshvineeth.github.io/calc_faq/';
+  static const playStoreLink =
+      'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite';
+  static const privacyPolicy = 'https://makeshvineeth.github.io/privacy_policy/';
+
+  static final List<List<dynamic>> rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
     [7, 8, 9, multiplyChar],
     [4, 5, 6, minus],
@@ -36,7 +43,7 @@ class FixedValues {
     [changeSignChar, 0, decimalChar, '=']
   ];
 
-  static List<List<dynamic>> rowExtras = [
+  static final List<List<dynamic>> rowExtras = [
     [downArrow, invButton, 'e', '%'],
     ['sin', 'cos', 'tan', cubeChar],
     ['ln', 'log', 'mod', reciprocalChar],
@@ -44,7 +51,7 @@ class FixedValues {
     [pi, cubeRoot, capChar, squareChar]
   ];
 
-  static List<List<dynamic>> rowInverse = [
+  static final List<List<dynamic>> rowInverse = [
     [downArrow, invButton, 'e', '%'],
     ['sin⁻¹', 'cos⁻¹', 'tan⁻¹', cubeChar],
     ['eˣ', '𝟏𝟬ˣ', 'mod', reciprocalChar],
@@ -52,7 +59,7 @@ class FixedValues {
     [pi, cubeRoot, capChar, squareChar]
   ];
 
-  static List<List<dynamic>> horizontalLayout = [
+  static final List<List<dynamic>> horizontalLayout = [
     ['eˣ', '𝟏𝟬ˣ', invButton, 'e', '%', 'C', backSpaceChar, divisionChar],
     [7, 8, 9, multiplyChar, 'sin', 'cos', 'tan', cubeChar],
     [4, 5, 6, minus, 'ln', 'log', 'mod', reciprocalChar],
@@ -60,7 +67,7 @@ class FixedValues {
     [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar]
   ];
 
-  static List<List<dynamic>> horizontalLayoutInverse = [
+  static final List<List<dynamic>> horizontalLayoutInverse = [
     ['eˣ', '𝟏𝟬ˣ', invButton, 'e', '%', 'C', backSpaceChar, divisionChar],
     [7, 8, 9, multiplyChar, 'sin⁻¹', 'cos⁻¹', 'tan⁻¹', cubeChar],
     [4, 5, 6, minus, 'ln', 'log', 'mod', reciprocalChar],
@@ -122,8 +129,8 @@ class FixedValues {
     );
   }
 
-  static TextStyle semiBoldStyle = TextStyle(fontWeight: FontWeight.w600);
-  static Color blurBgColor = Colors.white10;
+  static const TextStyle semiBoldStyle = TextStyle(fontWeight: FontWeight.w600);
+  static const Color blurBgColor = Colors.white10;
   static const double sigmaLevel = 5.0;
   static const Duration transitionDuration = const Duration(milliseconds: 100);
   static const String appName = 'Calculator Lite';
@@ -132,12 +139,12 @@ class FixedValues {
   static const String appLegalese =
       'An Open-Source Calculator that does all the calculations for you. No bloat, just the essentials: Calculator, History & Currency Tabs. Make faster calculations, display latest currencies, endless history scrolling.';
 
-  static BorderRadius large = BorderRadius.circular(20.0);
-  static RoundedRectangleBorder roundShapeLarge = RoundedRectangleBorder(
+  static final BorderRadius large = BorderRadius.circular(20.0);
+  static final RoundedRectangleBorder roundShapeLarge = RoundedRectangleBorder(
     borderRadius: large,
   );
 
-  static RoundedRectangleBorder roundShapeBtns = RoundedRectangleBorder(
+  static final RoundedRectangleBorder roundShapeBtns = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(30.0),
   );
 

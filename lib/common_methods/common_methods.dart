@@ -1,3 +1,4 @@
+import 'package:calculator_lite/fixedValues.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:meta/meta.dart';
@@ -23,6 +24,11 @@ Future<void> setSecure(bool _disabled) async {
   }
 }
 
+Future<bool> isFirstLaunch() async {
+  bool showTutorial = await getPrefs(FixedValues.firstLaunchPref, true);
+  return showTutorial;
+}
+
 void launchUrl(
     {@required String url,
     bool forceWebView = false,
@@ -32,5 +38,5 @@ void launchUrl(
     if (await canLaunch(urlEncoded))
       await launch(urlEncoded,
           forceWebView: forceWebView, enableJavaScript: enableJavaScript);
-  } catch (e) {}
+  } catch (_) {}
 }

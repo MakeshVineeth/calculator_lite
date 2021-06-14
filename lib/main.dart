@@ -2,6 +2,8 @@ import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/CurrencyTab/currencyTab.dart';
 import 'package:calculator_lite/Export_Screen/export_screen.dart';
 import 'package:calculator_lite/HistoryTab/historyTab.dart';
+import 'package:calculator_lite/UIElements/TutorialDialog.dart';
+import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/calculatorTab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/payments/payments_wrapper.dart';
@@ -143,6 +145,15 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
   }
 
   void doInitialTasks() async {
+    bool isFirst = await isFirstLaunch();
+    if (isFirst) {
+      await setPrefs(FixedValues.firstLaunchPref, false);
+      showBlurDialog(
+        context: context,
+        child: TutorialDialog(),
+      );
+    }
+
     if (Platform.isAndroid) {
       bool _disabled = await getPrefs('privacy', true);
       setSecure(_disabled);
