@@ -21,7 +21,10 @@ class TutorialDialog extends StatelessWidget {
           ),
           DialogTextBtn(
             title: 'Open Website',
-            function: () => launchUrl(url: FixedValues.faqUrl),
+            function: () {
+              launchUrl(url: FixedValues.faqUrl);
+              Navigator.pop(context);
+            },
           ),
         ],
         content: SingleChildScrollView(
