@@ -22,7 +22,7 @@ Features
 * Add Currency Cards.
 * Auto-Update Currency data using a Free API.
 * Toggle between Dark/Light/System default themes.
-* Export history to Microsoft Excel Format (.xlxs)
+* Export history to Microsoft Excel Format (.xlsx)
 * Enable/Disable Screen Recording and Screenshots using Secure Mode.
 * Various Advanced Calculator functions like Inverse Trigonometry , Smart +/- function etc.
 * Open-source & Privacy friendly. 
@@ -50,5 +50,6 @@ Credits
 ------
 * Icons made by [Pixel Buddha](https://www.flaticon.com/authors/pixel-buddha) from [www.flaticon.com](https://www.flaticon.com)
 * App Screenshots created with [MockUPhone](https://mockuphone.com).
+* Thanks to [Frankfurter API](https://www.frankfurter.app/).
 * Much Thanks to [Frankfurter](https://www.frankfurter.app) for the Currency API.
 * Google Play and the Google Play logo are trademarks of Google LLC.
