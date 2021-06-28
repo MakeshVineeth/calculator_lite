@@ -76,14 +76,18 @@ Future<void> askForReview({bool action = false}) async {
   } catch (_) {}
 }
 
-void launchUrl(
-    {@required String url,
-    bool forceWebView = false,
-    bool enableJavaScript = false}) async {
+Future<void> launchUrl({
+  @required String url,
+  bool forceWebView = false,
+  bool enableJavaScript = false,
+}) async {
   try {
     final urlEncoded = Uri.encodeFull(url);
     if (await canLaunch(urlEncoded))
-      await launch(urlEncoded,
-          forceWebView: forceWebView, enableJavaScript: enableJavaScript);
+      await launch(
+        urlEncoded,
+        forceWebView: forceWebView,
+        enableJavaScript: enableJavaScript,
+      );
   } catch (_) {}
 }

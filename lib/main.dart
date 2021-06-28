@@ -119,14 +119,14 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
   }
 
   SystemUiOverlayStyle setFlatStatusBar() {
-    SystemUiOverlayStyle _light = SystemUiOverlayStyle(
+    final SystemUiOverlayStyle _light = SystemUiOverlayStyle(
       systemNavigationBarColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     );
 
-    SystemUiOverlayStyle _dark = SystemUiOverlayStyle(
+    final SystemUiOverlayStyle _dark = SystemUiOverlayStyle(
       systemNavigationBarColor: Colors.black,
       systemNavigationBarIconBrightness: Brightness.light,
       statusBarColor: Colors.transparent,
@@ -144,20 +144,21 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
     doInitialTasks();
   }
 
-  void doInitialTasks() async {
-    bool isFirst = await isFirstLaunch();
-    if (isFirst) {
+  Future<void> doInitialTasks() async {
+    if (Platform.isAndroid) {
+      bool _disabled = await getPrefs('privacy', true);
+      setSecure(_disabled);
+    }
+
+    if (await isFirstLaunch()) {
       await setPrefs(FixedValues.firstLaunchPref, false);
-      showBlurDialog(
+      await showBlurDialog(
         context: context,
         child: TutorialDialog(),
       );
     }
 
-    if (Platform.isAndroid) {
-      bool _disabled = await getPrefs('privacy', true);
-      setSecure(_disabled);
-    }
+    await askForReview();
   }
 
   @override
