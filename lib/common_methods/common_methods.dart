@@ -1,4 +1,5 @@
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:meta/meta.dart';
@@ -29,6 +30,50 @@ Future<void> setSecure(bool _disabled) async {
 Future<bool> isFirstLaunch() async {
   bool showTutorial = await getPrefs(FixedValues.firstLaunchPref, true);
   return showTutorial;
+}
+
+void showPlayStorePage() {
+  try {
+    final InAppReview inAppReview = InAppReview.instance;
+    inAppReview.openStoreListing();
+  } catch (_) {}
+}
+
+Future<void> askForReview({bool action = false}) async {
+  try {
+    const String reviewCountPrefs = 'review_count';
+    const String dateStrPrefs = 'review_date';
+
+    final prefs = await SharedPreferences.getInstance();
+    int reviewAskedCount = prefs.getInt(reviewCountPrefs) ?? 0;
+
+    if (reviewAskedCount > 1) return;
+
+    String dateStr = prefs.getString(dateStrPrefs);
+    DateTime now = DateTime.now();
+
+    DateTime dateCheck;
+    // If dateStr is null, it means there is no shared preference yet which should mean first time.
+    if (dateStr == null) {
+      await prefs.setString(dateStrPrefs, now.toString());
+      dateCheck = now;
+    } else
+      dateCheck = DateTime.tryParse(dateStr);
+
+    Duration difference = now.difference(dateCheck);
+
+    if ((action && reviewAskedCount == 0) || difference.inHours >= 7) {
+      final InAppReview inAppReview = InAppReview.instance;
+      final bool isAvailable = await inAppReview.isAvailable();
+
+      if (isAvailable) {
+        Future.delayed(const Duration(seconds: 2), () async {
+          await prefs.setInt(reviewCountPrefs, ++reviewAskedCount);
+          await inAppReview.requestReview();
+        });
+      }
+    }
+  } catch (_) {}
 }
 
 void launchUrl(

@@ -254,7 +254,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
           Navigator.pushNamed(context, FixedValues.buyRoute);
       },
       'How to Use': () => launchUrl(url: FixedValues.faqUrl),
-      'Rate on Play Store ✨': () => launchUrl(url: FixedValues.playStoreLink),
+      'Rate on Play Store ✨': () => showPlayStorePage(),
       'Privacy Policy': () => launchUrl(url: FixedValues.privacyPolicy),
       'About Calculator Lite': () => AboutPage.showAboutDialogFunc(context),
       'Exit': () {
