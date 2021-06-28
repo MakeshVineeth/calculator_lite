@@ -42,7 +42,7 @@ class _ProScreenState extends State<ProScreen> {
 
   @override
   Widget build(BuildContext context) {
-    purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
+    purchaseStatusProvider = context.watch<PurchaseStatusProvider>();
     isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
@@ -117,51 +117,50 @@ class _ProScreenState extends State<ProScreen> {
       );
   }
 
-  Widget bulletPoints() {
-    return ListView(
-      physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-      children: List.generate(featuresList.length, (index) {
-        return Card(
-          elevation: Theme.of(context).brightness == Brightness.light
-              ? Theme.of(context).cardTheme.elevation
-              : 4,
-          child: InkWell(
-            onTap: () => showBlurDialog(
-              context: context,
-              child: FadeScale(
-                child: AlertDialog(
-                  content: Text(featuresList.values.elementAt(index)),
-                  shape: FixedValues.roundShapeLarge,
+  Widget bulletPoints() => ListView(
+        physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        children: List.generate(featuresList.length, (index) {
+          return Card(
+            elevation: Theme.of(context).brightness == Brightness.light
+                ? Theme.of(context).cardTheme.elevation
+                : 4,
+            child: InkWell(
+              onTap: () => showBlurDialog(
+                context: context,
+                child: FadeScale(
+                  child: AlertDialog(
+                    content: Text(featuresList.values.elementAt(index)),
+                    shape: FixedValues.roundShapeLarge,
+                  ),
+                ),
+              ),
+              borderRadius: FixedValues.large,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                    ),
+                    SizedBox(width: 5.0),
+                    Expanded(
+                      child: Text(
+                        featuresList.keys.elementAt(index),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15.5,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            borderRadius: FixedValues.large,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                  ),
-                  SizedBox(width: 5.0),
-                  Expanded(
-                    child: Text(
-                      featuresList.keys.elementAt(index),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }),
-    );
-  }
+          );
+        }),
+      );
 
   Widget loadProducts() {
     if (_products.isNotEmpty && !purchaseStatusProvider.hasPurchased)

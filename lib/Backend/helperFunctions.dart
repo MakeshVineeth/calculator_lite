@@ -6,14 +6,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 class HelperFunctions {
-  List<String> operations = [
+  final List<String> operations = [
     FixedValues.divisionChar,
     FixedValues.multiplyChar,
     FixedValues.minus,
     '+',
     '^'
   ];
-  List<String> numbersList = [
+
+  final List<String> numbersList = [
     '0',
     '1',
     '2',
@@ -26,8 +27,10 @@ class HelperFunctions {
     '9',
     '.'
   ];
-  List<String> constList = ['e', FixedValues.pi];
-  List<String> randomList = [
+
+  final List<String> constList = ['e', FixedValues.pi];
+
+  final List<String> randomList = [
     'tan(',
     'sin(',
     'cos(',
@@ -38,7 +41,8 @@ class HelperFunctions {
     'tan⁻¹(',
     FixedValues.root,
     FixedValues.cubeRootSym
-  ]; // Cube root too must be added here.
+  ];
+
   int parseNumbersFromEnd(int i, var str) {
     // Parse the string from the end to start. Break immediately if any symbol found other than integers.
     for (; i >= 0; i--) if (!numbersList.contains(str[i])) break;

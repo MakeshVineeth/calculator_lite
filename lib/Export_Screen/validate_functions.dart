@@ -14,7 +14,7 @@ String checkDateFormat(TextEditingController controller) {
     return dateTime == null
         ? error
         : null; // Validator accepts a null if the value is indeed correct, else an error String msg.
-  } catch (e) {
+  } catch (_) {
     return error;
   }
 }

@@ -93,12 +93,10 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget applicationIconImg() {
-    return Image(
-      image: AssetImage('assets/' + FixedValues.logo),
-      width: 30,
-    );
-  }
+  Widget applicationIconImg() => Image(
+        image: AssetImage('assets/' + FixedValues.logo),
+        width: 30,
+      );
 
   final TextStyle appLegaleseStyle = TextStyle(
       // any styles

@@ -1,8 +1,7 @@
 class CommonStrings {
-  static final String dateTitle = 'DATE';
-  static final String historyTitle = 'TITLE';
-  static final String expTextTitle = 'EXP';
-  static final String valTextTile = 'VAL';
-
-  static final String dateFormat = 'dd-MM-yyyy';
+  static const String dateTitle = 'DATE';
+  static const String historyTitle = 'TITLE';
+  static const String expTextTitle = 'EXP';
+  static const String valTextTile = 'VAL';
+  static const String dateFormat = 'dd-MM-yyyy';
 }

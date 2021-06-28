@@ -5,7 +5,7 @@ import 'package:calculator_lite/Backend/calcParser.dart';
 class CustomFocusEvents extends ChangeNotifier {
   int position = 0;
 
-  List<String> lists = 'sicotao⁻¹mngld'.split('');
+  final List<String> lists = 'sicotao⁻¹mngld'.split('');
   String myText;
   bool isFocused = false;
 
@@ -57,14 +57,12 @@ class CustomFocusEvents extends ChangeNotifier {
         position = start;
         return position;
       }
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   }
 
-  void updateFocus() {
-    isFocused = true;
-  }
+  void updateFocus() => isFocused = true;
 
   List<String> removeBack({
     @required List<String> calculationString,
@@ -121,7 +119,7 @@ class CustomFocusEvents extends ChangeNotifier {
       // save newly made text and return final string.
       myText = calculationString.join();
       return calculationString;
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   }

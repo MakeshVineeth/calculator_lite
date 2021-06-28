@@ -7,7 +7,7 @@ class StatusToolTip extends StatelessWidget {
   final bool visibility;
   final bool forceLight;
 
-  StatusToolTip({
+  const StatusToolTip({
     this.status = '',
     this.visibility = false,
     this.isError = false,

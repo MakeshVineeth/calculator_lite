@@ -7,7 +7,7 @@ class RadioTileCustom extends StatelessWidget {
   final String title;
   final VoidCallback function;
 
-  RadioTileCustom({
+  const RadioTileCustom({
     @required this.value,
     @required this.groupValue,
     @required this.title,

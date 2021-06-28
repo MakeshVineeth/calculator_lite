@@ -20,7 +20,7 @@ class _HistoryTabState extends State<HistoryTab> {
 
   @override
   Widget build(BuildContext context) {
-    _purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
+    _purchaseStatusProvider = context.watch<PurchaseStatusProvider>();
 
     return Column(
       children: [
@@ -44,7 +44,7 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   getMenuList() {
-    Map<String, Function> menuList = {
+    final Map<String, Function> menuList = {
       'Clear All': () => Future.delayed(
           CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
       'Export': () {

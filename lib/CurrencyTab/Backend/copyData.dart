@@ -41,8 +41,8 @@ class CopyData {
     }
 
     // For exceptions
-    catch (e) {
-      print('Exception copyData: ' + e.toString());
+    catch (_) {
+      print('Exception copyData');
       return CommonsData.errorToken;
     }
   }
@@ -73,7 +73,7 @@ class CopyData {
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       }
-    } catch (e) {}
+    } catch (_) {}
   }
 
   // Gets local path of app doc dir
@@ -103,7 +103,7 @@ class CopyData {
         return await file.readAsString();
       else
         return null;
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   }

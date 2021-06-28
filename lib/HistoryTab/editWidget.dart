@@ -68,7 +68,7 @@ class _EditWidgetState extends State<EditWidget> {
 
   void changeTitle(bool date) async {
     final box = Hive.box(CommonsHistory.historyBox);
-    HistoryItem historyItem = box.getAt(widget.index);
+    final HistoryItem historyItem = box.getAt(widget.index);
 
     String newTitle = myController.text.trim() ?? widget.title;
     if (newTitle.isEmpty) newTitle = widget.title;

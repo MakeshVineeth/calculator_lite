@@ -4,7 +4,7 @@ import 'package:octo_image/octo_image.dart';
 class FlagIcon extends StatefulWidget {
   final flagURL;
 
-  FlagIcon({@required this.flagURL});
+  const FlagIcon({@required this.flagURL});
 
   @override
   _FlagIconState createState() => _FlagIconState();

@@ -21,11 +21,7 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
 
   void initialTask() async {
     bool status = await getPrefs('privacy', true);
-
-    if (mounted)
-      setState(() {
-        _disabled = status;
-      });
+    if (mounted) setState(() => _disabled = status);
   }
 
   @override
@@ -61,14 +57,10 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
   void _doTask() async {
     try {
       if (Platform.isAndroid) {
-        if (mounted)
-          setState(() {
-            _disabled = !_disabled;
-          });
-
+        if (mounted) setState(() => _disabled = !_disabled);
         await setPrefs('privacy', _disabled);
         await setSecure(_disabled);
       }
-    } catch (e) {}
+    } catch (_) {}
   }
 }

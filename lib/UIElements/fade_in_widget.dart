@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 class FadeThis extends StatefulWidget {
   final Widget child;
   final Duration duration;
+
   const FadeThis(
       {@required this.child,
       this.duration = const Duration(milliseconds: 400)});
+
   @override
   _FadeThisState createState() => _FadeThisState();
 }

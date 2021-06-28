@@ -4,15 +4,14 @@ import 'package:flutter_animator/flutter_animator.dart';
 class BottomNavClass {
   String title;
   IconData icon;
-  BottomNavClass({this.title, this.icon});
 
-  BottomNavigationBarItem returnNavItems() {
-    return BottomNavigationBarItem(
-      label: title,
-      icon: Icon(icon),
-      activeIcon: Bounce(
-        child: Icon(icon),
-      ),
-    );
-  }
+  BottomNavClass({@required this.title, @required this.icon});
+
+  BottomNavigationBarItem returnNavItems() => BottomNavigationBarItem(
+        label: title,
+        icon: Icon(icon),
+        activeIcon: Bounce(
+          child: Icon(icon),
+        ),
+      );
 }

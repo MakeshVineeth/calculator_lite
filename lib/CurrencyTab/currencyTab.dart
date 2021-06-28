@@ -48,7 +48,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   @override
   Widget build(BuildContext context) {
-    _purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
+    _purchaseStatusProvider = context.watch<PurchaseStatusProvider>();
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -107,7 +107,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   void popCurBtns() {
-    Map<String, Function> menuList = {
+    final Map<String, Function> menuList = {
       'Update Now': () => updateListen.update(),
       'Delete All': () {
         fromBox.clear();

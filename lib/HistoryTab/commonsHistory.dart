@@ -1,3 +1,3 @@
 class CommonsHistory {
-  static final historyBox = 'history_box';
+  static const historyBox = 'history_box';
 }

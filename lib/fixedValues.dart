@@ -7,7 +7,7 @@ class FixedValues {
   static final String downArrow = String.fromCharCode(charcode.$darr);
   static final String backSpaceChar = String.fromCharCode(charcode.$larr);
   static final String multiplyChar = String.fromCharCode(charcode.$x);
-  static final String changeSignChar =
+  static const String changeSignChar =
       '\u207A/-'; // superscript + is not present in charcode library.
   static final String decimalChar = String.fromCharCode(charcode.$middot);
   static final String capChar = String.fromCharCode(charcode.$hat);
@@ -18,22 +18,23 @@ class FixedValues {
   static final String sup3 = String.fromCharCode(charcode.$sup3);
   static final String squareChar = String.fromCharCode(charcode.$x) + sup2;
   static final String cubeChar = String.fromCharCode(charcode.$x) + sup3;
-  static final String reciprocalChar = '⅟𝑥';
+  static const String reciprocalChar = '⅟𝑥';
   static final String cubeRoot =
       String.fromCharCodes([charcode.$sup3, charcode.$radic, charcode.$x]);
   static final String minus = String.fromCharCode(charcode.$ndash);
   static final String cubeRootSym =
       String.fromCharCodes([charcode.$sup3, charcode.$radic]);
-  static final String invButton = 'inv';
-  static final String firstLaunchPref = 'first_launch';
+  static const String invButton = 'inv';
+  static const String firstLaunchPref = 'first_launch';
 
-  static final String buyRoute = '/buy';
+  static const String buyRoute = '/buy';
 
   // Links
   static const faqUrl = 'https://makeshvineeth.github.io/calc_faq/';
   static const playStoreLink =
       'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite';
-  static const privacyPolicy = 'https://makeshvineeth.github.io/privacy_policy/';
+  static const privacyPolicy =
+      'https://makeshvineeth.github.io/privacy_policy/';
 
   static final List<List<dynamic>> rowSimple = [
     [upperArrow, 'C', backSpaceChar, divisionChar],
@@ -148,7 +149,7 @@ class FixedValues {
     borderRadius: BorderRadius.circular(30.0),
   );
 
-  static final TextStyle appTitleStyle = TextStyle(
+  static final TextStyle appTitleStyle = const TextStyle(
     fontWeight: FontWeight.w600,
     fontSize: 25,
     height: 1,

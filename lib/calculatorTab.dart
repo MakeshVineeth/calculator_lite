@@ -39,11 +39,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
   PurchaseStatusProvider _purchaseStatusProvider;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
@@ -212,7 +207,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   @override
   Widget build(BuildContext context) {
-    _purchaseStatusProvider = Provider.of<PurchaseStatusProvider>(context);
+    _purchaseStatusProvider = context.watch<PurchaseStatusProvider>();
 
     return ChangeNotifierProvider(
       create: (context) => CustomFocusEvents(),

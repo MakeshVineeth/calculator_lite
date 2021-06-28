@@ -7,8 +7,10 @@ class CalcButtons extends StatefulWidget {
   final int index;
   final Function displayFunction;
   final bool isCornerRows;
+
   const CalcButtons(
       {this.rowData, this.index, this.displayFunction, this.isCornerRows});
+
   @override
   _CalcButtonsState createState() => _CalcButtonsState();
 }
@@ -60,7 +62,7 @@ class _CalcButtonsState extends State<CalcButtons> {
     );
   }
 
-  TextStyle calcButtonTextStyle = TextStyle(
+  TextStyle calcButtonTextStyle = const TextStyle(
     fontWeight: FontWeight.w600,
   );
 }

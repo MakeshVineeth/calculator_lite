@@ -8,11 +8,13 @@ import 'dart:math' as math;
 class CalcParser {
   List<String> calculationString;
   String currentMetric;
+
   CalcParser({this.calculationString, this.currentMetric});
-  HelperFunctions helperFunctions = HelperFunctions();
+
+  final HelperFunctions helperFunctions = HelperFunctions();
 
   // List of constants for conditional checks.
-  List<String> trigFunctions = [
+  final List<String> trigFunctions = [
     'sin',
     'cos',
     'tan',
@@ -22,8 +24,17 @@ class CalcParser {
     'cos⁻¹',
     'tan⁻¹'
   ];
-  List<String> trigs = ['sin(', 'cos(', 'tan(', 'sin⁻¹(', 'cos⁻¹(', 'tan⁻¹('];
-  List<String> avoidFirstElement = [
+
+  final List<String> trigs = [
+    'sin(',
+    'cos(',
+    'tan(',
+    'sin⁻¹(',
+    'cos⁻¹(',
+    'tan⁻¹('
+  ];
+
+  final List<String> avoidFirstElement = [
     '+',
     '*',
     '/',

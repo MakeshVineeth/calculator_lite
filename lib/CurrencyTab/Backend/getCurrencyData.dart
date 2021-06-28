@@ -60,7 +60,8 @@ class CurrencyData {
 
       if (response == null) return CommonsData.errorToken;
 
-      Map<String, String> currencyMap = Map<String, String>.from(response.data);
+      final Map<String, String> currencyMap =
+          Map<String, String>.from(response.data);
 
       // Loop through all available currencies.
       for (int keyIndex = 0; keyIndex < currencyList.length; keyIndex++) {
@@ -93,8 +94,7 @@ class CurrencyData {
       }
 
       return CommonsData.successToken;
-    } catch (e) {
-      print(e);
+    } catch (_) {
       return CommonsData.errorToken;
     }
   }
@@ -109,7 +109,7 @@ class CurrencyData {
 
       // if jsonData not null, meaning this currency data already exists, no need to get response again.
       if (jsonData != null) {
-        Map<String, dynamic> rates = jsonData['rates'];
+        final Map<String, dynamic> rates = jsonData['rates'];
         await box.putAll(rates);
         return CommonsData.successToken;
       }
@@ -117,7 +117,7 @@ class CurrencyData {
       Response response = await CommonsData.getResponse(currentBaseUrl);
 
       if (response != null) {
-        Map data = Map<String, dynamic>.from(response.data);
+        final Map data = Map<String, dynamic>.from(response.data);
         Map<String, dynamic> rates = data['rates'];
 
         await box.putAll(rates);

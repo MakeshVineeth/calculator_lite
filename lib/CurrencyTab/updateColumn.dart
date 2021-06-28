@@ -12,7 +12,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/updateListen.dart';
 class UpdateColumn extends StatefulWidget {
   final UpdateListen updateListen;
 
-  UpdateColumn({@required this.updateListen});
+  const UpdateColumn({@required this.updateListen});
 
   @override
   _UpdateColumnState createState() => _UpdateColumnState();
@@ -106,7 +106,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
       widget.updateListen.inProgress = false;
 
       retryMethod(result);
-    } catch (e) {
+    } catch (_) {
       widget.updateListen.inProgress = false;
       if (mounted) setState(() => status = CommonsData.errorToken);
 
@@ -187,31 +187,29 @@ class _UpdateColumnState extends State<UpdateColumn> {
     );
   }
 
-  Widget srcLink({@required BuildContext context}) {
-    return Row(
-      children: [
-        Text(
-          'Source: ',
-          style: statusStyle,
-        ),
-        InkWell(
-          onTap: () => launchUrl(url: CommonsData.remoteSource),
-          borderRadius: FixedValues.large,
-          child: Padding(
-            padding: const EdgeInsets.all(3.0),
-            child: Text(
-              CommonsData.remoteName,
-              style: statusStyle.copyWith(
-                decoration: TextDecoration.underline,
+  Widget srcLink({@required BuildContext context}) => Row(
+        children: [
+          Text(
+            'Source: ',
+            style: statusStyle,
+          ),
+          InkWell(
+            onTap: () => launchUrl(url: CommonsData.remoteSource),
+            borderRadius: FixedValues.large,
+            child: Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: Text(
+                CommonsData.remoteName,
+                style: statusStyle.copyWith(
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
 
-  TextStyle statusStyle = TextStyle(
+  TextStyle statusStyle = const TextStyle(
     fontWeight: FontWeight.w600,
     fontSize: 13.5,
   );

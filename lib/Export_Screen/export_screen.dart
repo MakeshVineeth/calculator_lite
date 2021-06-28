@@ -164,9 +164,7 @@ class _ExportScreenState extends State<ExportScreen> {
         setStatus(text: 'Exported!');
       else
         setStatus(isError: true, text: 'Unable to export');
-    } on PlatformException catch (e) {
-      print(e);
-    }
+    } on PlatformException catch (_) {}
   }
 
   void setStatus(
@@ -321,8 +319,7 @@ class _ExportScreenState extends State<ExportScreen> {
       // For validation and data (empty) errors.
       else
         setStatus(text: 'Unable to Proceed!', isError: true);
-    } catch (e) {
-      print('Error: $e');
+    } catch (_) {
       setStatus(text: 'Unable to Proceed!', isError: true);
     }
   }

@@ -44,6 +44,7 @@ class _DateFieldCustomState extends State<DateFieldCustom> {
 
   void dateFunction() {
     FocusScope.of(context).unfocus();
+
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),

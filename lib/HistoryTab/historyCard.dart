@@ -21,10 +21,10 @@ class HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    HistoryItem historyItem = historyBox.getAt(index);
-    DateTime dateObj = historyItem.dateTime;
-    String date = _helperFunctions.getDate(dateObj);
-    String title = historyItem.title;
+    final HistoryItem historyItem = historyBox.getAt(index);
+    final DateTime dateObj = historyItem.dateTime;
+    final String date = _helperFunctions.getDate(dateObj);
+    final String title = historyItem.title;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),

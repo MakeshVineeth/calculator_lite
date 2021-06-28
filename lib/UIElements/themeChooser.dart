@@ -21,15 +21,13 @@ class PopThemeChooser extends StatelessWidget {
     );
   }
 
-  static void showThemeChooser(BuildContext context) {
-    showBlurDialog(
-      context: context,
-      child: PopThemeChooser(),
-    );
-  }
+  static void showThemeChooser(BuildContext context) => showBlurDialog(
+        context: context,
+        child: PopThemeChooser(),
+      );
 }
 
-Map<String, String> e = {
+final Map<String, String> e = {
   'Light': 'Light',
   'Dark': 'Dark',
   'System Default': 'System Default'

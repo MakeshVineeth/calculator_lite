@@ -5,7 +5,7 @@ class DialogTextBtn extends StatelessWidget {
   final Function function;
   final String title;
 
-  DialogTextBtn({@required this.function, @required this.title});
+  const DialogTextBtn({@required this.function, @required this.title});
 
   @override
   Widget build(BuildContext context) {

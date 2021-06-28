@@ -103,7 +103,7 @@ class _DisplayScreenState extends State<DisplayScreen> {
     }
   }
 
-  TextStyle mainValueStyle = TextStyle(
+  TextStyle mainValueStyle = const TextStyle(
     letterSpacing: 1.0,
     fontWeight: FontWeight.w800,
   );

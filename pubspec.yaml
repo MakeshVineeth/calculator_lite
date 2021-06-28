@@ -17,7 +17,7 @@ dependencies:
   auto_size_text_field: ^0.1.7
   country_icons: ^2.0.2
   decimal: ^1.2.0
-  device_info_plus: ^1.0.1
+  device_info_plus: ^2.0.1
   dio: ^4.0.0
   excel: ^2.0.0-null-safety-3
   flutter_animator: ^3.1.1
