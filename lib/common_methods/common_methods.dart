@@ -47,7 +47,7 @@ Future<void> askForReview({bool action = false}) async {
     final prefs = await SharedPreferences.getInstance();
     int reviewAskedCount = prefs.getInt(reviewCountPrefs) ?? 0;
 
-    if (reviewAskedCount > 1) return;
+    if (reviewAskedCount > 2) return;
 
     String dateStr = prefs.getString(dateStrPrefs);
     DateTime now = DateTime.now();
@@ -62,13 +62,16 @@ Future<void> askForReview({bool action = false}) async {
 
     Duration difference = now.difference(dateCheck);
 
-    if ((action && reviewAskedCount == 0) || difference.inHours >= 7) {
+    if ((action && reviewAskedCount == 0) ||
+        (difference.inHours >= 1 && reviewAskedCount == 0) ||
+        difference.inHours >= 7) {
       final InAppReview inAppReview = InAppReview.instance;
       final bool isAvailable = await inAppReview.isAvailable();
 
       if (isAvailable) {
         Future.delayed(const Duration(seconds: 2), () async {
           await prefs.setInt(reviewCountPrefs, ++reviewAskedCount);
+          await prefs.setString(dateStrPrefs, now.toString());
           await inAppReview.requestReview();
         });
       }
