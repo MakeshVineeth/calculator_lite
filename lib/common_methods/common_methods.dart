@@ -1,4 +1,6 @@
 import 'package:calculator_lite/fixedValues.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -52,19 +54,19 @@ Future<void> askForReview({bool action = false}) async {
     String dateStr = prefs.getString(dateStrPrefs);
     DateTime now = DateTime.now();
 
-    DateTime dateCheck;
     // If dateStr is null, it means there is no shared preference yet which should mean first time.
     if (dateStr == null) {
       await prefs.setString(dateStrPrefs, now.toString());
-      dateCheck = now;
-    } else
-      dateCheck = DateTime.tryParse(dateStr);
+      return;
+    }
 
+    DateTime dateCheck = DateTime.tryParse(dateStr);
+    if (dateCheck == null) return;
     Duration difference = now.difference(dateCheck);
 
     if ((action && reviewAskedCount == 0) ||
-        (difference.inHours >= 1 && reviewAskedCount == 0) ||
-        difference.inHours >= 7) {
+        (difference.inMinutes >= 30 && reviewAskedCount == 0) ||
+        difference.inHours >= 3) {
       final InAppReview inAppReview = InAppReview.instance;
       final bool isAvailable = await inAppReview.isAvailable();
 
