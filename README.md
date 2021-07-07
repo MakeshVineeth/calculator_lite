@@ -1,10 +1,7 @@
 Calculator Lite
 ======
 
-
-An Open-Source Calculator that does all the calculations for you. No bloat, just the essentials: **Calculator, History & Currency Tabs.**
-
-
+An Open-Source Calculator that does all the calculations for you. No bloat, just the essentials: Calculator, History & Currency Tabs.
 
 
 |                                     Calculator Tab                                     |                                   History Tab                                    |
@@ -18,16 +15,16 @@ An Open-Source Calculator that does all the calculations for you. No bloat, just
 
 Features
 ------
-* Switch easily between Calculator, History, Currency Tabs.
+* Switch easily between Calculator, History & Currency Tabs.
 * Add Currency Cards.
 * Auto-Update Currency data using a Free API.
 * Toggle between Dark/Light/System default themes.
 * Export history to Microsoft Excel Format (.xlsx)
 * Enable/Disable Screen Recording and Screenshots using Secure Mode.
-* Various Advanced Calculator functions like Inverse Trigonometry , Smart +/- function etc.
-* Open-source & Privacy friendly. 
+* Various Advanced functions like Inverse Trigonometry , Smart +/- function etc.
+* Open-Source & Privacy friendly. 
 * Built with [Flutter](https://flutter.dev) 2.
-* Beautiful UI and Smooth Animation Transitions.
+* Beautiful UI and Smooth Animations.
 * Intuitive design for History and Currency Cards.
 
 
@@ -38,7 +35,8 @@ Download 🔗
 
 Notes
 ------
-For Currency data, A free and MIT Licensed API is being used. If at all this service goes down, I'll try my best to update the app as soon as possible with a new API.
+- Please visit our FAQ page to learn more about how to use our app: https://makeshvineeth.github.io/calc_faq/
+- For Currency data, A free and MIT Licensed API is being used. If at all this service goes down, I'll try my best to update the app as soon as possible with a new API.
 
 
 Buy Me a Coffee ☕
@@ -50,6 +48,5 @@ Credits
 ------
 * Icons made by [Pixel Buddha](https://www.flaticon.com/authors/pixel-buddha) from [www.flaticon.com](https://www.flaticon.com)
 * App Screenshots created with [MockUPhone](https://mockuphone.com).
-* Thanks to [Frankfurter API](https://www.frankfurter.app/).
-* Much Thanks to [Frankfurter](https://www.frankfurter.app) for the Currency API.
+* Much Thanks to [Frankfurter API](https://www.frankfurter.app) for the Currency API.
 * Google Play and the Google Play logo are trademarks of Google LLC.
