@@ -23,8 +23,10 @@ class _ProScreenState extends State<ProScreen> {
         'Ability to export the history to a Microsoft supported Excel format (.xlsx)',
     'Add Unlimited Currency Cards':
         'In free version, you can add upto 5 currency cards. Remove this limit by purchasing the app.',
-    'Enable/Disable Privacy Mode':
-        'With Privacy Mode, you can disable/enable Screen Recording and Screenshots within the app.',
+    'Enable/Disable Secure Mode':
+        'With Secure Mode, you can disable/enable Screen Recording and Screenshots within the app. It will also disable the preview of app in Recent apps screen.',
+    'Why Pro? Why not Free?':
+        'It is for general motivation. Most of the core functionality in the app is freely available. Only if you want to add more currency cards or to use optional features, then you may opt for Pro version.',
   };
 
   // The In App Purchase plugin

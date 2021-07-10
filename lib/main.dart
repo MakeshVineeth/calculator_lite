@@ -1,6 +1,7 @@
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/CurrencyTab/currencyTab.dart';
 import 'package:calculator_lite/Export_Screen/export_screen.dart';
+import 'package:calculator_lite/HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/HistoryTab/historyTab.dart';
 import 'package:calculator_lite/UIElements/TutorialDialog.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
@@ -145,20 +146,39 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
   }
 
   Future<void> doInitialTasks() async {
-    if (Platform.isAndroid) {
-      bool _disabled = await getPrefs('privacy', true);
-      setSecure(_disabled);
-    }
+    try {
+      if (Platform.isAndroid) {
+        bool _disabled = await getPrefs('privacy', true);
+        setSecure(_disabled);
+      }
 
-    if (await isFirstLaunch()) {
-      await setPrefs(FixedValues.firstLaunchPref, false);
-      await showBlurDialog(
-        context: context,
-        child: TutorialDialog(),
-      );
-    }
+      if (await isFirstLaunch()) {
+        await setPrefs(FixedValues.firstLaunchPref, false);
 
-    await askForReview();
+        // Add a sample history item.
+        final Box box = await Hive.openBox(CommonsHistory.historyBox);
+        DateTime now = DateTime.now();
+        final HistoryItem historyItem = HistoryItem(
+          expression: '5+3',
+          value: '8.0',
+          dateTime: now,
+          title: 'Sample history item. Swipe to see more actions.',
+          metrics: 'RAD',
+        );
+
+        await box.add(historyItem);
+
+        Future.delayed(
+          const Duration(milliseconds: 600),
+          () => showBlurDialog(
+            context: context,
+            child: TutorialDialog(),
+          ),
+        );
+      }
+
+      await askForReview();
+    } catch (_) {}
   }
 
   @override

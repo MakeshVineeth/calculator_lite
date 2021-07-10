@@ -27,15 +27,16 @@ class _HistoryTabState extends State<HistoryTab> {
         Container(
           alignment: Alignment.centerRight,
           child: IconButton(
-              icon: Icon(Icons.more_vert_rounded), onPressed: () => menuShow()),
+            icon: Icon(Icons.more_vert_rounded),
+            onPressed: () => menuShow(),
+          ),
         ),
         FutureBuilder(
           future: Hive.openBox(CommonsHistory.historyBox),
           builder: (context, AsyncSnapshot data) {
-            if (data.connectionState == ConnectionState.done) {
-              final Box box = data.data;
-              return listWidget(box);
-            } else
+            if (data.connectionState == ConnectionState.done)
+              return listWidget();
+            else
               return Center(child: CircularProgressIndicator());
           },
         ),
@@ -43,7 +44,7 @@ class _HistoryTabState extends State<HistoryTab> {
     );
   }
 
-  getMenuList() {
+  Map<String, Function> getMenuList() {
     final Map<String, Function> menuList = {
       'Clear All': () => Future.delayed(
           CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
@@ -62,7 +63,7 @@ class _HistoryTabState extends State<HistoryTab> {
 
   void menuShow() => showSlideUp(context: context, menuList: getMenuList());
 
-  Widget listWidget(final Box box) => ValueListenableBuilder(
+  Widget listWidget() => ValueListenableBuilder(
         valueListenable: Hive.box(CommonsHistory.historyBox).listenable(),
         builder: (context, Box listener, child) {
           if (listener.isNotEmpty)
