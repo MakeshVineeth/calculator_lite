@@ -7,6 +7,7 @@ import 'package:calculator_lite/UIElements/TutorialDialog.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/calculatorTab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
+import 'package:calculator_lite/features/app_shortcuts.dart';
 import 'package:calculator_lite/payments/payments_wrapper.dart';
 import 'package:calculator_lite/payments/pro_screen.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
@@ -18,6 +19,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:provider/provider.dart';
+import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
@@ -101,11 +103,12 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
   final double _landScapeFont = 10.0;
   final double _iconSizeLandscape = 15.0;
   final HelperFunctions _helperFunctions = HelperFunctions();
+  final QuickActions quickActions = const QuickActions();
 
-  final Map<String, IconData> e = {
-    'Currency': Icons.monetization_on_outlined,
-    'Calculator': Icons.calculate_outlined,
-    'History': Icons.history_outlined
+  final Map<String, IconData> tabs = {
+    FixedValues.currencyTabTitle: Icons.monetization_on_outlined,
+    FixedValues.calculatorTabTitle: Icons.calculate_outlined,
+    FixedValues.historyTabTitle: Icons.history_outlined
   };
 
   final List<Widget> availableWidgets = [
@@ -120,23 +123,19 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
   }
 
   SystemUiOverlayStyle setFlatStatusBar() {
-    final SystemUiOverlayStyle _light = SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    );
-
-    final SystemUiOverlayStyle _dark = SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.black,
-      systemNavigationBarIconBrightness: Brightness.light,
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-    );
-
     bool isLightTheme = Theme.of(context).brightness == Brightness.light;
-    SystemChrome.setSystemUIOverlayStyle(isLightTheme ? _light : _dark);
-    return isLightTheme ? _light : _dark;
+
+    final SystemUiOverlayStyle theme = SystemUiOverlayStyle(
+      systemNavigationBarColor: isLightTheme ? Colors.white : Colors.black,
+      systemNavigationBarIconBrightness:
+          isLightTheme ? Brightness.dark : Brightness.light,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness:
+          isLightTheme ? Brightness.dark : Brightness.light,
+    );
+
+    SystemChrome.setSystemUIOverlayStyle(theme);
+    return theme;
   }
 
   @override
@@ -150,6 +149,14 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
       if (Platform.isAndroid) {
         bool _disabled = await getPrefs('privacy', true);
         setSecure(_disabled);
+
+        quickActions.initialize((shortcutType) {
+          if (shortcutType == AppShortcuts.calculatorQuickAction.type) {
+          } else if (shortcutType == AppShortcuts.currencyQuickAction.type) {
+          } else if (shortcutType == AppShortcuts.historyQuickAction.type) {}
+        });
+
+        quickActions.setShortcutItems(AppShortcuts.shortcutsList);
       }
 
       if (await isFirstLaunch()) {
@@ -208,10 +215,10 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
                 _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
             type: BottomNavigationBarType.fixed,
             items: List.generate(
-                e.length,
+                tabs.length,
                 (index) => BottomNavClass(
-                      title: e.keys.elementAt(index),
-                      icon: e.values.elementAt(index),
+                      title: tabs.keys.elementAt(index),
+                      icon: tabs.values.elementAt(index),
                     ).returnNavItems()),
             onTap: _onItemTapped,
           ),

@@ -1,4 +1,5 @@
 import 'package:calculator_lite/HistoryTab/editWidget.dart';
+import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
@@ -29,67 +30,72 @@ class HistoryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        child: Slidable(
-          endActionPane: ActionPane(
-            motion: const DrawerMotion(),
-            children: [
-              SlidePanelItem(
-                function: () => showBlurDialog(
-                  context: context,
-                  child: EditWidget(
-                    index: index,
-                    title: title,
-                    date: dateObj,
-                  ),
-                ),
-                icon: Icons.edit_outlined,
-                light: Colors.green[400],
-                label: 'Edit',
-              ),
-              SlidePanelItem(
-                function: () => delete(),
-                icon: Icons.delete_outline,
-                label: 'Delete',
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: ClipRRect(
+          borderRadius: FixedValues.large,
+          child: Slidable(
+            endActionPane: ActionPane(
+              motion: const DrawerMotion(),
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
+                SlidePanelItem(
+                  function: () => showBlurDialog(
+                    context: context,
+                    child: EditWidget(
+                      index: index,
+                      title: title,
+                      date: dateObj,
                     ),
                   ),
+                  icon: Icons.edit_outlined,
+                  light: Colors.green[400],
+                  label: 'Edit',
                 ),
-                itemRow(
-                    heading: 'EXP:',
-                    text: historyItem.expression,
-                    context: context),
-                itemRow(
-                    heading: 'VAL:', text: historyItem.value, context: context),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3),
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    date,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey[350]
-                          : Colors.grey[700],
-                    ),
-                  ),
+                SlidePanelItem(
+                  function: () => delete(),
+                  icon: Icons.delete_outline,
+                  label: 'Delete',
                 ),
               ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 3),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  itemRow(
+                      heading: 'EXP:',
+                      text: historyItem.expression,
+                      context: context),
+                  itemRow(
+                      heading: 'VAL:',
+                      text: historyItem.value,
+                      context: context),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 3),
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      date,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[350]
+                            : Colors.grey[700],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

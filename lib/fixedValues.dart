@@ -29,6 +29,10 @@ class FixedValues {
 
   static const String buyRoute = '/buy';
 
+  static const String calculatorTabTitle = 'Calculator';
+  static const String historyTabTitle = 'History';
+  static const String currencyTabTitle = 'Currency';
+
   // Links
   static const faqUrl = 'https://makeshvineeth.github.io/calc_faq/';
   static const playStoreLink =
