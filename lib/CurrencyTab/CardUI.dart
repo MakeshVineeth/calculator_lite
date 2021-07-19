@@ -4,6 +4,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
 import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
 import 'package:calculator_lite/CurrencyTab/resetFormProvider.dart';
+import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -73,8 +74,8 @@ class _CardUIState extends State<CardUI> {
       fromCurBox = Hive.box(fromCur.currencyCode.toLowerCase());
 
       updateExchange();
-    } catch (e) {
-      print('Exception openBoxes: ' + e.toString());
+    } catch (_) {
+      print('Exception openBoxes');
     }
   }
 
@@ -103,60 +104,59 @@ class _CardUIState extends State<CardUI> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: slidable(),
+      child: ClipRRect(
+        borderRadius: FixedValues.large,
+        child: Slidable(
+          endActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            children: [
+              SlidePanelItem(
+                function: delete,
+                icon: Icons.delete_outline,
+                label: 'Delete',
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    buttonCurrency(CommonsData.fromBox),
+                    buttonCurrency(CommonsData.toBox),
+                  ],
+                ),
+                buttonToolTipInfo(),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget slidable() => Slidable(
-        endActionPane: ActionPane(
-          motion: const DrawerMotion(),
-          children: [
-            SlidePanelItem(
-              function: delete,
-              icon: Icons.delete_outline,
-              label: 'Delete',
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  buttonCurrency(CommonsData.fromBox),
-                  buttonCurrency(CommonsData.toBox),
-                ],
+  void delete() => Future.delayed(CommonsData.dur1, () {
+        FocusScope.of(context).unfocus();
+        fromBox.deleteAt(widget.index);
+        toBox.deleteAt(widget.index);
+        AnimatedList.of(context).removeItem(
+          widget.index,
+          (context, animation) => SizeTransition(
+            sizeFactor: animation,
+            child: FadeTransition(
+              opacity: animation,
+              child: CardUI(
+                index: widget.index,
+                remove: true,
+                resetFormProvider: widget.resetFormProvider,
               ),
-              buttonToolTipInfo(),
-            ],
-          ),
-        ),
-      );
-
-  void delete() {
-    Future.delayed(CommonsData.dur1, () {
-      FocusScope.of(context).unfocus();
-      fromBox.deleteAt(widget.index);
-      toBox.deleteAt(widget.index);
-      AnimatedList.of(context).removeItem(
-        widget.index,
-        (context, animation) => SizeTransition(
-          sizeFactor: animation,
-          child: FadeTransition(
-            opacity: animation,
-            child: CardUI(
-              index: widget.index,
-              remove: true,
-              resetFormProvider: widget.resetFormProvider,
             ),
           ),
-        ),
-      );
-    });
-  }
+        );
+      });
 
   Widget buttonToolTipInfo() {
     if (!widget.remove)
@@ -195,40 +195,38 @@ class _CardUIState extends State<CardUI> {
     handleFromText(controllerFrom.text, CommonsData.fromBox);
   }
 
-  Widget buttonCurrency(String method) {
-    return Expanded(
-      child: ListTile(
-        title: Row(
-          children: [
-            ElevatedButton.icon(
-              style: ButtonStyle(
-                elevation: MaterialStateProperty.all(0),
-                padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 5)),
-              ),
-              onPressed: () => displayCurrencyChooser(method),
-              icon: FlagIcon(
-                flagURL:
-                    isFromMethod(method) ? fromCur?.flagURL : toCur?.flagURL,
-              ),
-              label: Text(
-                (isFromMethod(method)
-                        ? fromCur?.currencyCode
-                        : toCur?.currencyCode) ??
-                    '',
-                style: TextStyle(
-                  height: 1,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).textTheme.button.color,
+  Widget buttonCurrency(String method) => Expanded(
+        child: ListTile(
+          title: Row(
+            children: [
+              ElevatedButton.icon(
+                style: ButtonStyle(
+                  elevation: MaterialStateProperty.all(0),
+                  padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 5)),
                 ),
-              ),
-            )
-          ],
+                onPressed: () => displayCurrencyChooser(method),
+                icon: FlagIcon(
+                  flagURL:
+                      isFromMethod(method) ? fromCur?.flagURL : toCur?.flagURL,
+                ),
+                label: Text(
+                  (isFromMethod(method)
+                          ? fromCur?.currencyCode
+                          : toCur?.currencyCode) ??
+                      '',
+                  style: TextStyle(
+                    height: 1,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).textTheme.button.color,
+                  ),
+                ),
+              )
+            ],
+          ),
+          subtitle: getTextField(method),
         ),
-        subtitle: getTextField(method),
-      ),
-    );
-  }
+      );
 
   void handleFromText(String from, String method) {
     if (isFromMethod(method)) {
@@ -262,43 +260,41 @@ class _CardUIState extends State<CardUI> {
     locale: 'en_US',
   );
 
-  Widget getTextField(String method) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Card(
-        color: Theme.of(context).brightness == Brightness.light
-            ? Theme.of(context).scaffoldBackgroundColor
-            : Colors.black45,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: TextFormField(
-            controller: isFromMethod(method) ? controllerFrom : controllerTo,
-            keyboardType: TextInputType.numberWithOptions(
-              decimal: true,
-              signed: true,
-            ),
-            style: textFieldStyle(context),
-            onChanged: (str) => handleFromText(str, method),
-            readOnly: isFromMethod(method) ? false : true,
-            showCursor: true,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintStyle: TextStyle(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.grey[800]
-                    : Colors.grey,
-                fontWeight: FontWeight.w600,
+  Widget getTextField(String method) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Card(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Theme.of(context).scaffoldBackgroundColor
+              : Colors.black45,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: TextFormField(
+              controller: isFromMethod(method) ? controllerFrom : controllerTo,
+              keyboardType: TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
               ),
-              hintText: placeholder,
-              fillColor: Colors.white70,
+              style: textFieldStyle(context),
+              onChanged: (str) => handleFromText(str, method),
+              readOnly: isFromMethod(method) ? false : true,
+              showCursor: true,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintStyle: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.grey[800]
+                      : Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+                hintText: placeholder,
+                fillColor: Colors.white70,
+              ),
+              scrollPhysics: AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics()),
             ),
-            scrollPhysics:
-                AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   TextStyle textFieldStyle(BuildContext context) =>
       TextStyle(fontWeight: FontWeight.w600);
