@@ -151,9 +151,16 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
         setSecure(_disabled);
 
         quickActions.initialize((shortcutType) {
-          if (shortcutType == AppShortcuts.calculatorQuickAction.type) {
-          } else if (shortcutType == AppShortcuts.currencyQuickAction.type) {
-          } else if (shortcutType == AppShortcuts.historyQuickAction.type) {}
+          int index = 1;
+
+          if (shortcutType == AppShortcuts.calculatorQuickAction.type)
+            index = 1;
+          else if (shortcutType == AppShortcuts.currencyQuickAction.type)
+            index = 0;
+          else if (shortcutType == AppShortcuts.historyQuickAction.type)
+            index = 2;
+
+          _onItemTapped(index);
         });
 
         quickActions.setShortcutItems(AppShortcuts.shortcutsList);
