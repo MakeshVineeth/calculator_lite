@@ -88,8 +88,8 @@ class FixedValues {
 
     return ThemeData(
       brightness: brightness,
-      primaryColor:
-          foreground, // For Dark, primary Color has to be set, otherwise issues with foreground text for Calc Buttons.
+      primaryColor: foreground,
+      // For Dark, primary Color has to be set, otherwise issues with foreground text for Calc Buttons.
       primarySwatch: foreground,
       accentColor: foreground,
       buttonColor: background,
@@ -103,19 +103,21 @@ class FixedValues {
         shape: FixedValues.roundShapeLarge,
       ),
       appBarTheme: AppBarTheme(
-          brightness: brightness,
-          centerTitle: true,
-          titleSpacing: 1,
-          color: background,
-          iconTheme: IconThemeData(
-            color: foreground,
-          ),
-          textTheme: TextTheme(
-              headline6: TextStyle(
+        brightness: brightness,
+        centerTitle: true,
+        titleSpacing: 1,
+        color: background,
+        iconTheme: IconThemeData(
+          color: foreground,
+        ),
+        textTheme: TextTheme(
+          headline6: TextStyle(
             color: foreground,
             fontWeight: FontWeight.w600,
             fontSize: 20,
-          ))),
+          ),
+        ),
+      ),
       canvasColor: backgroundScaffold,
       applyElevationOverlayColor: brightness == Brightness.dark,
       elevatedButtonTheme: ElevatedButtonThemeData(

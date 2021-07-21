@@ -11,15 +11,16 @@ class AppShortcuts {
   static final calculatorQuickAction = const ShortcutItem(
     type: 'action_calculator',
     localizedTitle: FixedValues.calculatorTabTitle,
+    icon: 'icon_calculator',
   );
 
   static final currencyQuickAction = const ShortcutItem(
-    type: 'action_currency',
-    localizedTitle: FixedValues.currencyTabTitle,
-  );
+      type: 'action_currency',
+      localizedTitle: FixedValues.currencyTabTitle,
+      icon: 'icon_currency');
 
   static final historyQuickAction = const ShortcutItem(
-    type: 'action_history',
-    localizedTitle: FixedValues.historyTabTitle,
-  );
+      type: 'action_history',
+      localizedTitle: FixedValues.historyTabTitle,
+      icon: 'icon_history');
 }
