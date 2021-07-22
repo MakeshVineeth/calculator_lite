@@ -20,7 +20,7 @@ class TutorialDialog extends StatelessWidget {
             function: () => Navigator.pop(context),
           ),
           DialogTextBtn(
-            title: 'Open Website',
+            title: 'Open FAQ',
             function: () {
               launchUrl(url: FixedValues.faqUrl);
               Navigator.pop(context);
@@ -31,7 +31,7 @@ class TutorialDialog extends StatelessWidget {
           physics:
               AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           child: Text(
-            'Learn to use Calculator Lite through our FAQ Website which will have most of the questions and answers on how to use our app. Click on Open Website to visit our FAQ Page.',
+            'Learn to use Calculator Lite through our FAQ Website which will have information on how to use our app. You can also visit the website again through drop-down menu in Calculator Tab.',
           ),
         ),
       ),

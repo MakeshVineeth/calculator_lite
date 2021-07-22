@@ -23,6 +23,7 @@ class SlidePanelItem extends StatelessWidget {
       onPressed: (context) => function(),
       autoClose: true,
       icon: icon,
+      backgroundColor: Theme.of(context).cardTheme.color,
       foregroundColor:
           (Theme.of(context).brightness == Brightness.light ? light : dark) ??
               Theme.of(context).primaryColor,

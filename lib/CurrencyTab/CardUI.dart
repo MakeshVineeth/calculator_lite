@@ -18,10 +18,11 @@ class CardUI extends StatefulWidget {
   final bool remove;
   final ResetFormProvider resetFormProvider;
 
-  const CardUI(
-      {@required this.index,
-      this.remove = false,
-      @required this.resetFormProvider});
+  const CardUI({
+    @required this.index,
+    this.remove = false,
+    @required this.resetFormProvider,
+  });
 
   @override
   _CardUIState createState() => _CardUIState();
@@ -96,8 +97,8 @@ class _CardUIState extends State<CardUI> {
 
       currentRateStr =
           '1 ${fromCur.currencyCode} = $exchangeRate ${toCur.currencyCode}.';
-    } catch (e) {
-      print('Exception updateExchange: ' + e.toString());
+    } catch (_) {
+      print('Exception updateExchange');
     }
   }
 
@@ -187,10 +188,7 @@ class _CardUIState extends State<CardUI> {
       method: method,
     );
 
-    if (mounted)
-      setState(() {
-        updateExchange();
-      });
+    if (mounted) setState(() => updateExchange());
 
     handleFromText(controllerFrom.text, CommonsData.fromBox);
   }
@@ -229,29 +227,50 @@ class _CardUIState extends State<CardUI> {
       );
 
   void handleFromText(String from, String method) {
-    if (isFromMethod(method)) {
+    try {
+      // Text is shown in a currency format. So we're replacing the commas for further parsing.
       from = from.replaceAll(',', '');
 
+      // making sure text is ending with an integer, else it cannot parse.
+      // following code is to check if the text is double, else format it using currency format.
       if (!from.endsWith('.')) {
         double val = double.tryParse(from);
+
         if (val != null && helperFunctions.isInteger(val))
           from = formatCurrency.format(val);
       }
 
-      controllerFrom.text = from;
-      controllerFrom.selection = controllerFrom.selection.copyWith(
-        baseOffset: from.length,
-        extentOffset: from.length,
-      );
+      // display the new currency formatted numbers.
+      if (isFromMethod(method)) {
+        controllerFrom.text = from;
+        controllerFrom.selection = controllerFrom.selection.copyWith(
+          baseOffset: from.length,
+          extentOffset: from.length,
+        );
 
-      double toVal =
-          double.tryParse(controllerFrom.text.replaceAll(',', '').trim());
+        double toVal =
+            double.tryParse(controllerFrom.text.replaceAll(',', '').trim());
 
-      if (toVal != null)
-        controllerTo.text = (toVal * exchangeRate).toString();
-      else
-        controllerTo.clear();
-    }
+        if (toVal != null)
+          controllerTo.text = (toVal * exchangeRate).toString();
+        else
+          controllerTo.clear();
+      } else {
+        controllerTo.text = from;
+        controllerTo.selection = controllerTo.selection.copyWith(
+          baseOffset: from.length,
+          extentOffset: from.length,
+        );
+
+        double toVal =
+            double.tryParse(controllerTo.text.replaceAll(',', '').trim());
+
+        if (toVal != null)
+          controllerFrom.text = (toVal / exchangeRate).toString();
+        else
+          controllerFrom.clear();
+      }
+    } catch (_) {}
   }
 
   final formatCurrency = NumberFormat.currency(
@@ -276,7 +295,6 @@ class _CardUIState extends State<CardUI> {
               ),
               style: textFieldStyle(context),
               onChanged: (str) => handleFromText(str, method),
-              readOnly: isFromMethod(method) ? false : true,
               showCursor: true,
               decoration: InputDecoration(
                 border: InputBorder.none,
