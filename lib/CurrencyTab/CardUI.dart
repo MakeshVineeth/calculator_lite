@@ -35,6 +35,7 @@ class _CardUIState extends State<CardUI> {
 
   final Box fromBox = Hive.box(CommonsData.fromBox);
   final Box toBox = Hive.box(CommonsData.toBox);
+  final int decimalPlaces = 3;
 
   CurrencyListItem fromCur;
   CurrencyListItem toCur;
@@ -231,16 +232,13 @@ class _CardUIState extends State<CardUI> {
       // Text is shown in a currency format. So we're replacing the commas for further parsing.
       from = from.replaceAll(',', '');
 
-      // making sure text is ending with an integer, else it cannot parse.
-      // following code is to check if the text is double, else format it using currency format.
-      if (!from.endsWith('.')) {
-        double val = double.tryParse(from);
+      double val = double.tryParse(from);
 
-        if (val != null && helperFunctions.isInteger(val))
-          from = formatCurrency.format(val);
-      }
+      // making sure text is an integer & format it using currency format.
+      if (val != null && !from.endsWith('.') && helperFunctions.isInteger(val))
+        from = formatCurrency.format(val);
 
-      // display the new currency formatted numbers.
+      // display the new currency formatted numbers. Following code if users types in Left Text Box.
       if (isFromMethod(method)) {
         controllerFrom.text = from;
         controllerFrom.selection = controllerFrom.selection.copyWith(
@@ -248,25 +246,24 @@ class _CardUIState extends State<CardUI> {
           extentOffset: from.length,
         );
 
-        double toVal =
-            double.tryParse(controllerFrom.text.replaceAll(',', '').trim());
-
-        if (toVal != null)
-          controllerTo.text = (toVal * exchangeRate).toString();
+        if (val != null)
+          controllerTo.text =
+              (val * exchangeRate).toStringAsFixed(decimalPlaces);
         else
           controllerTo.clear();
-      } else {
+      }
+
+      // Following code if users types in Right Text Box.
+      else {
         controllerTo.text = from;
         controllerTo.selection = controllerTo.selection.copyWith(
           baseOffset: from.length,
           extentOffset: from.length,
         );
 
-        double toVal =
-            double.tryParse(controllerTo.text.replaceAll(',', '').trim());
-
-        if (toVal != null)
-          controllerFrom.text = (toVal / exchangeRate).toString();
+        if (val != null)
+          controllerFrom.text =
+              (val / exchangeRate).toStringAsFixed(decimalPlaces);
         else
           controllerFrom.clear();
       }
