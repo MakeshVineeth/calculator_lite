@@ -232,11 +232,25 @@ class _CardUIState extends State<CardUI> {
       // Text is shown in a currency format. So we're replacing the commas for further parsing.
       from = from.replaceAll(',', '');
 
+      List<String> textArray = from.split('');
+      if (!helperFunctions.numbersList.contains(textArray.last))
+        textArray.removeLast();
+
+      if (textArray.last == '.') {
+        int decimalOccurrence =
+            textArray.where((element) => element == '.').toList().length;
+
+        if (decimalOccurrence > 1) textArray.removeLast();
+      }
+
+      from = textArray.join();
+
       double val = double.tryParse(from);
 
       // making sure text is an integer & format it using currency format.
-      if (val != null && !from.endsWith('.') && helperFunctions.isInteger(val))
-        from = formatCurrency.format(val);
+      if (val != null &&
+          textArray.last != '.' &&
+          helperFunctions.isInteger(val)) from = formatCurrency.format(val);
 
       // display the new currency formatted numbers. Following code if users types in Left Text Box.
       if (isFromMethod(method)) {
