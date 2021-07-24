@@ -4,6 +4,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 import 'package:calculator_lite/CurrencyTab/CurrencyChooser.dart';
 import 'package:calculator_lite/CurrencyTab/FlagIcon.dart';
 import 'package:calculator_lite/CurrencyTab/resetFormProvider.dart';
+import 'package:calculator_lite/UIElements/slidePanelItem.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:calculator_lite/UIElements/slidePanelItem.dart';
 
 class CardUI extends StatefulWidget {
   final int index;
@@ -232,7 +232,17 @@ class _CardUIState extends State<CardUI> {
       // Text is shown in a currency format. So we're replacing the commas for further parsing.
       from = from.replaceAll(',', '');
 
+      bool isFrom = isFromMethod(method);
+
       List<String> textArray = from.split('');
+
+      if (textArray.isEmpty) {
+        if (isFrom)
+          controllerTo.clear();
+        else
+          controllerFrom.clear();
+      }
+
       if (!helperFunctions.numbersList.contains(textArray.last))
         textArray.removeLast();
 
@@ -249,11 +259,11 @@ class _CardUIState extends State<CardUI> {
 
       // making sure text is an integer & format it using currency format.
       if (val != null &&
-          textArray.last != '.' &&
+          !textArray.contains('.') &&
           helperFunctions.isInteger(val)) from = formatCurrency.format(val);
 
       // display the new currency formatted numbers. Following code if users types in Left Text Box.
-      if (isFromMethod(method)) {
+      if (isFrom) {
         controllerFrom.text = from;
         controllerFrom.selection = controllerFrom.selection.copyWith(
           baseOffset: from.length,
