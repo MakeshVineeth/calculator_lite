@@ -77,29 +77,28 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 }
 
-Widget materialApp(final ThemeMode setTheme) {
-  return MaterialApp(
-    title: FixedValues.appName,
-    debugShowCheckedModeBanner: false,
-    themeMode: setTheme,
-    theme: FixedValues.getTotalData(Brightness.light),
-    darkTheme: FixedValues.getTotalData(Brightness.dark),
-    initialRoute: '/',
-    routes: {
-      '/': (context) => ScaffoldHome(),
-      '/export': (context) => ExportScreen(),
-      FixedValues.buyRoute: (context) => ProScreen(),
-    },
-  );
-}
+Widget materialApp(final ThemeMode setTheme) => MaterialApp(
+      title: FixedValues.appName,
+      debugShowCheckedModeBanner: false,
+      themeMode: setTheme,
+      restorationScopeId: 'root',
+      theme: FixedValues.getTotalData(Brightness.light),
+      darkTheme: FixedValues.getTotalData(Brightness.dark),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => ScaffoldHome(),
+        '/export': (context) => ExportScreen(),
+        FixedValues.buyRoute: (context) => ProScreen(),
+      },
+    );
 
 class ScaffoldHome extends StatefulWidget {
   @override
   _ScaffoldHomeState createState() => _ScaffoldHomeState();
 }
 
-class _ScaffoldHomeState extends State<ScaffoldHome> {
-  int _currentIndex = 1;
+class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
+  final RestorableInt _currentIndex = RestorableInt(1);
   final double _landScapeFont = 10.0;
   final double _iconSizeLandscape = 15.0;
   final HelperFunctions _helperFunctions = HelperFunctions();
@@ -119,7 +118,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
 
   void _onItemTapped(int index) {
     FocusScope.of(context).unfocus();
-    if (mounted) setState(() => _currentIndex = index);
+    if (mounted) setState(() => _currentIndex.value = index);
   }
 
   SystemUiOverlayStyle setFlatStatusBar() {
@@ -202,14 +201,14 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
       child: Scaffold(
         body: SafeArea(
           child: FadeIndexedStack(
-            index: _currentIndex,
+            index: _currentIndex.value,
             children: availableWidgets,
           ),
         ),
         bottomNavigationBar: SizedBox(
           height: _helperFunctions.isLandScape(context) ? 40 : 58,
           child: BottomNavigationBar(
-            currentIndex: _currentIndex,
+            currentIndex: _currentIndex.value,
             selectedLabelStyle: FixedValues.semiBoldStyle,
             unselectedLabelStyle: FixedValues.semiBoldStyle,
             elevation: 0,
@@ -232,5 +231,13 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
         ),
       ),
     );
+  }
+
+  @override
+  String get restorationId => 'landing_tab_index';
+
+  @override
+  void restoreState(RestorationBucket oldBucket, bool initialRestore) {
+    registerForRestoration(_currentIndex, restorationId);
   }
 }

@@ -67,7 +67,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     @required BuildContext context,
     @required CustomFocusEvents focus,
   }) {
-    if (timer != null && timer.isActive) timer.cancel();
+    timer?.cancel();
     bool isFocused = focus.isFocused;
 
     // First check for down or up arrow buttons
@@ -132,7 +132,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   Future<void> runCalcParser(String value) async {
     if (value != null) {
-      List<String> str = await compute(getCalcStrIsolate, {
+      final List<String> str = await compute(getCalcStrIsolate, {
         'calculationString': calculationString,
         'value': value,
         'currentMetric': currentMetric,
@@ -146,7 +146,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     double getValue = await calcParser.getValue();
     setState(() => mainValue = getValue);
 
-    timer = Timer(Duration(seconds: 5), () => addToHistory());
+    timer = Timer(Duration(seconds: 6), () => addToHistory());
   }
 
   static List<String> getCalcStrIsolate(Map<dynamic, dynamic> args) {
@@ -154,6 +154,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     CalcParser calcParser = CalcParser(
         calculationString: args['calculationString'],
         currentMetric: args['currentMetric']);
+
     return calcParser?.addToExpression(args['value']);
   }
 

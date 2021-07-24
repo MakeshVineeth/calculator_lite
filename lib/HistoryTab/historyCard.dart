@@ -106,10 +106,11 @@ class HistoryCard extends StatelessWidget {
   void delete() =>
       Future.delayed(CommonsData.dur1, () => historyBox.deleteAt(index));
 
-  Widget itemRow(
-          {@required String heading,
-          @required text,
-          @required BuildContext context}) =>
+  Widget itemRow({
+    @required String heading,
+    @required text,
+    @required BuildContext context,
+  }) =>
       Expanded(
         child: Card(
           color: Theme.of(context).brightness == Brightness.light
