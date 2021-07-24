@@ -34,11 +34,13 @@ class TutorialDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Learn more on how to use our app through our FAQ Page.',
+                'Learn more on how to use this app through our FAQ Page.',
+                softWrap: true,
               ),
               SizedBox(height: 10),
               Text(
-                'You can also visit the website again by going to Calculator Tab > 3-dots menu > FAQ.',
+                'You can also visit the website by going to Calculator Tab > 3-dots menu > FAQ.',
+                softWrap: true,
               ),
             ],
           ),

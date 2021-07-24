@@ -19,7 +19,7 @@ class _ProScreenState extends State<ProScreen> {
   PurchaseStatusProvider purchaseStatusProvider;
   final Map<String, String> featuresList = {
     'Support the Developer': 'A token of appreciation from your side :)',
-    'Promote the Development':
+    'Promote Development':
         'Your donations will keep me motivated in further development of this app :)',
   };
 
