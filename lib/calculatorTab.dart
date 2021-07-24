@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:calculator_lite/Backend/helperFunctions.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/secure_mode.dart';
-import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/foundation.dart';
 import 'HistoryTab/commonsHistory.dart';
 import 'package:calculator_lite/Backend/customFocusEvents.dart';
@@ -36,7 +35,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
   Timer timer;
   final MethodChannel _androidAppRetain = MethodChannel("kotlin.flutter.dev");
   final HelperFunctions _helperFunctions = HelperFunctions();
-  PurchaseStatusProvider _purchaseStatusProvider;
 
   @override
   void didChangeDependencies() {
@@ -207,8 +205,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   @override
   Widget build(BuildContext context) {
-    _purchaseStatusProvider = context.watch<PurchaseStatusProvider>();
-
     return ChangeNotifierProvider(
       create: (context) => CustomFocusEvents(),
       child: Column(
@@ -244,16 +240,14 @@ class _CalculatorTabState extends State<CalculatorTab> {
     Map<String, Function> menuList = {
       'Change Theme': () => PopThemeChooser.showThemeChooser(context),
       'Secure Mode': () {
-        if (_purchaseStatusProvider.hasPurchased || Platform.isWindows)
+        if (Platform.isAndroid)
           showDialog(context: context, builder: (context) => PrivacyDialog());
-        else
-          Navigator.pushNamed(context, FixedValues.buyRoute);
       },
-      'Get Pro Edition': () {
+      'Donate': () {
         if (Platform.isAndroid)
           Navigator.pushNamed(context, FixedValues.buyRoute);
       },
-      'How to Use': () => launchUrl(url: FixedValues.faqUrl),
+      'FAQ': () => launchUrl(url: FixedValues.faqUrl),
       'Rate on Play Store ✨': () => showPlayStorePage(),
       'Privacy Policy': () => launchUrl(url: FixedValues.privacyPolicy),
       'About Calculator Lite': () => AboutPage.showAboutDialogFunc(context),

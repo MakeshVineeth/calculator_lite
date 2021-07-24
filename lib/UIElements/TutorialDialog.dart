@@ -30,8 +30,17 @@ class TutorialDialog extends StatelessWidget {
         content: SingleChildScrollView(
           physics:
               AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          child: Text(
-            'Learn to use Calculator Lite through our FAQ Website which will have information on how to use our app. You can also visit the website again through drop-down menu in Calculator Tab.',
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Learn more on how to use our app through our FAQ Page.',
+              ),
+              SizedBox(height: 10),
+              Text(
+                'You can also visit the website again by going to Calculator Tab > 3-dots menu > FAQ.',
+              ),
+            ],
           ),
         ),
       ),
