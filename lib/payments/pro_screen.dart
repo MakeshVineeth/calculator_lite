@@ -79,7 +79,7 @@ class _ProScreenState extends State<ProScreen> {
               children: [
                 SizedBox(height: isPortrait ? 10 : 5),
                 Text(
-                  'Donate',
+                  'Donations',
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
@@ -117,6 +117,9 @@ class _ProScreenState extends State<ProScreen> {
         physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         children: List.generate(featuresList.length, (index) {
           return Card(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black87,
             elevation: Theme.of(context).brightness == Brightness.light
                 ? Theme.of(context).cardTheme.elevation
                 : 4,
