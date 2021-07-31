@@ -19,14 +19,8 @@ class _ProScreenState extends State<ProScreen> {
   PurchaseStatusProvider purchaseStatusProvider;
   final Map<String, String> featuresList = {
     'Support the Developer': 'A token of appreciation from your side :)',
-    'Unlock the Export Feature':
-        'Ability to export the history to a Microsoft supported Excel format (.xlsx)',
-    'Add Unlimited Currency Cards':
-        'In free version, you can add upto 5 currency cards. Remove this limit by purchasing the app.',
-    'Enable/Disable Secure Mode':
-        'With Secure Mode, you can disable/enable Screen Recording and Screenshots within the app. It will also disable the preview of app in Recent apps screen.',
-    'Why Pro? Why not Free?':
-        'It is for general motivation. Most of the core functionality in the app is freely available. Only if you want to add more currency cards or to use optional features, then you may opt for Pro version.',
+    'Promote Development':
+        'Your donations will keep me motivated in further development of this app :)',
   };
 
   // The In App Purchase plugin
@@ -85,7 +79,7 @@ class _ProScreenState extends State<ProScreen> {
               children: [
                 SizedBox(height: isPortrait ? 10 : 5),
                 Text(
-                  'Get Premium Features',
+                  'Donations',
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
@@ -123,6 +117,9 @@ class _ProScreenState extends State<ProScreen> {
         physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         children: List.generate(featuresList.length, (index) {
           return Card(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black87,
             elevation: Theme.of(context).brightness == Brightness.light
                 ? Theme.of(context).cardTheme.elevation
                 : 4,

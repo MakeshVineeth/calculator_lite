@@ -29,6 +29,10 @@ class FixedValues {
 
   static const String buyRoute = '/buy';
 
+  static const String calculatorTabTitle = 'Calculator';
+  static const String historyTabTitle = 'History';
+  static const String currencyTabTitle = 'Currency';
+
   // Links
   static const faqUrl = 'https://makeshvineeth.github.io/calc_faq/';
   static const playStoreLink =
@@ -84,8 +88,8 @@ class FixedValues {
 
     return ThemeData(
       brightness: brightness,
-      primaryColor:
-          foreground, // For Dark, primary Color has to be set, otherwise issues with foreground text for Calc Buttons.
+      primaryColor: foreground,
+      // For Dark, primary Color has to be set, otherwise issues with foreground text for Calc Buttons.
       primarySwatch: foreground,
       accentColor: foreground,
       buttonColor: background,
@@ -99,19 +103,21 @@ class FixedValues {
         shape: FixedValues.roundShapeLarge,
       ),
       appBarTheme: AppBarTheme(
-          brightness: brightness,
-          centerTitle: true,
-          titleSpacing: 1,
-          color: background,
-          iconTheme: IconThemeData(
-            color: foreground,
-          ),
-          textTheme: TextTheme(
-              headline6: TextStyle(
+        brightness: brightness,
+        centerTitle: true,
+        titleSpacing: 1,
+        color: background,
+        iconTheme: IconThemeData(
+          color: foreground,
+        ),
+        textTheme: TextTheme(
+          headline6: TextStyle(
             color: foreground,
             fontWeight: FontWeight.w600,
             fontSize: 20,
-          ))),
+          ),
+        ),
+      ),
       canvasColor: backgroundScaffold,
       applyElevationOverlayColor: brightness == Brightness.dark,
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -135,7 +141,7 @@ class FixedValues {
   static const double sigmaLevel = 5.0;
   static const Duration transitionDuration = const Duration(milliseconds: 100);
   static const String appName = 'Calculator Lite';
-  static const String appVersion = '1.0.1';
+  static const String appVersion = '1.0.2';
   static const String logo = 'logo.png';
   static const String appLegalese =
       'An Open-Source Calculator that does all the calculations for you. No bloat, just the essentials: Calculator, History & Currency Tabs. Make faster calculations, display latest currencies, previous history scrolling, renaming the titles of history items and so much more!';

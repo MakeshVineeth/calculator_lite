@@ -7,6 +7,7 @@ import 'package:calculator_lite/UIElements/TutorialDialog.dart';
 import 'package:calculator_lite/UIElements/showBlurDialog.dart';
 import 'package:calculator_lite/calculatorTab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
+import 'package:calculator_lite/features/app_shortcuts.dart';
 import 'package:calculator_lite/payments/payments_wrapper.dart';
 import 'package:calculator_lite/payments/pro_screen.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
@@ -18,6 +19,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:provider/provider.dart';
+import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/fixedValues.dart';
 import 'package:calculator_lite/Backend/themeChange.dart';
@@ -75,37 +77,37 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 }
 
-Widget materialApp(final ThemeMode setTheme) {
-  return MaterialApp(
-    title: FixedValues.appName,
-    debugShowCheckedModeBanner: false,
-    themeMode: setTheme,
-    theme: FixedValues.getTotalData(Brightness.light),
-    darkTheme: FixedValues.getTotalData(Brightness.dark),
-    initialRoute: '/',
-    routes: {
-      '/': (context) => ScaffoldHome(),
-      '/export': (context) => ExportScreen(),
-      FixedValues.buyRoute: (context) => ProScreen(),
-    },
-  );
-}
+Widget materialApp(final ThemeMode setTheme) => MaterialApp(
+      title: FixedValues.appName,
+      debugShowCheckedModeBanner: false,
+      themeMode: setTheme,
+      restorationScopeId: 'root',
+      theme: FixedValues.getTotalData(Brightness.light),
+      darkTheme: FixedValues.getTotalData(Brightness.dark),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => ScaffoldHome(),
+        '/export': (context) => ExportScreen(),
+        FixedValues.buyRoute: (context) => ProScreen(),
+      },
+    );
 
 class ScaffoldHome extends StatefulWidget {
   @override
   _ScaffoldHomeState createState() => _ScaffoldHomeState();
 }
 
-class _ScaffoldHomeState extends State<ScaffoldHome> {
-  int _currentIndex = 1;
+class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
+  final RestorableInt _currentIndex = RestorableInt(1);
   final double _landScapeFont = 10.0;
   final double _iconSizeLandscape = 15.0;
   final HelperFunctions _helperFunctions = HelperFunctions();
+  final QuickActions quickActions = const QuickActions();
 
-  final Map<String, IconData> e = {
-    'Currency': Icons.monetization_on_outlined,
-    'Calculator': Icons.calculate_outlined,
-    'History': Icons.history_outlined
+  final Map<String, IconData> tabs = {
+    FixedValues.currencyTabTitle: Icons.monetization_on_outlined,
+    FixedValues.calculatorTabTitle: Icons.calculate_outlined,
+    FixedValues.historyTabTitle: Icons.history_outlined
   };
 
   final List<Widget> availableWidgets = [
@@ -116,27 +118,23 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
 
   void _onItemTapped(int index) {
     FocusScope.of(context).unfocus();
-    if (mounted) setState(() => _currentIndex = index);
+    if (mounted) setState(() => _currentIndex.value = index);
   }
 
   SystemUiOverlayStyle setFlatStatusBar() {
-    final SystemUiOverlayStyle _light = SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    );
-
-    final SystemUiOverlayStyle _dark = SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.black,
-      systemNavigationBarIconBrightness: Brightness.light,
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-    );
-
     bool isLightTheme = Theme.of(context).brightness == Brightness.light;
-    SystemChrome.setSystemUIOverlayStyle(isLightTheme ? _light : _dark);
-    return isLightTheme ? _light : _dark;
+
+    final SystemUiOverlayStyle theme = SystemUiOverlayStyle(
+      systemNavigationBarColor: isLightTheme ? Colors.white : Colors.black,
+      systemNavigationBarIconBrightness:
+          isLightTheme ? Brightness.dark : Brightness.light,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness:
+          isLightTheme ? Brightness.dark : Brightness.light,
+    );
+
+    SystemChrome.setSystemUIOverlayStyle(theme);
+    return theme;
   }
 
   @override
@@ -150,6 +148,21 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
       if (Platform.isAndroid) {
         bool _disabled = await getPrefs('privacy', true);
         setSecure(_disabled);
+
+        quickActions.initialize((shortcutType) {
+          int index = 1;
+
+          if (shortcutType == AppShortcuts.calculatorQuickAction.type)
+            index = 1;
+          else if (shortcutType == AppShortcuts.currencyQuickAction.type)
+            index = 0;
+          else if (shortcutType == AppShortcuts.historyQuickAction.type)
+            index = 2;
+
+          _onItemTapped(index);
+        });
+
+        quickActions.setShortcutItems(AppShortcuts.shortcutsList);
       }
 
       if (await isFirstLaunch()) {
@@ -188,14 +201,14 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
       child: Scaffold(
         body: SafeArea(
           child: FadeIndexedStack(
-            index: _currentIndex,
+            index: _currentIndex.value,
             children: availableWidgets,
           ),
         ),
         bottomNavigationBar: SizedBox(
           height: _helperFunctions.isLandScape(context) ? 40 : 58,
           child: BottomNavigationBar(
-            currentIndex: _currentIndex,
+            currentIndex: _currentIndex.value,
             selectedLabelStyle: FixedValues.semiBoldStyle,
             unselectedLabelStyle: FixedValues.semiBoldStyle,
             elevation: 0,
@@ -208,15 +221,23 @@ class _ScaffoldHomeState extends State<ScaffoldHome> {
                 _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
             type: BottomNavigationBarType.fixed,
             items: List.generate(
-                e.length,
+                tabs.length,
                 (index) => BottomNavClass(
-                      title: e.keys.elementAt(index),
-                      icon: e.values.elementAt(index),
+                      title: tabs.keys.elementAt(index),
+                      icon: tabs.values.elementAt(index),
                     ).returnNavItems()),
             onTap: _onItemTapped,
           ),
         ),
       ),
     );
+  }
+
+  @override
+  String get restorationId => 'landing_tab_index';
+
+  @override
+  void restoreState(RestorationBucket oldBucket, bool initialRestore) {
+    registerForRestoration(_currentIndex, restorationId);
   }
 }

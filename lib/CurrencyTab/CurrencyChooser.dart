@@ -22,27 +22,29 @@ class CurrencyChooser extends StatelessWidget {
         content: Container(
           height: MediaQuery.of(context).size.height / 1.4,
           width: MediaQuery.of(context).size.width,
-          child: ListView.builder(
+          child: ListView(
             addAutomaticKeepAlives: true,
             cacheExtent: 1000,
             physics:
                 AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-            itemCount: listBoxes.values.length,
-            itemBuilder: (context, index) {
-              final CurrencyListItem currencyListItem =
-                  listBoxes.values.elementAt(index);
+            children: List.generate(
+              listBoxes.values.length,
+              (index) {
+                final CurrencyListItem currencyListItem =
+                    listBoxes.values.elementAt(index);
 
-              return ListTile(
-                shape: FixedValues.roundShapeLarge,
-                onTap: () => onTap(context, currencyListItem),
-                leading: FlagIcon(flagURL: currencyListItem.flagURL),
-                title: Text(
-                  currencyListItem.currencyName +
-                      ' (${currencyListItem.currencyCode})',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              );
-            },
+                return ListTile(
+                  shape: FixedValues.roundShapeLarge,
+                  onTap: () => onTap(context, currencyListItem),
+                  leading: FlagIcon(flagURL: currencyListItem.flagURL),
+                  title: Text(
+                    currencyListItem.currencyName +
+                        ' (${currencyListItem.currencyCode})',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),

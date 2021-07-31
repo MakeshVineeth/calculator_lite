@@ -1,11 +1,8 @@
 import 'dart:io';
 import 'package:calculator_lite/HistoryTab/historyCard.dart';
-import 'package:calculator_lite/fixedValues.dart';
-import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 import 'commonsHistory.dart';
 import 'package:calculator_lite/UIElements/showSlideUp.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
@@ -16,12 +13,8 @@ class HistoryTab extends StatefulWidget {
 }
 
 class _HistoryTabState extends State<HistoryTab> {
-  PurchaseStatusProvider _purchaseStatusProvider;
-
   @override
   Widget build(BuildContext context) {
-    _purchaseStatusProvider = context.watch<PurchaseStatusProvider>();
-
     return Column(
       children: [
         Container(
@@ -32,16 +25,29 @@ class _HistoryTabState extends State<HistoryTab> {
           ),
         ),
         FutureBuilder(
-          future: Hive.openBox(CommonsHistory.historyBox),
-          builder: (context, AsyncSnapshot data) {
-            if (data.connectionState == ConnectionState.done)
-              return listWidget();
+          future: getHistoryBox(),
+          builder: (context, AsyncSnapshot<Box> data) {
+            if (data.connectionState == ConnectionState.done &&
+                data.data != null)
+              return listWidget(data.data);
             else
-              return Center(child: CircularProgressIndicator());
+              return Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
           },
         ),
       ],
     );
+  }
+
+  Future<Box> getHistoryBox() async {
+    try {
+      return await Hive.openBox(CommonsHistory.historyBox);
+    } catch (_) {
+      return null;
+    }
   }
 
   Map<String, Function> getMenuList() {
@@ -50,11 +56,7 @@ class _HistoryTabState extends State<HistoryTab> {
           CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
       'Export': () {
         if (!Platform.isAndroid) return;
-
-        if (_purchaseStatusProvider.hasPurchased)
-          Navigator.pushNamed(context, '/export');
-        else
-          Navigator.pushNamed(context, FixedValues.buyRoute);
+        Navigator.pushNamed(context, '/export');
       },
     };
 
@@ -63,8 +65,8 @@ class _HistoryTabState extends State<HistoryTab> {
 
   void menuShow() => showSlideUp(context: context, menuList: getMenuList());
 
-  Widget listWidget() => ValueListenableBuilder(
-        valueListenable: Hive.box(CommonsHistory.historyBox).listenable(),
+  Widget listWidget(Box box) => ValueListenableBuilder(
+        valueListenable: box.listenable(),
         builder: (context, Box listener, child) {
           if (listener.isNotEmpty)
             return Expanded(

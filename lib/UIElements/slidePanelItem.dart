@@ -8,12 +8,13 @@ class SlidePanelItem extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const SlidePanelItem(
-      {@required this.function,
-      @required this.icon,
-      this.dark,
-      this.light,
-      @required this.label});
+  const SlidePanelItem({
+    @required this.function,
+    @required this.icon,
+    this.dark,
+    this.light,
+    @required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,7 @@ class SlidePanelItem extends StatelessWidget {
       onPressed: (context) => function(),
       autoClose: true,
       icon: icon,
+      backgroundColor: Theme.of(context).cardTheme.color,
       foregroundColor:
           (Theme.of(context).brightness == Brightness.light ? light : dark) ??
               Theme.of(context).primaryColor,
