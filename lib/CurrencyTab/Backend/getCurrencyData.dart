@@ -10,26 +10,25 @@ import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
 class CurrencyData {
   final HelperFunctions helperFunctions = HelperFunctions();
 
-  Future<String> getRemoteData(
-      {@required BuildContext context, @required Map baseJson}) async {
+  Future<String> getRemoteData({@required BuildContext context}) async {
     try {
-      // get a list of all currencies. Value must be dynamic as it can contain both ints and doubles.
-      Map<String, dynamic> _ratesListBase = baseJson['rates'];
-      List<String> allCurrencies = _ratesListBase.keys.toList();
+      // gets a list of all currencies.
+      List<String> allCurrencies = await writeCurrencyDetails(context: context);
 
-      // for each currency, store it's values in separate boxes. Each currency is used as base.
-      List<Future<String>> futures = [
-        writeCurrencyDetails(currencyList: allCurrencies, context: context)
-      ];
+      if (allCurrencies == null || allCurrencies.isEmpty)
+        return CommonsData.errorToken;
+
+      // for each currency, store it's values in separate boxes. Each currency is used as base in later part of the code.
+      List<Future<String>> futures = [];
 
       for (String currentBase in allCurrencies) {
         String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
 
         futures.add(
           insertData(
-              currency: currentBase,
-              currentBaseUrl: currentBaseUrl,
-              jsonData: (currentBase.toLowerCase() == 'eur') ? baseJson : null),
+            currency: currentBase,
+            currentBaseUrl: currentBaseUrl,
+          ),
         );
       }
 
@@ -42,10 +41,8 @@ class CurrencyData {
     }
   }
 
-  Future<String> writeCurrencyDetails({
-    @required List<String> currencyList,
-    @required BuildContext context,
-  }) async {
+  Future<List<String>> writeCurrencyDetails(
+      {@required BuildContext context}) async {
     try {
       // Load the countries json asset. Used for getting country code for flag icon.
       String countryJson = await DefaultAssetBundle.of(context)
@@ -58,17 +55,18 @@ class CurrencyData {
       Response response = await CommonsData.getResponse(
           'https://api.frankfurter.app/currencies');
 
-      if (response == null) return CommonsData.errorToken;
+      if (response == null) return null;
 
       final Map<String, String> currencyMap =
           Map<String, String>.from(response.data);
 
       // Loop through all available currencies.
-      for (int keyIndex = 0; keyIndex < currencyList.length; keyIndex++) {
-        String currencyCode = currencyList.elementAt(keyIndex);
+      for (int keyIndex = 0; keyIndex < currencyMap.length; keyIndex++) {
+        String currencyCode = currencyMap.keys.elementAt(keyIndex);
         String flagURL;
         String currencyName;
 
+        // Find out country code in order to get flag.
         for (int index = 0; index < countriesList.length; index++) {
           Map<String, dynamic> eachCountry = countriesList[index];
 
@@ -81,8 +79,6 @@ class CurrencyData {
           }
         }
 
-        // Loop through all countries list and check if currency code is same.
-
         final CurrencyListItem currencyListItem = CurrencyListItem(
           currencyCode: currencyCode,
           currencyName: currencyName,
@@ -93,26 +89,18 @@ class CurrencyData {
         await currencyBox.put(keyIndex, currencyListItem);
       }
 
-      return CommonsData.successToken;
+      return currencyMap.keys.toList();
     } catch (_) {
-      return CommonsData.errorToken;
+      return null;
     }
   }
 
   Future<String> insertData({
     @required String currency,
     @required String currentBaseUrl,
-    Map jsonData,
   }) async {
     try {
       final box = await Hive.openBox(currency.toLowerCase());
-
-      // if jsonData not null, meaning this currency data already exists, no need to get response again.
-      if (jsonData != null) {
-        final Map<String, dynamic> rates = jsonData['rates'];
-        await box.putAll(rates);
-        return CommonsData.successToken;
-      }
 
       Response response = await CommonsData.getResponse(currentBaseUrl);
 
