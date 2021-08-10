@@ -59,15 +59,15 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       if (mounted) setState(() => status = CommonsData.checkingStr);
 
-      Response getBaseData = await CommonsData.getResponse(
-          CommonsData.remoteUrl); // EUR by default.
+      Response getBaseData =
+          await CommonsData.getResponse(CommonsData.remoteUrl);
 
-      // Gets the base currency data to also get a database data for checking.
+      // Gets the base currency data to get a database data for checking.
       Map baseJson = Map<String, dynamic>.from(getBaseData.data);
 
       // Gets the newly updated date online.
       String updatedDate = baseJson['date'];
-      if (checkDateBox) {
+      if (checkDateBox && !force) {
         final Box dateBox = Hive.box(CommonsData.updatedDateBox);
         String dateStr = dateBox.get(CommonsData.updatedDateKey);
         DateTime dateTimeObj = DateTime.tryParse(dateStr);
@@ -87,10 +87,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       if (mounted) setState(() => status = CommonsData.progressToken);
 
-      String result = await currencyData.getRemoteData(
-        context: context,
-        baseJson: baseJson,
-      );
+      String result = await currencyData.getRemoteData(context: context);
 
       if (result == CommonsData.successToken) {
         Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
