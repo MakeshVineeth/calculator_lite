@@ -580,7 +580,7 @@ class CalcParser {
         factNum = helperFunctions.factorial(getNum);
         computerStr.removeRange(count + 1, index);
         computerStr.insert(count + 1, '${factNum.toString()}');
-      } catch (StackOverflowError) {
+      } catch (_) {
         computerStr = ['0/0']; // Make it NaN this way.
       }
 
