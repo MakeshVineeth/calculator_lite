@@ -1,4 +1,4 @@
-import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 
 class RadioTileCustom extends StatelessWidget {
@@ -7,12 +7,13 @@ class RadioTileCustom extends StatelessWidget {
   final String title;
   final VoidCallback function;
 
-  const RadioTileCustom({
-    @required this.value,
-    @required this.groupValue,
-    @required this.title,
-    @required this.function,
-  });
+  const RadioTileCustom(
+      {@required this.value,
+      @required this.groupValue,
+      @required this.title,
+      @required this.function,
+      Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

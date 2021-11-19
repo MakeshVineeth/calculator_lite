@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class PaymentsWrapper extends StatefulWidget {
   final Widget child;
 
-  const PaymentsWrapper({@required this.child});
+  const PaymentsWrapper({@required this.child, Key key}) : super(key: key);
 
   @override
   _PaymentsWrapperState createState() => _PaymentsWrapperState();
@@ -16,7 +16,7 @@ class PaymentsWrapper extends StatefulWidget {
 
 class _PaymentsWrapperState extends State<PaymentsWrapper> {
   // The In App Purchase plugin
-  InAppPurchase _iap = InAppPurchase.instance;
+  final InAppPurchase _iap = InAppPurchase.instance;
 
   // Updates to purchases
   StreamSubscription<List<PurchaseDetails>> _subscription;
@@ -43,7 +43,7 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
     _subscription = purchaseUpdated.listen(
       (purchaseDetailsList) => _listenToPurchaseUpdated(purchaseDetailsList),
       onDone: () => _subscription.cancel(),
-      onError: (error) => _purchaseStatus.changeStatusCheck(StatusCheck.Error),
+      onError: (error) => _purchaseStatus.changeStatusCheck(StatusCheck.error),
     );
 
     bool available = await _iap.isAvailable();
@@ -59,12 +59,13 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
   }
 
   Future<void> _listenToPurchaseUpdated(
-          List<PurchaseDetails> purchaseDetailsList) async =>
-      purchaseDetailsList.forEach((purchase) {
-        _verifyPurchase(purchase);
+      List<PurchaseDetails> purchaseDetailsList) async {
+    for (var purchase in purchaseDetailsList) {
+      _verifyPurchase(purchase);
 
-        if (purchase.pendingCompletePurchase) _iap.completePurchase(purchase);
-      });
+      if (purchase.pendingCompletePurchase) _iap.completePurchase(purchase);
+    }
+  }
 
   void _verifyPurchase(PurchaseDetails purchase) {
     try {
@@ -80,20 +81,21 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
             _deliverPurchase(purchase);
             break;
           case PurchaseStatus.error:
-            _purchaseStatus.changeStatusCheck(StatusCheck.Error);
+            _purchaseStatus.changeStatusCheck(StatusCheck.error);
             break;
           case PurchaseStatus.pending:
-            _purchaseStatus.changeStatusCheck(StatusCheck.Pending);
+            _purchaseStatus.changeStatusCheck(StatusCheck.pending);
             break;
           default:
-            _purchaseStatus.changeStatusCheck(StatusCheck.Null);
+            _purchaseStatus.changeStatusCheck(StatusCheck.isNull);
             break;
         }
       }
 
       // If a null or any wrong productID is received.
-      else
-        _purchaseStatus.changeStatusCheck(StatusCheck.Error);
+      else {
+        _purchaseStatus.changeStatusCheck(StatusCheck.error);
+      }
     } catch (_) {}
   }
 

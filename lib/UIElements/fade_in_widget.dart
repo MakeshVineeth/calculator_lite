@@ -6,7 +6,9 @@ class FadeThis extends StatefulWidget {
 
   const FadeThis(
       {@required this.child,
-      this.duration = const Duration(milliseconds: 400)});
+      this.duration = const Duration(milliseconds: 400),
+      Key key})
+      : super(key: key);
 
   @override
   _FadeThisState createState() => _FadeThisState();
@@ -44,7 +46,7 @@ class _FadeThisState extends State<FadeThis>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _animation,
-      child: this.widget.child,
+      child: widget.child,
     );
   }
 }

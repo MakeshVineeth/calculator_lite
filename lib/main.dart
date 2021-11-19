@@ -1,11 +1,11 @@
-import 'package:calculator_lite/Backend/helperFunctions.dart';
-import 'package:calculator_lite/CurrencyTab/currencyTab.dart';
+import 'package:calculator_lite/Backend/helper_functions.dart';
+import 'package:calculator_lite/CurrencyTab/currency_tab.dart';
 import 'package:calculator_lite/Export_Screen/export_screen.dart';
-import 'package:calculator_lite/HistoryTab/commonsHistory.dart';
-import 'package:calculator_lite/HistoryTab/historyTab.dart';
-import 'package:calculator_lite/UIElements/TutorialDialog.dart';
-import 'package:calculator_lite/UIElements/showBlurDialog.dart';
-import 'package:calculator_lite/calculatorTab.dart';
+import 'package:calculator_lite/HistoryTab/commons_history.dart';
+import 'package:calculator_lite/HistoryTab/history_tab.dart';
+import 'package:calculator_lite/UIElements/tutorial_dialog.dart';
+import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
+import 'package:calculator_lite/calculator_tab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/app_shortcuts.dart';
 import 'package:calculator_lite/payments/payments_wrapper.dart';
@@ -13,7 +13,7 @@ import 'package:calculator_lite/payments/pro_screen.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:calculator_lite/bottomNavClass.dart';
+import 'package:calculator_lite/bottom_nav_class.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -21,25 +21,28 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:calculator_lite/fixedValues.dart';
-import 'package:calculator_lite/Backend/themeChange.dart';
+import 'package:calculator_lite/fixed_values.dart';
+import 'package:calculator_lite/Backend/theme_change.dart';
 import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'dart:io' show Platform;
-import 'package:calculator_lite/CurrencyTab/Backend/currencyListItem.dart';
-import 'HistoryTab/historyItem.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
+import 'HistoryTab/history_item.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (defaultTargetPlatform == TargetPlatform.android)
+  if (defaultTargetPlatform == TargetPlatform.android) {
     InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+  }
 
   await Hive.initFlutter('hiveUserData');
   Hive.registerAdapter(CurrencyListItemAdapter());
   Hive.registerAdapter(HistoryItemAdapter());
-  runApp(BottomNavBar());
+  runApp(const BottomNavBar());
 }
 
 class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({Key key}) : super(key: key);
+
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
 }
@@ -67,7 +70,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     return ThemeChange(
       stateFunction: setThemeFunction,
-      child: (Platform.isAndroid)
+      newChild: (Platform.isAndroid)
           ? PaymentsWrapper(child: materialApp(setTheme))
           : ChangeNotifierProvider<PurchaseStatusProvider>.value(
               value: PurchaseStatusProvider(),
@@ -86,13 +89,15 @@ Widget materialApp(final ThemeMode setTheme) => MaterialApp(
       darkTheme: FixedValues.getTotalData(Brightness.dark),
       initialRoute: '/',
       routes: {
-        '/': (context) => ScaffoldHome(),
-        '/export': (context) => ExportScreen(),
-        FixedValues.buyRoute: (context) => ProScreen(),
+        '/': (context) => const ScaffoldHome(),
+        '/export': (context) => const ExportScreen(),
+        FixedValues.buyRoute: (context) => const ProScreen(),
       },
     );
 
 class ScaffoldHome extends StatefulWidget {
+  const ScaffoldHome({Key key}) : super(key: key);
+
   @override
   _ScaffoldHomeState createState() => _ScaffoldHomeState();
 }
@@ -111,9 +116,9 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
   };
 
   final List<Widget> availableWidgets = [
-    CurrencyTab(),
-    CalculatorTab(),
-    HistoryTab()
+    const CurrencyTab(),
+    const CalculatorTab(),
+    const HistoryTab()
   ];
 
   void _onItemTapped(int index) {
@@ -152,12 +157,13 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
         quickActions.initialize((shortcutType) {
           int index = 1;
 
-          if (shortcutType == AppShortcuts.calculatorQuickAction.type)
+          if (shortcutType == AppShortcuts.calculatorQuickAction.type) {
             index = 1;
-          else if (shortcutType == AppShortcuts.currencyQuickAction.type)
+          } else if (shortcutType == AppShortcuts.currencyQuickAction.type) {
             index = 0;
-          else if (shortcutType == AppShortcuts.historyQuickAction.type)
+          } else if (shortcutType == AppShortcuts.historyQuickAction.type) {
             index = 2;
+          }
 
           _onItemTapped(index);
         });
@@ -185,7 +191,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
           const Duration(milliseconds: 600),
           () => showBlurDialog(
             context: context,
-            child: TutorialDialog(),
+            child: const TutorialDialog(),
           ),
         );
       }

@@ -11,6 +11,7 @@ Future<bool> isAboveOreo() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     return androidInfo.version.sdkInt >= 26;
-  } else
+  } else {
     return false;
+  }
 }

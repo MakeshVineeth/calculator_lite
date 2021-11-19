@@ -7,13 +7,14 @@ class StatusToolTip extends StatelessWidget {
   final bool visibility;
   final bool forceLight;
 
-  const StatusToolTip({
-    this.status = '',
-    this.visibility = false,
-    this.isError = false,
-    this.isLoading = false,
-    this.forceLight = false,
-  });
+  const StatusToolTip(
+      {this.status = '',
+      this.visibility = false,
+      this.isError = false,
+      this.isLoading = false,
+      this.forceLight = false,
+      Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +24,8 @@ class StatusToolTip extends StatelessWidget {
         duration: const Duration(milliseconds: 300),
         crossFadeState:
             (isLoading) ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-        firstChild: Padding(
-          padding: const EdgeInsets.all(5.0),
+        firstChild: const Padding(
+          padding: EdgeInsets.all(5.0),
           child: CircularProgressIndicator(),
         ),
         secondChild: Text(
@@ -43,16 +44,13 @@ class StatusToolTip extends StatelessWidget {
   Color getColor(Brightness brightness) {
     Color _color;
 
-    if (forceLight)
+    if (forceLight) {
       _color = isError ? Colors.yellowAccent : Colors.white;
-
-    // Force only light colors all the time.
-    else if (brightness == Brightness.light)
+    } else if (brightness == Brightness.light) {
       _color = isError ? Colors.red : Colors.green;
-
-    // means it is dark theme.
-    else
+    } else {
       _color = isError ? Colors.yellowAccent : Colors.blue[200];
+    }
 
     return _color;
   }

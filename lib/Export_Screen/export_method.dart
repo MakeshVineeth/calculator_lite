@@ -18,7 +18,9 @@ class ExportExcel {
 
       // Create empty Row with count as headers.
       List<String> emptyRow = [];
-      headers.forEach((element) => emptyRow.add(''));
+      for (String _ in headers) {
+        emptyRow.add('');
+      }
 
       // emptyRow
       sheetObject.appendRow(emptyRow);
@@ -35,10 +37,12 @@ class ExportExcel {
         );
       }
 
-      data.forEach((element) => sheetObject.appendRow(element.values.toList()));
+      for (var element in data) {
+        sheetObject.appendRow(element.values.toList());
+      }
 
       Directory tempDir = await getTemporaryDirectory();
-      String tempPath = tempDir.path + '/${this.fileName}.xlsx';
+      String tempPath = tempDir.path + '/$fileName.xlsx';
 
       List<int> dataInts = excel.encode();
       File file = File(tempPath)

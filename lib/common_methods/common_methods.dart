@@ -1,4 +1,4 @@
-import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
@@ -21,10 +21,11 @@ Future<bool> getPrefs(String title, dynamic defaultVal) async {
 Future<void> setSecure(bool _disabled) async {
   try {
     if (Platform.isAndroid) {
-      if (!_disabled)
+      if (!_disabled) {
         await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-      else
+      } else {
         await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+      }
     }
   } catch (_) {}
 }
@@ -88,11 +89,12 @@ Future<void> launchUrl({
 }) async {
   try {
     final urlEncoded = Uri.encodeFull(url);
-    if (await canLaunch(urlEncoded))
+    if (await canLaunch(urlEncoded)) {
       await launch(
         urlEncoded,
         forceWebView: forceWebView,
         enableJavaScript: enableJavaScript,
       );
+    }
   } catch (_) {}
 }

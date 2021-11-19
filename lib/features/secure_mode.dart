@@ -2,10 +2,12 @@ import 'dart:io' show Platform;
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/custom_radio.dart';
-import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 
 class PrivacyDialog extends StatefulWidget {
+  const PrivacyDialog({Key key}) : super(key: key);
+
   @override
   _PrivacyDialogState createState() => _PrivacyDialogState();
 }
@@ -28,7 +30,7 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
   Widget build(BuildContext context) {
     return FadeScale(
       child: AlertDialog(
-        title: Text(
+        title: const Text(
           'Secure Mode',
           style: FixedValues.semiBoldStyle,
         ),

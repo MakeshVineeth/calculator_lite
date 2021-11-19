@@ -8,14 +8,15 @@ class ButtonLinks extends StatelessWidget {
   final Color backgroundColor;
   final IconData icon;
 
-  const ButtonLinks({
-    this.function,
-    @required this.title,
-    this.foregroundColor = Colors.white,
-    this.iconColor = Colors.white,
-    this.backgroundColor = Colors.green,
-    @required this.icon,
-  });
+  const ButtonLinks(
+      {this.function,
+      @required this.title,
+      this.foregroundColor = Colors.white,
+      this.iconColor = Colors.white,
+      this.backgroundColor = Colors.green,
+      @required this.icon,
+      Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

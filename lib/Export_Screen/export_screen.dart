@@ -1,6 +1,6 @@
 import 'package:calculator_lite/Export_Screen/validate_functions.dart';
-import 'package:calculator_lite/HistoryTab/commonsHistory.dart';
-import 'package:calculator_lite/HistoryTab/historyItem.dart';
+import 'package:calculator_lite/HistoryTab/commons_history.dart';
+import 'package:calculator_lite/HistoryTab/history_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +9,7 @@ import 'export_commons.dart';
 import 'export_helpers.dart';
 import 'export_method.dart';
 import 'export_theming.dart';
-import 'buttonCustom.dart';
+import 'button_custom.dart';
 import 'date_field_custom.dart';
 import 'status_tooltip.dart';
 import 'dart:io' show File;
@@ -17,6 +17,8 @@ import 'package:share/share.dart';
 import 'package:intl/intl.dart';
 
 class ExportScreen extends StatefulWidget {
+  const ExportScreen({Key key}) : super(key: key);
+
   @override
   _ExportScreenState createState() => _ExportScreenState();
 }
@@ -32,7 +34,7 @@ class _ExportScreenState extends State<ExportScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _dateFrom = TextEditingController();
   final TextEditingController _dateTo = TextEditingController();
-  static const platform = const MethodChannel('kotlin.flutter.dev');
+  static const platform = MethodChannel('kotlin.flutter.dev');
   Future<bool> isNewerOS;
 
   @override
@@ -53,7 +55,7 @@ class _ExportScreenState extends State<ExportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Export'),
+        title: const Text('Export'),
         shape: CustomThemes.appBarShape,
       ),
       body: Center(
@@ -62,7 +64,7 @@ class _ExportScreenState extends State<ExportScreen> {
           child: FutureBuilder(
             future: isNewerOS,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done)
+              if (snapshot.connectionState == ConnectionState.done) {
                 return Card(
                   elevation: 5.0,
                   child: Padding(
@@ -71,25 +73,25 @@ class _ExportScreenState extends State<ExportScreen> {
                       key: _formKey,
                       child: SingleChildScrollView(
                         controller: _scrollController,
-                        physics: AlwaysScrollableScrollPhysics(
+                        physics: const AlwaysScrollableScrollPhysics(
                             parent: BouncingScrollPhysics()),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
+                            const Text(
                               'Export History',
                               style: TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 30),
+                            const SizedBox(height: 30),
                             DateFieldCustom(
                               dateController: _dateFrom,
                               dateText: 'Date From',
                               ignoreValidation: true,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             DateFieldCustom(
                               dateController: _dateTo,
                               dateText: 'Date To',
@@ -103,7 +105,7 @@ class _ExportScreenState extends State<ExportScreen> {
                                   : 2,
                               child: SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
-                                physics: AlwaysScrollableScrollPhysics(
+                                physics: const AlwaysScrollableScrollPhysics(
                                     parent: BouncingScrollPhysics()),
                                 child: Row(
                                   children: [
@@ -124,7 +126,7 @@ class _ExportScreenState extends State<ExportScreen> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             StatusToolTip(
                               visibility: _visibility,
                               status: _status,
@@ -137,8 +139,9 @@ class _ExportScreenState extends State<ExportScreen> {
                     ),
                   ),
                 );
-              else
-                return CircularProgressIndicator();
+              } else {
+                return const CircularProgressIndicator();
+              }
             },
           ),
         ),
@@ -160,10 +163,11 @@ class _ExportScreenState extends State<ExportScreen> {
         'fileName': generateFileName(),
       });
 
-      if (result == 'success')
+      if (result == 'success') {
         setStatus(text: 'Exported!');
-      else
+      } else {
         setStatus(isError: true, text: 'Unable to export');
+      }
     } on PlatformException catch (_) {}
   }
 
@@ -212,7 +216,7 @@ class _ExportScreenState extends State<ExportScreen> {
       if (isValid && data.isNotEmpty) {
         List<Map<String, String>> allData = [];
 
-        data.forEach((HistoryItem element) {
+        for (var element in data) {
           String formattedDate =
               DateFormat(CommonStrings.dateFormat).format(element.dateTime);
           DateTime val = getDateTime(formattedDate);
@@ -285,7 +289,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
             allData.add(eachHistoryItem);
           }
-        });
+        }
 
         if (allData.isNotEmpty) {
           String status = await ExportExcel(fileName: generateFileName())
@@ -295,10 +299,10 @@ class _ExportScreenState extends State<ExportScreen> {
           if (status != null) {
             File file = File(status);
 
-            if (save)
+            if (save) {
               kotlinFile(file.path);
-            else {
-              await Share.shareFiles(['$status'], text: 'Logging Excel File');
+            } else {
+              await Share.shareFiles([status], text: 'Logging Excel File');
               if (file.existsSync()) {
                 file.deleteSync();
                 clearStatus();
@@ -307,18 +311,21 @@ class _ExportScreenState extends State<ExportScreen> {
           }
 
           // If null, display error.
-          else
+          else {
             setStatus(text: 'Unable to proceed!', isError: true);
+          }
         }
 
         // If data is not available within criteria.
-        else
+        else {
           setStatus(text: 'No items available!', isError: true);
+        }
       }
 
       // For validation and data (empty) errors.
-      else
+      else {
         setStatus(text: 'Unable to Proceed!', isError: true);
+      }
     } catch (_) {
       setStatus(text: 'Unable to Proceed!', isError: true);
     }

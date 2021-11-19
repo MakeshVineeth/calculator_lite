@@ -6,12 +6,8 @@ class PurchaseButton extends StatelessWidget {
   final VoidCallback callback;
   final String text;
 
-  const PurchaseButton({
-    this.bg,
-    this.callback,
-    this.text,
-    this.fg,
-  });
+  const PurchaseButton({this.bg, this.callback, this.text, this.fg, Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

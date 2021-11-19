@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
-import 'package:calculator_lite/UIElements/showBlurDialog.dart';
-import 'package:calculator_lite/fixedValues.dart';
+import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:calculator_lite/payments/common_purchase_strings.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:calculator_lite/payments/purchase_button.dart';
@@ -10,12 +10,14 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 
 class ProScreen extends StatefulWidget {
+  const ProScreen({Key key}) : super(key: key);
+
   @override
   _ProScreenState createState() => _ProScreenState();
 }
 
 class _ProScreenState extends State<ProScreen> {
-  List<ProductDetails> _products = [];
+  final List<ProductDetails> _products = [];
   PurchaseStatusProvider purchaseStatusProvider;
   final Map<String, String> featuresList = {
     'Support the Developer': 'A token of appreciation from your side :)',
@@ -24,7 +26,7 @@ class _ProScreenState extends State<ProScreen> {
   };
 
   // The In App Purchase plugin
-  InAppPurchase _iap = InAppPurchase.instance;
+  final InAppPurchase _iap = InAppPurchase.instance;
 
   bool isPortrait = true;
 
@@ -43,7 +45,7 @@ class _ProScreenState extends State<ProScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Support Us'),
+        title: const Text('Support Us'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -58,18 +60,18 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   Widget checkPlatformWin() {
-    if (!Platform.isAndroid)
-      return Center(
+    if (!Platform.isAndroid) {
+      return const Center(
         child: Card(
             child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Text(
             'Not Supported',
             style: FixedValues.semiBoldStyle,
           ),
         )),
       );
-    else
+    } else {
       return FutureBuilder(
         future: _loadProductsFut,
         builder: (context, snapshot) {
@@ -78,7 +80,7 @@ class _ProScreenState extends State<ProScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: isPortrait ? 10 : 5),
-                Text(
+                const Text(
                   'Donations',
                   style: TextStyle(
                     fontSize: 25,
@@ -97,7 +99,7 @@ class _ProScreenState extends State<ProScreen> {
                   ),
                 ),
                 loadProducts(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   'Tip: Click on each feature card to learn more.',
                   textAlign: TextAlign.center,
@@ -107,14 +109,16 @@ class _ProScreenState extends State<ProScreen> {
                 ),
               ],
             );
-          } else
-            return Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
         },
       );
+    }
   }
 
   Widget bulletPoints() => ListView(
-        physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         children: List.generate(featuresList.length, (index) {
           return Card(
             color: Theme.of(context).brightness == Brightness.light
@@ -139,15 +143,15 @@ class _ProScreenState extends State<ProScreen> {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.check_circle,
                       color: Colors.green,
                     ),
-                    SizedBox(width: 5.0),
+                    const SizedBox(width: 5.0),
                     Expanded(
                       child: Text(
                         featuresList.keys.elementAt(index),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15.5,
                         ),
@@ -162,7 +166,7 @@ class _ProScreenState extends State<ProScreen> {
       );
 
   Widget loadProducts() {
-    if (_products.isNotEmpty && !purchaseStatusProvider.hasPurchased)
+    if (_products.isNotEmpty && !purchaseStatusProvider.hasPurchased) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(
@@ -175,27 +179,28 @@ class _ProScreenState extends State<ProScreen> {
           ),
         ),
       );
-    else if (purchaseStatusProvider.hasPurchased)
+    } else if (purchaseStatusProvider.hasPurchased) {
       return PurchaseButton(
         callback: () => {},
         fg: Colors.white,
         bg: Colors.green,
         text: CommonPurchaseStrings.paymentSuccess,
       );
-    else if (purchaseStatusProvider.statusCheck == StatusCheck.Pending)
+    } else if (purchaseStatusProvider.statusCheck == StatusCheck.pending) {
       return PurchaseButton(
         callback: () => {},
         fg: Colors.white,
         bg: Colors.blueAccent,
         text: CommonPurchaseStrings.paymentPending,
       );
-    else
+    } else {
       return PurchaseButton(
         callback: () => {},
         fg: Colors.white,
         bg: Colors.red,
         text: CommonPurchaseStrings.paymentErrors,
       );
+    }
   }
 
   void _buyProduct(ProductDetails prod) async {
@@ -216,12 +221,14 @@ class _ProScreenState extends State<ProScreen> {
         final ProductDetailsResponse response =
             await _iap.queryProductDetails(CommonPurchaseStrings.productIds);
 
-        if (!response.notFoundIDs.isNotEmpty)
+        if (!response.notFoundIDs.isNotEmpty) {
           _products.addAll(response.productDetails);
-        else
+        } else {
           _products.clear();
-      } else
+        }
+      } else {
         _products.clear();
+      }
     } catch (_) {
       _products.clear();
       return;

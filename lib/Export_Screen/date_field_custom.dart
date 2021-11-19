@@ -12,7 +12,9 @@ class DateFieldCustom extends StatefulWidget {
   const DateFieldCustom(
       {@required this.dateController,
       this.dateText,
-      this.ignoreValidation = false});
+      this.ignoreValidation = false,
+      Key key})
+      : super(key: key);
 
   @override
   _DateFieldCustomState createState() => _DateFieldCustomState();
@@ -33,7 +35,7 @@ class _DateFieldCustomState extends State<DateFieldCustom> {
           ),
         ),
         IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.date_range_outlined,
           ),
           onPressed: () => dateFunction(),
