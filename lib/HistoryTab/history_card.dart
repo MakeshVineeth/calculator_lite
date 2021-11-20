@@ -119,7 +119,7 @@ class HistoryCard extends StatelessWidget {
           child: ListTile(
             leading: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Text(
                   heading,
                   style: TextStyle(

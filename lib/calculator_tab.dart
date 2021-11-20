@@ -214,7 +214,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               metricsButton(),
               popUpDotMenu(),
             ],
@@ -288,7 +288,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
           ),
           onPressed: changeMetrics,
           child: Text(
-            currentMetric,
+            currentMetric ?? '',
             style: const TextStyle(
               fontWeight: FontWeight.w600, //w600 is semi-bold.
             ),

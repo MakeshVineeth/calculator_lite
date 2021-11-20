@@ -81,14 +81,13 @@ class FixedValues {
     [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar]
   ];
 
-  static ThemeData getTotalData(Brightness brightness) {
+  static ThemeData getThemeData(Brightness brightness) {
     bool isLight = brightness == Brightness.light;
     Color foreground = isLight ? Colors.red : Colors.yellow;
     Color background = isLight ? Colors.white : Colors.grey[900];
     Color backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
-      brightness: brightness,
       primaryColor: foreground,
       scaffoldBackgroundColor: backgroundScaffold,
       bottomAppBarColor: backgroundScaffold,
@@ -108,6 +107,7 @@ class FixedValues {
         ),
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarBrightness: brightness,
+          statusBarIconBrightness: isLight ? Brightness.dark : Brightness.light,
         ),
         titleTextStyle: TextStyle(
           color: foreground,

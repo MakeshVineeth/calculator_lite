@@ -85,8 +85,8 @@ Widget materialApp(final ThemeMode setTheme) => MaterialApp(
       debugShowCheckedModeBanner: false,
       themeMode: setTheme,
       restorationScopeId: 'root',
-      theme: FixedValues.getTotalData(Brightness.light),
-      darkTheme: FixedValues.getTotalData(Brightness.dark),
+      theme: FixedValues.getThemeData(Brightness.light),
+      darkTheme: FixedValues.getThemeData(Brightness.dark),
       initialRoute: '/',
       routes: {
         '/': (context) => const ScaffoldHome(),
