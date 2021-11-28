@@ -81,13 +81,14 @@ class FixedValues {
     [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar]
   ];
 
-  static ThemeData getThemeData(Brightness brightness) {
+  static ThemeData getThemeData(Brightness brightness, BuildContext context) {
     bool isLight = brightness == Brightness.light;
     Color foreground = isLight ? Colors.red : Colors.yellow;
     Color background = isLight ? Colors.white : Colors.grey[900];
     Color backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
+      brightness: brightness,
       primaryColor: foreground,
       scaffoldBackgroundColor: backgroundScaffold,
       bottomAppBarColor: backgroundScaffold,
@@ -98,25 +99,27 @@ class FixedValues {
         elevation: isLight ? 2.0 : 10.0,
         shape: FixedValues.roundShapeLarge,
       ),
-      appBarTheme: AppBarTheme(
-        centerTitle: true,
-        titleSpacing: 1,
-        color: background,
-        iconTheme: IconThemeData(
-          color: foreground,
-        ),
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarBrightness: brightness,
-          statusBarIconBrightness: isLight ? Brightness.dark : Brightness.light,
-        ),
-        titleTextStyle: TextStyle(
-          color: foreground,
-          fontWeight: FontWeight.w600,
-          fontSize: 20,
-        ),
-      ),
+      appBarTheme: Theme.of(context).appBarTheme.copyWith(
+            centerTitle: true,
+            toolbarHeight: 0,
+            titleSpacing: 1,
+            color: background,
+            iconTheme: IconThemeData(
+              color: foreground,
+            ),
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarBrightness: brightness,
+              statusBarIconBrightness:
+                  isLight ? Brightness.dark : Brightness.light,
+            ),
+            titleTextStyle: TextStyle(
+              color: foreground,
+              fontWeight: FontWeight.w600,
+              fontSize: 20,
+            ),
+          ),
       canvasColor: backgroundScaffold,
-      applyElevationOverlayColor: brightness == Brightness.dark,
+      applyElevationOverlayColor: !isLight,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           primary: background,
@@ -130,8 +133,10 @@ class FixedValues {
           shape: roundShapeBtns,
         ),
       ),
-      colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground)
-          .copyWith(secondary: foreground),
+      colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground).copyWith(
+        secondary: foreground,
+        brightness: brightness,
+      ),
     );
   }
 

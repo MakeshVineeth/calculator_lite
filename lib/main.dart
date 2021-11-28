@@ -71,22 +71,23 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return ThemeChange(
       stateFunction: setThemeFunction,
       newChild: (Platform.isAndroid)
-          ? PaymentsWrapper(child: materialApp(setTheme))
+          ? PaymentsWrapper(child: materialApp(setTheme, context))
           : ChangeNotifierProvider<PurchaseStatusProvider>.value(
               value: PurchaseStatusProvider(),
-              child: materialApp(setTheme),
+              child: materialApp(setTheme, context),
             ),
     );
   }
 }
 
-Widget materialApp(final ThemeMode setTheme) => MaterialApp(
+Widget materialApp(final ThemeMode setTheme, BuildContext context) =>
+    MaterialApp(
       title: FixedValues.appName,
       debugShowCheckedModeBanner: false,
       themeMode: setTheme,
       restorationScopeId: 'root',
-      theme: FixedValues.getThemeData(Brightness.light),
-      darkTheme: FixedValues.getThemeData(Brightness.dark),
+      theme: FixedValues.getThemeData(Brightness.light, context),
+      darkTheme: FixedValues.getThemeData(Brightness.dark, context),
       initialRoute: '/',
       routes: {
         '/': (context) => const ScaffoldHome(),
@@ -115,7 +116,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
     FixedValues.historyTabTitle: Icons.history_outlined
   };
 
-  final List<Widget> availableWidgets = [
+  final List<Widget> availableWidgets = <Widget>[
     const CurrencyTab(),
     const CalculatorTab(),
     const HistoryTab()
