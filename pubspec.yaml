@@ -37,6 +37,7 @@ dependencies:
   url_launcher: ^6.0.13
   in_app_review: ^2.0.3
   quick_actions: ^0.6.0+7
+  flutter_displaymode: ^0.3.2
 
 dev_dependencies:
   flutter_test:

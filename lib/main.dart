@@ -11,10 +11,12 @@ import 'package:calculator_lite/features/app_shortcuts.dart';
 import 'package:calculator_lite/payments/payments_wrapper.dart';
 import 'package:calculator_lite/payments/pro_screen.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottom_nav_class.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -152,6 +154,16 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
   Future<void> doInitialTasks() async {
     try {
       if (Platform.isAndroid) {
+        try {
+          if (Platform.isAndroid) {
+            DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+            AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+            int sdkVer = androidInfo.version.sdkInt;
+
+            if (sdkVer >= 23) await FlutterDisplayMode.setHighRefreshRate();
+          }
+        } catch (_) {}
+
         bool _disabled = await getPrefs('privacy', true);
         setSecure(_disabled);
 
