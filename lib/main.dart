@@ -148,13 +148,11 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
     try {
       if (Platform.isAndroid) {
         try {
-          if (Platform.isAndroid) {
-            DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-            AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-            int sdkVer = androidInfo.version.sdkInt;
+          DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+          AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+          int sdkVer = androidInfo.version.sdkInt;
 
-            if (sdkVer >= 23) await FlutterDisplayMode.setHighRefreshRate();
-          }
+          if (sdkVer >= 23) await FlutterDisplayMode.setHighRefreshRate();
         } catch (_) {}
 
         bool _disabled = await getPrefs('privacy', true);

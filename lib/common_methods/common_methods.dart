@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:meta/meta.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'dart:io' show Platform;
 
@@ -44,6 +43,10 @@ void showPlayStorePage() {
 
 Future<void> askForReview({bool action = false}) async {
   try {
+    if (!Platform.isAndroid) {
+      return;
+    }
+
     const String reviewCountPrefs = 'review_count';
     const String dateStrPrefs = 'review_date';
 
@@ -79,7 +82,9 @@ Future<void> askForReview({bool action = false}) async {
         });
       }
     }
-  } catch (_) {}
+  } catch (e) {
+    debugPrint(e);
+  }
 }
 
 Future<void> launchUrl({
