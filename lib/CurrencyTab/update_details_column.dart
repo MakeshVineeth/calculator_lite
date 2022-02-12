@@ -88,6 +88,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
       if (mounted) setState(() => status = CommonsData.progressToken);
 
       String result = await currencyData.getRemoteData(context: context);
+      debugPrint("Data retrieve result: " + result);
 
       if (result == CommonsData.successToken) {
         Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
@@ -103,10 +104,11 @@ class _UpdateColumnState extends State<UpdateColumn> {
       widget.updateListen.inProgress = false;
 
       retryMethod(result);
-    } catch (_) {
+    } catch (e) {
+      debugPrint("Error Updating: " + e);
       widget.updateListen.inProgress = false;
-      if (mounted) setState(() => status = CommonsData.errorToken);
 
+      if (mounted) setState(() => status = CommonsData.errorToken);
       retryMethod(CommonsData.errorToken);
     }
   }

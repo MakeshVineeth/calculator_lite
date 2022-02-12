@@ -42,8 +42,8 @@ class CopyData {
     }
 
     // For exceptions
-    catch (_) {
-      debugPrint('Exception copyData');
+    catch (e) {
+      debugPrint('Exception copyData: ' + e);
       return CommonsData.errorToken;
     }
   }
@@ -74,7 +74,9 @@ class CopyData {
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint("Error Copying Data: " + e);
+    }
   }
 
   // Gets local path of app doc dir
@@ -105,7 +107,8 @@ class CopyData {
       } else {
         return null;
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint("Error Reading data: " + e);
       return null;
     }
   }

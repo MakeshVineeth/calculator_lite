@@ -36,7 +36,8 @@ class CurrencyData {
       return results.contains(CommonsData.errorToken)
           ? CommonsData.errorToken
           : CommonsData.successToken;
-    } catch (_) {
+    } catch (e) {
+      debugPrint("Unable to retrieve remote data: " + e);
       return CommonsData.errorToken;
     }
   }
@@ -90,7 +91,8 @@ class CurrencyData {
       }
 
       return currencyMap.keys.toList();
-    } catch (_) {
+    } catch (e) {
+      debugPrint("Error writing data: " + e);
       return null;
     }
   }
@@ -101,7 +103,6 @@ class CurrencyData {
   }) async {
     try {
       final box = await Hive.openBox(currency.toLowerCase());
-
       Response response = await CommonsData.getResponse(currentBaseUrl);
 
       if (response != null) {
@@ -111,9 +112,13 @@ class CurrencyData {
         await box.putAll(rates);
         return CommonsData.successToken;
       } else {
+        debugPrint(
+            "Response error with CurrentUrl: $currentBaseUrl and current: $currency.");
+
         return CommonsData.errorToken;
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint("Error inserting data: " + e);
       return CommonsData.errorToken;
     }
   }

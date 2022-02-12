@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 
 class CommonsData {
   static const remoteName = 'FrankFurter API';
@@ -33,7 +34,8 @@ class CommonsData {
       return await dio.get(url);
     } on DioError catch (_) {
       return null;
-    } catch (_) {
+    } catch (e) {
+      debugPrint("HTTP Request Error: " + e);
       return null;
     }
   }
