@@ -3,7 +3,7 @@ description: 'Calculator Lite: Make faster calculations, display latest
   currencies, previous history scrolling and so much more!'
 
 publish_to: 'none'
-version: 1.0.4+14
+version: 1.0.5+15
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -13,37 +13,37 @@ dependencies:
     sdk: flutter
   angles: ^2.1.1
   animations: ^2.0.2
-  archive: ^3.1.6
+  archive: ^3.1.11
   auto_size_text_field: ^1.0.1
   country_icons: ^2.0.2
   decimal: ^2.1.0
-  device_info_plus: ^3.1.1
-  dio: ^4.0.3
+  device_info_plus: ^3.2.1
+  dio: ^4.0.4
   excel: ^2.0.0-null-safety-3
-  flutter_animator: ^3.2.0
-  flutter_slidable: ^1.1.0
+  flutter_animator: ^3.2.1
+  flutter_slidable: ^1.2.0
   flutter_windowmanager: ^0.2.0
-  hive: ^2.0.4
+  hive: ^2.0.5
   hive_flutter: ^1.1.0
   in_app_purchase: ^2.0.1
   intl: ^0.17.0
-  math_expressions: ^2.2.0
-  octo_image: ^1.0.0+1
-  path_provider: ^2.0.7
-  provider: ^6.0.1
-  share: ^2.0.4
-  shared_preferences: ^2.0.8
+  math_expressions: ^2.3.0
+  octo_image: ^1.0.1
+  path_provider: ^2.0.9
+  provider: ^6.0.2
+  shared_preferences: ^2.0.13
   slide_popup_dialog: ^0.0.2
-  url_launcher: ^6.0.13
-  in_app_review: ^2.0.3
-  quick_actions: ^0.6.0+7
+  url_launcher: ^6.0.20
+  in_app_review: ^2.0.4
+  quick_actions: ^0.6.0+9
   flutter_displaymode: ^0.3.2
+  share_plus: ^3.0.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.1.5
-  hive_generator: ^1.1.1
+  build_runner: ^2.1.7
+  hive_generator: ^1.1.2
   flutter_lints: ^1.0.4
 
 flutter:

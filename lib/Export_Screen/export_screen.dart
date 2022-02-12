@@ -13,7 +13,7 @@ import 'button_custom.dart';
 import 'date_field_custom.dart';
 import 'status_tooltip.dart';
 import 'dart:io' show File;
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 
 class ExportScreen extends StatefulWidget {
