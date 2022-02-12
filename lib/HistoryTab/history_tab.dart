@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:calculator_lite/HistoryTab/history_card.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'commons_history.dart';
 import 'package:calculator_lite/UIElements/show_slide_up.dart';

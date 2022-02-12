@@ -16,7 +16,7 @@ dependencies:
   archive: ^3.1.6
   auto_size_text_field: ^1.0.1
   country_icons: ^2.0.2
-  decimal: ^1.5.0
+  decimal: ^2.1.0
   device_info_plus: ^3.1.1
   dio: ^4.0.3
   excel: ^2.0.0-null-safety-3
@@ -25,7 +25,7 @@ dependencies:
   flutter_windowmanager: ^0.2.0
   hive: ^2.0.4
   hive_flutter: ^1.1.0
-  in_app_purchase: ^1.0.9
+  in_app_purchase: ^2.0.1
   intl: ^0.17.0
   math_expressions: ^2.2.0
   octo_image: ^1.0.0+1

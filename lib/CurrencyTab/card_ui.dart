@@ -6,10 +6,8 @@ import 'package:calculator_lite/CurrencyTab/flag_icon.dart';
 import 'package:calculator_lite/CurrencyTab/reset_form_provider.dart';
 import 'package:calculator_lite/UIElements/slide_panel_item.dart';
 import 'package:calculator_lite/fixed_values.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
