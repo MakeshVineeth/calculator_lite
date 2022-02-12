@@ -105,7 +105,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       retryMethod(result);
     } catch (e) {
-      debugPrint("Error Updating: " + e);
+      debugPrint("Error Updating: " + e.toString());
       widget.updateListen.inProgress = false;
 
       if (mounted) setState(() => status = CommonsData.errorToken);

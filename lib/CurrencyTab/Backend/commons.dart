@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class CommonsData {
   static const remoteName = 'FrankFurter API';
@@ -18,24 +18,21 @@ class CommonsData {
   static const checkingStr = 'Checking...';
   static const upToDate = 'Up to date';
   static const Duration dur1 = Duration(milliseconds: 500);
-  static const int timeOut = 5000;
 
   static Future<Response> getResponse(url) async {
     final options = BaseOptions(
       baseUrl: remoteUrl,
-      connectTimeout: timeOut,
-      receiveTimeout: timeOut,
-      sendTimeout: timeOut,
     );
 
     Dio dio = Dio(options);
 
     try {
       return await dio.get(url);
-    } on DioError catch (_) {
+    } on DioError catch (e) {
+      debugPrint("DioError: " + e.message);
       return null;
     } catch (e) {
-      debugPrint("HTTP Request Error: " + e);
+      debugPrint("HTTP Request Error: " + e.toString());
       return null;
     }
   }

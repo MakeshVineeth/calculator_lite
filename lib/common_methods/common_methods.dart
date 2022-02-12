@@ -83,7 +83,7 @@ Future<void> askForReview({bool action = false}) async {
       }
     }
   } catch (e) {
-    debugPrint(e);
+    debugPrint(e.toString());
   }
 }
 

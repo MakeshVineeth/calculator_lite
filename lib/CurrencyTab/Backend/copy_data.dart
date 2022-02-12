@@ -43,7 +43,7 @@ class CopyData {
 
     // For exceptions
     catch (e) {
-      debugPrint('Exception copyData: ' + e);
+      debugPrint('Exception copyData: ' + e.toString());
       return CommonsData.errorToken;
     }
   }
@@ -75,7 +75,7 @@ class CopyData {
           ..writeAsBytesSync(data);
       }
     } catch (e) {
-      debugPrint("Error Copying Data: " + e);
+      debugPrint("Error Copying Data: " + e.toString());
     }
   }
 
@@ -108,7 +108,7 @@ class CopyData {
         return null;
       }
     } catch (e) {
-      debugPrint("Error Reading data: " + e);
+      debugPrint("Error Reading data: " + e.toString());
       return null;
     }
   }
