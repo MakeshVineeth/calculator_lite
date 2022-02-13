@@ -1,4 +1,5 @@
-import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slide_dialog;
+import 'package:slide_popup_dialog_null_safety/slide_popup_dialog.dart'
+    as slide_dialog;
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixed_values.dart';
 

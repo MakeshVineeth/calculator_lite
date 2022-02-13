@@ -805,13 +805,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  slide_popup_dialog:
+  slide_popup_dialog_null_safety:
     dependency: "direct main"
     description:
-      name: slide_popup_dialog
+      name: slide_popup_dialog_null_safety
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "1.0.0"
   source_gen:
     dependency: transitive
     description:
