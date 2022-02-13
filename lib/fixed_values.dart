@@ -88,6 +88,7 @@ class FixedValues {
     Color backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
+      useMaterial3: true,
       brightness: brightness,
       primaryColor: foreground,
       scaffoldBackgroundColor: backgroundScaffold,
