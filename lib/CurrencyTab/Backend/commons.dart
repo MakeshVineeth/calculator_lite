@@ -22,6 +22,7 @@ class CommonsData {
   static Future<Response> getResponse(url) async {
     final options = BaseOptions(
       baseUrl: remoteUrl,
+      receiveTimeout: 1000 * 15,
     );
 
     Dio dio = Dio(options);
