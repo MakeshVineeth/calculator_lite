@@ -14,8 +14,8 @@ import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottom_nav_class.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
@@ -122,20 +122,14 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
     if (mounted) setState(() => _currentIndex.value = index);
   }
 
-  SystemUiOverlayStyle setFlatStatusBar() {
+  void setFlatStatusBar() {
     bool isLightTheme = Theme.of(context).brightness == Brightness.light;
-
-    final SystemUiOverlayStyle theme = SystemUiOverlayStyle(
-      systemNavigationBarColor: isLightTheme ? Colors.white : Colors.black,
-      systemNavigationBarIconBrightness:
-          isLightTheme ? Brightness.dark : Brightness.light,
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness:
-          isLightTheme ? Brightness.dark : Brightness.light,
-    );
-
-    SystemChrome.setSystemUIOverlayStyle(theme);
-    return theme;
+    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    if (isLightTheme) {
+      FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    } else {
+      FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    }
   }
 
   @override
@@ -206,38 +200,36 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: setFlatStatusBar(),
-      child: Scaffold(
-        body: SafeArea(
-          child: FadeIndexedStack(
-            index: _currentIndex.value,
-            children: availableWidgets,
-          ),
+    setFlatStatusBar();
+
+    return Scaffold(
+      body: SafeArea(
+        child: FadeIndexedStack(
+          index: _currentIndex.value,
+          children: availableWidgets,
         ),
-        bottomNavigationBar: SizedBox(
-          height: _helperFunctions.isLandScape(context) ? 40 : 58,
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex.value,
-            selectedLabelStyle: FixedValues.semiBoldStyle,
-            unselectedLabelStyle: FixedValues.semiBoldStyle,
-            elevation: 0,
-            iconSize: _helperFunctions.isLandScape(context)
-                ? _iconSizeLandscape
-                : 24.0,
-            selectedFontSize:
-                _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
-            unselectedFontSize:
-                _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
-            type: BottomNavigationBarType.fixed,
-            items: List.generate(
-                tabs.length,
-                (index) => BottomNavClass(
-                      title: tabs.keys.elementAt(index),
-                      icon: tabs.values.elementAt(index),
-                    ).returnNavItems()),
-            onTap: _onItemTapped,
-          ),
+      ),
+      bottomNavigationBar: SizedBox(
+        height: _helperFunctions.isLandScape(context) ? 40 : 58,
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex.value,
+          selectedLabelStyle: FixedValues.semiBoldStyle,
+          unselectedLabelStyle: FixedValues.semiBoldStyle,
+          elevation: 0,
+          iconSize:
+              _helperFunctions.isLandScape(context) ? _iconSizeLandscape : 24.0,
+          selectedFontSize:
+              _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
+          unselectedFontSize:
+              _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
+          type: BottomNavigationBarType.fixed,
+          items: List.generate(
+              tabs.length,
+              (index) => BottomNavClass(
+                    title: tabs.keys.elementAt(index),
+                    icon: tabs.values.elementAt(index),
+                  ).returnNavItems()),
+          onTap: _onItemTapped,
         ),
       ),
     );

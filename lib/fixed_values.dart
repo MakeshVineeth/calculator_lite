@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:charcode/charcode.dart' as charcode;
-import 'package:flutter/services.dart';
 
 class FixedValues {
   // Set Symbols from Flutter CharCode Library and Static to access across all files.
@@ -89,7 +88,6 @@ class FixedValues {
 
     return ThemeData(
       useMaterial3: true,
-      brightness: brightness,
       primaryColor: foreground,
       scaffoldBackgroundColor: backgroundScaffold,
       bottomAppBarColor: backgroundScaffold,
@@ -107,11 +105,6 @@ class FixedValues {
             color: background,
             iconTheme: IconThemeData(
               color: foreground,
-            ),
-            systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarBrightness: brightness,
-              statusBarIconBrightness:
-                  isLight ? Brightness.dark : Brightness.light,
             ),
             titleTextStyle: TextStyle(
               color: foreground,
