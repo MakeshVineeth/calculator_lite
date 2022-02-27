@@ -123,12 +123,14 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
   }
 
   void setFlatStatusBar() {
-    bool isLightTheme = Theme.of(context).brightness == Brightness.light;
-    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-    if (isLightTheme) {
-      FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-    } else {
-      FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    if (Platform.isAndroid) {
+      bool isLightTheme = Theme.of(context).brightness == Brightness.light;
+      FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+      if (isLightTheme) {
+        FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+      } else {
+        FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+      }
     }
   }
 
