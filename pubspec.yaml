@@ -13,19 +13,19 @@ dependencies:
     sdk: flutter
   angles: ^2.1.1
   animations: ^2.0.2
-  archive: ^3.1.11
+  archive: ^3.2.1
   auto_size_text_field: ^1.0.1
   country_icons: ^2.0.2
   decimal: ^2.1.0
-  device_info_plus: ^3.2.1
+  device_info_plus: ^3.2.2
   dio: ^4.0.4
   excel: ^2.0.0-null-safety-3
   flutter_animator: ^3.2.1
   flutter_slidable: ^1.2.0
   flutter_windowmanager: ^0.2.0
-  hive: ^2.0.5
+  hive: ^2.0.6
   hive_flutter: ^1.1.0
-  in_app_purchase: ^2.0.1
+  in_app_purchase: ^3.0.0
   intl: ^0.17.0
   math_expressions: ^2.3.0
   octo_image: ^1.0.1

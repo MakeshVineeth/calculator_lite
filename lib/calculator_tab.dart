@@ -160,8 +160,13 @@ class _CalculatorTabState extends State<CalculatorTab> {
     return calcParser?.addToExpression(args['value']);
   }
 
-  void addToHistory() {
-    if (Hive.isBoxOpen(CommonsHistory.historyBox)) {
+  void addToHistory() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String status = preferences.getString(CommonsHistory.historyStatusPref) ??
+        CommonsHistory.historyEnabled;
+
+    if (status.contains(CommonsHistory.historyEnabled) &&
+        Hive.isBoxOpen(CommonsHistory.historyBox)) {
       final Box box = Hive.box(CommonsHistory.historyBox);
 
       if (calculationString.isNotEmpty && mainValue != null) {
