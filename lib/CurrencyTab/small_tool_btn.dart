@@ -11,12 +11,11 @@ class SmallToolBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
+      padding: EdgeInsets.zero,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       shape: FixedValues.roundShapeBtns,
       onPressed: () => function(),
-      child: Padding(
-        padding: const EdgeInsets.all(3.0),
-        child: Center(child: Icon(icon)),
-      ),
+      child: Icon(icon),
     );
   }
 }

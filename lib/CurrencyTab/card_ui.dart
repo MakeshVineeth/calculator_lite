@@ -53,16 +53,18 @@ class _CardUIState extends State<CardUI> {
     openBoxes();
 
     widget.resetFormProvider.addListener(() {
-      controllerFrom.text = '';
-      controllerTo.text = '';
+      if (mounted) {
+        controllerFrom?.text = '';
+        controllerTo?.text = '';
+      }
     });
   }
 
   @override
   void dispose() {
+    controllerFrom?.dispose();
+    controllerTo?.dispose();
     super.dispose();
-    controllerFrom.dispose();
-    controllerTo.dispose();
   }
 
   void openBoxes() {

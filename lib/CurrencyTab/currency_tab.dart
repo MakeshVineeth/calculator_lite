@@ -63,26 +63,26 @@ class _CurrencyTabState extends State<CurrencyTab> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+                children: <Widget>[
                   Card(
                     shape: FixedValues.roundShapeLarge,
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             flex: 4,
                             child: UpdateColumn(
                               updateListen: updateListen,
                             ),
                           ),
-                          Expanded(
+                          Flexible(
                             child: SmallToolBtn(
                               function: () => resetForm(context),
                               icon: Icons.clear_all_outlined,
                             ),
                           ),
-                          Expanded(
+                          Flexible(
                             child: SmallToolBtn(
                               function: () => popCurBtns(),
                               icon: Icons.expand_more_outlined,
@@ -103,7 +103,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
               ),
             );
           } else {
-            return const FadeThis(child: Center(child: CircularProgressIndicator()));
+            return const FadeThis(
+                child: Center(child: CircularProgressIndicator()));
           }
         },
       ),
@@ -189,8 +190,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
           key: _animListKey,
           controller: _scrollController,
           initialItemCount: fromBox.length,
-          physics:
-              const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics()),
           padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
           itemBuilder: (context, index, animation) => SlideTransition(
             position: CurvedAnimation(parent: animation, curve: Curves.easeIn)
