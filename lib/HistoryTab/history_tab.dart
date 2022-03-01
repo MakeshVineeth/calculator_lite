@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:calculator_lite/HistoryTab/history_card.dart';
 import 'package:calculator_lite/HistoryTab/history_item.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:nil/nil.dart';
@@ -25,16 +26,23 @@ class _HistoryTabState extends State<HistoryTab> {
     return Column(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
           child: Row(
             children: <Widget>[
               Expanded(
                 child: AnimatedSearchBar(
-                  onChanged: (value) {
-                    setState(() {
-                      searchString = value.trim().toLowerCase();
-                    });
-                  },
+                  searchDecoration: InputDecoration(
+                    labelText: "Search",
+                    alignLabelWithHint: true,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    border: OutlineInputBorder(
+                      borderRadius: FixedValues.large,
+                      gapPadding: 4,
+                    ),
+                  ),
+                  onChanged: (value) =>
+                      setState(() => searchString = value.trim().toLowerCase()),
                 ),
               ),
               IconButton(
