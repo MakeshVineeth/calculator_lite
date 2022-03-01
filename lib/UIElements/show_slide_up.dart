@@ -52,9 +52,7 @@ Widget buttonDesigned(
               text,
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.w600,
                 fontSize: 18,
-                letterSpacing: 0.5,
               ),
             ),
           ),

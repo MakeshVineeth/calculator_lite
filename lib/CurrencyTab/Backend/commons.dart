@@ -17,6 +17,9 @@ class CommonsData {
   static const progressToken = 'Downloading..';
   static const checkingStr = 'Checking...';
   static const upToDate = 'Up to date';
+  static const autoUpdatePref = 'auto_update_status';
+  static const autoUpdateEnabled = 'auto_update_yes';
+  static const autoUpdateDisabled = 'auto_update_no';
   static const Duration dur1 = Duration(milliseconds: 500);
 
   static Future<Response> getResponse(url) async {

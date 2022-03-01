@@ -15,17 +15,18 @@ class AboutPage extends StatelessWidget {
       child: AlertDialog(
         shape: FixedValues.roundShapeLarge,
         buttonPadding: const EdgeInsets.all(10.0),
-        actions: [
+        actions: <DialogTextBtn>[
           DialogTextBtn(
             function: () => showLicensePage(
-                context: context,
-                applicationName: FixedValues.appName,
-                applicationVersion: FixedValues.appVersion,
-                applicationLegalese: FixedValues.appLegalese,
-                applicationIcon: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: applicationIconImg(),
-                )),
+              context: context,
+              applicationName: FixedValues.appName,
+              applicationVersion: FixedValues.appVersion,
+              applicationLegalese: FixedValues.appLegalese,
+              applicationIcon: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: applicationIconImg(),
+              ),
+            ),
             title: 'VIEW LICENSES',
           ),
         ],
@@ -34,7 +35,7 @@ class AboutPage extends StatelessWidget {
               parent: AlwaysScrollableScrollPhysics()),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               applicationIconImg(),
               const SizedBox(width: 10),
               Expanded(
@@ -50,9 +51,8 @@ class AboutPage extends StatelessWidget {
                       FixedValues.appVersion,
                     ),
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       FixedValues.appLegalese,
-                      style: appLegaleseStyle,
                     ),
                     const SizedBox(height: 15),
                     SingleChildScrollView(
@@ -63,14 +63,15 @@ class AboutPage extends StatelessWidget {
                         width: MediaQuery.of(context).size.width / 1.5,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
+                          children: <Widget>[
                             ButtonLinks(
                               title: 'Play Store',
                               icon: Icons.shop_outlined,
                               backgroundColor: const Color(0xff078C30),
                               function: () => launchUrl(
-                                  url:
-                                      'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite'),
+                                url:
+                                    'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite',
+                              ),
                             ),
                             const SizedBox(width: 5),
                             ButtonLinks(
@@ -78,8 +79,9 @@ class AboutPage extends StatelessWidget {
                               icon: Icons.code_outlined,
                               backgroundColor: const Color(0xff24292E),
                               function: () => launchUrl(
-                                  url:
-                                      'https://github.com/MakeshVineeth/calculator_lite'),
+                                url:
+                                    'https://github.com/MakeshVineeth/calculator_lite',
+                              ),
                             ),
                           ],
                         ),
@@ -98,10 +100,6 @@ class AboutPage extends StatelessWidget {
   Widget applicationIconImg() => const Image(
         image: AssetImage('assets/' + FixedValues.logo),
         width: 30,
-      );
-
-  final TextStyle appLegaleseStyle = const TextStyle(
-      // any styles
       );
 
   static void showAboutDialogFunc(BuildContext context) async {

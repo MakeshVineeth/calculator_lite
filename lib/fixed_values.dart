@@ -143,7 +143,7 @@ class FixedValues {
   static const String appVersion = '1.0.5';
   static const String logo = 'logo.png';
   static const String appLegalese =
-      'An Open-Source Calculator that does all the calculations for you. No bloat, just the essentials: Calculator, History & Currency Tabs. Make faster calculations, display latest currencies, previous history scrolling, renaming the titles of history items and so much more!';
+      'An Open-Source Calculator that does all the calculations for you. Make faster calculations, display latest currencies, previous history scrolling, renaming the titles of history items and so much more!';
 
   static final BorderRadius large = BorderRadius.circular(20.0);
   static final RoundedRectangleBorder roundShapeLarge = RoundedRectangleBorder(

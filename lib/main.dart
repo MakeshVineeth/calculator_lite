@@ -98,7 +98,8 @@ class ScaffoldHome extends StatefulWidget {
   _ScaffoldHomeState createState() => _ScaffoldHomeState();
 }
 
-class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
+class _ScaffoldHomeState extends State<ScaffoldHome>
+    with RestorationMixin, WidgetsBindingObserver {
   final RestorableInt _currentIndex = RestorableInt(1);
   final double _landScapeFont = 10.0;
   final double _iconSizeLandscape = 15.0;
@@ -137,7 +138,21 @@ class _ScaffoldHomeState extends State<ScaffoldHome> with RestorationMixin {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     doInitialTasks();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (mounted) setFlatStatusBar();
+    }
   }
 
   Future<void> doInitialTasks() async {

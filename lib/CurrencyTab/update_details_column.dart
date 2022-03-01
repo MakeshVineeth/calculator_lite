@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UpdateColumn extends StatefulWidget {
   final UpdateListen updateListen;
@@ -36,6 +37,16 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
   Future<void> updateInitial({bool force = false}) async {
     try {
+      final SharedPreferences preferences =
+          await SharedPreferences.getInstance();
+      final updateStatus = preferences.getString(CommonsData.autoUpdatePref) ??
+          CommonsData.autoUpdateEnabled;
+
+      // Checking if user disabled auto updates. And allow manual update.
+      if (updateStatus.contains(CommonsData.autoUpdateDisabled) && !force) {
+        return;
+      }
+
       if (widget.updateListen.inProgress) return;
       widget.updateListen.inProgress = true;
 

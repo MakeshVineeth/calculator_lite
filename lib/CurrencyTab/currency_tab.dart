@@ -16,6 +16,7 @@ import 'package:hive/hive.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CurrencyTab extends StatefulWidget {
   const CurrencyTab({Key key}) : super(key: key);
@@ -44,9 +45,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
     Hive.close();
+    super.dispose();
   }
 
   @override
@@ -111,7 +112,14 @@ class _CurrencyTabState extends State<CurrencyTab> {
     );
   }
 
-  void popCurBtns() {
+  void popCurBtns() async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final status = preferences.getString(CommonsData.autoUpdatePref) ??
+        CommonsData.autoUpdateEnabled;
+    final updateStatusStr = status.contains(CommonsData.autoUpdateEnabled)
+        ? 'Disable Auto Update'
+        : 'Enable Auto Update';
+
     final Map<String, Function> menuList = {
       'Update Now': () => updateListen.update(),
       'Delete All': () {
@@ -119,21 +127,32 @@ class _CurrencyTabState extends State<CurrencyTab> {
         toBox.clear();
         for (int i = 0; i <= fromBox.length - 1; i++) {
           _animListKey.currentState.removeItem(
-              0,
-              (BuildContext context, Animation<double> animation) =>
-                  SizeTransition(
-                    sizeFactor: animation,
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: CardUI(
-                        index: 0,
-                        remove: true,
-                        resetFormProvider: resetFormProvider,
-                      ),
-                    ),
-                  ));
+            0,
+            (BuildContext context, Animation<double> animation) =>
+                SizeTransition(
+              sizeFactor: animation,
+              child: FadeTransition(
+                opacity: animation,
+                child: CardUI(
+                  index: 0,
+                  remove: true,
+                  resetFormProvider: resetFormProvider,
+                ),
+              ),
+            ),
+          );
         }
       },
+      updateStatusStr: () {
+        // User Preference for auto update.
+        if (status.contains(CommonsData.autoUpdateEnabled)) {
+          preferences.setString(
+              CommonsData.autoUpdatePref, CommonsData.autoUpdateDisabled);
+        } else {
+          preferences.setString(
+              CommonsData.autoUpdatePref, CommonsData.autoUpdateEnabled);
+        }
+      }
     };
 
     showSlideUp(context: context, menuList: menuList);
