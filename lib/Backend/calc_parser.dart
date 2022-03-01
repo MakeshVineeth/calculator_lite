@@ -332,10 +332,10 @@ class CalcParser {
   // This function called from CalcTab.dart after calling addToExpression.
   Future<double> getValue() => compute(evalFunction, calculationString);
 
-  static double evalFunction(List<String> calcStr) {
+  double evalFunction(List<String> calcStr) {
     try {
       Parser p = Parser();
-      String comptStr = CalcParser().computerString(calcStr);
+      String comptStr = computerString(calcStr);
       Expression exp = p.parse(
           comptStr); // evalFunction is executed first, internally function asks for computerString.
       ContextModel cm = ContextModel();

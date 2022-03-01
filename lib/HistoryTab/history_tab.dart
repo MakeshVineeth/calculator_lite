@@ -54,7 +54,7 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   Future<Map<String, Function>> getMenuList() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
     String status = preferences.getString(CommonsHistory.historyStatusPref) ??
         CommonsHistory.historyEnabled;
 

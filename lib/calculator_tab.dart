@@ -122,9 +122,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
         runCalcParser(value);
       } else {
         setState(() => calculationString = focus.getRegulatedString(
-                calculationString: calculationString,
-                currentMetric: currentMetric,
-                value: value) ??
+              calculationString: calculationString,
+              currentMetric: currentMetric,
+              value: value,
+            ) ??
             calculationString);
 
         runCalcParser(null);
@@ -144,7 +145,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
     }
 
     CalcParser calcParser = CalcParser(
-        calculationString: calculationString, currentMetric: currentMetric);
+      calculationString: calculationString,
+      currentMetric: currentMetric,
+    );
+
     double getValue = await calcParser.getValue();
     setState(() => mainValue = getValue);
 
@@ -161,7 +165,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void addToHistory() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
     String status = preferences.getString(CommonsHistory.historyStatusPref) ??
         CommonsHistory.historyEnabled;
 
@@ -170,7 +174,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       final Box box = Hive.box(CommonsHistory.historyBox);
 
       if (calculationString.isNotEmpty && mainValue != null) {
-        DateTime now = DateTime.now();
+        final DateTime now = DateTime.now();
         final HistoryItem historyItem = HistoryItem(
           expression: calculationString.join(),
           value: mainValue.toString(),
