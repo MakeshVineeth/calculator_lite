@@ -1,4 +1,3 @@
-import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 
@@ -50,11 +49,9 @@ class _CalcButtonsState extends State<CalcButtons> {
                   child: FadeThis(
                     child: Text(
                       widget.rowData[widget.index].toString(),
-                      style: calcButtonTextStyle.copyWith(
+                      style: TextStyle(
                         color: fgColor,
-                        fontSize: HelperFunctions().isLandScape(context)
-                            ? 15.0
-                            : 20.0,
+                        fontSize: 17.0,
                       ),
                     ),
                   ),
@@ -66,8 +63,4 @@ class _CalcButtonsState extends State<CalcButtons> {
       ),
     );
   }
-
-  TextStyle calcButtonTextStyle = const TextStyle(
-    fontWeight: FontWeight.w600,
-  );
 }

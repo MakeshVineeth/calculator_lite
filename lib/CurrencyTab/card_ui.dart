@@ -45,7 +45,6 @@ class _CardUIState extends State<CardUI> {
   String currentRateStr = '';
 
   bool isFromMethod(String method) => method == CommonsData.fromBox;
-
   final HelperFunctions helperFunctions = HelperFunctions();
 
   @override
@@ -110,7 +109,7 @@ class _CardUIState extends State<CardUI> {
         child: Slidable(
           endActionPane: ActionPane(
             motion: const DrawerMotion(),
-            children: [
+            children: <SlidePanelItem>[
               SlidePanelItem(
                 function: delete,
                 icon: Icons.delete_outline,
@@ -125,7 +124,7 @@ class _CardUIState extends State<CardUI> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     buttonCurrency(CommonsData.fromBox),
                     buttonCurrency(CommonsData.toBox),
                   ],
@@ -178,7 +177,12 @@ class _CardUIState extends State<CardUI> {
 
     return Text(
       currentRateStr,
-      style: const TextStyle(fontWeight: FontWeight.w600),
+      style: TextStyle(
+        fontSize: 13,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[350]
+            : Colors.grey[700],
+      ),
     );
   }
 
@@ -197,7 +201,7 @@ class _CardUIState extends State<CardUI> {
   Widget buttonCurrency(String method) => Expanded(
         child: ListTile(
           title: Row(
-            children: [
+            children: <Widget>[
               ElevatedButton.icon(
                 style: ButtonStyle(
                   elevation: MaterialStateProperty.all(0),
@@ -318,7 +322,6 @@ class _CardUIState extends State<CardUI> {
                 decimal: true,
                 signed: true,
               ),
-              style: textFieldStyle(context),
               onChanged: (str) => handleFromText(str, method),
               showCursor: true,
               decoration: InputDecoration(
@@ -327,7 +330,6 @@ class _CardUIState extends State<CardUI> {
                   color: Theme.of(context).brightness == Brightness.light
                       ? Colors.grey[800]
                       : Colors.grey,
-                  fontWeight: FontWeight.w600,
                 ),
                 hintText: placeholder,
                 fillColor: Colors.white70,
@@ -338,7 +340,4 @@ class _CardUIState extends State<CardUI> {
           ),
         ),
       );
-
-  TextStyle textFieldStyle(BuildContext context) =>
-      const TextStyle(fontWeight: FontWeight.w600);
 }

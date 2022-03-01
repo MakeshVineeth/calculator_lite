@@ -72,21 +72,24 @@ class HistoryCard extends StatelessWidget {
                     ),
                   ),
                   itemRow(
-                      heading: 'EXP:',
-                      text: historyItem.expression,
-                      context: context),
+                    heading: 'EXP:',
+                    text: historyItem.expression,
+                    context: context,
+                  ),
                   itemRow(
-                      heading: 'VAL:',
-                      text: historyItem.value,
-                      context: context),
+                    heading: 'VAL:',
+                    text: historyItem.value,
+                    context: context,
+                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 3),
+                      horizontal: 8.0,
+                      vertical: 3,
+                    ),
                     alignment: Alignment.centerRight,
                     child: Text(
                       date,
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
                         fontSize: 13,
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Colors.grey[350]
@@ -138,7 +141,6 @@ class HistoryCard extends StatelessWidget {
               child: Text(
                 text,
                 maxLines: 1,
-                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             trailing: Column(
