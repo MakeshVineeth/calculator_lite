@@ -39,6 +39,8 @@ dependencies:
   share_plus: ^3.0.4
   slide_popup_dialog_null_safety: ^1.0.0
   flutter_statusbarcolor_ns: ^0.4.0
+  animated_search_bar: ^2.2.0
+  nil: ^1.1.1
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:calculator_lite/HistoryTab/history_card.dart';
+import 'package:calculator_lite/HistoryTab/history_item.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:nil/nil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'commons_history.dart';
 import 'package:calculator_lite/UIElements/show_slide_up.dart';
@@ -15,15 +18,30 @@ class HistoryTab extends StatefulWidget {
 }
 
 class _HistoryTabState extends State<HistoryTab> {
+  String searchString = '';
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
-        Container(
-          alignment: Alignment.centerRight,
-          child: IconButton(
-            icon: const Icon(Icons.more_vert_rounded),
-            onPressed: () => menuShow(),
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: AnimatedSearchBar(
+                  onChanged: (value) {
+                    setState(() {
+                      searchString = value.trim().toLowerCase();
+                    });
+                  },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.more_vert_rounded),
+                onPressed: () => menuShow(),
+              ),
+            ],
           ),
         ),
         FutureBuilder(
@@ -97,9 +115,23 @@ class _HistoryTabState extends State<HistoryTab> {
                 physics: const AlwaysScrollableScrollPhysics(
                     parent: BouncingScrollPhysics()),
                 itemCount: listener.length,
-                itemExtent: 200,
                 cacheExtent: 2000,
-                itemBuilder: (context, index) => HistoryCard(index: index),
+                itemBuilder: (context, index) {
+                  final HistoryItem historyItem = box.getAt(index);
+
+                  if (historyItem.title
+                      .trim()
+                      .toLowerCase()
+                      .contains(searchString)) {
+                    return SizedBox(
+                      height: 200,
+                      child:
+                          HistoryCard(index: index, historyItem: historyItem),
+                    );
+                  } else {
+                    return nil;
+                  }
+                },
               ),
             );
           } else {

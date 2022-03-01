@@ -13,8 +13,10 @@ import 'package:flutter/services.dart';
 
 class HistoryCard extends StatelessWidget {
   final int index;
+  final HistoryItem historyItem;
 
-  HistoryCard({Key key, @required this.index}) : super(key: key);
+  HistoryCard({Key key, @required this.index, @required this.historyItem})
+      : super(key: key);
 
   final Box historyBox = Hive.box(CommonsHistory.historyBox);
   final HelperFunctions _helperFunctions = HelperFunctions();
@@ -22,7 +24,6 @@ class HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HistoryItem historyItem = historyBox.getAt(index);
     final DateTime dateObj = historyItem.dateTime;
     final String date = _helperFunctions.getDate(dateObj);
     final String title = historyItem.title;
@@ -35,7 +36,7 @@ class HistoryCard extends StatelessWidget {
           child: Slidable(
             endActionPane: ActionPane(
               motion: const DrawerMotion(),
-              children: [
+              children: <SlidePanelItem>[
                 SlidePanelItem(
                   function: () => showBlurDialog(
                     context: context,
@@ -60,10 +61,12 @@ class HistoryCard extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 3),
+                      horizontal: 8.0,
+                      vertical: 3,
+                    ),
                     child: Text(
                       title,
                       style: const TextStyle(
@@ -113,52 +116,53 @@ class HistoryCard extends StatelessWidget {
     @required String heading,
     @required text,
     @required BuildContext context,
-  }) =>
-      Expanded(
-        child: Card(
-          color: Theme.of(context).brightness == Brightness.light
-              ? Theme.of(context).scaffoldBackgroundColor
-              : Colors.black45,
-          child: ListTile(
-            leading: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  heading,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: Theme.of(context).primaryColor,
-                    letterSpacing: 0.5,
-                  ),
+  }) {
+    return Expanded(
+      child: Card(
+        color: Theme.of(context).brightness == Brightness.light
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Colors.black45,
+        child: ListTile(
+          leading: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                heading,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Theme.of(context).primaryColor,
+                  letterSpacing: 0.5,
                 ),
-              ],
-            ),
-            title: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics()),
-              child: Text(
-                text,
-                maxLines: 1,
               ),
-            ),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () => Clipboard.setData(ClipboardData(text: text))
-                      .then((_) =>
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar)),
-                  icon: Icon(
-                    Icons.copy_rounded,
-                    size: 20,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-              ],
+            ],
+          ),
+          title: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics()),
+            child: Text(
+              text,
+              maxLines: 1,
             ),
           ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () => Clipboard.setData(ClipboardData(text: text))
+                    .then((_) =>
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar)),
+                icon: Icon(
+                  Icons.copy_rounded,
+                  size: 20,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ],
+          ),
         ),
-      );
+      ),
+    );
+  }
 }
