@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 
@@ -47,12 +48,15 @@ class _CalcButtonsState extends State<CalcButtons> {
                 onPressed: widget.displayFunction,
                 child: IgnorePointer(
                   child: FadeThis(
-                    child: Text(
+                    child: AutoSizeText(
                       widget.rowData[widget.index].toString(),
                       style: TextStyle(
                         color: fgColor,
-                        fontSize: 18.0,
+                        fontSize: 20.0,
                       ),
+                      minFontSize: 13,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                 ),
