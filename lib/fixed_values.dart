@@ -33,6 +33,9 @@ class FixedValues {
   static const String historyTabTitle = 'History';
   static const String currencyTabTitle = 'Currency';
 
+  static const Color deleteBtnLight = Colors.red;
+  static final Color deleteBtnDark = Colors.red[400];
+
   // Links
   static const faqUrl = 'https://makeshvineeth.github.io/calc_faq/';
   static const playStoreLink =

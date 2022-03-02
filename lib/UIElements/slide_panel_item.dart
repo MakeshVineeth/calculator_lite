@@ -11,8 +11,8 @@ class SlidePanelItem extends StatelessWidget {
   const SlidePanelItem(
       {@required this.function,
       @required this.icon,
-      this.dark,
-      this.light,
+      @required this.dark,
+      @required this.light,
       @required this.label,
       Key key})
       : super(key: key);

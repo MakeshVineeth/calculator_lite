@@ -51,7 +51,7 @@ class _CalcButtonsState extends State<CalcButtons> {
                       widget.rowData[widget.index].toString(),
                       style: TextStyle(
                         color: fgColor,
-                        fontSize: 17.0,
+                        fontSize: 18.0,
                       ),
                     ),
                   ),

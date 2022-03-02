@@ -48,12 +48,15 @@ class HistoryCard extends StatelessWidget {
                   ),
                   icon: Icons.edit_outlined,
                   light: Colors.green[400],
+                  dark: Colors.green[300],
                   label: 'Edit',
                 ),
                 SlidePanelItem(
                   function: () => delete(),
                   icon: Icons.delete_outline,
                   label: 'Delete',
+                  light: FixedValues.deleteBtnLight,
+                  dark: FixedValues.deleteBtnDark,
                 ),
               ],
             ),
@@ -69,8 +72,11 @@ class HistoryCard extends StatelessWidget {
                     ),
                     child: Text(
                       title,
+                      softWrap: true,
+                      maxLines: 1,
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
@@ -130,9 +136,7 @@ class HistoryCard extends StatelessWidget {
                 heading,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 13,
                   color: Theme.of(context).primaryColor,
-                  letterSpacing: 0.5,
                 ),
               ),
             ],
@@ -148,15 +152,17 @@ class HistoryCard extends StatelessWidget {
           ),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () => Clipboard.setData(ClipboardData(text: text))
-                    .then((_) =>
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar)),
-                icon: Icon(
-                  Icons.copy_rounded,
-                  size: 20,
-                  color: Theme.of(context).primaryColor,
+            children: <Widget>[
+              Flexible(
+                child: IconButton(
+                  onPressed: () => Clipboard.setData(ClipboardData(text: text))
+                      .then((_) =>
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar)),
+                  icon: Icon(
+                    Icons.copy_rounded,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ),
               ),
             ],

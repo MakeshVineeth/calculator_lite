@@ -241,11 +241,12 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
               _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
           type: BottomNavigationBarType.fixed,
           items: List.generate(
-              tabs.length,
-              (index) => BottomNavClass(
-                    title: tabs.keys.elementAt(index),
-                    icon: tabs.values.elementAt(index),
-                  ).returnNavItems()),
+            tabs.length,
+            (index) => BottomNavClass(
+              title: tabs.keys.elementAt(index),
+              icon: tabs.values.elementAt(index),
+            ).returnNavItems(),
+          ),
           onTap: _onItemTapped,
         ),
       ),

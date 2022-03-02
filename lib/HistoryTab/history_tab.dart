@@ -20,9 +20,12 @@ class HistoryTab extends StatefulWidget {
 
 class _HistoryTabState extends State<HistoryTab> {
   String searchString = '';
+  final double widthSearchBorder = 1.5;
 
   @override
   Widget build(BuildContext context) {
+    bool isLightTheme = Theme.of(context).brightness == Brightness.light;
+
     return Column(
       children: <Widget>[
         Padding(
@@ -31,14 +34,29 @@ class _HistoryTabState extends State<HistoryTab> {
             children: <Widget>[
               Expanded(
                 child: AnimatedSearchBar(
+                  cursorColor: Theme.of(context).textTheme.button.color,
+                  searchStyle: TextStyle(
+                    color: Theme.of(context).textTheme.button.color,
+                  ),
                   searchDecoration: InputDecoration(
                     labelText: "Search",
                     alignLabelWithHint: true,
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                    border: OutlineInputBorder(
+                    focusedBorder: OutlineInputBorder(
                       borderRadius: FixedValues.large,
-                      gapPadding: 4,
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                        width: widthSearchBorder,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: FixedValues.large,
+                      borderSide: BorderSide(
+                        color:
+                            isLightTheme ? Colors.grey[600] : Colors.grey[350],
+                        width: widthSearchBorder,
+                      ),
                     ),
                   ),
                   onChanged: (value) =>

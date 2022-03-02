@@ -116,6 +116,8 @@ class _CardUIState extends State<CardUI> {
                 function: delete,
                 icon: Icons.delete_outline,
                 label: 'Delete',
+                light: FixedValues.deleteBtnLight,
+                dark: FixedValues.deleteBtnDark,
               ),
             ],
           ),
