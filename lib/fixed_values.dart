@@ -102,9 +102,7 @@ class FixedValues {
         shape: FixedValues.roundShapeLarge,
       ),
       appBarTheme: Theme.of(context).appBarTheme.copyWith(
-            elevation: 0,
             centerTitle: true,
-            toolbarHeight: 0,
             titleSpacing: 1,
             color: background,
             iconTheme: IconThemeData(

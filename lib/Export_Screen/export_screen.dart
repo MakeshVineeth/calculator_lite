@@ -8,7 +8,6 @@ import 'package:hive/hive.dart';
 import 'export_commons.dart';
 import 'export_helpers.dart';
 import 'export_method.dart';
-import 'export_theming.dart';
 import 'button_custom.dart';
 import 'date_field_custom.dart';
 import 'status_tooltip.dart';
@@ -56,11 +55,11 @@ class _ExportScreenState extends State<ExportScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Export'),
-        shape: CustomThemes.appBarShape,
+        elevation: 0,
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: FutureBuilder(
             future: isNewerOS,
             builder: (context, snapshot) {
