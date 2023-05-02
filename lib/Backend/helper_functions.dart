@@ -209,7 +209,7 @@ class HelperFunctions {
     return isMultiple;
   }
 
-  bool isInteger(num value) => value is int || value == value?.roundToDouble();
+  bool isInteger(num value) => value is int || value == value.roundToDouble();
 
   String getDate(DateTime dateTime) {
     String t1 = DateFormat.Hm().format(dateTime);

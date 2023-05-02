@@ -51,7 +51,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   @override
   void dispose() {
     super.dispose();
-    if (timer != null) timer.cancel();
+ timer.cancel();
   }
 
   void getCurrentMetrics() async {
@@ -70,7 +70,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     @required BuildContext context,
     @required CustomFocusEvents focus,
   }) {
-    timer?.cancel();
+    timer.cancel();
     bool isFocused = focus.isFocused;
 
     // First check for down or up arrow buttons
@@ -134,15 +134,13 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   Future<void> runCalcParser(String value) async {
-    if (value != null) {
-      final List<String> str = await compute(getCalcStrIsolate, {
-        'calculationString': calculationString,
-        'value': value,
-        'currentMetric': currentMetric,
-      });
+    final List<String> str = await compute(getCalcStrIsolate, {
+      'calculationString': calculationString,
+      'value': value,
+      'currentMetric': currentMetric,
+    });
 
-      setState(() => calculationString = str ?? calculationString);
-    }
+    setState(() => calculationString = str ?? calculationString);
 
     CalcParser calcParser = CalcParser(
       calculationString: calculationString,
@@ -161,7 +159,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
         calculationString: args['calculationString'],
         currentMetric: args['currentMetric']);
 
-    return calcParser?.addToExpression(args['value']);
+    return calcParser.addToExpression(args['value']);
   }
 
   void addToHistory() async {
@@ -173,7 +171,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
         Hive.isBoxOpen(CommonsHistory.historyBox)) {
       final Box box = Hive.box(CommonsHistory.historyBox);
 
-      if (calculationString.isNotEmpty && mainValue != null) {
+      if (calculationString.isNotEmpty) {
         final DateTime now = DateTime.now();
         final HistoryItem historyItem = HistoryItem(
           expression: calculationString.join(),

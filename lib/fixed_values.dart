@@ -93,8 +93,6 @@ class FixedValues {
       useMaterial3: true,
       primaryColor: foreground,
       scaffoldBackgroundColor: backgroundScaffold,
-      bottomAppBarColor: backgroundScaffold,
-      backgroundColor: backgroundScaffold,
       iconTheme: IconThemeData(color: foreground),
       cardTheme: CardTheme(
         color: background,
@@ -118,8 +116,7 @@ class FixedValues {
       applyElevationOverlayColor: !isLight,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: background,
-          onPrimary: foreground,
+          foregroundColor: foreground, backgroundColor: background,
           shape: roundShapeBtns,
           elevation: isLight ? 2.0 : 10.0,
         ),
@@ -128,11 +125,10 @@ class FixedValues {
         style: TextButton.styleFrom(
           shape: roundShapeBtns,
         ),
-      ),
-      colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground).copyWith(
+      ), colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground).copyWith(
         secondary: foreground,
         brightness: brightness,
-      ),
+      ).copyWith(background: backgroundScaffold), bottomAppBarTheme: BottomAppBarTheme(color: backgroundScaffold),
     );
   }
 

@@ -54,16 +54,16 @@ class _CardUIState extends State<CardUI> {
 
     widget.resetFormProvider.addListener(() {
       if (mounted) {
-        controllerFrom?.text = '';
-        controllerTo?.text = '';
+        controllerFrom.text = '';
+        controllerTo.text = '';
       }
     });
   }
 
   @override
   void dispose() {
-    controllerFrom?.dispose();
-    controllerTo?.dispose();
+    controllerFrom.dispose();
+    controllerTo.dispose();
     super.dispose();
   }
 
@@ -215,17 +215,17 @@ class _CardUIState extends State<CardUI> {
                 onPressed: () => displayCurrencyChooser(method),
                 icon: FlagIcon(
                   flagURL:
-                      isFromMethod(method) ? fromCur?.flagURL : toCur?.flagURL,
+                      isFromMethod(method) ? fromCur.flagURL : toCur.flagURL,
                 ),
                 label: Text(
                   (isFromMethod(method)
-                          ? fromCur?.currencyCode
-                          : toCur?.currencyCode) ??
+                          ? fromCur.currencyCode
+                          : toCur.currencyCode) ??
                       '',
                   style: TextStyle(
                     height: 1,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).textTheme.button.color,
+                    color: Theme.of(context).textTheme.labelLarge.color,
                   ),
                 ),
               )
@@ -268,8 +268,7 @@ class _CardUIState extends State<CardUI> {
       double val = double.tryParse(from);
 
       // making sure text is an integer & format it using currency format.
-      if (val != null &&
-          !textArray.contains('.') &&
+      if (!textArray.contains('.') &&
           helperFunctions.isInteger(val)) from = formatCurrency.format(val);
 
       // display the new currency formatted numbers. Following code if users types in Left Text Box.

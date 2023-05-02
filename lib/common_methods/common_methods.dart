@@ -17,10 +17,10 @@ Future<bool> getPrefs(String title, dynamic defaultVal) async {
   return prefs.getBool(title) ?? defaultVal;
 }
 
-Future<void> setSecure(bool _disabled) async {
+Future<void> setSecure(bool disabled) async {
   try {
     if (Platform.isAndroid) {
-      if (!_disabled) {
+      if (!disabled) {
         await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
       } else {
         await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);

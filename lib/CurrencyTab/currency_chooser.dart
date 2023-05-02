@@ -39,8 +39,7 @@ class CurrencyChooser extends StatelessWidget {
                   onTap: () => onTap(context, currencyListItem),
                   leading: FlagIcon(flagURL: currencyListItem.flagURL),
                   title: Text(
-                    currencyListItem.currencyName +
-                        ' (${currencyListItem.currencyCode})',
+                    '${currencyListItem.currencyName} (${currencyListItem.currencyCode})',
                   ),
                 );
               },

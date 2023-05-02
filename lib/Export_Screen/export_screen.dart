@@ -152,7 +152,7 @@ class _ExportScreenState extends State<ExportScreen> {
     DateTime now = DateTime.now();
     String date = DateFormat(CommonStrings.dateFormat).format(now);
     String time = DateFormat('H_m_ss').format(now);
-    return 'History_' + date + '_$time';
+    return 'History_${date}_$time';
   }
 
   void kotlinFile(String path) async {
@@ -222,12 +222,9 @@ class _ExportScreenState extends State<ExportScreen> {
 
           bool case1 = checkDateFormat(_dateFrom) == null &&
               checkDateFormat(_dateTo) == null;
-          bool case2 = checkDateFormat(_dateFrom) == null &&
-              checkDateFormat(_dateTo) != null;
-          bool case3 = checkDateFormat(_dateFrom) != null &&
-              checkDateFormat(_dateTo) == null;
-          bool case4 = checkDateFormat(_dateFrom) != null &&
-              checkDateFormat(_dateTo) != null;
+          bool case2 = checkDateFormat(_dateFrom) == null;
+          bool case3 = checkDateFormat(_dateTo) == null;
+          bool case4 = checkDateFormat(_dateTo) != null;
 
           if (case1) {
             DateTime from = getDateTime(_dateFrom.text);

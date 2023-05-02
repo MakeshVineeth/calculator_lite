@@ -42,7 +42,7 @@ class ExportExcel {
       }
 
       Directory tempDir = await getTemporaryDirectory();
-      String tempPath = tempDir.path + '/$fileName.xlsx';
+      String tempPath = '${tempDir.path}/$fileName.xlsx';
 
       List<int> dataInts = excel.encode();
       File file = File(tempPath)

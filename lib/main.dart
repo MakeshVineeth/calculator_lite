@@ -166,8 +166,8 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
           if (sdkVer >= 23) await FlutterDisplayMode.setHighRefreshRate();
         } catch (_) {}
 
-        bool _disabled = await getPrefs('privacy', true);
-        setSecure(_disabled);
+        bool disabled = await getPrefs('privacy', true);
+        setSecure(disabled);
 
         quickActions.initialize((shortcutType) {
           int index = 1;

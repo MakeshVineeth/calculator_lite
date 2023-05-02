@@ -27,12 +27,12 @@ class TutorialDialog extends StatelessWidget {
             },
           ),
         ],
-        content: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
+        content: const SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(
               parent: BouncingScrollPhysics()),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               Text(
                 'Learn more on how to use this app through our FAQ Page.',
                 softWrap: true,

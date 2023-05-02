@@ -25,7 +25,7 @@ class _CalcButtonsState extends State<CalcButtons> {
   Widget build(BuildContext context) {
     Color fgColor = Theme.of(context)
         .textTheme
-        .button
+        .labelLarge
         .color; // Initialized as Default Text Color
 
     if (widget.index == (widget.rowData.length - 1)) {

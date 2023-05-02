@@ -60,8 +60,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
         String lastChecked = dateBox.get(CommonsData.lastDateChecked);
         DateTime lastCheckedDate = DateTime.tryParse(lastChecked);
 
-        if (lastCheckedDate != null &&
-            lastCheckedDate.difference(now).inHours >= -3 &&
+        if (lastCheckedDate.difference(now).inHours >= -3 &&
             lastCheckedDate.difference(now).inDays == 0) {
           widget.updateListen.inProgress = false;
           return;
@@ -84,8 +83,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
         DateTime dateTimeObj = DateTime.tryParse(dateStr);
         DateTime online = DateTime.tryParse(updatedDate);
 
-        if (dateTimeObj != null &&
-            dateTimeObj.year == online.year &&
+        if (dateTimeObj.year == online.year &&
             dateTimeObj.day == online.day &&
             dateTimeObj.month == online.month) {
           await dateBox.put(CommonsData.lastDateChecked, now.toString());
@@ -99,7 +97,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
       if (mounted) setState(() => status = CommonsData.progressToken);
 
       String result = await currencyData.getRemoteData(context: context);
-      debugPrint("Data retrieve result: " + result);
+      debugPrint("Data retrieve result: $result");
 
       if (result == CommonsData.successToken) {
         Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
@@ -116,7 +114,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       retryMethod(result);
     } catch (e) {
-      debugPrint("Error Updating: " + e.toString());
+      debugPrint("Error Updating: $e");
       widget.updateListen.inProgress = false;
 
       if (mounted) setState(() => status = CommonsData.errorToken);
@@ -172,11 +170,11 @@ class _UpdateColumnState extends State<UpdateColumn> {
       {@required String title,
       @required String value,
       @required BuildContext context}) {
-    Color _default = Theme.of(context).textTheme.button.color;
+    Color default = Theme.of(context).textTheme.labelLarge.color;
 
-    if (value == CommonsData.errorToken) _default = Colors.redAccent;
+    if (value == CommonsData.errorToken) default = Colors.redAccent;
     if (value == CommonsData.successToken || value == CommonsData.upToDate) {
-      _default = Colors.green;
+      default = Colors.green;
     }
 
     return Row(
@@ -190,7 +188,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
           child: Text(
             value,
             style: statusStyle.copyWith(
-              color: _default,
+              color: default,
             ),
             key: UniqueKey(),
           ),

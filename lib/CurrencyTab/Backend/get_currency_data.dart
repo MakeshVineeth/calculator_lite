@@ -14,7 +14,7 @@ class CurrencyData {
       // gets a list of all currencies.
       List<String> allCurrencies = await writeCurrencyDetails(context: context);
 
-      if (allCurrencies == null || allCurrencies.isEmpty) {
+      if (allCurrencies.isEmpty) {
         return CommonsData.errorToken;
       }
 
@@ -37,7 +37,7 @@ class CurrencyData {
           ? CommonsData.errorToken
           : CommonsData.successToken;
     } catch (e) {
-      debugPrint("Unable to retrieve remote data: " + e.toString());
+      debugPrint("Unable to retrieve remote data: $e");
       return CommonsData.errorToken;
     }
   }
@@ -92,7 +92,7 @@ class CurrencyData {
 
       return currencyMap.keys.toList();
     } catch (e) {
-      debugPrint("Error writing data: " + e.toString());
+      debugPrint("Error writing data: $e");
       return null;
     }
   }
@@ -105,7 +105,7 @@ class CurrencyData {
       final box = await Hive.openBox(currency.toLowerCase());
       Response response = await CommonsData.getResponse(currentBaseUrl);
 
-      if (response?.data != null) {
+      if (response.data != null) {
         final Map data = Map<String, dynamic>.from(response.data);
         Map<String, dynamic> rates = data['rates'];
 
@@ -118,7 +118,7 @@ class CurrencyData {
         return CommonsData.errorToken;
       }
     } catch (e) {
-      debugPrint("Error inserting data: " + e.toString());
+      debugPrint("Error inserting data: $e");
       return CommonsData.errorToken;
     }
   }

@@ -11,26 +11,24 @@ class CustomFocusEvents extends ChangeNotifier {
 
   int getCurPosition(List<String> calculationString) {
     List<String> convertStr = [];
-    if (calculationString != null && myText != null) {
-      if (calculationString.length != myText.length) {
-        String trimmedText = myText.substring(0, position);
+    if (calculationString.length != myText.length) {
+      String trimmedText = myText.substring(0, position);
 
-        for (int i = 0; i < trimmedText.length; i++) {
-          if ((lists.contains(trimmedText[i]) || trimmedText.contains('(')) &&
-              i - 1 >= 0 &&
-              lists.contains(trimmedText[i - 1])) {
-            int len = convertStr.length - 1;
-            convertStr[len] = '${convertStr[len]}${trimmedText[i]}';
-          } else {
-            convertStr.add(trimmedText[i]);
-          }
+      for (int i = 0; i < trimmedText.length; i++) {
+        if ((lists.contains(trimmedText[i]) || trimmedText.contains('(')) &&
+            i - 1 >= 0 &&
+            lists.contains(trimmedText[i - 1])) {
+          int len = convertStr.length - 1;
+          convertStr[len] = '${convertStr[len]}${trimmedText[i]}';
+        } else {
+          convertStr.add(trimmedText[i]);
         }
-      } else {
-        return position;
       }
-
-      notifyListeners();
+    } else {
+      return position;
     }
+
+    notifyListeners();
 
     return convertStr.length;
   }
@@ -88,7 +86,7 @@ class CustomFocusEvents extends ChangeNotifier {
       @required var currentMetric,
       @required var value}) {
     try {
-      int firstLength = calculationString?.join()?.length;
+      int firstLength = calculationString.join().length;
       int pos = getCurPosition(calculationString);
 
       // Temp String for Checking.
@@ -114,7 +112,7 @@ class CustomFocusEvents extends ChangeNotifier {
           }
 
           // set position of cursor.
-          int secondLength = calculationString?.join()?.length;
+          int secondLength = calculationString.join().length;
           int diff = secondLength - firstLength;
           position = diff > 0 ? position + diff : position;
         }

@@ -14,8 +14,8 @@ class PurchaseStatusProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeStatusCheck(StatusCheck _statusCheck) {
-    statusCheck = _statusCheck;
+  void changeStatusCheck(StatusCheck statusCheck) {
+    statusCheck = statusCheck;
     notifyListeners();
   }
 }

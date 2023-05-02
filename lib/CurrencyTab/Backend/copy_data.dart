@@ -43,7 +43,7 @@ class CopyData {
 
     // For exceptions
     catch (e) {
-      debugPrint('Exception copyData: ' + e.toString());
+      debugPrint('Exception copyData: $e');
       return CommonsData.errorToken;
     }
   }
@@ -51,11 +51,11 @@ class CopyData {
   Future<void> copy() async {
     try {
       String folderName = 'hiveUserData';
-      String zipFileName = folderName + '.zip';
-      ByteData zipContent = await rootBundle.load('assets/' + zipFileName);
+      String zipFileName = '$folderName.zip';
+      ByteData zipContent = await rootBundle.load('assets/$zipFileName');
 
       Directory tempDir = await getTemporaryDirectory();
-      String tempPath = tempDir.path + '/' + zipFileName;
+      String tempPath = '${tempDir.path}/$zipFileName';
 
       File zipFile = File(tempPath);
       zipFile.writeAsBytesSync(zipContent.buffer.asUint8List());
@@ -64,18 +64,18 @@ class CopyData {
       Archive archive = ZipDecoder().decodeBytes(bytes);
 
       Directory appDocDir = await getApplicationDocumentsDirectory();
-      String appPath = appDocDir.path + '/$folderName';
+      String appPath = '${appDocDir.path}/$folderName';
       Directory(appPath).createSync();
 
       for (ArchiveFile file in archive) {
         String filename = file.name;
         List<int> data = file.content;
-        File(appPath + '/' + filename)
+        File('$appPath/$filename')
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       }
     } catch (e) {
-      debugPrint("Error Copying Data: " + e.toString());
+      debugPrint("Error Copying Data: $e");
     }
   }
 
@@ -108,7 +108,7 @@ class CopyData {
         return null;
       }
     } catch (e) {
-      debugPrint("Error Reading data: " + e.toString());
+      debugPrint("Error Reading data: $e");
       return null;
     }
   }

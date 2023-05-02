@@ -42,16 +42,16 @@ class StatusToolTip extends StatelessWidget {
   }
 
   Color getColor(Brightness brightness) {
-    Color _color;
+    Color color;
 
     if (forceLight) {
-      _color = isError ? Colors.yellowAccent : Colors.white;
+      color = isError ? Colors.yellowAccent : Colors.white;
     } else if (brightness == Brightness.light) {
-      _color = isError ? Colors.red : Colors.green;
+      color = isError ? Colors.red : Colors.green;
     } else {
-      _color = isError ? Colors.yellowAccent : Colors.blue[200];
+      color = isError ? Colors.yellowAccent : Colors.blue[200];
     }
 
-    return _color;
+    return color;
   }
 }

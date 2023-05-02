@@ -98,7 +98,7 @@ class AboutPage extends StatelessWidget {
   }
 
   Widget applicationIconImg() => const Image(
-        image: AssetImage('assets/' + FixedValues.logo),
+        image: AssetImage('assets/${FixedValues.logo}'),
         width: 30,
       );
 

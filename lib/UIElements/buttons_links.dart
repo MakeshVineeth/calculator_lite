@@ -27,7 +27,7 @@ class ButtonLinks extends StatelessWidget {
           color: iconColor,
         ),
         onPressed: () {
-          if (function != null) function();
+ function();
         },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(backgroundColor),

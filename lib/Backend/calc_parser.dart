@@ -531,7 +531,7 @@ class CalcParser {
 
       List<String> valStr = computerStr.getRange(index + 1, count).toList();
       double val = evalFunction(valStr);
-      if (val < 0 || val == null) {
+      if (val < 0) {
         computerStr = ['0/0']; // Make it NaN
       } else {
         List<String> replaceRoot;
@@ -548,9 +548,8 @@ class CalcParser {
                 .contains(computerStr[index - 1])) {
           computerStr.replaceRange(index, count, replaceRoot);
         } else {
-          replaceRoot[0] = '*' +
-              replaceRoot[
-                  0]; // Add * for those that do not contain any operator before.
+          replaceRoot[0] = '*${replaceRoot[
+                  0]}'; // Add * for those that do not contain any operator before.
           computerStr.replaceRange(index, count, replaceRoot);
         }
       }

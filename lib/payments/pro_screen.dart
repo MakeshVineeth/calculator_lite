@@ -178,7 +178,7 @@ class _ProScreenState extends State<ProScreen> {
             callback: () => _buyProduct(_products.elementAt(index)),
             fg: Colors.white,
             bg: Colors.blueAccent,
-            text: 'BUY ' + _products.elementAt(index).price,
+            text: 'BUY ${_products.elementAt(index).price}',
           ),
         ),
       );
@@ -209,18 +209,18 @@ class _ProScreenState extends State<ProScreen> {
   void _buyProduct(ProductDetails prod) async {
     try {
       final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
-      bool _iapAvailable = await _iap.isAvailable();
+      bool iapAvailable = await _iap.isAvailable();
 
-      if (_iapAvailable) _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      if (iapAvailable) _iap.buyNonConsumable(purchaseParam: purchaseParam);
     } catch (_) {}
   }
 
   Future<void> _getProducts() async {
     try {
       _products.clear();
-      bool _iapAvailable = await _iap.isAvailable();
+      bool iapAvailable = await _iap.isAvailable();
 
-      if (_iapAvailable) {
+      if (iapAvailable) {
         final ProductDetailsResponse response =
             await _iap.queryProductDetails(CommonPurchaseStrings.productIds);
 

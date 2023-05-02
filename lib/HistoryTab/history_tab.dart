@@ -34,9 +34,9 @@ class _HistoryTabState extends State<HistoryTab> {
             children: <Widget>[
               Expanded(
                 child: AnimatedSearchBar(
-                  cursorColor: Theme.of(context).textTheme.button.color,
+                  cursorColor: Theme.of(context).textTheme.labelLarge.color,
                   searchStyle: TextStyle(
-                    color: Theme.of(context).textTheme.button.color,
+                    color: Theme.of(context).textTheme.labelLarge.color,
                   ),
                   searchDecoration: InputDecoration(
                     labelText: "Search",

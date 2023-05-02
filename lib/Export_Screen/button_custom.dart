@@ -12,7 +12,7 @@ class ButtonCustom extends StatelessWidget {
     return TextButton(
       onPressed: () {
         FocusScope.of(context).unfocus();
-        if (function != null) function();
+ function();
       },
       child: IgnorePointer(
         child: Padding(

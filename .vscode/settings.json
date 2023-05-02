@@ -23,5 +23,6 @@
         "mngl",
         "sicotao",
         "sicotao mngl"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "disabled"
 }

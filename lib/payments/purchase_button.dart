@@ -17,8 +17,7 @@ class PurchaseButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () => callback(),
       style: ElevatedButton.styleFrom(
-        primary: bg,
-        onPrimary: fg,
+        foregroundColor: fg, backgroundColor: bg,
         elevation: 10,
       ),
       child: Padding(
