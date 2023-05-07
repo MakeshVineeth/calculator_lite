@@ -6,10 +6,10 @@ import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 
 class PrivacyDialog extends StatefulWidget {
-  const PrivacyDialog({Key key}) : super(key: key);
+  const PrivacyDialog({Key? key}) : super(key: key);
 
   @override
-  _PrivacyDialogState createState() => _PrivacyDialogState();
+  State<PrivacyDialog> createState() => _PrivacyDialogState();
 }
 
 class _PrivacyDialogState extends State<PrivacyDialog> {

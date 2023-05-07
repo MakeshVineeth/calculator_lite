@@ -13,10 +13,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UpdateColumn extends StatefulWidget {
   final UpdateListen updateListen;
 
-  const UpdateColumn({required this.updateListen, Key key}) : super(key: key);
+  const UpdateColumn({required this.updateListen, Key? key}) : super(key: key);
 
   @override
-  _UpdateColumnState createState() => _UpdateColumnState();
+  State<UpdateColumn> createState() => _UpdateColumnState();
 }
 
 class _UpdateColumnState extends State<UpdateColumn> {
@@ -204,7 +204,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
             style: statusStyle,
           ),
           InkWell(
-            onTap: () => launchUrl(url: CommonsData.remoteSource),
+            onTap: () => launchThisUrl(url: CommonsData.remoteSource),
             borderRadius: FixedValues.large,
             child: Padding(
               padding: const EdgeInsets.all(3.0),

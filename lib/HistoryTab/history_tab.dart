@@ -12,10 +12,10 @@ import 'package:calculator_lite/UIElements/show_slide_up.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 
 class HistoryTab extends StatefulWidget {
-  const HistoryTab({Key key}) : super(key: key);
+  const HistoryTab({Key? key}) : super(key: key);
 
   @override
-  _HistoryTabState createState() => _HistoryTabState();
+  State<HistoryTab> createState() => _HistoryTabState();
 }
 
 class _HistoryTabState extends State<HistoryTab> {
@@ -34,9 +34,9 @@ class _HistoryTabState extends State<HistoryTab> {
             children: <Widget>[
               Expanded(
                 child: AnimatedSearchBar(
-                  cursorColor: Theme.of(context).textTheme.labelLarge.color,
+                  cursorColor: Theme.of(context).textTheme.labelLarge?.color,
                   searchStyle: TextStyle(
-                    color: Theme.of(context).textTheme.labelLarge.color,
+                    color: Theme.of(context).textTheme.labelLarge?.color,
                   ),
                   searchDecoration: InputDecoration(
                     labelText: "Search",
@@ -54,7 +54,7 @@ class _HistoryTabState extends State<HistoryTab> {
                       borderRadius: FixedValues.large,
                       borderSide: BorderSide(
                         color:
-                            isLightTheme ? Colors.grey[600] : Colors.grey[350],
+                            isLightTheme ? Colors.grey[600]! : Colors.grey[350]!,
                         width: widthSearchBorder,
                       ),
                     ),
@@ -72,10 +72,10 @@ class _HistoryTabState extends State<HistoryTab> {
         ),
         FutureBuilder(
           future: getHistoryBox(),
-          builder: (context, AsyncSnapshot<Box> data) {
+          builder: (context, AsyncSnapshot<Box?> data) {
             if (data.connectionState == ConnectionState.done &&
                 data.data != null) {
-              return listWidget(data.data);
+              return listWidget(data.data!);
             } else {
               return const Expanded(
                 child: Center(
@@ -89,7 +89,7 @@ class _HistoryTabState extends State<HistoryTab> {
     );
   }
 
-  Future<Box> getHistoryBox() async {
+  Future<Box?> getHistoryBox() async {
     try {
       return await Hive.openBox(CommonsHistory.historyBox);
     } catch (_) {

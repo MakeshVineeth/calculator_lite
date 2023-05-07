@@ -15,7 +15,7 @@ class HistoryCard extends StatelessWidget {
   final int index;
   final HistoryItem historyItem;
 
-  HistoryCard({Key key, required this.index, required this.historyItem})
+  HistoryCard({Key? key, required this.index, required this.historyItem})
       : super(key: key);
 
   final Box historyBox = Hive.box(CommonsHistory.historyBox);
@@ -47,8 +47,8 @@ class HistoryCard extends StatelessWidget {
                     ),
                   ),
                   icon: Icons.edit_outlined,
-                  light: Colors.green[400],
-                  dark: Colors.green[300],
+                  light: Colors.green[400]!,
+                  dark: Colors.green[300]!,
                   label: 'Edit',
                 ),
                 SlidePanelItem(

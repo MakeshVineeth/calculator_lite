@@ -5,7 +5,7 @@ import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 
 class TutorialDialog extends StatelessWidget {
-  const TutorialDialog({Key key}) : super(key: key);
+  const TutorialDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +22,14 @@ class TutorialDialog extends StatelessWidget {
           DialogTextBtn(
             title: 'Open FAQ',
             function: () {
-              launchUrl(url: FixedValues.faqUrl);
+              launchThisUrl(url: FixedValues.faqUrl);
               Navigator.pop(context);
             },
           ),
         ],
         content: const SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics()),
+          physics:
+              AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

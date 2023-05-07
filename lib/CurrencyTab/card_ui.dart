@@ -20,11 +20,11 @@ class CardUI extends StatefulWidget {
       {required this.index,
       this.remove = false,
       required this.resetFormProvider,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
-  _CardUIState createState() => _CardUIState();
+  State<CardUI> createState() => _CardUIState();
 }
 
 class _CardUIState extends State<CardUI> {
@@ -36,10 +36,10 @@ class _CardUIState extends State<CardUI> {
   final Box toBox = Hive.box(CommonsData.toBox);
   final int decimalPlaces = 3;
 
-  CurrencyListItem fromCur;
-  CurrencyListItem toCur;
+  late CurrencyListItem fromCur;
+  late CurrencyListItem toCur;
   double exchangeRate = 0.0;
-  Box fromCurBox;
+  late Box fromCurBox;
 
   String placeholder = '0.00';
   String currentRateStr = '';
@@ -220,12 +220,11 @@ class _CardUIState extends State<CardUI> {
                 label: Text(
                   (isFromMethod(method)
                           ? fromCur.currencyCode
-                          : toCur.currencyCode) ??
-                      '',
+                          : toCur.currencyCode),
                   style: TextStyle(
                     height: 1,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).textTheme.labelLarge.color,
+                    color: Theme.of(context).textTheme.labelLarge?.color,
                   ),
                 ),
               )
@@ -265,11 +264,11 @@ class _CardUIState extends State<CardUI> {
 
       from = textArray.join();
 
-      double val = double.tryParse(from);
+      double? val = double.tryParse(from);
 
       // making sure text is an integer & format it using currency format.
       if (!textArray.contains('.') &&
-          helperFunctions.isInteger(val)) from = formatCurrency.format(val);
+          helperFunctions.isInteger(val!)) from = formatCurrency.format(val);
 
       // display the new currency formatted numbers. Following code if users types in Left Text Box.
       if (isFrom) {

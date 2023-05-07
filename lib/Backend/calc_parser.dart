@@ -9,7 +9,7 @@ class CalcParser {
   List<String> calculationString;
   String currentMetric;
 
-  CalcParser({this.calculationString, this.currentMetric});
+  CalcParser({required this.calculationString, required this.currentMetric});
 
   final HelperFunctions helperFunctions = HelperFunctions();
 
@@ -157,7 +157,7 @@ class CalcParser {
       start = helperFunctions.parseNumbersFromEnd(lastIndex, compStr);
       if (start != lastIndex) {
         value =
-            double.tryParse(compStr.getRange(start + 1, lastIndex + 1).join());
+            double.tryParse(compStr.getRange(start + 1, lastIndex + 1).join())!;
       }
 
       // Run below code for Matching brackets
@@ -343,7 +343,7 @@ class CalcParser {
 
       return eval;
     } catch (_) {
-      return null;
+      return double.nan;
     }
   }
 

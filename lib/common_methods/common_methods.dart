@@ -55,7 +55,7 @@ Future<void> askForReview({bool action = false}) async {
 
     if (reviewAskedCount > 2) return;
 
-    String dateStr = prefs.getString(dateStrPrefs);
+    String? dateStr = prefs.getString(dateStrPrefs);
     DateTime now = DateTime.now();
 
     // If dateStr is null, it means there is no shared preference yet which should mean first time.
@@ -64,7 +64,7 @@ Future<void> askForReview({bool action = false}) async {
       return;
     }
 
-    DateTime dateCheck = DateTime.tryParse(dateStr);
+    DateTime? dateCheck = DateTime.tryParse(dateStr);
     if (dateCheck == null) return;
     Duration difference = now.difference(dateCheck);
 
@@ -87,19 +87,16 @@ Future<void> askForReview({bool action = false}) async {
   }
 }
 
-Future<void> launchUrl({
+Future<void> launchThisUrl({
   required String url,
   bool forceWebView = false,
   bool enableJavaScript = false,
 }) async {
   try {
-    final urlEncoded = Uri.encodeFull(url);
-    if (await canLaunch(urlEncoded)) {
-      await launch(
-        urlEncoded,
-        forceWebView: forceWebView,
-        enableJavaScript: enableJavaScript,
-      );
-    }
+    Uri urlEncoded = Uri.tryParse(url)!;
+
+    await launchUrl(
+      urlEncoded,
+    );
   } catch (_) {}
 }

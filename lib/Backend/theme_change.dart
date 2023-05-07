@@ -4,14 +4,15 @@ class ThemeChange extends InheritedWidget {
   final Widget newChild;
   final Function stateFunction;
 
-  const ThemeChange({this.newChild, this.stateFunction, Key key})
+  const ThemeChange(
+      {required this.newChild, required this.stateFunction, Key? key})
       : super(child: newChild, key: key);
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) =>
       newChild != oldWidget.child;
 
-  static ThemeChange of(BuildContext context) =>
+  static ThemeChange? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<ThemeChange>();
 }
 
@@ -28,6 +29,8 @@ class MiniThemeFunctions {
       case 'Light':
         themeMode = ThemeMode.light;
         break;
+      default:
+        themeMode = ThemeMode.system;
     }
     return themeMode;
   }

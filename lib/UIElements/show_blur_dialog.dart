@@ -5,16 +5,16 @@ import 'dart:ui';
 class BlurredWindow extends StatefulWidget {
   final Widget child;
 
-  const BlurredWindow({required this.child, Key key}) : super(key: key);
+  const BlurredWindow({required this.child, Key? key}) : super(key: key);
 
   @override
-  _BlurredWindowState createState() => _BlurredWindowState();
+  State<BlurredWindow> createState() => _BlurredWindowState();
 }
 
 class _BlurredWindowState extends State<BlurredWindow> {
   double _currentOpacity = 0;
   final Duration duration = const Duration(milliseconds: 1000);
-  Widget _currentChild;
+  late Widget _currentChild;
 
   @override
   void initState() {

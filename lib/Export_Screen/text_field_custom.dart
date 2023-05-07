@@ -5,7 +5,7 @@ import 'export_theming.dart';
 class TextFieldCustom extends StatefulWidget {
   final String title;
   final TextEditingController controller;
-  final Function validate;
+  final Function? validate;
   final TextInputType textInputType;
   final bool ignoreValidation;
 
@@ -15,11 +15,11 @@ class TextFieldCustom extends StatefulWidget {
       this.validate,
       this.textInputType = TextInputType.text,
       this.ignoreValidation = false,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
-  _TextFieldCustomState createState() => _TextFieldCustomState();
+  State<TextFieldCustom> createState() => _TextFieldCustomState();
 }
 
 class _TextFieldCustomState extends State<TextFieldCustom> {
@@ -33,7 +33,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
 
             return widget.validate == null
                 ? emptyValidator(widget.controller)
-                : widget.validate(widget.controller);
+                : widget.validate!(widget.controller);
           },
           controller: widget.controller,
           textCapitalization: TextCapitalization.characters,

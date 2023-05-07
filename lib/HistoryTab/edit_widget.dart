@@ -16,11 +16,11 @@ class EditWidget extends StatefulWidget {
       {required this.index,
       required this.title,
       required this.date,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
-  _EditWidgetState createState() => _EditWidgetState();
+  State<EditWidget> createState() => _EditWidgetState();
 }
 
 class _EditWidgetState extends State<EditWidget> {
@@ -74,7 +74,7 @@ class _EditWidgetState extends State<EditWidget> {
     final box = Hive.box(CommonsHistory.historyBox);
     final HistoryItem historyItem = box.getAt(widget.index);
 
-    String newTitle = myController.text.trim() ?? widget.title;
+    String newTitle = myController.text.trim();
     if (newTitle.isEmpty) newTitle = widget.title;
     if (date) newTitle = getFormattedTitle(widget.date);
 
@@ -87,6 +87,5 @@ class _EditWidgetState extends State<EditWidget> {
     );
 
     await box.putAt(widget.index, newHistoryItem);
-    Navigator.pop(context);
   }
 }

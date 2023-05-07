@@ -10,15 +10,15 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 
 class ProScreen extends StatefulWidget {
-  const ProScreen({Key key}) : super(key: key);
+  const ProScreen({Key? key}) : super(key: key);
 
   @override
-  _ProScreenState createState() => _ProScreenState();
+  State<ProScreen> createState() => _ProScreenState();
 }
 
 class _ProScreenState extends State<ProScreen> {
   final List<ProductDetails> _products = [];
-  PurchaseStatusProvider purchaseStatusProvider;
+  late PurchaseStatusProvider purchaseStatusProvider;
   final Map<String, String> featuresList = {
     'Support the Developer': 'A token of appreciation from your side :)',
     'Promote Development':
@@ -30,7 +30,7 @@ class _ProScreenState extends State<ProScreen> {
 
   bool isPortrait = true;
 
-  Future<void> _loadProductsFut;
+  late Future<void> _loadProductsFut;
 
   @override
   void initState() {

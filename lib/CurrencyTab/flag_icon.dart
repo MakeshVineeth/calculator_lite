@@ -4,10 +4,10 @@ import 'package:octo_image/octo_image.dart';
 class FlagIcon extends StatefulWidget {
   final String flagURL;
 
-  const FlagIcon({required this.flagURL, Key key}) : super(key: key);
+  const FlagIcon({required this.flagURL, Key? key}) : super(key: key);
 
   @override
-  _FlagIconState createState() => _FlagIconState();
+  State<FlagIcon> createState() => _FlagIconState();
 }
 
 class _FlagIconState extends State<FlagIcon>
@@ -20,9 +20,9 @@ class _FlagIconState extends State<FlagIcon>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey[300]),
+        border: Border.all(color: Colors.grey[300]!),
       ),
-      child: (widget.flagURL != null)
+      child: (widget.flagURL.isNotEmpty)
           ? image()
           : const CircularProgressIndicator(),
     );

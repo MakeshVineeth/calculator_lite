@@ -34,7 +34,7 @@ class FixedValues {
   static const String currencyTabTitle = 'Currency';
 
   static const Color deleteBtnLight = Colors.red;
-  static final Color deleteBtnDark = Colors.red[400];
+  static final Color deleteBtnDark = Colors.red[400]!;
 
   // Links
   static const faqUrl = 'https://makeshvineeth.github.io/calc_faq/';
@@ -85,9 +85,9 @@ class FixedValues {
 
   static ThemeData getThemeData(Brightness brightness, BuildContext context) {
     bool isLight = brightness == Brightness.light;
-    Color foreground = isLight ? Colors.red : Colors.yellow;
-    Color background = isLight ? Colors.white : Colors.grey[900];
-    Color backgroundScaffold = isLight ? background : Colors.black;
+    MaterialColor foreground = isLight ? Colors.red : Colors.yellow;
+    Color? background = isLight ? Colors.white : Colors.grey[900];
+    Color? backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
       useMaterial3: true,

@@ -9,23 +9,23 @@ class CalcButtons extends StatefulWidget {
   final bool isCornerRows;
 
   const CalcButtons(
-      {this.rowData,
-      this.index,
-      this.displayFunction,
-      this.isCornerRows,
-      Key key})
+      {required this.rowData,
+      required this.index,
+      required this.displayFunction,
+      required this.isCornerRows,
+      Key? key})
       : super(key: key);
 
   @override
-  _CalcButtonsState createState() => _CalcButtonsState();
+  State<CalcButtons> createState() => _CalcButtonsState();
 }
 
 class _CalcButtonsState extends State<CalcButtons> {
   @override
   Widget build(BuildContext context) {
-    Color fgColor = Theme.of(context)
+    Color? fgColor = Theme.of(context)
         .textTheme
-        .labelLarge
+        .labelLarge!
         .color; // Initialized as Default Text Color
 
     if (widget.index == (widget.rowData.length - 1)) {
@@ -45,7 +45,7 @@ class _CalcButtonsState extends State<CalcButtons> {
             child: Container(
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: widget.displayFunction,
+                onPressed: () => widget.displayFunction,
                 child: IgnorePointer(
                   child: FadeThis(
                     child: AutoSizeText(

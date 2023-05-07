@@ -36,10 +36,10 @@ void main() async {
 }
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key key}) : super(key: key);
+  const BottomNavBar({Key? key}) : super(key: key);
 
   @override
-  _BottomNavBarState createState() => _BottomNavBarState();
+  State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
@@ -92,10 +92,10 @@ Widget materialApp(final ThemeMode setTheme, BuildContext context) =>
     );
 
 class ScaffoldHome extends StatefulWidget {
-  const ScaffoldHome({Key key}) : super(key: key);
+  const ScaffoldHome({Key? key}) : super(key: key);
 
   @override
-  _ScaffoldHomeState createState() => _ScaffoldHomeState();
+  State<ScaffoldHome> createState() => _ScaffoldHomeState();
 }
 
 class _ScaffoldHomeState extends State<ScaffoldHome>
@@ -257,7 +257,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   String get restorationId => 'landing_tab_index';
 
   @override
-  void restoreState(RestorationBucket oldBucket, bool initialRestore) {
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(_currentIndex, restorationId);
   }
 }

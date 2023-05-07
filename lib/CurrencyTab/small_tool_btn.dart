@@ -5,7 +5,7 @@ class SmallToolBtn extends StatelessWidget {
   final Function function;
   final IconData icon;
 
-  const SmallToolBtn({required this.function, required this.icon, Key key})
+  const SmallToolBtn({required this.function, required this.icon, Key? key})
       : super(key: key);
 
   @override

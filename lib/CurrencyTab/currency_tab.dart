@@ -19,19 +19,19 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CurrencyTab extends StatefulWidget {
-  const CurrencyTab({Key key}) : super(key: key);
+  const CurrencyTab({Key? key}) : super(key: key);
 
   @override
-  _CurrencyTabState createState() => _CurrencyTabState();
+  State<CurrencyTab> createState() => _CurrencyTabState();
 }
 
 class _CurrencyTabState extends State<CurrencyTab> {
   final _scrollController = ScrollController();
-  Box fromBox;
-  Box toBox;
+  late Box fromBox;
+  late Box toBox;
   final resetFormProvider = ResetFormProvider();
   final UpdateListen updateListen = UpdateListen();
-  PurchaseStatusProvider _purchaseStatusProvider;
+  late PurchaseStatusProvider _purchaseStatusProvider;
 
   Future<void> process() async {
     await CopyData().copyData;
@@ -126,7 +126,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
         fromBox.clear();
         toBox.clear();
         for (int i = 0; i <= fromBox.length - 1; i++) {
-          _animListKey.currentState.removeItem(
+          _animListKey.currentState?.removeItem(
             0,
             (BuildContext context, Animation<double> animation) =>
                 SizeTransition(
@@ -183,7 +183,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
       int index = fromBox.length;
       _animListKey.currentState
-          .insertItem(index - 1, duration: CommonsData.dur1);
+          ?.insertItem(index - 1, duration: CommonsData.dur1);
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(

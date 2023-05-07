@@ -6,14 +6,14 @@ import 'package:auto_size_text_field/auto_size_text_field.dart';
 
 class DisplayScreen extends StatefulWidget {
   const DisplayScreen(
-      {required this.calculationString, required this.mainValue, Key key})
+      {required this.calculationString, required this.mainValue, Key? key})
       : super(key: key);
 
   final List<String> calculationString;
   final double mainValue;
 
   @override
-  _DisplayScreenState createState() => _DisplayScreenState();
+  State<DisplayScreen> createState() => _DisplayScreenState();
 
   static String formatNumber(double value) {
     if (value == -0) value = 0; // For Cos90 = -0

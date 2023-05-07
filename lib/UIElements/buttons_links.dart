@@ -15,7 +15,7 @@ class ButtonLinks extends StatelessWidget {
       this.iconColor = Colors.white,
       this.backgroundColor = Colors.green,
       required this.icon,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override

@@ -7,7 +7,7 @@ import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'buttons_links.dart';
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({Key key}) : super(key: key);
+  const AboutPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class AboutPage extends StatelessWidget {
                               title: 'Play Store',
                               icon: Icons.shop_outlined,
                               backgroundColor: const Color(0xff078C30),
-                              function: () => launchUrl(
+                              function: () => launchThisUrl(
                                 url:
                                     'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite',
                               ),
@@ -78,7 +78,7 @@ class AboutPage extends StatelessWidget {
                               title: 'GitHub',
                               icon: Icons.code_outlined,
                               backgroundColor: const Color(0xff24292E),
-                              function: () => launchUrl(
+                              function: () => launchThisUrl(
                                 url:
                                     'https://github.com/MakeshVineeth/calculator_lite',
                               ),

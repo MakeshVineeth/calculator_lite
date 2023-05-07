@@ -7,17 +7,17 @@ class FadeThis extends StatefulWidget {
   const FadeThis(
       {required this.child,
       this.duration = const Duration(milliseconds: 400),
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
-  _FadeThisState createState() => _FadeThisState();
+  State<FadeThis> createState() => _FadeThisState();
 }
 
 class _FadeThisState extends State<FadeThis>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation _animation;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {

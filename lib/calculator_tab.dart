@@ -22,19 +22,19 @@ import 'package:flutter/services.dart';
 import 'dart:io' show Platform, exit;
 
 class CalculatorTab extends StatefulWidget {
-  const CalculatorTab({Key key}) : super(key: key);
+  const CalculatorTab({Key? key}) : super(key: key);
 
   @override
-  _CalculatorTabState createState() => _CalculatorTabState();
+  State<CalculatorTab> createState() => _CalculatorTabState();
 }
 
 class _CalculatorTabState extends State<CalculatorTab> {
-  Widget _currentChild;
+  late Widget _currentChild;
   bool secondPageFlip = false;
   List<String> calculationString = [];
-  double mainValue;
-  String currentMetric;
-  Timer timer;
+  late double mainValue;
+  late String currentMetric;
+  late Timer timer;
   final MethodChannel _androidAppRetain =
       const MethodChannel("kotlin.flutter.dev");
   final HelperFunctions _helperFunctions = HelperFunctions();
@@ -51,7 +51,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   @override
   void dispose() {
     super.dispose();
- timer.cancel();
+    timer.cancel();
   }
 
   void getCurrentMetrics() async {
@@ -80,7 +80,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     } else if (value.contains('C')) {
       setState(() {
         calculationString.clear();
-        mainValue = null;
+        mainValue = double.nan;
         if (isFocused) focus.clearData();
       });
     }
@@ -91,16 +91,15 @@ class _CalculatorTabState extends State<CalculatorTab> {
         backSpaceBtn();
 
         if (calculationString.isNotEmpty) {
-          runCalcParser(null);
+          runCalcParser("");
         } else {
           setState(() => mainValue = 0);
         }
       } else {
         setState(() => calculationString =
-            focus.removeBack(calculationString: calculationString) ??
-                calculationString);
+            focus.removeBack(calculationString: calculationString));
 
-        runCalcParser(null);
+        runCalcParser("");
       }
     }
 
@@ -125,10 +124,9 @@ class _CalculatorTabState extends State<CalculatorTab> {
               calculationString: calculationString,
               currentMetric: currentMetric,
               value: value,
-            ) ??
-            calculationString);
+            ));
 
-        runCalcParser(null);
+        runCalcParser("");
       }
     }
   }
@@ -140,7 +138,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       'currentMetric': currentMetric,
     });
 
-    setState(() => calculationString = str ?? calculationString);
+    setState(() => calculationString = str);
 
     CalcParser calcParser = CalcParser(
       calculationString: calculationString,
@@ -260,9 +258,9 @@ class _CalculatorTabState extends State<CalculatorTab> {
           Navigator.pushNamed(context, FixedValues.buyRoute);
         }
       },
-      'FAQ': () => launchUrl(url: FixedValues.faqUrl),
+      'FAQ': () => launchThisUrl(url: FixedValues.faqUrl),
       'Rate on Play Store ✨': () => showPlayStorePage(),
-      'Privacy Policy': () => launchUrl(url: FixedValues.privacyPolicy),
+      'Privacy Policy': () => launchThisUrl(url: FixedValues.privacyPolicy),
       'About Calculator Lite': () => AboutPage.showAboutDialogFunc(context),
       'Exit': () {
         if (Platform.isAndroid) {
@@ -295,7 +293,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
           ),
           onPressed: changeMetrics,
           child: Text(
-            currentMetric ?? '',
+            currentMetric,
             style: const TextStyle(
               fontWeight: FontWeight.w600, //w600 is semi-bold.
             ),
@@ -316,7 +314,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       } else {
         currentMetric = 'RAD';
       }
-      runCalcParser(null);
+      runCalcParser("");
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
