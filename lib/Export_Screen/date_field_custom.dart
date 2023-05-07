@@ -6,18 +6,18 @@ import 'package:intl/intl.dart';
 
 class DateFieldCustom extends StatefulWidget {
   final TextEditingController dateController;
-  final String dateText;
+  final String? dateText;
   final bool ignoreValidation;
 
   const DateFieldCustom(
       {required this.dateController,
       this.dateText,
       this.ignoreValidation = false,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
-  _DateFieldCustomState createState() => _DateFieldCustomState();
+  State<DateFieldCustom> createState() => _DateFieldCustomState();
 }
 
 class _DateFieldCustomState extends State<DateFieldCustom> {
@@ -54,7 +54,7 @@ class _DateFieldCustomState extends State<DateFieldCustom> {
       lastDate: DateTime.now(),
     ).then((value) {
       widget.dateController.text =
-          DateFormat(CommonStrings.dateFormat).format(value);
+          DateFormat(CommonStrings.dateFormat).format(value!);
     });
   }
 }

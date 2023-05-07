@@ -19,7 +19,7 @@ class ExportScreen extends StatefulWidget {
   const ExportScreen({Key? key}) : super(key: key);
 
   @override
-  _ExportScreenState createState() => _ExportScreenState();
+  State<ExportScreen> createState() => _ExportScreenState();
 }
 
 class _ExportScreenState extends State<ExportScreen> {
@@ -34,7 +34,7 @@ class _ExportScreenState extends State<ExportScreen> {
   final TextEditingController _dateFrom = TextEditingController();
   final TextEditingController _dateTo = TextEditingController();
   static const platform = MethodChannel('kotlin.flutter.dev');
-  Future<bool> isNewerOS;
+  late Future<bool> isNewerOS;
 
   @override
   void initState() {
@@ -112,7 +112,7 @@ class _ExportScreenState extends State<ExportScreen> {
                                       text: 'Share',
                                       function: () => exportEvent(),
                                     ),
-                                    if (snapshot.data) // Checks if OS SDK26+
+                                    if (snapshot.data != null) // Checks if OS SDK26+
                                       ButtonCustom(
                                         text: 'Save',
                                         function: () => exportEvent(save: true),
@@ -189,7 +189,7 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   void clearStatus() {
-    _formKey.currentState.reset();
+    _formKey.currentState!.reset();
     _dateFrom.clear();
     _dateTo.clear();
     clearStatusTips();
@@ -207,7 +207,7 @@ class _ExportScreenState extends State<ExportScreen> {
   void exportEvent({bool save = false}) async {
     try {
       clearStatusTips();
-      bool isValid = _formKey.currentState.validate();
+      bool isValid = _formKey.currentState!.validate();
       setStatus(isLoading: true);
       final Box history = Hive.box(CommonsHistory.historyBox);
       final List<HistoryItem> data = [...history.values.toList()];
@@ -288,7 +288,7 @@ class _ExportScreenState extends State<ExportScreen> {
         }
 
         if (allData.isNotEmpty) {
-          String status = await ExportExcel(fileName: generateFileName())
+          String? status = await ExportExcel(fileName: generateFileName())
               .writeExcel(data: allData);
 
           // If not null, then Share as the file exists.

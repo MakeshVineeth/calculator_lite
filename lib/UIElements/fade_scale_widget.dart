@@ -3,15 +3,15 @@ import 'package:animations/animations.dart';
 
 class FadeScale extends StatefulWidget {
   final Widget child;
-  const FadeScale({this.child, Key key}) : super(key: key);
+  const FadeScale({required this.child, Key? key}) : super(key: key);
 
   @override
-  _FadeThisState createState() => _FadeThisState();
+  State<FadeScale> createState() => _FadeThisState();
 }
 
 class _FadeThisState extends State<FadeScale>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
   final Duration _duration = const Duration(milliseconds: 800);
 
   @override
@@ -34,7 +34,7 @@ class _FadeThisState extends State<FadeScale>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      builder: (BuildContext context, Widget child) => FadeScaleTransition(
+      builder: (BuildContext context, Widget? child) => FadeScaleTransition(
         animation: _controller,
         child: widget.child,
       ),

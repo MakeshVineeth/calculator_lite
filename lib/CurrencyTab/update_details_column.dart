@@ -58,9 +58,9 @@ class _UpdateColumnState extends State<UpdateColumn> {
         final Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
 
         String lastChecked = dateBox.get(CommonsData.lastDateChecked);
-        DateTime lastCheckedDate = DateTime.tryParse(lastChecked);
+        DateTime? lastCheckedDate = DateTime.tryParse(lastChecked);
 
-        if (lastCheckedDate.difference(now).inHours >= -3 &&
+        if (lastCheckedDate!.difference(now).inHours >= -3 &&
             lastCheckedDate.difference(now).inDays == 0) {
           widget.updateListen.inProgress = false;
           return;
@@ -80,10 +80,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
       if (checkDateBox && !force) {
         final Box dateBox = Hive.box(CommonsData.updatedDateBox);
         String dateStr = dateBox.get(CommonsData.updatedDateKey);
-        DateTime dateTimeObj = DateTime.tryParse(dateStr);
-        DateTime online = DateTime.tryParse(updatedDate);
+        DateTime? dateTimeObj = DateTime.tryParse(dateStr);
+        DateTime? online = DateTime.tryParse(updatedDate);
 
-        if (dateTimeObj.year == online.year &&
+        if (dateTimeObj!.year == online!.year &&
             dateTimeObj.day == online.day &&
             dateTimeObj.month == online.month) {
           await dateBox.put(CommonsData.lastDateChecked, now.toString());
@@ -148,9 +148,9 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
   @override
   Widget build(BuildContext context) {
-    final DateTime dateTime = DateTime.tryParse(
+    final DateTime? dateTime = DateTime.tryParse(
         Hive.box(CommonsData.updatedDateBox).get(CommonsData.lastDateChecked));
-    final String lastUpdated = _helperFunctions.getDate(dateTime);
+    final String lastUpdated = _helperFunctions.getDate(dateTime!);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -170,11 +170,11 @@ class _UpdateColumnState extends State<UpdateColumn> {
       {required String title,
       required String value,
       required BuildContext context}) {
-    Color default = Theme.of(context).textTheme.labelLarge.color;
+    Color? defaultColor = Theme.of(context).textTheme.labelLarge!.color;
 
-    if (value == CommonsData.errorToken) default = Colors.redAccent;
+    if (value == CommonsData.errorToken) defaultColor = Colors.redAccent;
     if (value == CommonsData.successToken || value == CommonsData.upToDate) {
-      default = Colors.green;
+      defaultColor = Colors.green;
     }
 
     return Row(
@@ -188,7 +188,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
           child: Text(
             value,
             style: statusStyle.copyWith(
-              color: default,
+              color: defaultColor,
             ),
             key: UniqueKey(),
           ),

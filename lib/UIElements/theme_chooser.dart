@@ -7,7 +7,7 @@ import 'package:calculator_lite/fixed_values.dart';
 
 // Pop up for Choosing Theme
 class PopThemeChooser extends StatelessWidget {
-  const PopThemeChooser({Key key}) : super(key: key);
+  const PopThemeChooser({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +36,15 @@ final Map<String, String> e = {
 };
 
 class ThemeButtons extends StatefulWidget {
-  const ThemeButtons({Key key}) : super(key: key);
+  const ThemeButtons({Key? key}) : super(key: key);
 
   @override
-  _ThemeButtonsState createState() => _ThemeButtonsState();
+  State<ThemeButtons> createState() => _ThemeButtonsState();
 }
 
 class _ThemeButtonsState extends State<ThemeButtons> {
-  String _currentThemeString;
-  ThemeChange themeChange;
+  late String _currentThemeString;
+  late ThemeChange themeChange;
 
   void getCurrentThemeStat() async {
     final prefs = await SharedPreferences.getInstance();
@@ -60,7 +60,7 @@ class _ThemeButtonsState extends State<ThemeButtons> {
 
   @override
   Widget build(BuildContext context) {
-    themeChange = ThemeChange.of(context);
+    themeChange = ThemeChange.of(context)!;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

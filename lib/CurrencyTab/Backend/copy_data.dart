@@ -16,7 +16,7 @@ class CopyData {
         await copy();
       } else {
         // read updated_date.txt from app's doc dir.
-        String date = await readData();
+        String? date = await readData();
 
         // read updated_date.txt from assets.
         String dateAsset =
@@ -24,9 +24,9 @@ class CopyData {
 
         // if not null, then date file exists, then copy all data by checking previous date.
         if (date != null) {
-          DateTime dateTime = DateTime.tryParse(date);
-          DateTime dateTimeAsset = DateTime.tryParse(dateAsset);
-          if (dateTime.isBefore(dateTimeAsset)) await copy();
+          DateTime? dateTime = DateTime.tryParse(date);
+          DateTime? dateTimeAsset = DateTime.tryParse(dateAsset);
+          if (dateTime!.isBefore(dateTimeAsset!)) await copy();
         } else {
           await copy();
           await writeData(dateAsset);
@@ -98,7 +98,7 @@ class CopyData {
   }
 
   // read data from updated date text
-  Future<String> readData() async {
+  Future<String?> readData() async {
     try {
       final file = await _localFile;
 

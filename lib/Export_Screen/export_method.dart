@@ -1,5 +1,4 @@
 import 'package:excel/excel.dart';
-import 'package:meta/meta.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
@@ -8,7 +7,7 @@ class ExportExcel {
 
   const ExportExcel({required this.fileName});
 
-  Future<String> writeExcel({required List<Map<String, String>> data}) async {
+  Future<String?> writeExcel({required List<Map<String, String>> data}) async {
     try {
       var excel = Excel.createExcel();
       Sheet sheetObject = excel['Sheet1'];
@@ -44,10 +43,10 @@ class ExportExcel {
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = '${tempDir.path}/$fileName.xlsx';
 
-      List<int> dataInts = excel.encode();
+      List<int>? dataInts = excel.encode();
       File file = File(tempPath)
         ..createSync(recursive: true)
-        ..writeAsBytesSync(dataInts);
+        ..writeAsBytesSync(dataInts!);
 
       bool present = file.existsSync();
       return present ? tempPath : null;

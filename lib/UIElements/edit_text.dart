@@ -5,12 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:auto_size_text_field/auto_size_text_field.dart';
 
 class TextFieldCalc extends StatefulWidget {
-  const TextFieldCalc({required this.calculationString, Key key})
+  const TextFieldCalc({required this.calculationString, Key? key})
       : super(key: key);
 
   final List<String> calculationString;
   @override
-  _TextFieldCalcState createState() => _TextFieldCalcState();
+  State<TextFieldCalc> createState() => _TextFieldCalcState();
 }
 
 class _TextFieldCalcState extends State<TextFieldCalc> {
@@ -75,8 +75,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
       int count = Provider.of<CustomFocusEvents>(context, listen: false)
               .getPosition(
                   start: i.start,
-                  calculationString: widget.calculationString) ??
-          i.end;
+                  calculationString: widget.calculationString);
 
       TextSelection textSelection =
           TextSelection(baseOffset: count, extentOffset: count);
