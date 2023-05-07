@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'commons.dart';
 import 'package:hive/hive.dart';
 import 'package:dio/dio.dart';
@@ -9,10 +10,10 @@ import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 class CurrencyData {
   final HelperFunctions helperFunctions = HelperFunctions();
 
-  Future<String> getRemoteData({required BuildContext context}) async {
+  Future<String> getRemoteData() async {
     try {
       // gets a list of all currencies.
-      List<String> allCurrencies = await writeCurrencyDetails(context: context);
+      List<String> allCurrencies = await writeCurrencyDetails();
 
       if (allCurrencies.isEmpty) {
         return CommonsData.errorToken;
@@ -42,12 +43,10 @@ class CurrencyData {
     }
   }
 
-  Future<List<String>> writeCurrencyDetails(
-      {required BuildContext context}) async {
+  Future<List<String>> writeCurrencyDetails() async {
     try {
       // Load the countries json asset. Used for getting country code for flag icon.
-      String countryJson = await DefaultAssetBundle.of(context)
-          .loadString('assets/countries.json');
+      String countryJson = await rootBundle.loadString('assets/countries.json');
       Map data = json.decode(countryJson);
       List<dynamic> countriesList = data['countries']
           ['country']; // Should be dynamic, else runtime errors.

@@ -96,7 +96,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       if (mounted) setState(() => status = CommonsData.progressToken);
 
-      String result = await currencyData.getRemoteData(context: context);
+      String result = await currencyData.getRemoteData();
       debugPrint("Data retrieve result: $result");
 
       if (result == CommonsData.successToken) {
