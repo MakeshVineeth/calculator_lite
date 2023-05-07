@@ -12,7 +12,7 @@ class CurrencyChooser extends StatelessWidget {
   final int boxIndex;
   final String method;
 
-  CurrencyChooser({required this.boxIndex, required this.method, Key key})
+  CurrencyChooser({required this.boxIndex, required this.method, Key? key})
       : super(key: key);
 
   @override

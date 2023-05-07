@@ -13,7 +13,7 @@ class StatusToolTip extends StatelessWidget {
       this.isError = false,
       this.isLoading = false,
       this.forceLight = false,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
@@ -49,7 +49,7 @@ class StatusToolTip extends StatelessWidget {
     } else if (brightness == Brightness.light) {
       color = isError ? Colors.red : Colors.green;
     } else {
-      color = isError ? Colors.yellowAccent : Colors.blue[200];
+      color = (isError ? Colors.yellowAccent : Colors.blue[200])!;
     }
 
     return color;

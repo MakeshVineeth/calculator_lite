@@ -8,21 +8,21 @@ class FadeIndexedStack extends StatefulWidget {
   final Duration duration;
 
   const FadeIndexedStack({
-    Key key,
-    this.index,
-    this.children,
+    Key? key,
+    required this.index,
+    required this.children,
     this.duration = const Duration(
       milliseconds: 300,
     ),
   }) : super(key: key);
 
   @override
-  _FadeIndexedStackState createState() => _FadeIndexedStackState();
+  State<FadeIndexedStack> createState() => _FadeIndexedStackState();
 }
 
 class _FadeIndexedStackState extends State<FadeIndexedStack>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void didUpdateWidget(FadeIndexedStack oldWidget) {

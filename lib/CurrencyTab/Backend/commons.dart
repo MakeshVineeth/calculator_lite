@@ -22,10 +22,10 @@ class CommonsData {
   static const autoUpdateDisabled = 'auto_update_no';
   static const Duration dur1 = Duration(milliseconds: 500);
 
-  static Future<Response> getResponse(url) async {
+  static Future<Response?> getResponse(url) async {
     final options = BaseOptions(
       baseUrl: remoteUrl,
-      receiveTimeout: 1000 * 15,
+      receiveTimeout: const Duration(milliseconds: 1000 * 15),
     );
 
     Dio dio = Dio(options);

@@ -9,7 +9,7 @@ class ButtonLinks extends StatelessWidget {
   final IconData icon;
 
   const ButtonLinks(
-      {this.function,
+      {required this.function,
       required this.title,
       this.foregroundColor = Colors.white,
       this.iconColor = Colors.white,

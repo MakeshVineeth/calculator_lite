@@ -69,11 +69,11 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       if (mounted) setState(() => status = CommonsData.checkingStr);
 
-      Response getBaseData =
+      Response? getBaseData =
           await CommonsData.getResponse(CommonsData.remoteUrl);
 
       // Gets the base currency data to get a database data for checking.
-      Map baseJson = Map<String, dynamic>.from(getBaseData.data);
+      Map baseJson = Map<String, dynamic>.from(getBaseData?.data);
 
       // Gets the newly updated date online.
       String updatedDate = baseJson['date'];

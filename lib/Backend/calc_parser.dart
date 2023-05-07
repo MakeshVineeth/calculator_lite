@@ -585,9 +585,9 @@ class CalcParser {
 
     // For % below code.
     else if (char.contains("%")) {
-      List<String> prev;
-      String lastChar;
-      List<String> second;
+      List<String> prev = List.empty(growable: true);
+      String lastChar = "";
+      List<String> second = List.empty(growable: true);
       double first = val;
       List plusminus = [FixedValues.minus, '+'];
       bool previousMinus = false;
@@ -690,7 +690,7 @@ class CalcParser {
 
     // Returns null if char is neither % nor ! nor even if it is factorial but unsupported value like decimals etc.
     else {
-      return null;
+      return List.empty();
     }
   }
 }

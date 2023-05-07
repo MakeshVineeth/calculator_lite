@@ -53,10 +53,10 @@ class CurrencyData {
           ['country']; // Should be dynamic, else runtime errors.
 
       // Load the currencies json. Used for retrieving currency name.
-      Response response = await CommonsData.getResponse(
+      Response? response = await CommonsData.getResponse(
           'https://api.frankfurter.app/currencies');
 
-      if (response == null) return null;
+      if (response == null) return List.empty();
 
       final Map<String, String> currencyMap =
           Map<String, String>.from(response.data);
@@ -64,15 +64,15 @@ class CurrencyData {
       // Loop through all available currencies.
       for (int keyIndex = 0; keyIndex < currencyMap.length; keyIndex++) {
         String currencyCode = currencyMap.keys.elementAt(keyIndex);
-        String flagURL;
-        String currencyName;
+        String flagURL = "";
+        String currencyName = "";
 
         // Find out country code in order to get flag.
         for (int index = 0; index < countriesList.length; index++) {
           Map<String, dynamic> eachCountry = countriesList[index];
 
           if (eachCountry['currencyCode'] == currencyCode) {
-            currencyName = currencyMap[currencyCode];
+            currencyName = currencyMap[currencyCode]!;
 
             String countryCode = eachCountry['countryCode'].toLowerCase();
             flagURL = 'icons/flags/png/$countryCode.png';
@@ -93,7 +93,7 @@ class CurrencyData {
       return currencyMap.keys.toList();
     } catch (e) {
       debugPrint("Error writing data: $e");
-      return null;
+      return List.empty();
     }
   }
 
@@ -103,10 +103,10 @@ class CurrencyData {
   }) async {
     try {
       final box = await Hive.openBox(currency.toLowerCase());
-      Response response = await CommonsData.getResponse(currentBaseUrl);
+      Response? response = await CommonsData.getResponse(currentBaseUrl);
 
-      if (response.data != null) {
-        final Map data = Map<String, dynamic>.from(response.data);
+      if (response?.data != null) {
+        final Map data = Map<String, dynamic>.from(response?.data);
         Map<String, dynamic> rates = data['rates'];
 
         await box.putAll(rates);

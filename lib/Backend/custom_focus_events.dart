@@ -6,7 +6,7 @@ class CustomFocusEvents extends ChangeNotifier {
   int position = 0;
 
   final List<String> lists = 'sicotao⁻¹mngld'.split('');
-  String myText;
+  late String myText;
   bool isFocused = false;
 
   int getCurPosition(List<String> calculationString) {
@@ -33,7 +33,7 @@ class CustomFocusEvents extends ChangeNotifier {
     return convertStr.length;
   }
 
-  int getPosition(
+  int? getPosition(
       {required int start, required List<String> calculationString}) {
     try {
       myText = calculationString.join();
@@ -122,7 +122,7 @@ class CustomFocusEvents extends ChangeNotifier {
       myText = calculationString.join();
       return calculationString;
     } catch (_) {
-      return null;
+      return List.empty();
     }
   }
 

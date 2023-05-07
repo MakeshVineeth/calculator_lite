@@ -30,7 +30,7 @@ class DisplayScreen extends StatefulWidget {
     return valueStr.replaceAll(infinity, infinitySymbol);
   }
 
-  static bool isDoubleValid(double val) {
+  static bool isDoubleValid(double? val) {
     if (val == null) return false;
 
     if (val.isNaN) return false;
