@@ -10,7 +10,7 @@ class DateFieldCustom extends StatefulWidget {
   final bool ignoreValidation;
 
   const DateFieldCustom(
-      {@required this.dateController,
+      {required this.dateController,
       this.dateText,
       this.ignoreValidation = false,
       Key key})

@@ -13,9 +13,9 @@ class EditWidget extends StatefulWidget {
   final DateTime date;
 
   const EditWidget(
-      {@required this.index,
-      @required this.title,
-      @required this.date,
+      {required this.index,
+      required this.title,
+      required this.date,
       Key key})
       : super(key: key);
 

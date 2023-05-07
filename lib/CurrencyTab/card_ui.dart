@@ -17,9 +17,9 @@ class CardUI extends StatefulWidget {
   final ResetFormProvider resetFormProvider;
 
   const CardUI(
-      {@required this.index,
+      {required this.index,
       this.remove = false,
-      @required this.resetFormProvider,
+      required this.resetFormProvider,
       Key key})
       : super(key: key);
 

@@ -9,7 +9,7 @@ import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 class CurrencyData {
   final HelperFunctions helperFunctions = HelperFunctions();
 
-  Future<String> getRemoteData({@required BuildContext context}) async {
+  Future<String> getRemoteData({required BuildContext context}) async {
     try {
       // gets a list of all currencies.
       List<String> allCurrencies = await writeCurrencyDetails(context: context);
@@ -43,7 +43,7 @@ class CurrencyData {
   }
 
   Future<List<String>> writeCurrencyDetails(
-      {@required BuildContext context}) async {
+      {required BuildContext context}) async {
     try {
       // Load the countries json asset. Used for getting country code for flag icon.
       String countryJson = await DefaultAssetBundle.of(context)
@@ -98,8 +98,8 @@ class CurrencyData {
   }
 
   Future<String> insertData({
-    @required String currency,
-    @required String currentBaseUrl,
+    required String currency,
+    required String currentBaseUrl,
   }) async {
     try {
       final box = await Hive.openBox(currency.toLowerCase());

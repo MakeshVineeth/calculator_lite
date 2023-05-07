@@ -8,10 +8,10 @@ class RadioTileCustom extends StatelessWidget {
   final VoidCallback function;
 
   const RadioTileCustom(
-      {@required this.value,
-      @required this.groupValue,
-      @required this.title,
-      @required this.function,
+      {required this.value,
+      required this.groupValue,
+      required this.title,
+      required this.function,
       Key key})
       : super(key: key);
 

@@ -9,11 +9,11 @@ class SlidePanelItem extends StatelessWidget {
   final String label;
 
   const SlidePanelItem(
-      {@required this.function,
-      @required this.icon,
-      @required this.dark,
-      @required this.light,
-      @required this.label,
+      {required this.function,
+      required this.icon,
+      required this.dark,
+      required this.light,
+      required this.label,
       Key key})
       : super(key: key);
 

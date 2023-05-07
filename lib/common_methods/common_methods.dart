@@ -88,7 +88,7 @@ Future<void> askForReview({bool action = false}) async {
 }
 
 Future<void> launchUrl({
-  @required String url,
+  required String url,
   bool forceWebView = false,
   bool enableJavaScript = false,
 }) async {

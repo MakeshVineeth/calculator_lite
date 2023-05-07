@@ -21,9 +21,9 @@ class HistoryItem {
   final String metrics;
 
   const HistoryItem(
-      {@required this.title,
-      @required this.dateTime,
-      @required this.expression,
-      @required this.value,
-      @required this.metrics});
+      {required this.title,
+      required this.dateTime,
+      required this.expression,
+      required this.value,
+      required this.metrics});
 }

@@ -15,7 +15,7 @@ class HistoryCard extends StatelessWidget {
   final int index;
   final HistoryItem historyItem;
 
-  HistoryCard({Key key, @required this.index, @required this.historyItem})
+  HistoryCard({Key key, required this.index, required this.historyItem})
       : super(key: key);
 
   final Box historyBox = Hive.box(CommonsHistory.historyBox);
@@ -119,9 +119,9 @@ class HistoryCard extends StatelessWidget {
       Future.delayed(CommonsData.dur1, () => historyBox.deleteAt(index));
 
   Widget itemRow({
-    @required String heading,
-    @required text,
-    @required BuildContext context,
+    required String heading,
+    required text,
+    required BuildContext context,
   }) {
     return Expanded(
       child: Card(

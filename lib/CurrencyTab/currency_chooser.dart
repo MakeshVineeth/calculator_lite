@@ -12,7 +12,7 @@ class CurrencyChooser extends StatelessWidget {
   final int boxIndex;
   final String method;
 
-  CurrencyChooser({@required this.boxIndex, @required this.method, Key key})
+  CurrencyChooser({required this.boxIndex, required this.method, Key key})
       : super(key: key);
 
   @override
@@ -59,9 +59,9 @@ class CurrencyChooser extends StatelessWidget {
   }
 
   static Future<void> show({
-    @required BuildContext context,
-    @required int index,
-    @required String method,
+    required BuildContext context,
+    required int index,
+    required String method,
   }) async =>
       await showBlurDialog(
         child: CurrencyChooser(

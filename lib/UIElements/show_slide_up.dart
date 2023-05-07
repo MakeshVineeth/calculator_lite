@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixed_values.dart';
 
 void showSlideUp(
-    {@required BuildContext context,
-    @required Map<String, Function> menuList}) {
+    {required BuildContext context,
+    required Map<String, Function> menuList}) {
   slide_dialog.showSlideDialog(
     backgroundColor: Theme.of(context).brightness == Brightness.light
         ? Theme.of(context).scaffoldBackgroundColor
@@ -34,9 +34,9 @@ void showSlideUp(
 }
 
 Widget buttonDesigned(
-    {@required Function function,
-    @required String text,
-    @required BuildContext context}) {
+    {required Function function,
+    required String text,
+    required BuildContext context}) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
     child: TextButton(

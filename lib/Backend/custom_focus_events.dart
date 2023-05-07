@@ -34,7 +34,7 @@ class CustomFocusEvents extends ChangeNotifier {
   }
 
   int getPosition(
-      {@required int start, @required List<String> calculationString}) {
+      {required int start, required List<String> calculationString}) {
     try {
       myText = calculationString.join();
       int len = myText.length;
@@ -65,7 +65,7 @@ class CustomFocusEvents extends ChangeNotifier {
   void updateFocus() => isFocused = true;
 
   List<String> removeBack({
-    @required List<String> calculationString,
+    required List<String> calculationString,
   }) {
     int firstLength = calculationString.join().length;
     int pos = getCurPosition(calculationString) - 1;
@@ -82,9 +82,9 @@ class CustomFocusEvents extends ChangeNotifier {
   }
 
   List<String> getRegulatedString(
-      {@required List<String> calculationString,
-      @required var currentMetric,
-      @required var value}) {
+      {required List<String> calculationString,
+      required var currentMetric,
+      required var value}) {
     try {
       int firstLength = calculationString.join().length;
       int pos = getCurPosition(calculationString);

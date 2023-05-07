@@ -5,7 +5,7 @@ class BottomNavClass {
   String title;
   IconData icon;
 
-  BottomNavClass({@required this.title, @required this.icon});
+  BottomNavClass({required this.title, required this.icon});
 
   BottomNavigationBarItem returnNavItems() => BottomNavigationBarItem(
         label: title,

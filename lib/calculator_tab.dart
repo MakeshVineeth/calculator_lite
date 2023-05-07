@@ -66,9 +66,9 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void displayToScreen({
-    @required String value,
-    @required BuildContext context,
-    @required CustomFocusEvents focus,
+    required String value,
+    required BuildContext context,
+    required CustomFocusEvents focus,
   }) {
     timer.cancel();
     bool isFocused = focus.isFocused;

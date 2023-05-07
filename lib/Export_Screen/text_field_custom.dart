@@ -10,8 +10,8 @@ class TextFieldCustom extends StatefulWidget {
   final bool ignoreValidation;
 
   const TextFieldCustom(
-      {@required this.title,
-      @required this.controller,
+      {required this.title,
+      required this.controller,
       this.validate,
       this.textInputType = TextInputType.text,
       this.ignoreValidation = false,

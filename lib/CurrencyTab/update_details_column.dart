@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UpdateColumn extends StatefulWidget {
   final UpdateListen updateListen;
 
-  const UpdateColumn({@required this.updateListen, Key key}) : super(key: key);
+  const UpdateColumn({required this.updateListen, Key key}) : super(key: key);
 
   @override
   _UpdateColumnState createState() => _UpdateColumnState();
@@ -167,9 +167,9 @@ class _UpdateColumnState extends State<UpdateColumn> {
   }
 
   Widget textDetail(
-      {@required String title,
-      @required String value,
-      @required BuildContext context}) {
+      {required String title,
+      required String value,
+      required BuildContext context}) {
     Color default = Theme.of(context).textTheme.labelLarge.color;
 
     if (value == CommonsData.errorToken) default = Colors.redAccent;
@@ -197,7 +197,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
     );
   }
 
-  Widget srcLink({@required BuildContext context}) => Row(
+  Widget srcLink({required BuildContext context}) => Row(
         children: [
           Text(
             'Source: ',

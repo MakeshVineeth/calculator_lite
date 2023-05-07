@@ -6,9 +6,9 @@ import 'package:path_provider/path_provider.dart';
 class ExportExcel {
   final String fileName;
 
-  const ExportExcel({@required this.fileName});
+  const ExportExcel({required this.fileName});
 
-  Future<String> writeExcel({@required List<Map<String, String>> data}) async {
+  Future<String> writeExcel({required List<Map<String, String>> data}) async {
     try {
       var excel = Excel.createExcel();
       Sheet sheetObject = excel['Sheet1'];

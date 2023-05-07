@@ -5,7 +5,7 @@ import 'dart:ui';
 class BlurredWindow extends StatefulWidget {
   final Widget child;
 
-  const BlurredWindow({@required this.child, Key key}) : super(key: key);
+  const BlurredWindow({required this.child, Key key}) : super(key: key);
 
   @override
   _BlurredWindowState createState() => _BlurredWindowState();
@@ -57,7 +57,7 @@ class _BlurredWindowState extends State<BlurredWindow> {
 }
 
 Future<void> showBlurDialog(
-        {@required BuildContext context, @required Widget child}) =>
+        {required BuildContext context, required Widget child}) =>
     showDialog(
       context: context,
       barrierColor: Colors.transparent,

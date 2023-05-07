@@ -10,11 +10,11 @@ class ButtonLinks extends StatelessWidget {
 
   const ButtonLinks(
       {this.function,
-      @required this.title,
+      required this.title,
       this.foregroundColor = Colors.white,
       this.iconColor = Colors.white,
       this.backgroundColor = Colors.green,
-      @required this.icon,
+      required this.icon,
       Key key})
       : super(key: key);
 

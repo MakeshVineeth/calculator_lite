@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 part 'currency_list_item.g.dart';
@@ -15,8 +14,8 @@ class CurrencyListItem {
   final String currencyName;
 
   CurrencyListItem({
-    @required this.currencyCode,
-    @required this.flagURL,
-    @required this.currencyName,
+    required this.currencyCode,
+    required this.flagURL,
+    required this.currencyName,
   });
 }
