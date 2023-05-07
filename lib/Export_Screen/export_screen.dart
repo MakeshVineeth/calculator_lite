@@ -112,7 +112,8 @@ class _ExportScreenState extends State<ExportScreen> {
                                       text: 'Share',
                                       function: () => exportEvent(),
                                     ),
-                                    if (snapshot.data != null) // Checks if OS SDK26+
+                                    if (snapshot.data !=
+                                        null) // Checks if OS SDK26+
                                       ButtonCustom(
                                         text: 'Save',
                                         function: () => exportEvent(save: true),
@@ -298,7 +299,8 @@ class _ExportScreenState extends State<ExportScreen> {
             if (save) {
               kotlinFile(file.path);
             } else {
-              await Share.shareFiles([status], text: 'Logging Excel File');
+              await Share.shareXFiles([XFile('status')],
+                  text: 'Logging Excel File');
               if (file.existsSync()) {
                 file.deleteSync();
                 clearStatus();

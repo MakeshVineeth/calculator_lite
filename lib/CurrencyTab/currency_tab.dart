@@ -85,7 +85,12 @@ class _CurrencyTabState extends State<CurrencyTab> {
                           ),
                           Flexible(
                             child: SmallToolBtn(
-                              function: () => popCurBtns(),
+                              function: () {
+                                popCurBtns().then((value) {
+                                  showSlideUp(
+                                      context: context, menuList: value);
+                                });
+                              },
                               icon: Icons.expand_more_outlined,
                             ),
                           ),
@@ -112,7 +117,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
     );
   }
 
-  void popCurBtns() async {
+  Future<Map<String, Function>> popCurBtns() async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     final status = preferences.getString(CommonsData.autoUpdatePref) ??
         CommonsData.autoUpdateEnabled;
@@ -155,7 +160,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
       }
     };
 
-    showSlideUp(context: context, menuList: menuList);
+    return menuList;
   }
 
   void addCurrencyCard() async {

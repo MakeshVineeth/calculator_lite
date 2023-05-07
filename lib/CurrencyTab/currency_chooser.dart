@@ -36,7 +36,12 @@ class CurrencyChooser extends StatelessWidget {
 
                 return ListTile(
                   shape: FixedValues.roundShapeLarge,
-                  onTap: () => onTap(context, currencyListItem),
+                  onTap: () {
+                    onTap(context, currencyListItem).then((value) {
+                      FocusScope.of(context).unfocus();
+                      Navigator.of(context, rootNavigator: true).pop();
+                    });
+                  },
                   leading: FlagIcon(flagURL: currencyListItem.flagURL),
                   title: Text(
                     '${currencyListItem.currencyName} (${currencyListItem.currencyCode})',
@@ -50,12 +55,11 @@ class CurrencyChooser extends StatelessWidget {
     );
   }
 
-  void onTap(BuildContext context, CurrencyListItem currencyListItem) async {
+  Future<void> onTap(
+      BuildContext context, CurrencyListItem currencyListItem) async {
     Box box = Hive.box(method);
     await box.putAt(boxIndex, currencyListItem);
     await Hive.openBox(currencyListItem.currencyCode.toLowerCase());
-    FocusScope.of(context).unfocus();
-    Navigator.of(context, rootNavigator: true).pop();
   }
 
   static Future<void> show({
