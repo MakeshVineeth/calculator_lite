@@ -31,7 +31,7 @@ class CalculatorTab extends StatefulWidget {
 class _CalculatorTabState extends State<CalculatorTab> {
   late Widget _currentChild;
   bool secondPageFlip = false;
-  List<String> calculationString = [];
+  List<String> calculationString = List.empty(growable: true);
   double mainValue = 0;
   String currentMetric = "";
   late Timer timer;
