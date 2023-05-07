@@ -177,23 +177,27 @@ class _UpdateColumnState extends State<UpdateColumn> {
       defaultColor = Colors.green;
     }
 
-    return Row(
-      children: [
-        Text(
-          title,
-          style: statusStyle,
-        ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: Text(
-            value,
-            style: statusStyle.copyWith(
-              color: defaultColor,
-            ),
-            key: UniqueKey(),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: statusStyle,
           ),
-        ),
-      ],
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: Text(
+              value,
+              style: statusStyle.copyWith(
+                color: defaultColor,
+              ),
+              key: UniqueKey(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

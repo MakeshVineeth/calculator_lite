@@ -43,7 +43,7 @@ class ThemeButtons extends StatefulWidget {
 }
 
 class _ThemeButtonsState extends State<ThemeButtons> {
-  late String _currentThemeString;
+  String _currentThemeString = 'System Default';
   late ThemeChange themeChange;
 
   void getCurrentThemeStat() async {

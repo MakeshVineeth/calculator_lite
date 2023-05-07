@@ -32,8 +32,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
   late Widget _currentChild;
   bool secondPageFlip = false;
   List<String> calculationString = [];
-  late double mainValue;
-  late String currentMetric;
+  double mainValue = 0;
+  String currentMetric = "";
   late Timer timer;
   final MethodChannel _androidAppRetain =
       const MethodChannel("kotlin.flutter.dev");
