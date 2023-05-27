@@ -1,11 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/material.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
+import 'package:flutter/material.dart';
 
 class CalcButtons extends StatefulWidget {
   final List rowData;
   final int index;
-  final Function displayFunction;
+  final VoidCallback displayFunction;
   final bool isCornerRows;
 
   const CalcButtons(
@@ -45,7 +45,7 @@ class _CalcButtonsState extends State<CalcButtons> {
             child: Container(
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
-                onPressed: () => widget.displayFunction,
+                onPressed: widget.displayFunction,
                 child: IgnorePointer(
                   child: FadeThis(
                     child: AutoSizeText(

@@ -1,25 +1,27 @@
 import 'dart:async';
+import 'dart:io' show Platform, exit;
+
+import 'package:calculator_lite/Backend/calc_parser.dart';
+import 'package:calculator_lite/Backend/custom_focus_events.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';
+import 'package:calculator_lite/UIElements/about_page.dart';
+import 'package:calculator_lite/UIElements/calc_buttons.dart';
+import 'package:calculator_lite/UIElements/display_screen.dart';
+import 'package:calculator_lite/UIElements/show_slide_up.dart';
+import 'package:calculator_lite/UIElements/theme_chooser.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/secure_mode.dart';
-import 'package:flutter/foundation.dart';
-import 'HistoryTab/commons_history.dart';
-import 'package:calculator_lite/Backend/custom_focus_events.dart';
-import 'package:flutter/material.dart';
-import 'package:calculator_lite/UIElements/display_screen.dart';
-import 'package:calculator_lite/UIElements/calc_buttons.dart';
-import 'package:calculator_lite/UIElements/show_slide_up.dart';
-import 'package:calculator_lite/Backend/calc_parser.dart';
 import 'package:calculator_lite/fixed_values.dart';
-import 'package:hive/hive.dart';
-import 'HistoryTab/history_item.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
-import 'HistoryTab/Backend/history_functions.dart';
-import 'package:calculator_lite/UIElements/about_page.dart';
-import 'package:calculator_lite/UIElements/theme_chooser.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io' show Platform, exit;
+import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'HistoryTab/Backend/history_functions.dart';
+import 'HistoryTab/commons_history.dart';
+import 'HistoryTab/history_item.dart';
 
 class CalculatorTab extends StatefulWidget {
   const CalculatorTab({Key? key}) : super(key: key);
@@ -34,7 +36,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   List<String> calculationString = List.empty(growable: true);
   double mainValue = 0;
   String currentMetric = "";
-  late Timer timer;
+  Timer? timer;
   final MethodChannel _androidAppRetain =
       const MethodChannel("kotlin.flutter.dev");
   final HelperFunctions _helperFunctions = HelperFunctions();
@@ -50,8 +52,11 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   @override
   void dispose() {
+    if (timer != null && timer!.isActive) {
+      timer?.cancel();
+    }
+
     super.dispose();
-    timer.cancel();
   }
 
   void getCurrentMetrics() async {
@@ -70,7 +75,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
     required BuildContext context,
     required CustomFocusEvents focus,
   }) {
-    timer.cancel();
+    if (timer != null && timer!.isActive) {
+      timer?.cancel();
+    }
+
     bool isFocused = focus.isFocused;
 
     // First check for down or up arrow buttons
