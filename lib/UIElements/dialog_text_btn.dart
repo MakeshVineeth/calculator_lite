@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixed_values.dart';
+import 'package:flutter/material.dart';
 
 class DialogTextBtn extends StatelessWidget {
   final Function function;
@@ -14,7 +14,10 @@ class DialogTextBtn extends StatelessWidget {
       style: ButtonStyle(
         shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
       ),
-      onPressed: () => function(),
+      onPressed: () {
+        function();
+        Navigator.of(context).pop();
+      },
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Text(

@@ -141,22 +141,23 @@ class _HistoryTabState extends State<HistoryTab> {
           if (listener.isNotEmpty) {
             return Expanded(
               child: ListView.builder(
-                reverse: true,
                 physics: const AlwaysScrollableScrollPhysics(
                     parent: BouncingScrollPhysics()),
                 itemCount: listener.length,
                 cacheExtent: 2000,
                 itemBuilder: (context, index) {
-                  final HistoryItem historyItem = box.getAt(index);
+                  final indexVal = (listener.length - 1) - index;
+                  final HistoryItem historyItem = box.getAt(indexVal);
 
-                  if (historyItem.title
-                      .trim()
-                      .toLowerCase()
-                      .contains(searchString)) {
+                  if (searchString.isEmpty ||
+                      historyItem.title
+                          .trim()
+                          .toLowerCase()
+                          .contains(searchString)) {
                     return SizedBox(
                       height: 200,
-                      child:
-                          HistoryCard(index: index, historyItem: historyItem),
+                      child: HistoryCard(
+                          index: indexVal, historyItem: historyItem),
                     );
                   } else {
                     return nil;
