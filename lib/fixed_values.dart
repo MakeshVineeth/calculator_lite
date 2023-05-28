@@ -87,6 +87,7 @@ class FixedValues {
     bool isLight = brightness == Brightness.light;
     MaterialColor foreground = isLight ? Colors.red : Colors.yellow;
     Color? background = isLight ? Colors.white : Colors.grey[900];
+    Color? foregroundText = isLight ? Colors.black : Colors.white;
     Color? backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
@@ -124,6 +125,10 @@ class FixedValues {
           elevation: isLight ? 2.0 : 10.0,
         ),
       ),
+      textTheme: Theme.of(context).textTheme.apply(
+            bodyColor: foregroundText,
+            displayColor: foregroundText,
+          ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           shape: roundShapeBtns,

@@ -114,7 +114,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
     // Code for =
     else if (value.contains('=')) {
       if (DisplayScreen.isDoubleValid(mainValue)) {
-        addToHistory();
+        String calcStr = calculationString.join();
+        addToHistory(calcStr);
 
         setState(() {
           calculationString.clear();
@@ -156,7 +157,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
     double getValue = await calcParser.getValue();
     setState(() => mainValue = getValue);
 
-    timer = Timer(const Duration(seconds: 6), () => addToHistory());
+    String calcStr = calculationString.join();
+    timer = Timer(const Duration(seconds: 6), () => addToHistory(calcStr));
   }
 
   static List<String> getCalcStrIsolate(Map<dynamic, dynamic> args) {
@@ -168,7 +170,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     return calcParser.addToExpression(args['value']);
   }
 
-  void addToHistory() async {
+  void addToHistory(String historyCalcStr) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     String status = preferences.getString(CommonsHistory.historyStatusPref) ??
         CommonsHistory.historyEnabled;
@@ -177,10 +179,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
         Hive.isBoxOpen(CommonsHistory.historyBox)) {
       final Box box = Hive.box(CommonsHistory.historyBox);
 
-      if (calculationString.isNotEmpty) {
+      if (historyCalcStr.isNotEmpty) {
         final DateTime now = DateTime.now();
         final HistoryItem historyItem = HistoryItem(
-          expression: calculationString.join(),
+          expression: historyCalcStr,
           value: mainValue.toString(),
           dateTime: now,
           title: getFormattedTitle(now),
