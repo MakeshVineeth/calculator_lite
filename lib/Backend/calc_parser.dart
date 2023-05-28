@@ -1,9 +1,10 @@
+import 'dart:math' as math;
+
+import 'package:calculator_lite/Backend/helper_functions.dart';
+import 'package:calculator_lite/UIElements/display_screen.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/foundation.dart';
 import 'package:math_expressions/math_expressions.dart';
-import 'package:calculator_lite/fixed_values.dart';
-import 'package:calculator_lite/UIElements/display_screen.dart';
-import 'package:calculator_lite/Backend/helper_functions.dart';
-import 'dart:math' as math;
 
 class CalcParser {
   List<String> calculationString;
@@ -110,7 +111,7 @@ class CalcParser {
                   helperFunctions.operations.contains(lastChar))) {
             calculationString.add(value);
           }
-        } else {
+        } else if (value.isNotEmpty) {
           calculationString.add(value);
         }
       }
@@ -129,7 +130,7 @@ class CalcParser {
         calculationString.addAll(['e', '^']);
       } else if (value == '𝟏𝟬ˣ') {
         calculationString.addAll(['1', '0', '^']);
-      } else {
+      } else if (value.isNotEmpty) {
         calculationString.add(value);
       }
     }
@@ -548,8 +549,8 @@ class CalcParser {
                 .contains(computerStr[index - 1])) {
           computerStr.replaceRange(index, count, replaceRoot);
         } else {
-          replaceRoot[0] = '*${replaceRoot[
-                  0]}'; // Add * for those that do not contain any operator before.
+          replaceRoot[0] =
+              '*${replaceRoot[0]}'; // Add * for those that do not contain any operator before.
           computerStr.replaceRange(index, count, replaceRoot);
         }
       }

@@ -109,6 +109,7 @@ class _CardUIState extends State<CardUI> {
       child: ClipRRect(
         borderRadius: FixedValues.large,
         child: Slidable(
+          closeOnScroll: true,
           endActionPane: ActionPane(
             motion: const DrawerMotion(),
             children: <SlidePanelItem>[
@@ -219,8 +220,8 @@ class _CardUIState extends State<CardUI> {
                 ),
                 label: Text(
                   (isFromMethod(method)
-                          ? fromCur.currencyCode
-                          : toCur.currencyCode),
+                      ? fromCur.currencyCode
+                      : toCur.currencyCode),
                   style: TextStyle(
                     height: 1,
                     fontWeight: FontWeight.w600,
@@ -267,8 +268,8 @@ class _CardUIState extends State<CardUI> {
       double? val = double.tryParse(from);
 
       // making sure text is an integer & format it using currency format.
-      if (!textArray.contains('.') &&
-          helperFunctions.isInteger(val!)) from = formatCurrency.format(val);
+      if (!textArray.contains('.') && helperFunctions.isInteger(val!))
+        from = formatCurrency.format(val);
 
       // display the new currency formatted numbers. Following code if users types in Left Text Box.
       if (isFrom) {

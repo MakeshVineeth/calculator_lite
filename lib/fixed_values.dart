@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:charcode/charcode.dart' as charcode;
+import 'package:flutter/material.dart';
 
 class FixedValues {
   // Set Symbols from Flutter CharCode Library and Static to access across all files.
@@ -98,7 +98,9 @@ class FixedValues {
         color: background,
         elevation: isLight ? 2.0 : 10.0,
         shape: FixedValues.roundShapeLarge,
+        surfaceTintColor: Colors.transparent,
       ),
+      cardColor: background,
       appBarTheme: Theme.of(context).appBarTheme.copyWith(
             centerTitle: true,
             titleSpacing: 1,
@@ -116,7 +118,8 @@ class FixedValues {
       applyElevationOverlayColor: !isLight,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          foregroundColor: foreground, backgroundColor: background,
+          foregroundColor: foreground,
+          backgroundColor: background,
           shape: roundShapeBtns,
           elevation: isLight ? 2.0 : 10.0,
         ),
@@ -125,10 +128,14 @@ class FixedValues {
         style: TextButton.styleFrom(
           shape: roundShapeBtns,
         ),
-      ), colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground).copyWith(
-        secondary: foreground,
-        brightness: brightness,
-      ).copyWith(background: backgroundScaffold), bottomAppBarTheme: BottomAppBarTheme(color: backgroundScaffold),
+      ),
+      colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground)
+          .copyWith(
+            secondary: foreground,
+            brightness: brightness,
+          )
+          .copyWith(background: backgroundScaffold),
+      bottomAppBarTheme: BottomAppBarTheme(color: backgroundScaffold),
     );
   }
 

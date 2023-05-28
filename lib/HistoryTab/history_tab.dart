@@ -1,15 +1,17 @@
 import 'dart:io';
+
 import 'package:animated_search_bar/animated_search_bar.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/HistoryTab/history_card.dart';
 import 'package:calculator_lite/HistoryTab/history_item.dart';
+import 'package:calculator_lite/UIElements/show_slide_up.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:nil/nil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'commons_history.dart';
-import 'package:calculator_lite/UIElements/show_slide_up.dart';
-import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 
 class HistoryTab extends StatefulWidget {
   const HistoryTab({Key? key}) : super(key: key);
@@ -53,8 +55,9 @@ class _HistoryTabState extends State<HistoryTab> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: FixedValues.large,
                       borderSide: BorderSide(
-                        color:
-                            isLightTheme ? Colors.grey[600]! : Colors.grey[350]!,
+                        color: isLightTheme
+                            ? Colors.grey[600]!
+                            : Colors.grey[350]!,
                         width: widthSearchBorder,
                       ),
                     ),
@@ -138,6 +141,7 @@ class _HistoryTabState extends State<HistoryTab> {
           if (listener.isNotEmpty) {
             return Expanded(
               child: ListView.builder(
+                reverse: true,
                 physics: const AlwaysScrollableScrollPhysics(
                     parent: BouncingScrollPhysics()),
                 itemCount: listener.length,
