@@ -32,7 +32,7 @@ class CommonsData {
 
     try {
       return await dio.get(url);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       debugPrint("DioError: ${e.message}");
       return null;
     } catch (e) {

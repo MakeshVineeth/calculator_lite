@@ -268,8 +268,9 @@ class _CardUIState extends State<CardUI> {
       double? val = double.tryParse(from);
 
       // making sure text is an integer & format it using currency format.
-      if (!textArray.contains('.') && helperFunctions.isInteger(val!))
+      if (!textArray.contains('.') && helperFunctions.isInteger(val!)) {
         from = formatCurrency.format(val);
+      }
 
       // display the new currency formatted numbers. Following code if users types in Left Text Box.
       if (isFrom) {
