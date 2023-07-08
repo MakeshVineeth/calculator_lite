@@ -1,11 +1,12 @@
+import 'dart:io' show Platform;
+
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
-import 'dart:io' show Platform;
 
 Future<void> setPrefs(String title, bool data) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -97,6 +98,7 @@ Future<void> launchThisUrl({
 
     await launchUrl(
       urlEncoded,
+      mode: LaunchMode.externalApplication,
     );
   } catch (_) {}
 }
