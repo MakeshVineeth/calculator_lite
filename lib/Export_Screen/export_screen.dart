@@ -1,3 +1,5 @@
+import 'dart:io' show File;
+
 import 'package:calculator_lite/Export_Screen/validate_functions.dart';
 import 'package:calculator_lite/HistoryTab/commons_history.dart';
 import 'package:calculator_lite/HistoryTab/history_item.dart';
@@ -5,15 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
+
+import 'button_custom.dart';
+import 'date_field_custom.dart';
 import 'export_commons.dart';
 import 'export_helpers.dart';
 import 'export_method.dart';
-import 'button_custom.dart';
-import 'date_field_custom.dart';
 import 'status_tooltip.dart';
-import 'dart:io' show File;
-import 'package:share_plus/share_plus.dart';
-import 'package:intl/intl.dart';
 
 class ExportScreen extends StatefulWidget {
   const ExportScreen({Key? key}) : super(key: key);
@@ -295,15 +297,29 @@ class _ExportScreenState extends State<ExportScreen> {
           // If not null, then Share as the file exists.
           if (status != null) {
             File file = File(status);
+            if (!await file.exists()) {
+              setStatus(text: "Unable to create file", isError: true);
+              return;
+            }
 
             if (save) {
               kotlinFile(file.path);
             } else {
-              await Share.shareXFiles([XFile('status')],
-                  text: 'Logging Excel File');
-              if (file.existsSync()) {
-                file.deleteSync();
+              List<XFile> files = [];
+              XFile fileForSharing = XFile(file.path);
+              files.add(fileForSharing);
+
+              ShareResult shareResult =
+                  await Share.shareXFiles(files, text: 'Logging Excel File');
+
+              if (await file.exists()) {
+                await file.delete();
                 clearStatus();
+              }
+
+              if (shareResult.status != ShareResultStatus.success) {
+                setStatus(text: "Unable to share", isError: true);
+                return;
               }
             }
           }

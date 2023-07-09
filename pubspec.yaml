@@ -36,7 +36,7 @@ dependencies:
   in_app_review: ^2.0.6
   quick_actions: ^1.0.2
   flutter_displaymode: ^0.6.0
-  share_plus: ^7.0.2
+  share_plus: ^7.0.0
   slide_popup_dialog_null_safety: ^1.0.0
   flutter_statusbarcolor_ns: ^0.5.0
   animated_search_bar: ^2.5.0

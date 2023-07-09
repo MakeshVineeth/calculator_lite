@@ -17,13 +17,12 @@ class TutorialDialog extends StatelessWidget {
         actions: [
           DialogTextBtn(
             title: 'No Need',
-            function: () => Navigator.pop(context),
+            function: () {},
           ),
           DialogTextBtn(
             title: 'Open FAQ',
             function: () {
               launchThisUrl(url: FixedValues.faqUrl);
-              Navigator.pop(context);
             },
           ),
         ],
