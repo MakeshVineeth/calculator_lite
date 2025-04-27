@@ -5,14 +5,13 @@ class DialogTextBtn extends StatelessWidget {
   final Function function;
   final String title;
 
-  const DialogTextBtn({required this.function, required this.title, Key? key})
-      : super(key: key);
+  const DialogTextBtn({required this.function, required this.title, super.key});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(
-        shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+        shape: WidgetStateProperty.all(FixedValues.roundShapeLarge),
       ),
       onPressed: () {
         function();

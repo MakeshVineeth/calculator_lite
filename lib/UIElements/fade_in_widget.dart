@@ -7,8 +7,7 @@ class FadeThis extends StatefulWidget {
   const FadeThis(
       {required this.child,
       this.duration = const Duration(milliseconds: 400),
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   State<FadeThis> createState() => _FadeThisState();

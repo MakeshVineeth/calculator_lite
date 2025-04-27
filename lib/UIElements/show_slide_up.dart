@@ -41,7 +41,7 @@ Widget buttonDesigned(
     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
     child: TextButton(
       style: ButtonStyle(
-        shape: MaterialStateProperty.all(FixedValues.roundShapeLarge),
+        shape: WidgetStateProperty.all(FixedValues.roundShapeLarge),
       ),
       onPressed: () => function(),
       child: IgnorePointer(

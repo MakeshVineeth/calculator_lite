@@ -14,8 +14,7 @@ class SlidePanelItem extends StatelessWidget {
       required this.dark,
       required this.light,
       required this.label,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {

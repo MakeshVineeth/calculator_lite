@@ -24,7 +24,7 @@ import 'HistoryTab/commons_history.dart';
 import 'HistoryTab/history_item.dart';
 
 class CalculatorTab extends StatefulWidget {
-  const CalculatorTab({Key? key}) : super(key: key);
+  const CalculatorTab({super.key});
 
   @override
   State<CalculatorTab> createState() => _CalculatorTabState();

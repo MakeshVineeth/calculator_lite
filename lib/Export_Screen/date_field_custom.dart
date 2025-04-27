@@ -13,8 +13,7 @@ class DateFieldCustom extends StatefulWidget {
       {required this.dateController,
       this.dateText,
       this.ignoreValidation = false,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   State<DateFieldCustom> createState() => _DateFieldCustomState();

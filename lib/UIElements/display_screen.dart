@@ -6,8 +6,7 @@ import 'package:auto_size_text_field/auto_size_text_field.dart';
 
 class DisplayScreen extends StatefulWidget {
   const DisplayScreen(
-      {required this.calculationString, required this.mainValue, Key? key})
-      : super(key: key);
+      {required this.calculationString, required this.mainValue, super.key});
 
   final List<String> calculationString;
   final double mainValue;

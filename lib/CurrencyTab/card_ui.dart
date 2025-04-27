@@ -16,12 +16,12 @@ class CardUI extends StatefulWidget {
   final bool remove;
   final ResetFormProvider resetFormProvider;
 
-  const CardUI(
-      {required this.index,
-      this.remove = false,
-      required this.resetFormProvider,
-      Key? key})
-      : super(key: key);
+  const CardUI({
+    required this.index,
+    this.remove = false,
+    required this.resetFormProvider,
+    super.key,
+  });
 
   @override
   State<CardUI> createState() => _CardUIState();
@@ -144,24 +144,26 @@ class _CardUIState extends State<CardUI> {
   }
 
   void delete() => Future.delayed(CommonsData.dur1, () {
-        FocusScope.of(context).unfocus();
-        fromBox.deleteAt(widget.index);
-        toBox.deleteAt(widget.index);
-        AnimatedList.of(context).removeItem(
-          widget.index,
-          (context, animation) => SizeTransition(
-            sizeFactor: animation,
-            child: FadeTransition(
-              opacity: animation,
-              child: CardUI(
-                index: widget.index,
-                remove: true,
-                resetFormProvider: widget.resetFormProvider,
-              ),
-            ),
+    if (!context.mounted) return;
+
+    FocusScope.of(context).unfocus();
+    fromBox.deleteAt(widget.index);
+    toBox.deleteAt(widget.index);
+    AnimatedList.of(context).removeItem(
+      widget.index,
+      (context, animation) => SizeTransition(
+        sizeFactor: animation,
+        child: FadeTransition(
+          opacity: animation,
+          child: CardUI(
+            index: widget.index,
+            remove: true,
+            resetFormProvider: widget.resetFormProvider,
           ),
-        );
-      });
+        ),
+      ),
+    );
+  });
 
   Widget buttonToolTipInfo() {
     if (!widget.remove) {
@@ -178,15 +180,17 @@ class _CardUIState extends State<CardUI> {
     updateExchange();
 
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) => handleFromText(controllerFrom.text, CommonsData.fromBox));
+      (_) => handleFromText(controllerFrom.text, CommonsData.fromBox),
+    );
 
     return Text(
       currentRateStr,
       style: TextStyle(
         fontSize: 13,
-        color: Theme.of(context).brightness == Brightness.dark
-            ? Colors.grey[350]
-            : Colors.grey[700],
+        color:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[350]
+                : Colors.grey[700],
       ),
     );
   }
@@ -204,36 +208,36 @@ class _CardUIState extends State<CardUI> {
   }
 
   Widget buttonCurrency(String method) => Expanded(
-        child: ListTile(
-          title: Row(
-            children: <Widget>[
-              ElevatedButton.icon(
-                style: ButtonStyle(
-                  elevation: MaterialStateProperty.all(0),
-                  padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 5)),
-                ),
-                onPressed: () => displayCurrencyChooser(method),
-                icon: FlagIcon(
-                  flagURL:
-                      isFromMethod(method) ? fromCur.flagURL : toCur.flagURL,
-                ),
-                label: Text(
-                  (isFromMethod(method)
-                      ? fromCur.currencyCode
-                      : toCur.currencyCode),
-                  style: TextStyle(
-                    height: 1,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).textTheme.labelLarge?.color,
-                  ),
-                ),
-              )
-            ],
+    child: ListTile(
+      title: Row(
+        children: <Widget>[
+          ElevatedButton.icon(
+            style: ButtonStyle(
+              elevation: WidgetStateProperty.all(0),
+              padding: WidgetStateProperty.all(
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
+              ),
+            ),
+            onPressed: () => displayCurrencyChooser(method),
+            icon: FlagIcon(
+              flagURL: isFromMethod(method) ? fromCur.flagURL : toCur.flagURL,
+            ),
+            label: Text(
+              (isFromMethod(method)
+                  ? fromCur.currencyCode
+                  : toCur.currencyCode),
+              style: TextStyle(
+                height: 1,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).textTheme.labelLarge?.color,
+              ),
+            ),
           ),
-          subtitle: getTextField(method),
-        ),
-      );
+        ],
+      ),
+      subtitle: getTextField(method),
+    ),
+  );
 
   void handleFromText(String from, String method) {
     try {
@@ -281,13 +285,13 @@ class _CardUIState extends State<CardUI> {
         );
 
         if (val != null) {
-          controllerTo.text =
-              (val * exchangeRate).toStringAsFixed(decimalPlaces);
+          controllerTo.text = (val * exchangeRate).toStringAsFixed(
+            decimalPlaces,
+          );
         } else {
           controllerTo.clear();
         }
       }
-
       // Following code if users types in Right Text Box.
       else {
         controllerTo.text = from;
@@ -297,8 +301,9 @@ class _CardUIState extends State<CardUI> {
         );
 
         if (val != null) {
-          controllerFrom.text =
-              (val / exchangeRate).toStringAsFixed(decimalPlaces);
+          controllerFrom.text = (val / exchangeRate).toStringAsFixed(
+            decimalPlaces,
+          );
         } else {
           controllerFrom.clear();
         }
@@ -313,35 +318,38 @@ class _CardUIState extends State<CardUI> {
   );
 
   Widget getTextField(String method) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Card(
-          color: Theme.of(context).brightness == Brightness.light
+    padding: const EdgeInsets.symmetric(vertical: 2),
+    child: Card(
+      color:
+          Theme.of(context).brightness == Brightness.light
               ? Theme.of(context).scaffoldBackgroundColor
               : Colors.black45,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: TextFormField(
-              controller: isFromMethod(method) ? controllerFrom : controllerTo,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              onChanged: (str) => handleFromText(str, method),
-              showCursor: true,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintStyle: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: TextFormField(
+          controller: isFromMethod(method) ? controllerFrom : controllerTo,
+          keyboardType: const TextInputType.numberWithOptions(
+            decimal: true,
+            signed: true,
+          ),
+          onChanged: (str) => handleFromText(str, method),
+          showCursor: true,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintStyle: TextStyle(
+              color:
+                  Theme.of(context).brightness == Brightness.light
                       ? Colors.grey[800]
                       : Colors.grey,
-                ),
-                hintText: placeholder,
-                fillColor: Colors.white70,
-              ),
-              scrollPhysics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics()),
             ),
+            hintText: placeholder,
+            fillColor: Colors.white70,
+          ),
+          scrollPhysics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

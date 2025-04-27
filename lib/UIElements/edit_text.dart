@@ -5,8 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:auto_size_text_field/auto_size_text_field.dart';
 
 class TextFieldCalc extends StatefulWidget {
-  const TextFieldCalc({required this.calculationString, Key? key})
-      : super(key: key);
+  const TextFieldCalc({required this.calculationString, super.key});
 
   final List<String> calculationString;
   @override

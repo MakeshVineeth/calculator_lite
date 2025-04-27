@@ -71,7 +71,9 @@ class CalcParser {
           reciprocalFunction();
         } else if (value.contains(FixedValues.minus)) {
           if (!([FixedValues.cubeRootSym, FixedValues.root, FixedValues.minus]
-              .contains(lastChar))) calculationString.add(value);
+              .contains(lastChar))) {
+            calculationString.add(value);
+          }
         }
 
         // Code for add bracket after following functions.
@@ -335,7 +337,7 @@ class CalcParser {
 
   double evalFunction(List<String> calcStr) {
     try {
-      Parser p = Parser();
+      GrammarParser p = GrammarParser();
       String comptStr = computerString(calcStr);
       Expression exp = p.parse(
           comptStr); // evalFunction is executed first, internally function asks for computerString.
@@ -526,7 +528,9 @@ class CalcParser {
                 FixedValues.sup3,
                 'log(',
                 'ln('
-              ].contains(computerStr[count])) break;
+              ].contains(computerStr[count])) {
+            break;
+          }
         }
       }
 

@@ -12,8 +12,7 @@ class CurrencyChooser extends StatelessWidget {
   final int boxIndex;
   final String method;
 
-  CurrencyChooser({required this.boxIndex, required this.method, Key? key})
-      : super(key: key);
+  CurrencyChooser({required this.boxIndex, required this.method, super.key});
 
   @override
   Widget build(BuildContext context) {

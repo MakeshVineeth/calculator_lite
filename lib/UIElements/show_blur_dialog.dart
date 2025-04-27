@@ -5,7 +5,7 @@ import 'dart:ui';
 class BlurredWindow extends StatefulWidget {
   final Widget child;
 
-  const BlurredWindow({required this.child, Key? key}) : super(key: key);
+  const BlurredWindow({required this.child, super.key});
 
   @override
   State<BlurredWindow> createState() => _BlurredWindowState();

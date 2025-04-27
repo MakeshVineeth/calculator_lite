@@ -36,7 +36,7 @@ void main() async {
 }
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  const BottomNavBar({super.key});
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -65,12 +65,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     return ThemeChange(
       stateFunction: setThemeFunction,
-      newChild: (Platform.isAndroid)
-          ? PaymentsWrapper(child: materialApp(setTheme, context))
-          : ChangeNotifierProvider<PurchaseStatusProvider>.value(
-              value: PurchaseStatusProvider(),
-              child: materialApp(setTheme, context),
-            ),
+      newChild:
+          (Platform.isAndroid)
+              ? PaymentsWrapper(child: materialApp(setTheme, context))
+              : ChangeNotifierProvider<PurchaseStatusProvider>.value(
+                value: PurchaseStatusProvider(),
+                child: materialApp(setTheme, context),
+              ),
     );
   }
 }
@@ -92,7 +93,7 @@ Widget materialApp(final ThemeMode setTheme, BuildContext context) =>
     );
 
 class ScaffoldHome extends StatefulWidget {
-  const ScaffoldHome({Key? key}) : super(key: key);
+  const ScaffoldHome({super.key});
 
   @override
   State<ScaffoldHome> createState() => _ScaffoldHomeState();
@@ -109,13 +110,13 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   final Map<String, IconData> tabs = {
     FixedValues.currencyTabTitle: Icons.monetization_on_outlined,
     FixedValues.calculatorTabTitle: Icons.calculate_outlined,
-    FixedValues.historyTabTitle: Icons.history_outlined
+    FixedValues.historyTabTitle: Icons.history_outlined,
   };
 
   final List<Widget> availableWidgets = <Widget>[
     const CurrencyTab(),
     const CalculatorTab(),
-    const HistoryTab()
+    const HistoryTab(),
   ];
 
   void _onItemTapped(int index) {
@@ -202,13 +203,11 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
 
         await box.add(historyItem);
 
-        Future.delayed(
-          const Duration(milliseconds: 600),
-          () => showBlurDialog(
-            context: context,
-            child: const TutorialDialog(),
-          ),
-        );
+        Future.delayed(const Duration(milliseconds: 600), () {
+          if (mounted) {
+            showBlurDialog(context: context, child: const TutorialDialog());
+          }
+        });
       }
 
       await askForReview();
@@ -242,10 +241,11 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
           type: BottomNavigationBarType.fixed,
           items: List.generate(
             tabs.length,
-            (index) => BottomNavClass(
-              title: tabs.keys.elementAt(index),
-              icon: tabs.values.elementAt(index),
-            ).returnNavItems(),
+            (index) =>
+                BottomNavClass(
+                  title: tabs.keys.elementAt(index),
+                  icon: tabs.values.elementAt(index),
+                ).returnNavItems(),
           ),
           onTap: _onItemTapped,
         ),

@@ -15,8 +15,7 @@ class TextFieldCustom extends StatefulWidget {
       this.validate,
       this.textInputType = TextInputType.text,
       this.ignoreValidation = false,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   State<TextFieldCustom> createState() => _TextFieldCustomState();

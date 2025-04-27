@@ -13,8 +13,7 @@ class StatusToolTip extends StatelessWidget {
       this.isError = false,
       this.isLoading = false,
       this.forceLight = false,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {

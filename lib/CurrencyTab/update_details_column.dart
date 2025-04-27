@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UpdateColumn extends StatefulWidget {
   final UpdateListen updateListen;
 
-  const UpdateColumn({required this.updateListen, Key? key}) : super(key: key);
+  const UpdateColumn({required this.updateListen, super.key});
 
   @override
   State<UpdateColumn> createState() => _UpdateColumnState();

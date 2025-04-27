@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class PaymentsWrapper extends StatefulWidget {
   final Widget child;
 
-  const PaymentsWrapper({required this.child, Key? key}) : super(key: key);
+  const PaymentsWrapper({required this.child, super.key});
 
   @override
   State<PaymentsWrapper> createState() => _PaymentsWrapperState();

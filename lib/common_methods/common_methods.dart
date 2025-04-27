@@ -1,12 +1,11 @@
 import 'dart:io' show Platform;
-
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
 
 Future<void> setPrefs(String title, bool data) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -22,9 +21,9 @@ Future<void> setSecure(bool disabled) async {
   try {
     if (Platform.isAndroid) {
       if (!disabled) {
-        await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+        await FlutterWindowManagerPlus.addFlags(FlutterWindowManagerPlus.FLAG_SECURE);
       } else {
-        await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+        await FlutterWindowManagerPlus.clearFlags(FlutterWindowManagerPlus.FLAG_SECURE);
       }
     }
   } catch (_) {}

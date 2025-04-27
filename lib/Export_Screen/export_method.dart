@@ -12,13 +12,14 @@ class ExportExcel {
       var excel = Excel.createExcel();
       Sheet sheetObject = excel['Sheet1'];
 
-      List<String> headers = data.elementAt(0).keys.toList();
+      List<CellValue> headers =
+          data.elementAt(0).keys.map((x) => TextCellValue(x)).toList();
       sheetObject.appendRow(headers);
 
       // Create empty Row with count as headers.
-      List<String> emptyRow = [];
-      for (String _ in headers) {
-        emptyRow.add('');
+      List<CellValue> emptyRow = [];
+      for (CellValue _ in headers) {
+        emptyRow.add(TextCellValue(''));
       }
 
       // emptyRow
@@ -31,22 +32,25 @@ class ExportExcel {
           headers.elementAt(i),
           cellStyle: CellStyle(
             bold: true,
-            fontColorHex: '#0000FF',
+            fontColorHex: ExcelColor.fromHexString("#0000FF"),
           ),
         );
       }
 
       for (var element in data) {
-        sheetObject.appendRow(element.values.toList());
+        sheetObject.appendRow(
+          element.values.map((x) => TextCellValue(x)).toList(),
+        );
       }
 
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = '${tempDir.path}/$fileName.xlsx';
 
       List<int>? dataInts = excel.encode();
-      File file = File(tempPath)
-        ..createSync(recursive: true)
-        ..writeAsBytesSync(dataInts!);
+      File file =
+          File(tempPath)
+            ..createSync(recursive: true)
+            ..writeAsBytesSync(dataInts!);
 
       bool present = file.existsSync();
       return present ? tempPath : null;

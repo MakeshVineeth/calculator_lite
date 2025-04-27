@@ -16,8 +16,7 @@ class EditWidget extends StatefulWidget {
       {required this.index,
       required this.title,
       required this.date,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   State<EditWidget> createState() => _EditWidgetState();

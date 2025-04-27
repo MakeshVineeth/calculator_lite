@@ -18,7 +18,7 @@ import 'export_method.dart';
 import 'status_tooltip.dart';
 
 class ExportScreen extends StatefulWidget {
-  const ExportScreen({Key? key}) : super(key: key);
+  const ExportScreen({super.key});
 
   @override
   State<ExportScreen> createState() => _ExportScreenState();
@@ -55,10 +55,7 @@ class _ExportScreenState extends State<ExportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Export'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Export'), elevation: 0),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -75,7 +72,8 @@ class _ExportScreenState extends State<ExportScreen> {
                       child: SingleChildScrollView(
                         controller: _scrollController,
                         physics: const AlwaysScrollableScrollPhysics(
-                            parent: BouncingScrollPhysics()),
+                          parent: BouncingScrollPhysics(),
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -100,14 +98,16 @@ class _ExportScreenState extends State<ExportScreen> {
                             ),
                             Card(
                               color: Theme.of(context).scaffoldBackgroundColor,
-                              elevation: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Theme.of(context).cardTheme.elevation
-                                  : 2,
+                              elevation:
+                                  Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Theme.of(context).cardTheme.elevation
+                                      : 2,
                               child: SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 physics: const AlwaysScrollableScrollPhysics(
-                                    parent: BouncingScrollPhysics()),
+                                  parent: BouncingScrollPhysics(),
+                                ),
                                 child: Row(
                                   children: [
                                     ButtonCustom(
@@ -173,8 +173,11 @@ class _ExportScreenState extends State<ExportScreen> {
     } on PlatformException catch (_) {}
   }
 
-  void setStatus(
-      {String text = '', bool isError = false, bool isLoading = false}) {
+  void setStatus({
+    String text = '',
+    bool isError = false,
+    bool isLoading = false,
+  }) {
     setState(() {
       _status = text;
       _visibility = true;
@@ -213,17 +216,19 @@ class _ExportScreenState extends State<ExportScreen> {
       bool isValid = _formKey.currentState!.validate();
       setStatus(isLoading: true);
       final Box history = Hive.box(CommonsHistory.historyBox);
-      final List<HistoryItem> data = [...history.values.toList()];
+      final List<HistoryItem> data = [...history.values];
 
       if (isValid && data.isNotEmpty) {
         List<Map<String, String>> allData = [];
 
         for (var element in data) {
-          String formattedDate =
-              DateFormat(CommonStrings.dateFormat).format(element.dateTime);
+          String formattedDate = DateFormat(
+            CommonStrings.dateFormat,
+          ).format(element.dateTime);
           DateTime val = getDateTime(formattedDate);
 
-          bool case1 = checkDateFormat(_dateFrom) == null &&
+          bool case1 =
+              checkDateFormat(_dateFrom) == null &&
               checkDateFormat(_dateTo) == null;
           bool case2 = checkDateFormat(_dateFrom) == null;
           bool case3 = checkDateFormat(_dateTo) == null;
@@ -238,9 +243,9 @@ class _ExportScreenState extends State<ExportScreen> {
                 from.isBefore(val) && to.isAfter(val)) {
               final Map<String, String> eachHistoryItem = {
                 CommonStrings.historyTitle: element.title,
-                CommonStrings.dateTitle: DateFormat.yMMMMd('en_US')
-                    .add_jm()
-                    .format(element.dateTime),
+                CommonStrings.dateTitle: DateFormat.yMMMMd(
+                  'en_US',
+                ).add_jm().format(element.dateTime),
                 CommonStrings.expTextTitle: element.expression,
                 CommonStrings.valTextTile: element.value,
               };
@@ -253,9 +258,9 @@ class _ExportScreenState extends State<ExportScreen> {
             if (from.compareTo(val) == 0 || from.isBefore(val)) {
               final Map<String, String> eachHistoryItem = {
                 CommonStrings.historyTitle: element.title,
-                CommonStrings.dateTitle: DateFormat.yMMMMd('en_US')
-                    .add_jm()
-                    .format(element.dateTime),
+                CommonStrings.dateTitle: DateFormat.yMMMMd(
+                  'en_US',
+                ).add_jm().format(element.dateTime),
                 CommonStrings.expTextTitle: element.expression,
                 CommonStrings.valTextTile: element.value,
               };
@@ -268,9 +273,9 @@ class _ExportScreenState extends State<ExportScreen> {
             if (to.compareTo(val) == 0 || to.isAfter(val)) {
               final Map<String, String> eachHistoryItem = {
                 CommonStrings.historyTitle: element.title,
-                CommonStrings.dateTitle: DateFormat.yMMMMd('en_US')
-                    .add_jm()
-                    .format(element.dateTime),
+                CommonStrings.dateTitle: DateFormat.yMMMMd(
+                  'en_US',
+                ).add_jm().format(element.dateTime),
                 CommonStrings.expTextTitle: element.expression,
                 CommonStrings.valTextTile: element.value,
               };
@@ -280,8 +285,9 @@ class _ExportScreenState extends State<ExportScreen> {
           } else if (case4) {
             final Map<String, String> eachHistoryItem = {
               CommonStrings.historyTitle: element.title,
-              CommonStrings.dateTitle:
-                  DateFormat.yMMMMd('en_US').add_jm().format(element.dateTime),
+              CommonStrings.dateTitle: DateFormat.yMMMMd(
+                'en_US',
+              ).add_jm().format(element.dateTime),
               CommonStrings.expTextTitle: element.expression,
               CommonStrings.valTextTile: element.value,
             };
@@ -291,8 +297,9 @@ class _ExportScreenState extends State<ExportScreen> {
         }
 
         if (allData.isNotEmpty) {
-          String? status = await ExportExcel(fileName: generateFileName())
-              .writeExcel(data: allData);
+          String? status = await ExportExcel(
+            fileName: generateFileName(),
+          ).writeExcel(data: allData);
 
           // If not null, then Share as the file exists.
           if (status != null) {
@@ -309,8 +316,9 @@ class _ExportScreenState extends State<ExportScreen> {
               XFile fileForSharing = XFile(file.path);
               files.add(fileForSharing);
 
-              ShareResult shareResult =
-                  await Share.shareXFiles(files, text: 'Logging Excel File');
+              ShareResult shareResult = await SharePlus.instance.share(
+                ShareParams(files: files, text: 'Logging Excel File'),
+              );
 
               if (await file.exists()) {
                 await file.delete();
@@ -323,19 +331,16 @@ class _ExportScreenState extends State<ExportScreen> {
               }
             }
           }
-
           // If null, display error.
           else {
             setStatus(text: 'Unable to proceed!', isError: true);
           }
         }
-
         // If data is not available within criteria.
         else {
           setStatus(text: 'No items available!', isError: true);
         }
       }
-
       // For validation and data (empty) errors.
       else {
         setStatus(text: 'Unable to Proceed!', isError: true);

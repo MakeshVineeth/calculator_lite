@@ -10,7 +10,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 
 class ProScreen extends StatefulWidget {
-  const ProScreen({Key? key}) : super(key: key);
+  const ProScreen({super.key});
 
   @override
   State<ProScreen> createState() => _ProScreenState();

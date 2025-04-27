@@ -12,8 +12,7 @@ class RadioTileCustom extends StatelessWidget {
       required this.groupValue,
       required this.title,
       required this.function,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {

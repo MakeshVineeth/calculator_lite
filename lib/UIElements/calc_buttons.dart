@@ -13,8 +13,7 @@ class CalcButtons extends StatefulWidget {
       required this.index,
       required this.displayFunction,
       required this.isCornerRows,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   State<CalcButtons> createState() => _CalcButtonsState();

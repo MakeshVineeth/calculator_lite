@@ -41,7 +41,9 @@ class CustomFocusEvents extends ChangeNotifier {
       if (start > 0 && start < len && myText[start - 1] != "d") {
         if (myText[start].contains(FixedValues.root) &&
             myText.length > 1 &&
-            myText[start - 1].contains(FixedValues.sup3)) start -= 1;
+            myText[start - 1].contains(FixedValues.sup3)) {
+          start -= 1;
+        }
 
         int count = start - 1;
         for (; count >= 0; count--) {

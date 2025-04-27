@@ -15,8 +15,7 @@ class HistoryCard extends StatelessWidget {
   final int index;
   final HistoryItem historyItem;
 
-  HistoryCard({Key? key, required this.index, required this.historyItem})
-      : super(key: key);
+  HistoryCard({super.key, required this.index, required this.historyItem});
 
   final Box historyBox = Hive.box(CommonsHistory.historyBox);
   final HelperFunctions _helperFunctions = HelperFunctions();

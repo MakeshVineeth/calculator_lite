@@ -95,7 +95,7 @@ class FixedValues {
       primaryColor: foreground,
       scaffoldBackgroundColor: backgroundScaffold,
       iconTheme: IconThemeData(color: foreground),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: background,
         elevation: isLight ? 2.0 : 10.0,
         shape: FixedValues.roundShapeLarge,
@@ -139,7 +139,7 @@ class FixedValues {
             secondary: foreground,
             brightness: brightness,
           )
-          .copyWith(background: backgroundScaffold),
+          .copyWith(surface: backgroundScaffold),
       bottomAppBarTheme: BottomAppBarTheme(color: backgroundScaffold),
     );
   }

@@ -5,8 +5,8 @@ class ThemeChange extends InheritedWidget {
   final Function stateFunction;
 
   const ThemeChange(
-      {required this.newChild, required this.stateFunction, Key? key})
-      : super(child: newChild, key: key);
+      {required this.newChild, required this.stateFunction, super.key})
+      : super(child: newChild);
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) =>

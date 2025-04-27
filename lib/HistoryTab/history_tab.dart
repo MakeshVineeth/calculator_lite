@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'commons_history.dart';
 
 class HistoryTab extends StatefulWidget {
-  const HistoryTab({Key? key}) : super(key: key);
+  const HistoryTab({super.key});
 
   @override
   State<HistoryTab> createState() => _HistoryTabState();
@@ -43,8 +43,10 @@ class _HistoryTabState extends State<HistoryTab> {
                   searchDecoration: InputDecoration(
                     labelText: "Search",
                     alignLabelWithHint: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 8,
+                    ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: FixedValues.large,
                       borderSide: BorderSide(
@@ -55,15 +57,18 @@ class _HistoryTabState extends State<HistoryTab> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: FixedValues.large,
                       borderSide: BorderSide(
-                        color: isLightTheme
-                            ? Colors.grey[600]!
-                            : Colors.grey[350]!,
+                        color:
+                            isLightTheme
+                                ? Colors.grey[600]!
+                                : Colors.grey[350]!,
                         width: widthSearchBorder,
                       ),
                     ),
                   ),
-                  onChanged: (value) =>
-                      setState(() => searchString = value.trim().toLowerCase()),
+                  onChanged:
+                      (value) => setState(
+                        () => searchString = value.trim().toLowerCase(),
+                      ),
                 ),
               ),
               IconButton(
@@ -81,9 +86,7 @@ class _HistoryTabState extends State<HistoryTab> {
               return listWidget(data.data!);
             } else {
               return const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+                child: Center(child: CircularProgressIndicator()),
               );
             }
           },
@@ -102,16 +105,21 @@ class _HistoryTabState extends State<HistoryTab> {
 
   Future<Map<String, Function>> getMenuList() async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    String status = preferences.getString(CommonsHistory.historyStatusPref) ??
+    String status =
+        preferences.getString(CommonsHistory.historyStatusPref) ??
         CommonsHistory.historyEnabled;
 
-    String menuItemHistStatus = status.contains(CommonsHistory.historyEnabled)
-        ? 'Disable History'
-        : 'Enable History';
+    String menuItemHistStatus =
+        status.contains(CommonsHistory.historyEnabled)
+            ? 'Disable History'
+            : 'Enable History';
 
     final Map<String, Function> menuList = {
-      'Clear All': () => Future.delayed(
-          CommonsData.dur1, () => Hive.box(CommonsHistory.historyBox).clear()),
+      'Clear All':
+          () => Future.delayed(
+            CommonsData.dur1,
+            () => Hive.box(CommonsHistory.historyBox).clear(),
+          ),
       'Export': () {
         if (!Platform.isAndroid) return;
         Navigator.pushNamed(context, '/export');
@@ -119,10 +127,14 @@ class _HistoryTabState extends State<HistoryTab> {
       menuItemHistStatus: () {
         if (status.contains(CommonsHistory.historyEnabled)) {
           preferences.setString(
-              CommonsHistory.historyStatusPref, CommonsHistory.historyDisabled);
+            CommonsHistory.historyStatusPref,
+            CommonsHistory.historyDisabled,
+          );
         } else {
           preferences.setString(
-              CommonsHistory.historyStatusPref, CommonsHistory.historyEnabled);
+            CommonsHistory.historyStatusPref,
+            CommonsHistory.historyEnabled,
+          );
         }
       },
     };
@@ -130,69 +142,68 @@ class _HistoryTabState extends State<HistoryTab> {
     return menuList;
   }
 
-  void menuShow() async => showSlideUp(
-        context: context,
-        menuList: await getMenuList(),
-      );
+  void menuShow() async =>
+      showSlideUp(context: context, menuList: await getMenuList());
 
   Widget listWidget(Box box) => ValueListenableBuilder(
-        valueListenable: box.listenable(),
-        builder: (context, Box listener, child) {
-          if (listener.isNotEmpty) {
-            return Expanded(
-              child: ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics()),
-                itemCount: listener.length,
-                cacheExtent: 2000,
-                itemBuilder: (context, index) {
-                  final indexVal = (listener.length - 1) - index;
-                  final HistoryItem historyItem = box.getAt(indexVal);
+    valueListenable: box.listenable(),
+    builder: (context, Box listener, child) {
+      if (listener.isNotEmpty) {
+        return Expanded(
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            itemCount: listener.length,
+            cacheExtent: 2000,
+            itemBuilder: (context, index) {
+              final indexVal = (listener.length - 1) - index;
+              final HistoryItem historyItem = box.getAt(indexVal);
 
-                  if (searchString.isEmpty ||
-                      historyItem.title
-                          .trim()
-                          .toLowerCase()
-                          .contains(searchString)) {
-                    return SizedBox(
-                      height: 200,
-                      child: HistoryCard(
-                          index: indexVal, historyItem: historyItem),
-                    );
-                  } else {
-                    return nil;
-                  }
-                },
-              ),
-            );
-          } else {
-            return Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.history,
-                    color: Theme.of(context).brightness == Brightness.light
+              if (searchString.isEmpty ||
+                  historyItem.title.trim().toLowerCase().contains(
+                    searchString,
+                  )) {
+                return SizedBox(
+                  height: 200,
+                  child: HistoryCard(index: indexVal, historyItem: historyItem),
+                );
+              } else {
+                return nil;
+              }
+            },
+          ),
+        );
+      } else {
+        return Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.history,
+                color:
+                    Theme.of(context).brightness == Brightness.light
                         ? Colors.grey
-                        : Colors.amber.withOpacity(0.9),
-                    size: 30,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Your history will appear here.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.grey
-                          : Colors.amber.withOpacity(0.9),
-                    ),
-                  ),
-                ],
+                        : Colors.amber.withValues(alpha: 0.9),
+                size: 30,
               ),
-            );
-          }
-        },
-      );
+              const SizedBox(height: 10),
+              Text(
+                'Your history will appear here.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  color:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Colors.grey
+                          : Colors.amber.withValues(alpha: 0.9),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    },
+  );
 }

@@ -19,7 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CurrencyTab extends StatefulWidget {
-  const CurrencyTab({Key? key}) : super(key: key);
+  const CurrencyTab({super.key});
 
   @override
   State<CurrencyTab> createState() => _CurrencyTabState();
