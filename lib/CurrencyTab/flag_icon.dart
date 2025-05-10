@@ -22,23 +22,22 @@ class _FlagIconState extends State<FlagIcon>
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.grey[300]!),
       ),
-      child: (widget.flagURL.isNotEmpty)
-          ? image()
-          : const CircularProgressIndicator(),
+      child:
+          (widget.flagURL.isNotEmpty)
+              ? image()
+              : const CircularProgressIndicator(),
     );
   }
 
   Widget image() => OctoImage(
-        fit: BoxFit.fill,
-        width: sizeInt,
-        height: sizeInt,
-        image: AssetImage(
-          widget.flagURL,
-          package: 'country_icons',
-        ),
-        imageBuilder: OctoImageTransformer.circleAvatar(),
-        placeholderBuilder: OctoPlaceholder.circularProgressIndicator(),
-      );
+    fit: BoxFit.fill,
+    width: sizeInt,
+    height: sizeInt,
+    image: AssetImage(widget.flagURL, package: 'country_icons'),
+    imageBuilder: OctoImageTransformer.circleAvatar(),
+    placeholderBuilder: OctoPlaceholder.circularProgressIndicator(),
+    errorBuilder: OctoError.icon(icon: Icons.error, color: Colors.red),
+  );
 
   @override
   bool get wantKeepAlive => true;
