@@ -16,6 +16,19 @@ class CurrencyChooser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<CurrencyListItem> currencyListItems = List.castFrom(
+      listBoxes.values.toList(),
+    );
+
+    List<CurrencyListItem> uniqueCurrencyListItems =
+        currencyListItems
+            .fold<Map<String, CurrencyListItem>>(
+              {},
+              (map, item) => map..putIfAbsent(item.currencyCode, () => item),
+            )
+            .values
+            .toList();
+
     return FadeScale(
       child: AlertDialog(
         shape: FixedValues.roundShapeLarge,
@@ -26,28 +39,26 @@ class CurrencyChooser extends StatelessWidget {
             addAutomaticKeepAlives: true,
             cacheExtent: 1000,
             physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics()),
-            children: List.generate(
-              listBoxes.values.length,
-              (index) {
-                final CurrencyListItem currencyListItem =
-                    listBoxes.values.elementAt(index);
-
-                return ListTile(
-                  shape: FixedValues.roundShapeLarge,
-                  onTap: () {
-                    onTap(context, currencyListItem).then((value) {
-                      FocusScope.of(context).unfocus();
-                      Navigator.of(context, rootNavigator: true).pop();
-                    });
-                  },
-                  leading: FlagIcon(flagURL: currencyListItem.flagURL),
-                  title: Text(
-                    '${currencyListItem.currencyName} (${currencyListItem.currencyCode})',
-                  ),
-                );
-              },
+              parent: BouncingScrollPhysics(),
             ),
+            children: List.generate(uniqueCurrencyListItems.length, (index) {
+              final CurrencyListItem currencyListItem = uniqueCurrencyListItems
+                  .elementAt(index);
+
+              return ListTile(
+                shape: FixedValues.roundShapeLarge,
+                onTap: () {
+                  onTap(context, currencyListItem).then((value) {
+                    FocusScope.of(context).unfocus();
+                    Navigator.of(context, rootNavigator: true).pop();
+                  });
+                },
+                leading: FlagIcon(flagURL: currencyListItem.flagURL),
+                title: Text(
+                  '${currencyListItem.currencyName} (${currencyListItem.currencyCode})',
+                ),
+              );
+            }),
           ),
         ),
       ),
@@ -55,7 +66,9 @@ class CurrencyChooser extends StatelessWidget {
   }
 
   Future<void> onTap(
-      BuildContext context, CurrencyListItem currencyListItem) async {
+    BuildContext context,
+    CurrencyListItem currencyListItem,
+  ) async {
     Box box = Hive.box(method);
     await box.putAt(boxIndex, currencyListItem);
     await Hive.openBox(currencyListItem.currencyCode.toLowerCase());
@@ -65,12 +78,8 @@ class CurrencyChooser extends StatelessWidget {
     required BuildContext context,
     required int index,
     required String method,
-  }) async =>
-      await showBlurDialog(
-        child: CurrencyChooser(
-          boxIndex: index,
-          method: method,
-        ),
-        context: context,
-      );
+  }) async => await showBlurDialog(
+    child: CurrencyChooser(boxIndex: index, method: method),
+    context: context,
+  );
 }
