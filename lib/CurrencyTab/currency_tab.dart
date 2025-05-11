@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copy_data.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
@@ -17,6 +16,7 @@ import 'package:calculator_lite/fixed_values.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class CurrencyTab extends StatefulWidget {
   const CurrencyTab({super.key});
@@ -73,9 +73,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
                         children: <Widget>[
                           Expanded(
                             flex: 4,
-                            child: UpdateColumn(
-                              updateListen: updateListen,
-                            ),
+                            child: UpdateColumn(updateListen: updateListen),
                           ),
                           Flexible(
                             child: SmallToolBtn(
@@ -88,7 +86,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
                               function: () {
                                 popCurBtns().then((value) {
                                   showSlideUp(
-                                      context: context, menuList: value);
+                                    context: context,
+                                    menuList: value,
+                                  );
                                 });
                               },
                               icon: Icons.expand_more_outlined,
@@ -104,13 +104,14 @@ class _CurrencyTabState extends State<CurrencyTab> {
                     icon: const Icon(Icons.add_circle_rounded),
                   ),
                   const SizedBox(height: 10),
-                  Expanded(child: widgetsData())
+                  Expanded(child: widgetsData()),
                 ],
               ),
             );
           } else {
             return const FadeThis(
-                child: Center(child: CircularProgressIndicator()));
+              child: Center(child: CircularProgressIndicator()),
+            );
           }
         },
       ),
@@ -119,11 +120,13 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   Future<Map<String, Function>> popCurBtns() async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    final status = preferences.getString(CommonsData.autoUpdatePref) ??
+    final status =
+        preferences.getString(CommonsData.autoUpdatePref) ??
         CommonsData.autoUpdateEnabled;
-    final updateStatusStr = status.contains(CommonsData.autoUpdateEnabled)
-        ? 'Disable Auto Update'
-        : 'Enable Auto Update';
+    final updateStatusStr =
+        status.contains(CommonsData.autoUpdateEnabled)
+            ? 'Disable Auto Update'
+            : 'Enable Auto Update';
 
     final Map<String, Function> menuList = {
       'Update Now': () => updateListen.update(),
@@ -135,16 +138,16 @@ class _CurrencyTabState extends State<CurrencyTab> {
             0,
             (BuildContext context, Animation<double> animation) =>
                 SizeTransition(
-              sizeFactor: animation,
-              child: FadeTransition(
-                opacity: animation,
-                child: CardUI(
-                  index: 0,
-                  remove: true,
-                  resetFormProvider: resetFormProvider,
+                  sizeFactor: animation,
+                  child: FadeTransition(
+                    opacity: animation,
+                    child: CardUI(
+                      index: 0,
+                      remove: true,
+                      resetFormProvider: resetFormProvider,
+                    ),
+                  ),
                 ),
-              ),
-            ),
           );
         }
       },
@@ -152,12 +155,16 @@ class _CurrencyTabState extends State<CurrencyTab> {
         // User Preference for auto update.
         if (status.contains(CommonsData.autoUpdateEnabled)) {
           preferences.setString(
-              CommonsData.autoUpdatePref, CommonsData.autoUpdateDisabled);
+            CommonsData.autoUpdatePref,
+            CommonsData.autoUpdateDisabled,
+          );
         } else {
           preferences.setString(
-              CommonsData.autoUpdatePref, CommonsData.autoUpdateEnabled);
+            CommonsData.autoUpdatePref,
+            CommonsData.autoUpdateEnabled,
+          );
         }
-      }
+      },
     };
 
     return menuList;
@@ -174,21 +181,34 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
     final list = Hive.box(CommonsData.currencyListBox);
     if (list.length > 0) {
-      Random random = Random();
+      final NumberFormat currencyFormat = NumberFormat.currency(
+        locale: Platform.localeName,
+      );
+      String currencyCode = currencyFormat.currencyName ?? 'USD';
 
-      int t1 = random.nextInt(list.length);
-      int t2 = random.nextInt(list.length);
+      List<CurrencyListItem> currencyList =
+          list.values.cast<CurrencyListItem>().toList();
 
-      CurrencyListItem fromCur = list.getAt(t1);
-      CurrencyListItem toCur = list.getAt(t2);
+      CurrencyListItem fromCur = list.getAt(0);
+      CurrencyListItem toCur = list.getAt(0);
+
+      for (CurrencyListItem element in currencyList) {
+        if (element.currencyCode == currencyCode) {
+          fromCur = element;
+          break;
+        }
+      }
+
       await Hive.openBox(fromCur.currencyCode.toLowerCase());
 
       await fromBox.add(fromCur);
       await toBox.add(toCur);
 
       int index = fromBox.length;
-      _animListKey.currentState
-          ?.insertItem(index - 1, duration: CommonsData.dur1);
+      _animListKey.currentState?.insertItem(
+        index - 1,
+        duration: CommonsData.dur1,
+      );
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
@@ -205,29 +225,32 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   void resetForm(BuildContext buildContext) => resetFormProvider.reset(true);
 
-  final myTween =
-      Tween<Offset>(begin: const Offset(0.3, 0), end: const Offset(0, 0));
+  final myTween = Tween<Offset>(
+    begin: const Offset(0.3, 0),
+    end: const Offset(0, 0),
+  );
 
   Widget widgetsData() => Form(
-        key: _formKey,
-        child: AnimatedList(
-          key: _animListKey,
-          controller: _scrollController,
-          initialItemCount: fromBox.length,
-          physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics()),
-          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-          itemBuilder: (context, index, animation) => SlideTransition(
-            position: CurvedAnimation(parent: animation, curve: Curves.easeIn)
-                .drive(myTween),
+    key: _formKey,
+    child: AnimatedList(
+      key: _animListKey,
+      controller: _scrollController,
+      initialItemCount: fromBox.length,
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+      itemBuilder:
+          (context, index, animation) => SlideTransition(
+            position: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeIn,
+            ).drive(myTween),
             child: FadeTransition(
               opacity: animation,
-              child: CardUI(
-                index: index,
-                resetFormProvider: resetFormProvider,
-              ),
+              child: CardUI(index: index, resetFormProvider: resetFormProvider),
             ),
           ),
-        ),
-      );
+    ),
+  );
 }

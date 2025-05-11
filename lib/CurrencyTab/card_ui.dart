@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
@@ -39,6 +41,8 @@ class _CardUIState extends State<CardUI> {
 
   late CurrencyListItem fromCur;
   late CurrencyListItem toCur;
+  bool isInitialized = false;
+
   double exchangeRate = 0.0;
   late Box fromCurBox;
 
@@ -51,6 +55,7 @@ class _CardUIState extends State<CardUI> {
   @override
   void initState() {
     super.initState();
+
     openBoxes();
 
     widget.resetFormProvider.addListener(() {
@@ -75,6 +80,8 @@ class _CardUIState extends State<CardUI> {
       fromCur = fromBox.getAt(widget.index);
       toCur = toBox.getAt(widget.index);
       fromCurBox = Hive.box(fromCur.currencyCode.toLowerCase());
+
+      isInitialized = true;
 
       updateExchange();
     } catch (_) {
@@ -221,12 +228,19 @@ class _CardUIState extends State<CardUI> {
             ),
             onPressed: () => displayCurrencyChooser(method),
             icon: FlagIcon(
-              flagURL: isFromMethod(method) ? fromCur.flagURL : toCur.flagURL,
+              flagURL:
+                  isInitialized
+                      ? isFromMethod(method)
+                          ? fromCur.flagURL
+                          : toCur.flagURL
+                      : '',
             ),
             label: Text(
-              (isFromMethod(method)
-                  ? fromCur.currencyCode
-                  : toCur.currencyCode),
+              isInitialized
+                  ? (isFromMethod(method) 
+                      ? fromCur.currencyCode
+                      : toCur.currencyCode)
+                  : '',
               style: TextStyle(
                 height: 1,
                 fontWeight: FontWeight.w600,
@@ -315,7 +329,7 @@ class _CardUIState extends State<CardUI> {
   final formatCurrency = NumberFormat.currency(
     decimalDigits: 0,
     symbol: '',
-    locale: 'en_US',
+    locale: Platform.localeName,
   );
 
   Widget getTextField(String method) => Padding(
