@@ -44,10 +44,7 @@ class _ProScreenState extends State<ProScreen> {
     isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Support Us'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Support Us'), elevation: 0),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Card(
@@ -65,13 +62,11 @@ class _ProScreenState extends State<ProScreen> {
     if (!Platform.isAndroid) {
       return const Center(
         child: Card(
-            child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            'Not Supported',
-            style: FixedValues.semiBoldStyle,
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('Not Supported', style: FixedValues.semiBoldStyle),
           ),
-        )),
+        ),
       );
     } else {
       return FutureBuilder(
@@ -107,6 +102,10 @@ class _ProScreenState extends State<ProScreen> {
                   textAlign: TextAlign.center,
                   style: FixedValues.semiBoldStyle.copyWith(
                     fontSize: 13.5,
+                    color:
+                        Theme.of(context).brightness == Brightness.light
+                            ? Colors.black54
+                            : Colors.white70,
                   ),
                 ),
               ],
@@ -120,18 +119,22 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   Widget bulletPoints() => ListView(
-        physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics()),
-        children: List.generate(featuresList.length, (index) {
-          return Card(
-            color: Theme.of(context).brightness == Brightness.light
+    physics: const AlwaysScrollableScrollPhysics(
+      parent: BouncingScrollPhysics(),
+    ),
+    children: List.generate(featuresList.length, (index) {
+      return Card(
+        color:
+            Theme.of(context).brightness == Brightness.light
                 ? Colors.white
                 : Colors.black87,
-            elevation: Theme.of(context).brightness == Brightness.light
+        elevation:
+            Theme.of(context).brightness == Brightness.light
                 ? Theme.of(context).cardTheme.elevation
                 : 4,
-            child: InkWell(
-              onTap: () => showBlurDialog(
+        child: InkWell(
+          onTap:
+              () => showBlurDialog(
                 context: context,
                 child: FadeScale(
                   child: AlertDialog(
@@ -140,33 +143,29 @@ class _ProScreenState extends State<ProScreen> {
                   ),
                 ),
               ),
-              borderRadius: FixedValues.large,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
+          borderRadius: FixedValues.large,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+            child: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.green),
+                const SizedBox(width: 5.0),
+                Expanded(
+                  child: Text(
+                    featuresList.keys.elementAt(index),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15.5,
                     ),
-                    const SizedBox(width: 5.0),
-                    Expanded(
-                      child: Text(
-                        featuresList.keys.elementAt(index),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15.5,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          );
-        }),
+          ),
+        ),
       );
+    }),
+  );
 
   Widget loadProducts() {
     if (_products.isNotEmpty && !purchaseStatusProvider.hasPurchased) {
@@ -221,8 +220,9 @@ class _ProScreenState extends State<ProScreen> {
       bool iapAvailable = await _iap.isAvailable();
 
       if (iapAvailable) {
-        final ProductDetailsResponse response =
-            await _iap.queryProductDetails(CommonPurchaseStrings.productIds);
+        final ProductDetailsResponse response = await _iap.queryProductDetails(
+          CommonPurchaseStrings.productIds,
+        );
 
         if (!response.notFoundIDs.isNotEmpty) {
           _products.addAll(response.productDetails);

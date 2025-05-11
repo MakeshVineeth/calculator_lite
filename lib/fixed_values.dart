@@ -169,5 +169,6 @@ class FixedValues {
     fontWeight: FontWeight.w600,
     fontSize: 25,
     height: 1,
+    color: Colors.black,
   );
 }

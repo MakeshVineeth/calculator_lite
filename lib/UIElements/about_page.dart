@@ -1,4 +1,3 @@
-import 'package:calculator_lite/UIElements/dialog_text_btn.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixed_values.dart';
@@ -15,24 +14,11 @@ class AboutPage extends StatelessWidget {
       child: AlertDialog(
         shape: FixedValues.roundShapeLarge,
         buttonPadding: const EdgeInsets.all(10.0),
-        actions: <DialogTextBtn>[
-          DialogTextBtn(
-            function: () => showLicensePage(
-              context: context,
-              applicationName: FixedValues.appName,
-              applicationVersion: FixedValues.appVersion,
-              applicationLegalese: FixedValues.appLegalese,
-              applicationIcon: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: applicationIconImg(),
-              ),
-            ),
-            title: 'VIEW LICENSES',
-          ),
-        ],
+
         content: SingleChildScrollView(
           physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics()),
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -49,16 +35,19 @@ class AboutPage extends StatelessWidget {
                     ),
                     const Text(
                       FixedValues.appVersion,
+                      style: TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 20),
                     const Text(
                       FixedValues.appLegalese,
+                      style: TextStyle(color: Colors.black),
                     ),
                     const SizedBox(height: 15),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics()),
+                        parent: BouncingScrollPhysics(),
+                      ),
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width / 1.5,
                         child: Row(
@@ -68,20 +57,22 @@ class AboutPage extends StatelessWidget {
                               title: 'Play Store',
                               icon: Icons.shop_outlined,
                               backgroundColor: const Color(0xff078C30),
-                              function: () => launchThisUrl(
-                                url:
-                                    'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite',
-                              ),
+                              function:
+                                  () => launchThisUrl(
+                                    url:
+                                        'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite',
+                                  ),
                             ),
                             const SizedBox(width: 5),
                             ButtonLinks(
                               title: 'GitHub',
                               icon: Icons.code_outlined,
                               backgroundColor: const Color(0xff24292E),
-                              function: () => launchThisUrl(
-                                url:
-                                    'https://github.com/MakeshVineeth/calculator_lite',
-                              ),
+                              function:
+                                  () => launchThisUrl(
+                                    url:
+                                        'https://github.com/MakeshVineeth/calculator_lite',
+                                  ),
                             ),
                           ],
                         ),
@@ -89,7 +80,7 @@ class AboutPage extends StatelessWidget {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -97,17 +88,12 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget applicationIconImg() => const Image(
-        image: AssetImage('assets/${FixedValues.logo}'),
-        width: 30,
-      );
+  Widget applicationIconImg() =>
+      const Image(image: AssetImage('assets/${FixedValues.logo}'), width: 30);
 
   static void showAboutDialogFunc(BuildContext context) async {
     try {
-      showBlurDialog(
-        context: context,
-        child: const AboutPage(),
-      );
+      showBlurDialog(context: context, child: const AboutPage());
     } catch (_) {}
   }
 }
