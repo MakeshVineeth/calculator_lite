@@ -27,6 +27,7 @@ import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'dart:io' show Platform;
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 import 'HistoryTab/history_item.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +81,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
 Widget materialApp(final ThemeMode setTheme, BuildContext context) =>
     MaterialApp(
       title: FixedValues.appName,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [Locale('en')],
       debugShowCheckedModeBanner: false,
       themeMode: setTheme,
       restorationScopeId: 'root',

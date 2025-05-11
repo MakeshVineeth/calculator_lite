@@ -48,6 +48,8 @@ dependencies:
   auto_size_text: ^3.0.0
   charcode: ^1.4.0
   flutter_windowmanager_plus: ^1.0.1
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

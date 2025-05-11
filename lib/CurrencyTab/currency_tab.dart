@@ -182,7 +182,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
     final list = Hive.box(CommonsData.currencyListBox);
     if (list.length > 0) {
       final NumberFormat currencyFormat = NumberFormat.currency(
-        locale: Platform.localeName,
+        locale: Localizations.localeOf(context).toString(),
       );
       String currencyCode = currencyFormat.currencyName ?? 'USD';
 
