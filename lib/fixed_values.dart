@@ -19,11 +19,16 @@ class FixedValues {
   static final String squareChar = String.fromCharCode(charcode.$x) + sup2;
   static final String cubeChar = String.fromCharCode(charcode.$x) + sup3;
   static const String reciprocalChar = '⅟𝑥';
-  static final String cubeRoot =
-      String.fromCharCodes([charcode.$sup3, charcode.$radic, charcode.$x]);
+  static final String cubeRoot = String.fromCharCodes([
+    charcode.$sup3,
+    charcode.$radic,
+    charcode.$x,
+  ]);
   static final String minus = String.fromCharCode(charcode.$ndash);
-  static final String cubeRootSym =
-      String.fromCharCodes([charcode.$sup3, charcode.$radic]);
+  static final String cubeRootSym = String.fromCharCodes([
+    charcode.$sup3,
+    charcode.$radic,
+  ]);
   static const String invButton = 'inv';
   static const String firstLaunchPref = 'first_launch';
 
@@ -48,7 +53,7 @@ class FixedValues {
     [7, 8, 9, multiplyChar],
     [4, 5, 6, minus],
     [1, 2, 3, '+'],
-    [changeSignChar, 0, decimalChar, '=']
+    [changeSignChar, 0, decimalChar, '='],
   ];
 
   static final List<List<dynamic>> rowExtras = [
@@ -56,7 +61,7 @@ class FixedValues {
     ['sin', 'cos', 'tan', cubeChar],
     ['ln', 'log', 'mod', reciprocalChar],
     ['(', ')', '!', root],
-    [pi, cubeRoot, capChar, squareChar]
+    [pi, cubeRoot, capChar, squareChar],
   ];
 
   static final List<List<dynamic>> rowInverse = [
@@ -64,7 +69,7 @@ class FixedValues {
     ['sin⁻¹', 'cos⁻¹', 'tan⁻¹', cubeChar],
     ['eˣ', '𝟏𝟬ˣ', 'mod', reciprocalChar],
     ['(', ')', '!', root],
-    [pi, cubeRoot, capChar, squareChar]
+    [pi, cubeRoot, capChar, squareChar],
   ];
 
   static final List<List<dynamic>> horizontalLayout = [
@@ -72,7 +77,7 @@ class FixedValues {
     [7, 8, 9, multiplyChar, 'sin', 'cos', 'tan', cubeChar],
     [4, 5, 6, minus, 'ln', 'log', 'mod', reciprocalChar],
     [1, 2, 3, '+', '(', ')', '!', root],
-    [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar]
+    [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar],
   ];
 
   static final List<List<dynamic>> horizontalLayoutInverse = [
@@ -80,7 +85,7 @@ class FixedValues {
     [7, 8, 9, multiplyChar, 'sin⁻¹', 'cos⁻¹', 'tan⁻¹', cubeChar],
     [4, 5, 6, minus, 'ln', 'log', 'mod', reciprocalChar],
     [1, 2, 3, '+', '(', ')', '!', root],
-    [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar]
+    [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar],
   ];
 
   static ThemeData getThemeData(Brightness brightness, BuildContext context) {
@@ -103,18 +108,16 @@ class FixedValues {
       ),
       cardColor: background,
       appBarTheme: Theme.of(context).appBarTheme.copyWith(
-            centerTitle: true,
-            titleSpacing: 1,
-            color: background,
-            iconTheme: IconThemeData(
-              color: foreground,
-            ),
-            titleTextStyle: TextStyle(
-              color: foreground,
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
-            ),
-          ),
+        centerTitle: true,
+        titleSpacing: 1,
+        color: background,
+        iconTheme: IconThemeData(color: foreground),
+        titleTextStyle: TextStyle(
+          color: foreground,
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
+        ),
+      ),
       canvasColor: backgroundScaffold,
       applyElevationOverlayColor: !isLight,
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -126,25 +129,24 @@ class FixedValues {
         ),
       ),
       textTheme: Theme.of(context).textTheme.apply(
-            bodyColor: foregroundText,
-            displayColor: foregroundText,
-          ),
+        bodyColor: foregroundText,
+        displayColor: foregroundText,
+      ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          shape: roundShapeBtns,
-        ),
+        style: TextButton.styleFrom(shape: roundShapeBtns),
       ),
       colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground)
-          .copyWith(
-            secondary: foreground,
-            brightness: brightness,
-          )
+          .copyWith(secondary: foreground, brightness: brightness)
           .copyWith(surface: backgroundScaffold),
       bottomAppBarTheme: BottomAppBarTheme(color: backgroundScaffold),
     );
   }
 
-  static const TextStyle semiBoldStyle = TextStyle(fontWeight: FontWeight.w600);
+  static const TextStyle semiBoldStyle = TextStyle(
+    fontWeight: FontWeight.w600,
+    color: Colors.black,
+  );
+
   static const Color blurBgColor = Colors.white10;
   static const double sigmaLevel = 5.0;
   static const Duration transitionDuration = Duration(milliseconds: 100);
