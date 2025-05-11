@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 class CommonsData {
   static const remoteName = 'FrankFurter API';
-  static const remoteSource = 'https://github.com/hakanensari/frankfurter';
-  static const remoteUrl = 'https://api.frankfurter.app/latest';
+  static const remoteSource = 'https://github.com/lineofflight/frankfurter';
+  static const remoteUrl = 'https://api.frankfurter.dev/v1/latest';
+  static const getCurrencyListUrl = 'https://api.frankfurter.dev/v1/currencies';
   static const currencyListBox = 'currencies';
   static const fromBox = 'from_box';
   static const toBox = 'to_box';

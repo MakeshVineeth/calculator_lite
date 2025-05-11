@@ -26,10 +26,7 @@ class CurrencyData {
         String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
 
         futures.add(
-          insertData(
-            currency: currentBase,
-            currentBaseUrl: currentBaseUrl,
-          ),
+          insertData(currency: currentBase, currentBaseUrl: currentBaseUrl),
         );
       }
 
@@ -48,17 +45,19 @@ class CurrencyData {
       // Load the countries json asset. Used for getting country code for flag icon.
       String countryJson = await rootBundle.loadString('assets/countries.json');
       Map data = json.decode(countryJson);
-      List<dynamic> countriesList = data['countries']
-          ['country']; // Should be dynamic, else runtime errors.
+      List<dynamic> countriesList =
+          data['countries']['country']; // Should be dynamic, else runtime errors.
 
       // Load the currencies json. Used for retrieving currency name.
       Response? response = await CommonsData.getResponse(
-          'https://api.frankfurter.app/currencies');
+        CommonsData.getCurrencyListUrl,
+      );
 
       if (response == null) return List.empty();
 
-      final Map<String, String> currencyMap =
-          Map<String, String>.from(response.data);
+      final Map<String, String> currencyMap = Map<String, String>.from(
+        response.data,
+      );
 
       // Loop through all available currencies.
       for (int keyIndex = 0; keyIndex < currencyMap.length; keyIndex++) {
@@ -112,7 +111,8 @@ class CurrencyData {
         return CommonsData.successToken;
       } else {
         debugPrint(
-            "Response error with CurrentUrl: $currentBaseUrl and current: $currency.");
+          "Response error with CurrentUrl: $currentBaseUrl and current: $currency.",
+        );
 
         return CommonsData.errorToken;
       }
