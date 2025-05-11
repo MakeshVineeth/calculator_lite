@@ -151,7 +151,7 @@ class FixedValues {
   static const double sigmaLevel = 5.0;
   static const Duration transitionDuration = Duration(milliseconds: 100);
   static const String appName = 'Calculator Lite';
-  static const String appVersion = '1.0.5';
+  static const String appVersion = '2.0.0';
   static const String logo = 'logo.png';
   static const String appLegalese =
       'An Open-Source Calculator that does all the calculations for you. Make faster calculations, display latest currencies, previous history scrolling, renaming the titles of history items and so much more!';
