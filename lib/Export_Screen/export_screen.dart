@@ -6,7 +6,7 @@ import 'package:calculator_lite/HistoryTab/history_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 

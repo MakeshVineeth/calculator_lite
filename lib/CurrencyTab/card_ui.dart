@@ -8,7 +8,8 @@ import 'package:calculator_lite/UIElements/slide_panel_item.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/adapters.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 class CardUI extends StatefulWidget {

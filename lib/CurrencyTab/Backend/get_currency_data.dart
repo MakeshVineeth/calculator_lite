@@ -3,7 +3,7 @@ import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'commons.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:dio/dio.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 

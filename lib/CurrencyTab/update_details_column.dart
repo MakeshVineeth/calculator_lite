@@ -5,7 +5,7 @@ import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
 import 'package:shared_preferences/shared_preferences.dart';

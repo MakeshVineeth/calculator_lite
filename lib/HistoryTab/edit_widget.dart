@@ -4,7 +4,7 @@ import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/HistoryTab/history_item.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:calculator_lite/HistoryTab/Backend/history_functions.dart';
 
 class EditWidget extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:calculator_lite/HistoryTab/edit_widget.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'commons_history.dart';
 import 'history_item.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';

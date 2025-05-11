@@ -12,7 +12,7 @@ import 'package:calculator_lite/UIElements/show_slide_up.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
 import 'package:provider/provider.dart';
