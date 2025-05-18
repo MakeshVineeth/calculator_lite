@@ -12,6 +12,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeScale(
       child: AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         shape: FixedValues.roundShapeLarge,
         buttonPadding: const EdgeInsets.all(10.0),
 
@@ -38,10 +39,15 @@ class AboutPage extends StatelessWidget {
                       style: TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
+                    Text(
                       FixedValues.appLegalese,
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white,
+                      ),
                     ),
+
                     const SizedBox(height: 15),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
