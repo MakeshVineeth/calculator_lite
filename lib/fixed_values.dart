@@ -165,10 +165,14 @@ class FixedValues {
     borderRadius: BorderRadius.circular(30.0),
   );
 
-  static const TextStyle appTitleStyle = TextStyle(
-    fontWeight: FontWeight.w600,
-    fontSize: 25,
-    height: 1,
-    color: Colors.black,
-  );
+  static TextStyle appTitleStyle(BuildContext context) {
+    return TextStyle(
+      fontWeight: FontWeight.w600,
+      fontSize: 25,
+      height: 1,
+      color: Theme.of(context).brightness == Brightness.light
+          ? Colors.black
+          : Colors.white,
+    );
+  }
 }

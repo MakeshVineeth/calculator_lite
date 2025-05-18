@@ -9,13 +9,14 @@ class TextFieldCustom extends StatefulWidget {
   final TextInputType textInputType;
   final bool ignoreValidation;
 
-  const TextFieldCustom(
-      {required this.title,
-      required this.controller,
-      this.validate,
-      this.textInputType = TextInputType.text,
-      this.ignoreValidation = false,
-      super.key});
+  const TextFieldCustom({
+    required this.title,
+    required this.controller,
+    this.validate,
+    this.textInputType = TextInputType.text,
+    this.ignoreValidation = false,
+    super.key,
+  });
 
   @override
   State<TextFieldCustom> createState() => _TextFieldCustomState();
@@ -47,7 +48,14 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
               gapPadding: 0.0,
               borderSide: BorderSide.none,
             ),
-            labelText: widget.title,
+            label: Text(
+              widget.title,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 10),

@@ -102,10 +102,9 @@ class _ProScreenState extends State<ProScreen> {
                   textAlign: TextAlign.center,
                   style: FixedValues.semiBoldStyle.copyWith(
                     fontSize: 13.5,
-                    color:
-                        Theme.of(context).brightness == Brightness.light
-                            ? Colors.black54
-                            : Colors.white70,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black54
+                        : Colors.white70,
                   ),
                 ),
               ],
@@ -124,25 +123,25 @@ class _ProScreenState extends State<ProScreen> {
     ),
     children: List.generate(featuresList.length, (index) {
       return Card(
-        color:
-            Theme.of(context).brightness == Brightness.light
-                ? Colors.white
-                : Colors.black87,
-        elevation:
-            Theme.of(context).brightness == Brightness.light
-                ? Theme.of(context).cardTheme.elevation
-                : 4,
+        color: Theme.of(context).brightness == Brightness.light
+            ? Colors.white
+            : Colors.black87,
+        elevation: Theme.of(context).brightness == Brightness.light
+            ? Theme.of(context).cardTheme.elevation
+            : 4,
         child: InkWell(
-          onTap:
-              () => showBlurDialog(
-                context: context,
-                child: FadeScale(
-                  child: AlertDialog(
-                    content: Text(featuresList.values.elementAt(index)),
-                    shape: FixedValues.roundShapeLarge,
-                  ),
+          onTap: () => showBlurDialog(
+            context: context,
+            child: FadeScale(
+              child: AlertDialog(
+                content: Text(
+                  featuresList.values.elementAt(index),
+                  style: FixedValues.semiBoldStyle,
                 ),
+                shape: FixedValues.roundShapeLarge,
               ),
+            ),
+          ),
           borderRadius: FixedValues.large,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),

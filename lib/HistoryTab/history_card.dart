@@ -143,10 +143,16 @@ class HistoryCard extends StatelessWidget {
           title: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics()),
+              parent: BouncingScrollPhysics(),
+            ),
             child: Text(
               text,
               maxLines: 1,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white,
+              ),
             ),
           ),
           trailing: Column(
@@ -154,9 +160,12 @@ class HistoryCard extends StatelessWidget {
             children: <Widget>[
               Flexible(
                 child: IconButton(
-                  onPressed: () => Clipboard.setData(ClipboardData(text: text))
-                      .then((_) =>
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar)),
+                  onPressed: () =>
+                      Clipboard.setData(ClipboardData(text: text)).then(
+                        (_) => ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(snackBar),
+                      ),
                   icon: Icon(
                     Icons.copy_rounded,
                     size: 20,

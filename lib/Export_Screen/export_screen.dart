@@ -1,5 +1,4 @@
 import 'dart:io' show File;
-
 import 'package:calculator_lite/Export_Screen/validate_functions.dart';
 import 'package:calculator_lite/HistoryTab/commons_history.dart';
 import 'package:calculator_lite/HistoryTab/history_item.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-
 import 'button_custom.dart';
 import 'date_field_custom.dart';
 import 'export_commons.dart';

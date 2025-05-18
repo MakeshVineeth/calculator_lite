@@ -29,9 +29,9 @@ class AboutPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
+                    Text(
                       FixedValues.appName,
-                      style: FixedValues.appTitleStyle,
+                      style: FixedValues.appTitleStyle(context),
                     ),
                     const Text(
                       FixedValues.appVersion,
@@ -57,22 +57,20 @@ class AboutPage extends StatelessWidget {
                               title: 'Play Store',
                               icon: Icons.shop_outlined,
                               backgroundColor: const Color(0xff078C30),
-                              function:
-                                  () => launchThisUrl(
-                                    url:
-                                        'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite',
-                                  ),
+                              function: () => launchThisUrl(
+                                url:
+                                    'https://play.google.com/store/apps/details?id=com.makeshtech.calculator_lite',
+                              ),
                             ),
                             const SizedBox(width: 5),
                             ButtonLinks(
                               title: 'GitHub',
                               icon: Icons.code_outlined,
                               backgroundColor: const Color(0xff24292E),
-                              function:
-                                  () => launchThisUrl(
-                                    url:
-                                        'https://github.com/MakeshVineeth/calculator_lite',
-                                  ),
+                              function: () => launchThisUrl(
+                                url:
+                                    'https://github.com/MakeshVineeth/calculator_lite',
+                              ),
                             ),
                           ],
                         ),

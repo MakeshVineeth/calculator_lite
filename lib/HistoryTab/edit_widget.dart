@@ -12,11 +12,12 @@ class EditWidget extends StatefulWidget {
   final String title;
   final DateTime date;
 
-  const EditWidget(
-      {required this.index,
-      required this.title,
-      required this.date,
-      super.key});
+  const EditWidget({
+    required this.index,
+    required this.title,
+    required this.date,
+    super.key,
+  });
 
   @override
   State<EditWidget> createState() => _EditWidgetState();
@@ -41,8 +42,11 @@ class _EditWidgetState extends State<EditWidget> {
   Widget build(BuildContext context) {
     return FadeScale(
       child: AlertDialog(
+        backgroundColor: Brightness.light == Theme.of(context).brightness
+            ? Colors.white
+            : Colors.black,
         shape: FixedValues.roundShapeLarge,
-        title: const Text('Change Title', style: FixedValues.appTitleStyle),
+        title: Text('Change Title', style: FixedValues.appTitleStyle(context)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -53,7 +57,8 @@ class _EditWidgetState extends State<EditWidget> {
                 child: TextField(
                   controller: myController,
                   scrollPhysics: const AlwaysScrollableScrollPhysics(
-                      parent: BouncingScrollPhysics()),
+                    parent: BouncingScrollPhysics(),
+                  ),
                   style: const TextStyle(fontWeight: FontWeight.w600),
                   decoration: const InputDecoration(border: InputBorder.none),
                 ),
