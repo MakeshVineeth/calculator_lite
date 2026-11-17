@@ -53,6 +53,7 @@ dependencies:
   excel: ^4.0.6
   archive: ^3.6.1
   intl: ^0.20.2
+  package_info_plus: ^9.0.1
 
 dev_dependencies:
   flutter_test:
@@ -61,6 +62,8 @@ dev_dependencies:
   build_runner: ^2.4.15
   hive_ce_generator: ^1.12.1
   mocktail: ^1.0.4
+  path_provider_platform_interface: ^2.1.2
+  plugin_platform_interface: ^2.1.8
 
 flutter:
   uses-material-design: true

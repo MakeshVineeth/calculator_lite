@@ -32,11 +32,35 @@ class _CurrencyTabState extends State<CurrencyTab> {
   final resetFormProvider = ResetFormProvider();
   final UpdateListen updateListen = UpdateListen();
   late PurchaseStatusProvider _purchaseStatusProvider;
+  late Future<void> _processFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _processFuture = process();
+  }
 
   Future<void> process() async {
     await CopyData().copyData;
     fromBox = Hive.box<CurrencyListItem>(CommonsData.fromBox);
     toBox = Hive.box<CurrencyListItem>(CommonsData.toBox);
+
+    if (fromBox.isEmpty) {
+      final currencyBox =
+          Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
+      if (currencyBox.isNotEmpty) {
+        final usd = currencyBox.values.firstWhere(
+          (c) => c.currencyCode == 'USD',
+          orElse: () => currencyBox.values.first,
+        );
+        final eur = currencyBox.values.firstWhere(
+          (c) => c.currencyCode == 'EUR',
+          orElse: () => currencyBox.values.last,
+        );
+        await fromBox.add(usd);
+        await toBox.add(eur);
+      }
+    }
 
     for (final CurrencyListItem item in fromBox.values) {
       await Hive.openBox<dynamic>(item.currencyCode.toLowerCase());
@@ -46,7 +70,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
   @override
   void dispose() {
     _scrollController.dispose();
-    Hive.close();
     super.dispose();
   }
 
@@ -56,10 +79,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: FutureBuilder(
-        future: process(),
+      child: FutureBuilder<void>(
+        future: _processFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              !snapshot.hasError) {
             return FadeThis(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -105,6 +129,24 @@ class _CurrencyTabState extends State<CurrencyTab> {
                   ),
                   const SizedBox(height: 10),
                   Expanded(child: widgetsData()),
+                ],
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Failed to load currency data'),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _processFuture = process();
+                      });
+                    },
+                    child: const Text('Retry'),
+                  ),
                 ],
               ),
             );

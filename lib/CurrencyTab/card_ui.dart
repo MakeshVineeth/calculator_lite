@@ -35,10 +35,8 @@ class _CardUIState extends State<CardUI> {
   final controllerFrom = TextEditingController(text: initial);
   final controllerTo = TextEditingController(text: initial);
 
-  final Box<CurrencyListItem> fromBox =
-      Hive.box<CurrencyListItem>(CommonsData.fromBox);
-  final Box<CurrencyListItem> toBox =
-      Hive.box<CurrencyListItem>(CommonsData.toBox);
+  late final Box<CurrencyListItem> fromBox;
+  late final Box<CurrencyListItem> toBox;
   final int decimalPlaces = 3;
 
   late CurrencyListItem fromCur;
@@ -57,7 +55,8 @@ class _CardUIState extends State<CardUI> {
   @override
   void initState() {
     super.initState();
-
+    fromBox = Hive.box<CurrencyListItem>(CommonsData.fromBox);
+    toBox = Hive.box<CurrencyListItem>(CommonsData.toBox);
     openBoxes();
 
     widget.resetFormProvider.addListener(() {

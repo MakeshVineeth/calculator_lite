@@ -1,5 +1,6 @@
 ﻿import 'dart:io';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flutter/services.dart';
@@ -15,28 +16,40 @@ class CopyData {
       if (!check) {
         await copy();
       } else {
-        // read updated_date.txt from app's doc dir.
-        final String? date = await readData();
+        try {
+          final String? date = await readData();
+          final String dateAsset =
+              await rootBundle.loadString('assets/updated_date.txt');
 
-        // read updated_date.txt from assets.
-        final String dateAsset =
-            await rootBundle.loadString('assets/updated_date.txt');
-
-        // if not null, then date file exists, then copy all data by checking previous date.
-        if (date != null) {
-          final DateTime? dateTime = DateTime.tryParse(date);
-          final DateTime? dateTimeAsset = DateTime.tryParse(dateAsset);
-          if (dateTime!.isBefore(dateTimeAsset!)) await copy();
-        } else {
-          await copy();
-          await writeData(dateAsset);
+          if (date != null) {
+            final DateTime? dateTime = DateTime.tryParse(date);
+            final DateTime? dateTimeAsset = DateTime.tryParse(dateAsset);
+            if (dateTime != null &&
+                dateTimeAsset != null &&
+                dateTime.isBefore(dateTimeAsset)) {
+              await copy();
+            }
+          } else {
+            await copy();
+            await writeData(dateAsset);
+          }
+        } catch (e) {
+          debugPrint('Notice loading updated_date.txt: $e');
         }
       }
 
-      await Hive.openBox<dynamic>(CommonsData.fromBox);
-      await Hive.openBox<dynamic>(CommonsData.toBox);
-      await Hive.openBox<dynamic>(CommonsData.currencyListBox);
-      await Hive.openBox<dynamic>(CommonsData.updatedDateBox);
+      if (!Hive.isBoxOpen(CommonsData.fromBox)) {
+        await Hive.openBox<CurrencyListItem>(CommonsData.fromBox);
+      }
+      if (!Hive.isBoxOpen(CommonsData.toBox)) {
+        await Hive.openBox<CurrencyListItem>(CommonsData.toBox);
+      }
+      if (!Hive.isBoxOpen(CommonsData.currencyListBox)) {
+        await Hive.openBox<CurrencyListItem>(CommonsData.currencyListBox);
+      }
+      if (!Hive.isBoxOpen(CommonsData.updatedDateBox)) {
+        await Hive.openBox<dynamic>(CommonsData.updatedDateBox);
+      }
 
       return CommonsData.successToken;
     }

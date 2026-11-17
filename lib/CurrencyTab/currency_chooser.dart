@@ -8,15 +8,15 @@ import 'package:calculator_lite/fixed_values.dart';
 import 'package:hive_ce/hive.dart';
 
 class CurrencyChooser extends StatelessWidget {
-  final Box<CurrencyListItem> listBoxes =
-      Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
   final int boxIndex;
   final String method;
 
-  CurrencyChooser({required this.boxIndex, required this.method, super.key});
+  const CurrencyChooser({required this.boxIndex, required this.method, super.key});
 
   @override
   Widget build(BuildContext context) {
+    final Box<CurrencyListItem> listBoxes =
+        Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
     final List<CurrencyListItem> currencyListItems = List.castFrom(
       listBoxes.values.toList(),
     );

@@ -1,4 +1,5 @@
-﻿import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+﻿import 'dart:async';
+import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copy_data.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/get_currency_data.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
@@ -26,13 +27,28 @@ class _UpdateColumnState extends State<UpdateColumn> {
   static const int defaultTries = 1;
   int triesLeft = defaultTries;
 
+  Timer? _autoUpdateTimer;
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 5), () => updateInitial());
+    _autoUpdateTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted) updateInitial();
+    });
 
     // Check if Update now is clicked from other screen or widget.
-    widget.updateListen.addListener(() => updateInitial(force: true));
+    widget.updateListen.addListener(_handleUpdateListener);
+  }
+
+  void _handleUpdateListener() {
+    if (mounted) updateInitial(force: true);
+  }
+
+  @override
+  void dispose() {
+    _autoUpdateTimer?.cancel();
+    widget.updateListen.removeListener(_handleUpdateListener);
+    super.dispose();
   }
 
   Future<void> updateInitial({bool force = false}) async {

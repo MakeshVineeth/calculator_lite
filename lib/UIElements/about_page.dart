@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'buttons_links.dart';
 
 class AboutPage extends StatelessWidget {
@@ -34,9 +35,17 @@ class AboutPage extends StatelessWidget {
                       FixedValues.appName,
                       style: FixedValues.appTitleStyle(context),
                     ),
-                    const Text(
-                      FixedValues.appVersion,
-                      style: TextStyle(color: Colors.grey),
+                    FutureBuilder<PackageInfo>(
+                      future: PackageInfo.fromPlatform(),
+                      builder: (context, snapshot) {
+                        final version = snapshot.hasData
+                            ? 'v${snapshot.data!.version}+${snapshot.data!.buildNumber}'
+                            : 'v${FixedValues.appVersion}';
+                        return Text(
+                          version,
+                          style: const TextStyle(color: Colors.grey),
+                        );
+                      },
                     ),
                     const SizedBox(height: 20),
                     Text(

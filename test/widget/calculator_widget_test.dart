@@ -1,4 +1,5 @@
 import 'package:calculator_lite/Backend/custom_focus_events.dart';
+import 'package:calculator_lite/UIElements/about_page.dart';
 import 'package:calculator_lite/UIElements/display_screen.dart';
 import 'package:calculator_lite/bottom_nav_class.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,21 @@ void main() {
       expect(DisplayScreen.formatNumber(12345), equals('12345'));
       expect(DisplayScreen.formatNumber(0), equals('0'));
       expect(DisplayScreen.formatNumber(3.1415), contains('3.14'));
+    });
+
+    testWidgets('AboutPage renders dynamically without crashing',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AboutPage(),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      expect(find.byType(AboutPage), findsOneWidget);
+      expect(find.text('Calculator Lite'), findsOneWidget);
     });
   });
 }
