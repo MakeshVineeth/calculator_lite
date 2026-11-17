@@ -1,4 +1,75 @@
 include: package:flutter_lints/flutter.yaml
+
 analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
   errors:
-    use_build_context_synchronously: ignore
+    use_build_context_synchronously: error
+    avoid_print: error
+    close_sinks: error
+    cancel_subscriptions: error
+    missing_required_param: error
+    missing_return: error
+    deprecated_member_use: ignore
+    todo: ignore
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - windows/**
+    - macos/**
+    - linux/**
+    - '**/*.g.dart'
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_empty_else
+    - avoid_print
+    - avoid_relative_lib_imports
+    - avoid_shadowing_type_parameters
+    - avoid_types_as_parameter_names
+    - avoid_unnecessary_containers
+    - avoid_unused_constructor_parameters
+    - await_only_futures
+    - camel_case_extensions
+    - camel_case_types
+    - cancel_subscriptions
+    - close_sinks
+    - curly_braces_in_flow_control_structures
+    - dangling_library_doc_comments
+    - empty_catches
+    - empty_constructor_bodies
+    - file_names
+    - hash_and_equals
+    - no_duplicate_case_values
+    - non_constant_identifier_names
+    - prefer_conditional_assignment
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables
+    - prefer_final_fields
+    - prefer_final_in_for_each
+    - prefer_final_locals
+    - prefer_is_empty
+    - prefer_is_not_empty
+    - prefer_iterable_whereType
+    - prefer_single_quotes
+    - prefer_spread_collections
+    - sized_box_for_whitespace
+    - sized_box_shrink_expand
+    - unawaited_futures
+    - unnecessary_const
+    - unnecessary_constructor_name
+    - unnecessary_late
+    - unnecessary_new
+    - unnecessary_null_aware_assignments
+    - unnecessary_nullable_for_final_variable_declarations
+    - unnecessary_string_escapes
+    - unnecessary_string_interpolations
+    - use_build_context_synchronously
+    - use_key_in_widget_constructors
+    - use_rethrow_when_possible

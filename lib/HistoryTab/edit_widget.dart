@@ -1,4 +1,4 @@
-import 'package:calculator_lite/HistoryTab/commons_history.dart';
+﻿import 'package:calculator_lite/HistoryTab/commons_history.dart';
 import 'package:calculator_lite/UIElements/dialog_text_btn.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/fixed_values.dart';
@@ -75,8 +75,10 @@ class _EditWidgetState extends State<EditWidget> {
   }
 
   void changeTitle(bool date) async {
-    final box = Hive.box(CommonsHistory.historyBox);
-    final HistoryItem historyItem = box.getAt(widget.index);
+    final Box<HistoryItem> box =
+        Hive.box<HistoryItem>(CommonsHistory.historyBox);
+    final HistoryItem? historyItem = box.getAt(widget.index);
+    if (historyItem == null) return;
 
     String newTitle = myController.text.trim();
     if (newTitle.isEmpty) newTitle = widget.title;

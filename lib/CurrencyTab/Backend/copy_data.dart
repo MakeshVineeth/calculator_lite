@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
@@ -9,23 +9,23 @@ import 'package:archive/archive.dart';
 class CopyData {
   Future<String> get copyData async {
     try {
-      bool check = await Hive.boxExists(CommonsData.currencyListBox);
+      final bool check = await Hive.boxExists(CommonsData.currencyListBox);
 
       // If box doesn't exist at all, then copy the data without checking last updated.
       if (!check) {
         await copy();
       } else {
         // read updated_date.txt from app's doc dir.
-        String? date = await readData();
+        final String? date = await readData();
 
         // read updated_date.txt from assets.
-        String dateAsset =
+        final String dateAsset =
             await rootBundle.loadString('assets/updated_date.txt');
 
         // if not null, then date file exists, then copy all data by checking previous date.
         if (date != null) {
-          DateTime? dateTime = DateTime.tryParse(date);
-          DateTime? dateTimeAsset = DateTime.tryParse(dateAsset);
+          final DateTime? dateTime = DateTime.tryParse(date);
+          final DateTime? dateTimeAsset = DateTime.tryParse(dateAsset);
           if (dateTime!.isBefore(dateTimeAsset!)) await copy();
         } else {
           await copy();
@@ -33,10 +33,10 @@ class CopyData {
         }
       }
 
-      await Hive.openBox(CommonsData.fromBox);
-      await Hive.openBox(CommonsData.toBox);
-      await Hive.openBox(CommonsData.currencyListBox);
-      await Hive.openBox(CommonsData.updatedDateBox);
+      await Hive.openBox<dynamic>(CommonsData.fromBox);
+      await Hive.openBox<dynamic>(CommonsData.toBox);
+      await Hive.openBox<dynamic>(CommonsData.currencyListBox);
+      await Hive.openBox<dynamic>(CommonsData.updatedDateBox);
 
       return CommonsData.successToken;
     }
@@ -50,32 +50,34 @@ class CopyData {
 
   Future<void> copy() async {
     try {
-      String folderName = 'hiveUserData';
-      String zipFileName = '$folderName.zip';
-      ByteData zipContent = await rootBundle.load('assets/$zipFileName');
+      const String folderName = 'hiveUserData';
+      const String zipFileName = '$folderName.zip';
+      final ByteData zipContent = await rootBundle.load('assets/$zipFileName');
 
-      Directory tempDir = await getTemporaryDirectory();
-      String tempPath = '${tempDir.path}/$zipFileName';
+      final Directory tempDir = await getTemporaryDirectory();
+      final String tempPath = '${tempDir.path}/$zipFileName';
 
-      File zipFile = File(tempPath);
+      final File zipFile = File(tempPath);
       zipFile.writeAsBytesSync(zipContent.buffer.asUint8List());
 
-      List<int> bytes = File(tempPath).readAsBytesSync();
-      Archive archive = ZipDecoder().decodeBytes(bytes);
+      final List<int> bytes = File(tempPath).readAsBytesSync();
+      final Archive archive = ZipDecoder().decodeBytes(bytes);
 
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      String appPath = '${appDocDir.path}/$folderName';
+      final Directory appDocDir = await getApplicationDocumentsDirectory();
+      final String appPath = '${appDocDir.path}/$folderName';
       Directory(appPath).createSync();
 
-      for (ArchiveFile file in archive) {
-        String filename = file.name;
-        List<int> data = file.content;
+      for (final ArchiveFile file in archive) {
+        final String filename = file.name;
+        final List<int> data = file.content is List<int>
+            ? (file.content as List<int>)
+            : (file.content as List<dynamic>).cast<int>();
         File('$appPath/$filename')
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       }
     } catch (e) {
-      debugPrint("Error Copying Data: $e");
+      debugPrint('Error Copying Data: $e');
     }
   }
 
@@ -108,7 +110,7 @@ class CopyData {
         return null;
       }
     } catch (e) {
-      debugPrint("Error Reading data: $e");
+      debugPrint('Error Reading data: $e');
       return null;
     }
   }

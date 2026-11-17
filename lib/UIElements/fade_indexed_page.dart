@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 // Credits to diegoveloper for the FadeIndexedStack widget. Source: https://gist.github.com/diegoveloper/1cd23e79a31d0c18a67424f0cbdfd7ad
 

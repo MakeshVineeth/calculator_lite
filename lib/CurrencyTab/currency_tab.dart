@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copy_data.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
@@ -27,19 +27,19 @@ class CurrencyTab extends StatefulWidget {
 
 class _CurrencyTabState extends State<CurrencyTab> {
   final _scrollController = ScrollController();
-  late Box fromBox;
-  late Box toBox;
+  late Box<CurrencyListItem> fromBox;
+  late Box<CurrencyListItem> toBox;
   final resetFormProvider = ResetFormProvider();
   final UpdateListen updateListen = UpdateListen();
   late PurchaseStatusProvider _purchaseStatusProvider;
 
   Future<void> process() async {
     await CopyData().copyData;
-    fromBox = Hive.box(CommonsData.fromBox);
-    toBox = Hive.box(CommonsData.toBox);
+    fromBox = Hive.box<CurrencyListItem>(CommonsData.fromBox);
+    toBox = Hive.box<CurrencyListItem>(CommonsData.toBox);
 
-    for (CurrencyListItem item in fromBox.values) {
-      await Hive.openBox(item.currencyCode.toLowerCase());
+    for (final CurrencyListItem item in fromBox.values) {
+      await Hive.openBox<dynamic>(item.currencyCode.toLowerCase());
     }
   }
 
@@ -83,13 +83,13 @@ class _CurrencyTabState extends State<CurrencyTab> {
                           ),
                           Flexible(
                             child: SmallToolBtn(
-                              function: () {
-                                popCurBtns().then((value) {
-                                  showSlideUp(
-                                    context: context,
-                                    menuList: value,
-                                  );
-                                });
+                              function: () async {
+                                final value = await popCurBtns();
+                                if (!context.mounted) return;
+                                showSlideUp(
+                                  context: context,
+                                  menuList: value,
+                                );
                               },
                               icon: Icons.expand_more_outlined,
                             ),
@@ -172,39 +172,40 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   void addCurrencyCard() async {
     // Check for payment status. And allow not more than 7 currency cards.
-    bool paymentStatus = _purchaseStatusProvider.hasPurchased;
+    final bool paymentStatus = _purchaseStatusProvider.hasPurchased;
 
     if ((paymentStatus == false && fromBox.length >= 5) && Platform.isAndroid) {
       Navigator.pushNamed(context, FixedValues.buyRoute);
       return;
     }
 
-    final list = Hive.box(CommonsData.currencyListBox);
+    final Box<CurrencyListItem> list =
+        Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
     if (list.length > 0) {
       final NumberFormat currencyFormat = NumberFormat.currency(
         locale: Localizations.localeOf(context).toString(),
       );
-      String currencyCode = currencyFormat.currencyName ?? 'USD';
+      final String currencyCode = currencyFormat.currencyName ?? 'USD';
 
-      List<CurrencyListItem> currencyList =
-          list.values.cast<CurrencyListItem>().toList();
+      final List<CurrencyListItem> currencyList =
+          list.values.toList();
 
-      CurrencyListItem fromCur = list.getAt(0);
-      CurrencyListItem toCur = list.getAt(0);
+      CurrencyListItem fromCur = list.getAt(0)!;
+      final CurrencyListItem toCur = list.getAt(0)!;
 
-      for (CurrencyListItem element in currencyList) {
+      for (final CurrencyListItem element in currencyList) {
         if (element.currencyCode == currencyCode) {
           fromCur = element;
           break;
         }
       }
 
-      await Hive.openBox(fromCur.currencyCode.toLowerCase());
+      await Hive.openBox<dynamic>(fromCur.currencyCode.toLowerCase());
 
       await fromBox.add(fromCur);
       await toBox.add(toCur);
 
-      int index = fromBox.length;
+      final int index = fromBox.length;
       _animListKey.currentState?.insertItem(
         index - 1,
         duration: CommonsData.dur1,

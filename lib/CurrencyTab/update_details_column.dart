@@ -1,4 +1,4 @@
-import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+﻿import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copy_data.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/get_currency_data.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
@@ -50,57 +50,73 @@ class _UpdateColumnState extends State<UpdateColumn> {
       if (widget.updateListen.inProgress) return;
       widget.updateListen.inProgress = true;
 
-      DateTime now = DateTime.now();
-      bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
+      final DateTime now = DateTime.now();
+      final bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
 
       // if force is enabled, skip date checking.
       if (checkDateBox && !force) {
-        final Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
+        final Box<dynamic> dateBox =
+            await Hive.openBox<dynamic>(CommonsData.updatedDateBox);
 
-        String lastChecked = dateBox.get(CommonsData.lastDateChecked);
-        DateTime? lastCheckedDate = DateTime.tryParse(lastChecked);
+        final String? lastChecked =
+            dateBox.get(CommonsData.lastDateChecked) as String?;
+        if (lastChecked != null) {
+          final DateTime? lastCheckedDate = DateTime.tryParse(lastChecked);
 
-        if (lastCheckedDate!.difference(now).inHours >= -3 &&
-            lastCheckedDate.difference(now).inDays == 0) {
-          widget.updateListen.inProgress = false;
-          return;
+          if (lastCheckedDate != null &&
+              lastCheckedDate.difference(now).inHours >= -3 &&
+              lastCheckedDate.difference(now).inDays == 0) {
+            widget.updateListen.inProgress = false;
+            return;
+          }
         }
       }
 
       if (mounted) setState(() => status = CommonsData.checkingStr);
 
-      Response? getBaseData =
+      final Response<dynamic>? getBaseData =
           await CommonsData.getResponse(CommonsData.remoteUrl);
 
-      // Gets the base currency data to get a database data for checking.
-      Map baseJson = Map<String, dynamic>.from(getBaseData?.data);
+      if (getBaseData?.data == null) {
+        if (mounted) setState(() => status = CommonsData.errorToken);
+        return;
+      }
 
-      // Gets the newly updated date online.
-      String updatedDate = baseJson['date'];
-      if (checkDateBox && !force) {
-        final Box dateBox = Hive.box(CommonsData.updatedDateBox);
-        String dateStr = dateBox.get(CommonsData.updatedDateKey);
-        DateTime? dateTimeObj = DateTime.tryParse(dateStr);
-        DateTime? online = DateTime.tryParse(updatedDate);
+      final Map<String, dynamic> baseJson =
+          Map<String, dynamic>.from(getBaseData!.data as Map);
 
-        if (dateTimeObj!.year == online!.year &&
-            dateTimeObj.day == online.day &&
-            dateTimeObj.month == online.month) {
-          await dateBox.put(CommonsData.lastDateChecked, now.toString());
-          widget.updateListen.inProgress = false;
+      final String updatedDate = baseJson['date'] as String? ?? '';
+      if (checkDateBox && !force && updatedDate.isNotEmpty) {
+        final Box<dynamic> dateBox =
+            Hive.box<dynamic>(CommonsData.updatedDateBox);
+        final String? dateStr =
+            dateBox.get(CommonsData.updatedDateKey) as String?;
+        if (dateStr != null) {
+          final DateTime? dateTimeObj = DateTime.tryParse(dateStr);
+          final DateTime? online = DateTime.tryParse(updatedDate);
 
-          if (mounted) setState(() => status = CommonsData.upToDate);
-          return;
+          if (dateTimeObj != null &&
+              online != null &&
+              dateTimeObj.year == online.year &&
+              dateTimeObj.day == online.day &&
+              dateTimeObj.month == online.month) {
+            await dateBox.put(CommonsData.lastDateChecked, now.toString());
+            widget.updateListen.inProgress = false;
+
+            if (mounted) setState(() => status = CommonsData.upToDate);
+            return;
+          }
         }
       }
 
       if (mounted) setState(() => status = CommonsData.progressToken);
 
-      String result = await currencyData.getRemoteData();
-      debugPrint("Data retrieve result: $result");
+      final String result = await currencyData.getRemoteData();
+      debugPrint('Data retrieve result: $result');
 
       if (result == CommonsData.successToken) {
-        Box dateBox = await Hive.openBox(CommonsData.updatedDateBox);
+        final Box<dynamic> dateBox =
+            await Hive.openBox<dynamic>(CommonsData.updatedDateBox);
         await dateBox.put(CommonsData.updatedDateKey, updatedDate);
         await dateBox.put(CommonsData.lastDateChecked, now.toString());
 
@@ -114,7 +130,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       retryMethod(result);
     } catch (e) {
-      debugPrint("Error Updating: $e");
+      debugPrint('Error Updating: $e');
       widget.updateListen.inProgress = false;
 
       if (mounted) setState(() => status = CommonsData.errorToken);
@@ -148,9 +164,13 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
   @override
   Widget build(BuildContext context) {
-    final DateTime? dateTime = DateTime.tryParse(
-        Hive.box(CommonsData.updatedDateBox).get(CommonsData.lastDateChecked));
-    final String lastUpdated = _helperFunctions.getDate(dateTime!);
+    final String lastCheckedStr =
+        (Hive.box<dynamic>(CommonsData.updatedDateBox)
+                .get(CommonsData.lastDateChecked) as String?) ??
+            DateTime.now().toString();
+    final DateTime? dateTime = DateTime.tryParse(lastCheckedStr);
+    final String lastUpdated =
+        _helperFunctions.getDate(dateTime ?? DateTime.now());
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

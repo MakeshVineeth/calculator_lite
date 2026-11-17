@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+﻿import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class CommonsData {
@@ -23,21 +23,22 @@ class CommonsData {
   static const autoUpdateDisabled = 'auto_update_no';
   static const Duration dur1 = Duration(milliseconds: 500);
 
-  static Future<Response?> getResponse(url) async {
+  static Future<Response<dynamic>?> getResponse(String url) async {
     final options = BaseOptions(
       baseUrl: remoteUrl,
-      receiveTimeout: const Duration(milliseconds: 1000 * 15),
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
     );
 
-    Dio dio = Dio(options);
+    final Dio dio = Dio(options);
 
     try {
-      return await dio.get(url);
+      return await dio.get<dynamic>(url);
     } on DioException catch (e) {
-      debugPrint("DioError: ${e.message}");
+      debugPrint('DioException: ${e.message}');
       return null;
     } catch (e) {
-      debugPrint("HTTP Request Error: $e");
+      debugPrint('HTTP Request Error: $e');
       return null;
     }
   }

@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
@@ -9,7 +9,6 @@ import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-import 'package:nil/nil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'commons_history.dart';
@@ -27,7 +26,7 @@ class _HistoryTabState extends State<HistoryTab> {
 
   @override
   Widget build(BuildContext context) {
-    bool isLightTheme = Theme.of(context).brightness == Brightness.light;
+    final bool isLightTheme = Theme.of(context).brightness == Brightness.light;
 
     return Column(
       children: <Widget>[
@@ -42,7 +41,7 @@ class _HistoryTabState extends State<HistoryTab> {
                     color: Theme.of(context).textTheme.labelLarge?.color,
                   ),
                   searchDecoration: InputDecoration(
-                    labelText: "Search",
+                    labelText: 'Search',
                     alignLabelWithHint: true,
                     contentPadding: const EdgeInsets.symmetric(
                       vertical: 8,
@@ -79,9 +78,9 @@ class _HistoryTabState extends State<HistoryTab> {
             ],
           ),
         ),
-        FutureBuilder(
+        FutureBuilder<Box<HistoryItem>?>(
           future: getHistoryBox(),
-          builder: (context, AsyncSnapshot<Box?> data) {
+          builder: (context, AsyncSnapshot<Box<HistoryItem>?> data) {
             if (data.connectionState == ConnectionState.done &&
                 data.data != null) {
               return listWidget(data.data!);
@@ -96,9 +95,9 @@ class _HistoryTabState extends State<HistoryTab> {
     );
   }
 
-  Future<Box?> getHistoryBox() async {
+  Future<Box<HistoryItem>?> getHistoryBox() async {
     try {
-      return await Hive.openBox(CommonsHistory.historyBox);
+      return await Hive.openBox<HistoryItem>(CommonsHistory.historyBox);
     } catch (_) {
       return null;
     }
@@ -106,11 +105,11 @@ class _HistoryTabState extends State<HistoryTab> {
 
   Future<Map<String, Function>> getMenuList() async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    String status =
+    final String status =
         preferences.getString(CommonsHistory.historyStatusPref) ??
         CommonsHistory.historyEnabled;
 
-    String menuItemHistStatus =
+    final String menuItemHistStatus =
         status.contains(CommonsHistory.historyEnabled)
             ? 'Disable History'
             : 'Enable History';
@@ -119,7 +118,7 @@ class _HistoryTabState extends State<HistoryTab> {
       'Clear All':
           () => Future.delayed(
             CommonsData.dur1,
-            () => Hive.box(CommonsHistory.historyBox).clear(),
+            () => Hive.box<HistoryItem>(CommonsHistory.historyBox).clear(),
           ),
       'Export': () {
         if (!Platform.isAndroid) return;
@@ -143,12 +142,15 @@ class _HistoryTabState extends State<HistoryTab> {
     return menuList;
   }
 
-  void menuShow() async =>
-      showSlideUp(context: context, menuList: await getMenuList());
+  void menuShow() async {
+    final list = await getMenuList();
+    if (!mounted) return;
+    showSlideUp(context: context, menuList: list);
+  }
 
-  Widget listWidget(Box box) => ValueListenableBuilder(
+  Widget listWidget(Box<HistoryItem> box) => ValueListenableBuilder<Box<HistoryItem>>(
     valueListenable: box.listenable(),
-    builder: (context, Box listener, child) {
+    builder: (context, Box<HistoryItem> listener, child) {
       if (listener.isNotEmpty) {
         return Expanded(
           child: ListView.builder(
@@ -156,10 +158,10 @@ class _HistoryTabState extends State<HistoryTab> {
               parent: BouncingScrollPhysics(),
             ),
             itemCount: listener.length,
-            cacheExtent: 2000,
             itemBuilder: (context, index) {
               final indexVal = (listener.length - 1) - index;
-              final HistoryItem historyItem = box.getAt(indexVal);
+              final HistoryItem? historyItem = box.getAt(indexVal);
+              if (historyItem == null) return const SizedBox.shrink();
 
               if (searchString.isEmpty ||
                   historyItem.title.trim().toLowerCase().contains(
@@ -170,7 +172,7 @@ class _HistoryTabState extends State<HistoryTab> {
                   child: HistoryCard(index: indexVal, historyItem: historyItem),
                 );
               } else {
-                return nil;
+                return const SizedBox.shrink();
               }
             },
           ),

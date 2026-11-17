@@ -1,8 +1,8 @@
-import 'package:calculator_lite/fixed_values.dart';
-import 'package:angles/angles.dart';
 import 'dart:math' as math;
+import 'package:angles/angles.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:decimal/decimal.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class HelperFunctions {
@@ -11,7 +11,7 @@ class HelperFunctions {
     FixedValues.multiplyChar,
     FixedValues.minus,
     '+',
-    '^'
+    '^',
   ];
 
   final List<String> numbersList = [
@@ -25,7 +25,7 @@ class HelperFunctions {
     '7',
     '8',
     '9',
-    '.'
+    '.',
   ];
 
   final List<String> constList = ['e', FixedValues.pi];
@@ -40,41 +40,38 @@ class HelperFunctions {
     'cos⁻¹(',
     'tan⁻¹(',
     FixedValues.root,
-    FixedValues.cubeRootSym
+    FixedValues.cubeRootSym,
   ];
 
-  int parseNumbersFromEnd(int i, var str) {
-    // Parse the string from the end to start. Break immediately if any symbol found other than integers.
+  int parseNumbersFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
       if (!numbersList.contains(str[i])) break;
     }
     return i;
   }
 
-  int parseRandomFromEnd(int i, var str) {
-    // Parse the string from the end to start. Break immediately if any symbol found other than integers.
+  int parseRandomFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
       if (randomList.contains(str[i])) break;
     }
     return i - 1;
   }
 
-  int parseConstFromEnd(int i, var str) {
-    // Parse the string from the end to start. Break immediately if any symbol found other than integers.
+  int parseConstFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
       if (!constList.contains(str[i])) break;
     }
     return i;
   }
 
-  int parseOperatorFromEnd(int i, var str) {
+  int parseOperatorFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
       if (operations.contains(str[i])) break;
     }
     return i;
   }
 
-  int parseMatchingBrackets(int end, var str) {
+  int parseMatchingBrackets(int end, List<String> str) {
     int openBrace = 0;
     int closedBrace = 0;
     for (; end >= 0; --end) {
@@ -99,27 +96,27 @@ class HelperFunctions {
     return computerStr;
   }
 
-  List<String> concatenateList(List list) {
-    List<String> result = [];
-    for (var element in list) {
+  List<String> concatenateList(List<dynamic> list) {
+    final List<String> result = [];
+    for (final element in list) {
       if (element is List<String>) {
-        for (var element1 in element) {
+        for (final element1 in element) {
           result.add(element1);
         }
       } else if (element is double) {
         result.add(element.toString());
       } else {
-        result.add(element);
+        result.add(element.toString());
       }
     }
     return result;
   }
 
   BigInt factorial(BigInt n) {
-    if (n < BigInt.from(0)) throw ('Negative numbers are not allowed.');
-    return n <= BigInt.from(1)
-        ? BigInt.from(1)
-        : n * factorial(n - BigInt.from(1));
+    if (n < BigInt.zero) throw ArgumentError('Negative numbers are not allowed.');
+    return n <= BigInt.one
+        ? BigInt.one
+        : n * factorial(n - BigInt.one);
   }
 
   double getDegValue(List<String> computerString, int index, double angle) {
@@ -127,59 +124,48 @@ class HelperFunctions {
     double angleResult;
     switch (computerString[index]) {
       case 'cos(':
-        {
-          if (!isOddMultiple90(angle)) {
-            angleResult = an.cos;
-          } else {
-            angleResult = an.cos.roundToDouble();
-          }
-
-          break;
+        if (!isOddMultiple90(angle)) {
+          angleResult = an.cos;
+        } else {
+          angleResult = an.cos.roundToDouble();
         }
+        break;
 
       case 'sin(':
         angleResult = an.sin;
         break;
 
       case 'tan(':
-        {
-          if (angle.abs() == 45) {
-            angleResult = an.tan.roundToDouble();
-          } else if (check180(angle)) {
-            angleResult = 0;
-          } else if (!isOddMultiple90(angle)) {
-            angleResult = an.tan;
-          } else {
-            angleResult = double.infinity;
-          }
-          break;
+        if (angle.abs() == 45) {
+          angleResult = an.tan.roundToDouble();
+        } else if (check180(angle)) {
+          angleResult = 0;
+        } else if (!isOddMultiple90(angle)) {
+          angleResult = an.tan;
+        } else {
+          angleResult = double.infinity;
         }
+        break;
 
       case 'cos⁻¹(':
-        {
-          if (angle.abs() != 0.5) {
-            angleResult = Angle.acos(angle).degrees;
-          } else {
-            angleResult = Angle.acos(angle).degrees.roundToDouble();
-          }
-          break;
+        if (angle.abs() != 0.5) {
+          angleResult = Angle.acos(angle).degrees;
+        } else {
+          angleResult = Angle.acos(angle).degrees.roundToDouble();
         }
+        break;
 
       case 'sin⁻¹(':
-        {
-          if (angle.abs() != 0.5) {
-            angleResult = Angle.asin(angle).degrees;
-          } else {
-            angleResult = Angle.asin(angle).degrees.roundToDouble();
-          }
-          break;
+        if (angle.abs() != 0.5) {
+          angleResult = Angle.asin(angle).degrees;
+        } else {
+          angleResult = Angle.asin(angle).degrees.roundToDouble();
         }
+        break;
 
       case 'tan⁻¹(':
-        {
-          angleResult = Angle.atan(angle).degrees;
-          break;
-        }
+        angleResult = Angle.atan(angle).degrees;
+        break;
 
       default:
         angleResult = double.nan;
@@ -194,29 +180,23 @@ class HelperFunctions {
 
   bool isOddMultiple90(double angle) {
     bool isMultiple = false;
-
     if (isInteger(angle) && angle % 90 == 0) {
-      int quotient = angle ~/ 90;
+      final int quotient = angle ~/ 90;
       if (isInteger(quotient)) isMultiple = quotient.isOdd;
     }
-
     return isMultiple;
   }
 
   bool check180(double angle) {
-    bool isMultiple = false;
-    if (isInteger(angle) && angle % 180 == 0) isMultiple = true;
-    return isMultiple;
+    return isInteger(angle) && angle % 180 == 0;
   }
 
   bool isInteger(num value) => value is int || value == value.roundToDouble();
 
   String getDate(DateTime dateTime) {
-    String t1 = DateFormat.Hm().format(dateTime);
-    String t2 = DateFormat('yyyy-MM-dd').format(dateTime);
-    String date = '$t2 $t1';
-
-    return date;
+    final String t1 = DateFormat.Hm().format(dateTime);
+    final String t2 = DateFormat('yyyy-MM-dd').format(dateTime);
+    return '$t2 $t1';
   }
 
   bool isLandScape(BuildContext context) =>

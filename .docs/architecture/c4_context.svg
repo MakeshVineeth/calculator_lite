@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%" style="background-color: #1e1e2e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#89dceb" />
+    </marker>
+  </defs>
+
+  <!-- Title Header -->
+  <text x="500" y="45" text-anchor="middle" fill="#cdd6f4" font-size="24" font-weight="700">[System Context] Calculator Lite</text>
+  <text x="500" y="70" text-anchor="middle" fill="#a6adc8" font-size="14">C4 Model - Level 1: System Context Diagram</text>
+
+  <!-- Mobile App User (Person) -->
+  <g transform="translate(80, 230)" filter="url(#shadow)">
+    <rect width="220" height="150" rx="16" fill="#004D40" stroke="#26A69A" stroke-width="2"/>
+    <circle cx="110" cy="40" r="18" fill="#80CBC4"/>
+    <path d="M 85 80 Q 110 60 135 80 Z" fill="#80CBC4"/>
+    <text x="110" y="105" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="700">Mobile App User</text>
+    <text x="110" y="125" text-anchor="middle" fill="#b2dfdb" font-size="11">[Person]</text>
+    <text x="110" y="142" text-anchor="middle" fill="#e0f2f1" font-size="10">Performs calculations &amp; conversions</text>
+  </g>
+
+  <!-- Main System: Calculator Lite -->
+  <g transform="translate(390, 205)" filter="url(#shadow)">
+    <rect width="260" height="190" rx="16" fill="#00796B" stroke="#4DB6AC" stroke-width="3"/>
+    <rect x="25" y="20" width="40" height="40" rx="8" fill="#004D40"/>
+    <text x="45" y="47" text-anchor="middle" fill="#80CBC4" font-size="22">🧮</text>
+    <text x="135" y="75" text-anchor="middle" fill="#ffffff" font-size="20" font-weight="700">Calculator Lite</text>
+    <text x="135" y="98" text-anchor="middle" fill="#b2dfdb" font-size="12">[Software System]</text>
+    <text x="135" y="125" text-anchor="middle" fill="#e0f2f1" font-size="11">Fast, secure mobile calculator</text>
+    <text x="135" y="145" text-anchor="middle" fill="#e0f2f1" font-size="11">with offline history, currency sync,</text>
+    <text x="135" y="165" text-anchor="middle" fill="#e0f2f1" font-size="11">&amp; spreadsheet data export.</text>
+  </g>
+
+  <!-- External System 1: Exchange Rate API -->
+  <g transform="translate(730, 130)" filter="url(#shadow)">
+    <rect width="210" height="135" rx="14" fill="#37474F" stroke="#78909C" stroke-width="2"/>
+    <text x="105" y="40" text-anchor="middle" fill="#eceff1" font-size="16" font-weight="700">Exchange Rate API</text>
+    <text x="105" y="60" text-anchor="middle" fill="#b0bec5" font-size="12">[External System]</text>
+    <text x="105" y="88" text-anchor="middle" fill="#cfd8dc" font-size="11">Provides live &amp; historical</text>
+    <text x="105" y="106" text-anchor="middle" fill="#cfd8dc" font-size="11">global currency rates via HTTPS</text>
+  </g>
+
+  <!-- External System 2: Google Play In-App Billing -->
+  <g transform="translate(730, 335)" filter="url(#shadow)">
+    <rect width="210" height="135" rx="14" fill="#37474F" stroke="#78909C" stroke-width="2"/>
+    <text x="105" y="40" text-anchor="middle" fill="#eceff1" font-size="15" font-weight="700">Google Play Billing</text>
+    <text x="105" y="60" text-anchor="middle" fill="#b0bec5" font-size="12">[External System]</text>
+    <text x="105" y="88" text-anchor="middle" fill="#cfd8dc" font-size="11">Validates licensing &amp; securely</text>
+    <text x="105" y="106" text-anchor="middle" fill="#cfd8dc" font-size="11">processes in-app purchases</text>
+  </g>
+
+  <!-- Relationship: User -> Calculator Lite -->
+  <path d="M 300 300 L 390 300" fill="none" stroke="#89dceb" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="345" y="290" text-anchor="middle" fill="#cdd6f4" font-size="11">Uses app</text>
+
+  <!-- Relationship: Calculator Lite -> Exchange Rate API -->
+  <path d="M 650 260 L 730 210" fill="none" stroke="#89dceb" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="690" y="222" text-anchor="middle" fill="#cdd6f4" font-size="11">Fetch rates (HTTPS)</text>
+
+  <!-- Relationship: Calculator Lite -> Google Play Billing -->
+  <path d="M 650 340 L 730 390" fill="none" stroke="#89dceb" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="690" y="380" text-anchor="middle" fill="#cdd6f4" font-size="11">Billing requests</text>
+</svg>

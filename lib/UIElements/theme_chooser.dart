@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:calculator_lite/Backend/theme_change.dart';
 import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
@@ -72,7 +72,7 @@ class _ThemeButtonsState extends State<ThemeButtons> {
                   style: FixedValues.semiBoldStyle,
                 ),
                 onTap: () => setTheme(e.value),
-                leading: Radio(
+                leading: Radio<String>(
                   value: e.value,
                   groupValue: _currentThemeString,
                   onChanged: setTheme,
@@ -82,11 +82,12 @@ class _ThemeButtonsState extends State<ThemeButtons> {
     );
   }
 
-  void setTheme(var val) async {
+  void setTheme(String? val) async {
+    if (val == null) return;
     setState(() => _currentThemeString = val);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('theme', _currentThemeString);
-    ThemeMode themeMode = MiniThemeFunctions.parseTheme(_currentThemeString);
+    final ThemeMode themeMode = MiniThemeFunctions.parseTheme(_currentThemeString);
     themeChange.stateFunction(themeMode);
   }
 }

@@ -8,8 +8,8 @@ DateTime getDateTime(String dateText) =>
 
 Future<bool> isAboveOreo() async {
   if (Platform.isAndroid) {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     return androidInfo.version.sdkInt >= 26;
   } else {
     return false;

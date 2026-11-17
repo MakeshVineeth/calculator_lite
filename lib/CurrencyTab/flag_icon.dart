@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:octo_image/octo_image.dart';
 
 class FlagIcon extends StatefulWidget {

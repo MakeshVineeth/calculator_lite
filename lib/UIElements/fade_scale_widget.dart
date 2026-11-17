@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 
 class FadeScale extends StatefulWidget {

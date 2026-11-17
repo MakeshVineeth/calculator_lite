@@ -1,4 +1,4 @@
-import 'package:calculator_lite/common_methods/common_methods.dart';
+﻿import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
@@ -97,7 +97,7 @@ class AboutPage extends StatelessWidget {
 
   static void showAboutDialogFunc(BuildContext context) async {
     try {
-      showBlurDialog(context: context, child: const AboutPage());
+      await showBlurDialog(context: context, child: const AboutPage());
     } catch (_) {}
   }
 }

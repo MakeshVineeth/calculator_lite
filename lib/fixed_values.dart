@@ -1,4 +1,4 @@
-import 'package:charcode/charcode.dart' as charcode;
+﻿import 'package:charcode/charcode.dart' as charcode;
 import 'package:flutter/material.dart';
 
 class FixedValues {
@@ -89,11 +89,11 @@ class FixedValues {
   ];
 
   static ThemeData getThemeData(Brightness brightness, BuildContext context) {
-    bool isLight = brightness == Brightness.light;
-    MaterialColor foreground = isLight ? Colors.red : Colors.yellow;
-    Color? background = isLight ? Colors.white : Colors.grey[900];
-    Color? foregroundText = isLight ? Colors.black : Colors.white;
-    Color? backgroundScaffold = isLight ? background : Colors.black;
+    final bool isLight = brightness == Brightness.light;
+    final MaterialColor foreground = isLight ? Colors.red : Colors.yellow;
+    final Color? background = isLight ? Colors.white : Colors.grey[900];
+    final Color foregroundText = isLight ? Colors.black : Colors.white;
+    final Color? backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
       useMaterial3: true,
@@ -138,7 +138,7 @@ class FixedValues {
       colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground)
           .copyWith(secondary: foreground, brightness: brightness)
           .copyWith(surface: backgroundScaffold),
-      bottomAppBarTheme: BottomAppBarTheme(color: backgroundScaffold),
+      bottomAppBarTheme: BottomAppBarThemeData(color: backgroundScaffold),
     );
   }
 

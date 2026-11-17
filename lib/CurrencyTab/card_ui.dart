@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
@@ -35,8 +35,10 @@ class _CardUIState extends State<CardUI> {
   final controllerFrom = TextEditingController(text: initial);
   final controllerTo = TextEditingController(text: initial);
 
-  final Box fromBox = Hive.box(CommonsData.fromBox);
-  final Box toBox = Hive.box(CommonsData.toBox);
+  final Box<CurrencyListItem> fromBox =
+      Hive.box<CurrencyListItem>(CommonsData.fromBox);
+  final Box<CurrencyListItem> toBox =
+      Hive.box<CurrencyListItem>(CommonsData.toBox);
   final int decimalPlaces = 3;
 
   late CurrencyListItem fromCur;
@@ -44,7 +46,7 @@ class _CardUIState extends State<CardUI> {
   bool isInitialized = false;
 
   double exchangeRate = 0.0;
-  late Box fromCurBox;
+  late Box<dynamic> fromCurBox;
 
   String placeholder = '0.00';
   String currentRateStr = '';
@@ -77,8 +79,8 @@ class _CardUIState extends State<CardUI> {
     try {
       if (widget.remove) return;
 
-      fromCur = fromBox.getAt(widget.index);
-      toCur = toBox.getAt(widget.index);
+      fromCur = fromBox.getAt(widget.index) as CurrencyListItem;
+      toCur = toBox.getAt(widget.index) as CurrencyListItem;
       fromCurBox = Hive.box(fromCur.currencyCode.toLowerCase());
 
       isInitialized = true;
@@ -93,15 +95,19 @@ class _CardUIState extends State<CardUI> {
     if (widget.remove) return;
 
     try {
-      fromCur = fromBox.getAt(widget.index);
-      toCur = toBox.getAt(widget.index);
+      fromCur = fromBox.getAt(widget.index) as CurrencyListItem;
+      toCur = toBox.getAt(widget.index) as CurrencyListItem;
 
       if (fromCur.currencyCode == toCur.currencyCode) {
         exchangeRate = 1.0;
       } else {
         fromCurBox = Hive.box(fromCur.currencyCode.toLowerCase());
-        var value = fromCurBox.get(toCur.currencyCode);
-        exchangeRate = (value is int) ? value.ceilToDouble() : value;
+        final value = fromCurBox.get(toCur.currencyCode);
+        if (value is num) {
+          exchangeRate = value.toDouble();
+        } else {
+          exchangeRate = 1.0;
+        }
       }
 
       currentRateStr =
@@ -152,7 +158,7 @@ class _CardUIState extends State<CardUI> {
   }
 
   void delete() => Future.delayed(CommonsData.dur1, () {
-    if (!context.mounted) return;
+    if (!mounted) return;
 
     FocusScope.of(context).unfocus();
     fromBox.deleteAt(widget.index);
@@ -259,9 +265,9 @@ class _CardUIState extends State<CardUI> {
       // Text is shown in a currency format. So we're replacing the commas for further parsing.
       from = from.replaceAll(',', '');
 
-      bool isFrom = isFromMethod(method);
+      final bool isFrom = isFromMethod(method);
 
-      List<String> textArray = from.split('');
+      final List<String> textArray = from.split('');
 
       if (textArray.isEmpty) {
         if (isFrom) {
@@ -276,7 +282,7 @@ class _CardUIState extends State<CardUI> {
       }
 
       if (textArray.last == '.') {
-        int decimalOccurrence =
+        final int decimalOccurrence =
             textArray.where((element) => element == '.').toList().length;
 
         if (decimalOccurrence > 1) textArray.removeLast();
@@ -284,7 +290,7 @@ class _CardUIState extends State<CardUI> {
 
       from = textArray.join();
 
-      double? val = double.tryParse(from);
+      final double? val = double.tryParse(from);
 
       // making sure text is an integer & format it using currency format.
       if (!textArray.contains('.') && helperFunctions.isInteger(val!)) {

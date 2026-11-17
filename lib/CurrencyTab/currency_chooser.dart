@@ -1,4 +1,4 @@
-import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+﻿import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 import 'package:calculator_lite/CurrencyTab/flag_icon.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,8 @@ import 'package:calculator_lite/fixed_values.dart';
 import 'package:hive_ce/hive.dart';
 
 class CurrencyChooser extends StatelessWidget {
-  final Box listBoxes = Hive.box(CommonsData.currencyListBox);
+  final Box<CurrencyListItem> listBoxes =
+      Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
   final int boxIndex;
   final String method;
 
@@ -16,11 +17,11 @@ class CurrencyChooser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<CurrencyListItem> currencyListItems = List.castFrom(
+    final List<CurrencyListItem> currencyListItems = List.castFrom(
       listBoxes.values.toList(),
     );
 
-    List<CurrencyListItem> uniqueCurrencyListItems =
+    final List<CurrencyListItem> uniqueCurrencyListItems =
         currencyListItems
             .fold<Map<String, CurrencyListItem>>(
               {},
@@ -36,8 +37,7 @@ class CurrencyChooser extends StatelessWidget {
           height: MediaQuery.of(context).size.height / 1.4,
           width: MediaQuery.of(context).size.width,
           child: ListView(
-            addAutomaticKeepAlives: true,
-            cacheExtent: 1000,
+            scrollCacheExtent: const ScrollCacheExtent.pixels(1000), addAutomaticKeepAlives: true,
             physics: const AlwaysScrollableScrollPhysics(
               parent: BouncingScrollPhysics(),
             ),
@@ -47,11 +47,11 @@ class CurrencyChooser extends StatelessWidget {
 
               return ListTile(
                 shape: FixedValues.roundShapeLarge,
-                onTap: () {
-                  onTap(context, currencyListItem).then((value) {
-                    FocusScope.of(context).unfocus();
-                    Navigator.of(context, rootNavigator: true).pop();
-                  });
+                onTap: () async {
+                  await onTap(context, currencyListItem);
+                  if (!context.mounted) return;
+                  FocusScope.of(context).unfocus();
+                  Navigator.of(context, rootNavigator: true).pop();
                 },
                 leading: FlagIcon(flagURL: currencyListItem.flagURL),
                 title: Text(
@@ -69,9 +69,9 @@ class CurrencyChooser extends StatelessWidget {
     BuildContext context,
     CurrencyListItem currencyListItem,
   ) async {
-    Box box = Hive.box(method);
+    final Box<CurrencyListItem> box = Hive.box<CurrencyListItem>(method);
     await box.putAt(boxIndex, currencyListItem);
-    await Hive.openBox(currencyListItem.currencyCode.toLowerCase());
+    await Hive.openBox<dynamic>(currencyListItem.currencyCode.toLowerCase());
   }
 
   static Future<void> show({

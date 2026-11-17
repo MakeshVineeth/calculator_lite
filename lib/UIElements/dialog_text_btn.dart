@@ -1,4 +1,4 @@
-import 'package:calculator_lite/fixed_values.dart';
+﻿import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 
 class DialogTextBtn extends StatelessWidget {

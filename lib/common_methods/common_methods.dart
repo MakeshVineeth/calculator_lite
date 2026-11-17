@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+﻿import 'dart:io' show Platform;
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +8,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
 
 Future<void> setPrefs(String title, bool data) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setBool(title, data);
 }
 
-Future<bool> getPrefs(String title, dynamic defaultVal) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+Future<bool> getPrefs(String title, bool defaultVal) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getBool(title) ?? defaultVal;
 }
 
@@ -30,7 +30,7 @@ Future<void> setSecure(bool disabled) async {
 }
 
 Future<bool> isFirstLaunch() async {
-  bool showTutorial = await getPrefs(FixedValues.firstLaunchPref, true);
+  final bool showTutorial = await getPrefs(FixedValues.firstLaunchPref, true);
   return showTutorial;
 }
 
@@ -55,8 +55,8 @@ Future<void> askForReview({bool action = false}) async {
 
     if (reviewAskedCount > 2) return;
 
-    String? dateStr = prefs.getString(dateStrPrefs);
-    DateTime now = DateTime.now();
+    final String? dateStr = prefs.getString(dateStrPrefs);
+    final DateTime now = DateTime.now();
 
     // If dateStr is null, it means there is no shared preference yet which should mean first time.
     if (dateStr == null) {
@@ -64,9 +64,9 @@ Future<void> askForReview({bool action = false}) async {
       return;
     }
 
-    DateTime? dateCheck = DateTime.tryParse(dateStr);
+    final DateTime? dateCheck = DateTime.tryParse(dateStr);
     if (dateCheck == null) return;
-    Duration difference = now.difference(dateCheck);
+    final Duration difference = now.difference(dateCheck);
 
     if ((action && reviewAskedCount == 0) ||
         (difference.inMinutes >= 30 && reviewAskedCount == 0) ||
@@ -93,7 +93,7 @@ Future<void> launchThisUrl({
   bool enableJavaScript = false,
 }) async {
   try {
-    Uri urlEncoded = Uri.tryParse(url)!;
+    final Uri urlEncoded = Uri.tryParse(url)!;
 
     await launchUrl(
       urlEncoded,

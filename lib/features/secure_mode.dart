@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+﻿import 'dart:io' show Platform;
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/custom_radio.dart';
@@ -22,7 +22,7 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
   }
 
   void initialTask() async {
-    bool status = await getPrefs('privacy', true);
+    final bool status = await getPrefs('privacy', true);
     if (mounted) setState(() => _disabled = status);
   }
 

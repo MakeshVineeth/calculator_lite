@@ -1,0 +1,63 @@
+site_name: Calculator Lite
+site_description: Enterprise-grade open-source calculator & currency converter for Flutter.
+repo_name: makesh-ag/calculator_lite
+repo_url: https://github.com/makesh-ag/calculator_lite
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: kroki
+          class: kroki
+          format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: structurizr
+          class: structurizr
+          format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: excalidraw
+          class: excalidraw
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
