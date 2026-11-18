@@ -44,9 +44,19 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
       listBoxes.values.toList(),
     );
 
+    // Defensive deduplication by (currencyCode + currencyName)
+    final Set<String> seenKeys = {};
+    final List<CurrencyListItem> deduplicatedItems = [];
+    for (final item in currencyListItems) {
+      final key = '${item.currencyCode}_${item.currencyName}'.toLowerCase();
+      if (seenKeys.add(key)) {
+        deduplicatedItems.add(item);
+      }
+    }
+
     final List<CurrencyListItem> filteredItems = _searchQuery.trim().isEmpty
-        ? currencyListItems
-        : currencyListItems.where((item) {
+        ? deduplicatedItems
+        : deduplicatedItems.where((item) {
             // OWASP M4: Sanitize search query input
             final query = _searchQuery.toLowerCase().trim();
             final code = item.currencyCode.toLowerCase();

@@ -48,5 +48,46 @@ void main() {
     expect(Hive.isBoxOpen(CommonsData.fromBox), isTrue);
     expect(Hive.isBoxOpen(CommonsData.toBox), isTrue);
     expect(Hive.isBoxOpen(CommonsData.currencyListBox), isTrue);
+
+    final currencyBox = Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
+    expect(currencyBox.length, greaterThanOrEqualTo(180));
+
+    final zarItems =
+        currencyBox.values.where((c) => c.currencyCode == 'ZAR').toList();
+    expect(zarItems.length, equals(1));
+    expect(zarItems.first.flagURL, equals('icons/flags/png100px/za.png'));
+
+    // Check no duplicate keys
+    final seen = <String>{};
+    for (final item in currencyBox.values) {
+      final key = '${item.currencyCode}_${item.currencyName}'.toLowerCase();
+      expect(seen.contains(key), isFalse, reason: 'Duplicate found: $key');
+      seen.add(key);
+    }
+  });
+
+  test('CopyData re-seeds if existing box is outdated with legacy 32 items', () async {
+    // Simulate legacy box with 32 items and legacy seed version
+    final currencyBox =
+        await Hive.openBox<CurrencyListItem>(CommonsData.currencyListBox);
+    final dateBox = await Hive.openBox<dynamic>(CommonsData.updatedDateBox);
+    await dateBox.put(CopyData.kSeedVersionKey, 1); // Old version
+
+    // Insert fake old items
+    for (int i = 0; i < 32; i++) {
+      await currencyBox.add(CurrencyListItem(
+        currencyCode: 'USD',
+        currencyName: 'Old Item $i',
+        flagURL: '',
+      ));
+    }
+    expect(currencyBox.length, equals(32));
+
+    // Run copyData - should detect version < 2 and re-seed with 180+
+    final copyData = CopyData();
+    final result = await copyData.copyData;
+    expect(result, equals(CommonsData.successToken));
+    expect(currencyBox.length, greaterThanOrEqualTo(180));
+    expect(dateBox.get(CopyData.kSeedVersionKey), equals(CopyData.kSeedVersion));
   });
 }

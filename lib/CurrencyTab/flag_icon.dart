@@ -23,11 +23,25 @@ class _FlagIconState extends State<FlagIcon>
         border: Border.all(color: Colors.grey[300]!),
       ),
       child:
-          (widget.flagURL.isNotEmpty)
+          (widget.flagURL.trim().isNotEmpty)
               ? image()
-              : const CircularProgressIndicator(),
+              : _fallbackIcon(),
     );
   }
+
+  Widget _fallbackIcon() => Container(
+    width: sizeInt,
+    height: sizeInt,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.grey[200],
+    ),
+    child: Icon(
+      Icons.public,
+      size: 16,
+      color: Colors.grey[600],
+    ),
+  );
 
   Widget image() => OctoImage(
     fit: BoxFit.fill,
@@ -35,8 +49,12 @@ class _FlagIconState extends State<FlagIcon>
     height: sizeInt,
     image: AssetImage(widget.flagURL, package: 'country_icons'),
     imageBuilder: OctoImageTransformer.circleAvatar(),
-    placeholderBuilder: OctoPlaceholder.circularProgressIndicator(),
-    errorBuilder: OctoError.icon(icon: Icons.error, color: Colors.red),
+    placeholderBuilder: (context) => SizedBox(
+      width: sizeInt,
+      height: sizeInt,
+      child: const CircularProgressIndicator(strokeWidth: 1.5),
+    ),
+    errorBuilder: (context, error, stackTrace) => _fallbackIcon(),
   );
 
   @override

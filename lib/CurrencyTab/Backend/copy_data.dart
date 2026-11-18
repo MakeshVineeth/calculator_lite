@@ -6,6 +6,9 @@ import 'package:hive_ce/hive.dart';
 import 'package:flutter/services.dart';
 
 class CopyData {
+  static const int kSeedVersion = 2;
+  static const String kSeedVersionKey = 'currency_seed_version_v2';
+
   Future<String> get copyData async {
     try {
       final bool check = await Hive.boxExists(CommonsData.currencyListBox);
@@ -16,13 +19,20 @@ class CopyData {
           await _openBoxSafe<CurrencyListItem>(CommonsData.currencyListBox);
       final dateBox = await _openBoxSafe<dynamic>(CommonsData.updatedDateBox);
 
-      // Seed data if currencies box is empty or doesn't exist
-      if (!check || currencyBox.isEmpty) {
+      final int existingSeedVersion =
+          (await dateBox.get(kSeedVersionKey, defaultValue: 0)) as int;
+
+      // Seed or re-seed if currencies box doesn't exist, is empty, seed version is outdated, or items < 180
+      if (!check ||
+          currencyBox.isEmpty ||
+          existingSeedVersion < kSeedVersion ||
+          currencyBox.length < 180) {
         await seedFromAsset(currencyBox, dateBox);
+        await dateBox.put(kSeedVersionKey, kSeedVersion);
       }
 
-      // Seed initial from/to cards if empty
-      if (fromBox.isEmpty && currencyBox.isNotEmpty) {
+      // Seed initial from/to cards if empty or invalid
+      if (currencyBox.isNotEmpty && (fromBox.isEmpty || toBox.isEmpty)) {
         CurrencyListItem defaultFrom = currencyBox.getAt(0)!;
         CurrencyListItem defaultTo = currencyBox.getAt(0)!;
 
@@ -31,8 +41,38 @@ class CopyData {
           if (item.currencyCode == 'EUR') defaultTo = item;
         }
 
-        await fromBox.add(defaultFrom);
-        await toBox.add(defaultTo);
+        if (fromBox.isEmpty) await fromBox.add(defaultFrom);
+        if (toBox.isEmpty) await toBox.add(defaultTo);
+      }
+
+      // Heal existing from/to cards with updated flags/names if needed
+      if (fromBox.isNotEmpty && currencyBox.isNotEmpty) {
+        for (int i = 0; i < fromBox.length; i++) {
+          final item = fromBox.getAt(i);
+          if (item != null) {
+            final match = currencyBox.values.firstWhere(
+              (c) => c.currencyCode == item.currencyCode,
+              orElse: () => item,
+            );
+            if (match.flagURL != item.flagURL) {
+              await fromBox.putAt(i, match);
+            }
+          }
+        }
+      }
+      if (toBox.isNotEmpty && currencyBox.isNotEmpty) {
+        for (int i = 0; i < toBox.length; i++) {
+          final item = toBox.getAt(i);
+          if (item != null) {
+            final match = currencyBox.values.firstWhere(
+              (c) => c.currencyCode == item.currencyCode,
+              orElse: () => item,
+            );
+            if (match.flagURL != item.flagURL) {
+              await toBox.putAt(i, match);
+            }
+          }
+        }
       }
 
       return CommonsData.successToken;
@@ -64,17 +104,27 @@ class CopyData {
       await dateBox.put(CommonsData.lastDateChecked, updatedDate);
       await dateBox.put(CommonsData.updatedDateKey, updatedDate);
 
+      await currencyBox.clear();
       final List<dynamic> currenciesList =
           data['currencies'] as List<dynamic>? ?? [];
+      final Set<String> seen = {};
       for (int i = 0; i < currenciesList.length; i++) {
         final Map<String, dynamic> item =
             currenciesList[i] as Map<String, dynamic>;
+        final String code = (item['currencyCode'] as String? ?? '').trim();
+        final String name = (item['currencyName'] as String? ?? '').trim();
+        final String flag = (item['flagURL'] as String? ?? '').trim();
+        if (code.isEmpty) continue;
+
+        final String dedupeKey = '${code}_$name'.toLowerCase();
+        if (!seen.add(dedupeKey)) continue;
+
         final currencyItem = CurrencyListItem(
-          currencyCode: item['currencyCode'] as String,
-          currencyName: item['currencyName'] as String,
-          flagURL: item['flagURL'] as String,
+          currencyCode: code,
+          currencyName: name,
+          flagURL: flag,
         );
-        await currencyBox.put(i, currencyItem);
+        await currencyBox.add(currencyItem);
       }
 
       final Map<String, dynamic> rates =
