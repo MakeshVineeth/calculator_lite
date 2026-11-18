@@ -102,7 +102,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
                           Flexible(
                             child: SmallToolBtn(
                               function: () => resetForm(context),
-                              icon: Icons.clear_all_outlined,
+                              icon: Icons.restart_alt_rounded,
                             ),
                           ),
                           Flexible(

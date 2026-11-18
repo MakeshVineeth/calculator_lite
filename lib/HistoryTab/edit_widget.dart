@@ -42,15 +42,16 @@ class _EditWidgetState extends State<EditWidget> {
   Widget build(BuildContext context) {
     return FadeScale(
       child: AlertDialog(
-        backgroundColor: Brightness.light == Theme.of(context).brightness
-            ? Colors.white
-            : Colors.black,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         shape: FixedValues.roundShapeLarge,
         title: Text('Change Title', style: FixedValues.appTitleStyle(context)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Card(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.grey[100]
+                  : Colors.grey[850],
               shape: FixedValues.roundShapeLarge,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -59,7 +60,12 @@ class _EditWidgetState extends State<EditWidget> {
                   scrollPhysics: const AlwaysScrollableScrollPhysics(
                     parent: BouncingScrollPhysics(),
                   ),
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                  ),
                   decoration: const InputDecoration(border: InputBorder.none),
                 ),
               ),

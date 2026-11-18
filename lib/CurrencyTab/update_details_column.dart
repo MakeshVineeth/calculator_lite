@@ -1,6 +1,5 @@
 ﻿import 'dart:async';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
-import 'package:calculator_lite/CurrencyTab/Backend/copy_data.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/get_currency_data.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/fixed_values.dart';
@@ -136,8 +135,6 @@ class _UpdateColumnState extends State<UpdateColumn> {
         await dateBox.put(CommonsData.updatedDateKey, updatedDate);
         await dateBox.put(CommonsData.lastDateChecked, now.toString());
 
-        // writes the updated_date.txt in app's doc dir.
-        await CopyData().writeData(updatedDate);
         if (mounted) setState(() => triesLeft = defaultTries);
       }
 

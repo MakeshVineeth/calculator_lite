@@ -4,9 +4,8 @@
 [![Dart](https://img.shields.io/badge/Dart-3.15-blue.svg?logo=dart)](https://dart.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
-[![OWASP Mobile Top 10](https://img.shields.io/badge/Security-OWASP%20Mobile%20Top%2010-green.svg)](https://owasp.org/www-project-mobile-top-10/)
 
-An enterprise-grade, privacy-first, open-source calculator and foreign exchange currency converter built with **Flutter** and **Clean Architecture**.
+A modern, privacy-focused open-source calculator and currency converter built with **Flutter**.
 
 ---
 
@@ -24,12 +23,12 @@ An enterprise-grade, privacy-first, open-source calculator and foreign exchange 
 
 ## 🚀 Key Features
 
-* **Scientific & Basic Calculation Engine**: Full arithmetic, trigonometric (sin, cos, tan, arc-functions in Radian & Degree modes), log, ln, powers, factorials, roots, and percentages.
-* **Live Foreign Exchange Converter**: Synchronizes latest exchange rates across 150+ currencies with resilient offline caching.
-* **Persistent History & Search**: Local NoSQL storage for past calculations with custom title editing, instant search, and batch clearing.
+* **Scientific & Basic Calculation Engine**: Full arithmetic, trigonometric functions (sin, cos, tan, inverse in Radian & Degree modes), logarithms, powers, factorials, roots, and percentages.
+* **Foreign Exchange Converter**: Live and offline currency conversion across major world currencies with instant search and resilient local caching.
+* **Persistent History**: Local NoSQL storage for past calculations with custom title editing, search, and batch clearing.
 * **Multi-Format Export**: Export calculation history directly to Excel (`.xlsx`) and CSV with native share sheet integration.
-* **OWASP Mobile Security**: Strict input validation, zero telemetry or tracking, HTTPS-only network requests, and optional `FLAG_SECURE` mode to prevent screenshot leakage.
-* **Material 3 Adaptive Design**: Smooth animations, responsive layout, dynamic Light, Dark, and OLED Black theming.
+* **Privacy & Local Security**: Local-only calculation engine with zero telemetry or third-party analytics, input sanitization, and optional `FLAG_SECURE` mode to prevent screenshot capture.
+* **Material 3 Adaptive Design**: Responsive layout with dynamic Light, Dark, and System theming.
 
 ---
 

@@ -91,12 +91,13 @@ class FixedValues {
   static ThemeData getThemeData(Brightness brightness, BuildContext context) {
     final bool isLight = brightness == Brightness.light;
     final MaterialColor foreground = isLight ? Colors.red : Colors.yellow;
-    final Color? background = isLight ? Colors.white : Colors.grey[900];
+    final Color background = isLight ? Colors.white : Colors.grey[900]!;
     final Color foregroundText = isLight ? Colors.black : Colors.white;
-    final Color? backgroundScaffold = isLight ? background : Colors.black;
+    final Color backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
       useMaterial3: true,
+      brightness: brightness,
       primaryColor: foreground,
       scaffoldBackgroundColor: backgroundScaffold,
       iconTheme: IconThemeData(color: foreground),
@@ -107,6 +108,33 @@ class FixedValues {
         surfaceTintColor: Colors.transparent,
       ),
       cardColor: background,
+      dialogTheme: DialogThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
+        shape: FixedValues.roundShapeLarge,
+        titleTextStyle: TextStyle(
+          color: foregroundText,
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
+        ),
+        contentTextStyle: TextStyle(
+          color: foregroundText,
+          fontSize: 14,
+        ),
+      ),
+      dialogBackgroundColor: background,
+      popupMenuTheme: PopupMenuThemeData(
+        color: background,
+        surfaceTintColor: Colors.transparent,
+        textStyle: TextStyle(color: foregroundText),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+        ),
+      ),
       appBarTheme: Theme.of(context).appBarTheme.copyWith(
         centerTitle: true,
         titleSpacing: 1,
@@ -135,16 +163,22 @@ class FixedValues {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(shape: roundShapeBtns),
       ),
-      colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground)
-          .copyWith(secondary: foreground, brightness: brightness)
-          .copyWith(surface: backgroundScaffold),
+      colorScheme: ColorScheme.fromSwatch(
+        primarySwatch: foreground,
+        brightness: brightness,
+      ).copyWith(
+        secondary: foreground,
+        surface: backgroundScaffold,
+        surfaceContainer: background,
+        surfaceContainerHigh: background,
+        surfaceContainerHighest: background,
+      ),
       bottomAppBarTheme: BottomAppBarThemeData(color: backgroundScaffold),
     );
   }
 
   static const TextStyle semiBoldStyle = TextStyle(
     fontWeight: FontWeight.w600,
-    color: Colors.black,
   );
 
   static const Color blurBgColor = Colors.white10;

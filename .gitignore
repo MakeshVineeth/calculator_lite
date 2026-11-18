@@ -45,3 +45,14 @@ app.*.map.json
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 android/java_pid1672.hprof
+
+# Keystores, signing keys & private properties (NEVER commit to VCS)
+*.jks
+*.keystore
+*.p12
+*.key
+**/key.properties
+android/key.properties
+**/keystore
+android/keystore
+android/app/keystore

@@ -13,7 +13,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeScale(
       child: AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         shape: FixedValues.roundShapeLarge,
         buttonPadding: const EdgeInsets.all(10.0),
 
@@ -39,8 +39,8 @@ class AboutPage extends StatelessWidget {
                       future: PackageInfo.fromPlatform(),
                       builder: (context, snapshot) {
                         final version = snapshot.hasData
-                            ? 'v${snapshot.data!.version}+${snapshot.data!.buildNumber}'
-                            : 'v${FixedValues.appVersion}';
+                            ? 'Version ${snapshot.data!.version} (Build ${snapshot.data!.buildNumber})'
+                            : 'Version ${FixedValues.appVersion}';
                         return Text(
                           version,
                           style: const TextStyle(color: Colors.grey),
