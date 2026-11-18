@@ -44,18 +44,10 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
       listBoxes.values.toList(),
     );
 
-    final List<CurrencyListItem> uniqueCurrencyListItems =
-        currencyListItems
-            .fold<Map<String, CurrencyListItem>>(
-              {},
-              (map, item) => map..putIfAbsent(item.currencyCode, () => item),
-            )
-            .values
-            .toList();
-
     final List<CurrencyListItem> filteredItems = _searchQuery.trim().isEmpty
-        ? uniqueCurrencyListItems
-        : uniqueCurrencyListItems.where((item) {
+        ? currencyListItems
+        : currencyListItems.where((item) {
+            // OWASP M4: Sanitize search query input
             final query = _searchQuery.toLowerCase().trim();
             final code = item.currencyCode.toLowerCase();
             final name = item.currencyName.toLowerCase();
@@ -85,6 +77,8 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: TextField(
                   controller: _searchController,
+                  maxLength: 50,
+                  buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
                   onChanged: (value) => setState(() => _searchQuery = value),
                   style: TextStyle(
                     fontSize: 14,
@@ -136,6 +130,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                       )
                     : ListView.builder(
                         itemCount: filteredItems.length,
+                        itemExtent: 56.0,
                         physics: const AlwaysScrollableScrollPhysics(
                           parent: BouncingScrollPhysics(),
                         ),
@@ -176,6 +171,9 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
   ) async {
     final Box<CurrencyListItem> box = Hive.box<CurrencyListItem>(widget.method);
     await box.putAt(widget.boxIndex, currencyListItem);
-    await Hive.openBox<dynamic>(currencyListItem.currencyCode.toLowerCase());
+    final String codeLower = currencyListItem.currencyCode.toLowerCase();
+    if (!Hive.isBoxOpen(codeLower)) {
+      await Hive.openBox<dynamic>(codeLower);
+    }
   }
 }

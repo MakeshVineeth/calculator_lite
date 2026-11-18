@@ -74,13 +74,17 @@ class _CardUIState extends State<CardUI> {
     super.dispose();
   }
 
-  void openBoxes() {
+  void openBoxes() async {
     try {
       if (widget.remove) return;
 
       fromCur = fromBox.getAt(widget.index) as CurrencyListItem;
       toCur = toBox.getAt(widget.index) as CurrencyListItem;
-      fromCurBox = Hive.box(fromCur.currencyCode.toLowerCase());
+      final fromCode = fromCur.currencyCode.toLowerCase();
+      if (!Hive.isBoxOpen(fromCode)) {
+        await Hive.openBox<dynamic>(fromCode);
+      }
+      fromCurBox = Hive.box(fromCode);
 
       isInitialized = true;
 
@@ -100,10 +104,15 @@ class _CardUIState extends State<CardUI> {
       if (fromCur.currencyCode == toCur.currencyCode) {
         exchangeRate = 1.0;
       } else {
-        fromCurBox = Hive.box(fromCur.currencyCode.toLowerCase());
-        final value = fromCurBox.get(toCur.currencyCode);
-        if (value is num) {
-          exchangeRate = value.toDouble();
+        final fromCode = fromCur.currencyCode.toLowerCase();
+        if (Hive.isBoxOpen(fromCode)) {
+          fromCurBox = Hive.box(fromCode);
+          final value = fromCurBox.get(toCur.currencyCode);
+          if (value is num) {
+            exchangeRate = value.toDouble();
+          } else {
+            exchangeRate = 1.0;
+          }
         } else {
           exchangeRate = 1.0;
         }

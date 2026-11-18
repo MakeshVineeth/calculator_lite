@@ -242,7 +242,12 @@ class _CurrencyTabState extends State<CurrencyTab> {
         }
       }
 
-      await Hive.openBox<dynamic>(fromCur.currencyCode.toLowerCase());
+      if (!Hive.isBoxOpen(fromCur.currencyCode.toLowerCase())) {
+        await Hive.openBox<dynamic>(fromCur.currencyCode.toLowerCase());
+      }
+      if (!Hive.isBoxOpen(toCur.currencyCode.toLowerCase())) {
+        await Hive.openBox<dynamic>(toCur.currencyCode.toLowerCase());
+      }
 
       await fromBox.add(fromCur);
       await toBox.add(toCur);
