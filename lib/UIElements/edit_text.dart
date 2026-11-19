@@ -70,7 +70,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
               stepGranularity: 2,
               minLines: 1,
               maxLines: HelperFunctions().isLandScape(context) ? 2 : 4,
-              minFontSize: 22,
+              minFontSize: MediaQuery.sizeOf(context).width < 360 ? 14 : 22,
               maxFontSize: HelperFunctions().isLandScape(context) ? 28 : 50,
               focusNode: focus,
               showCursor: true,

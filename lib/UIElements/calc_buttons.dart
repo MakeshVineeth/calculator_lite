@@ -52,23 +52,28 @@ class _CalcButtonsState extends State<CalcButtons> {
     final bool isFunctionWord = _textFunctions.contains(text);
     final bool isSingleChar = text.length == 1 || text == '+/-';
 
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final bool isSmallScreen = screenWidth < 360;
+
     final double fontSize;
     final double minFontSize;
     final AutoSizeGroup? group;
 
     if (isFunctionWord) {
       fontSize = 20.0;
-      minFontSize = 14.0;
+      minFontSize = isSmallScreen ? 8.0 : 12.0;
       group = widget.autoSizeGroup;
     } else if (isSingleChar) {
       fontSize = 28.0;
-      minFontSize = 18.0;
+      minFontSize = isSmallScreen ? 9.0 : 16.0;
       group = null;
     } else {
       fontSize = 18.0;
-      minFontSize = 12.0;
+      minFontSize = isSmallScreen ? 8.0 : 10.0;
       group = null;
     }
+
+    final double marginVal = isSmallScreen ? 2.5 : 5.0;
 
     return Expanded(
       child: Row(
@@ -77,10 +82,11 @@ class _CalcButtonsState extends State<CalcButtons> {
         children: [
           Expanded(
             child: Container(
-              margin: const EdgeInsets.all(5.0),
+              margin: EdgeInsets.all(marginVal),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.zero,
+                  elevation: 1.0,
                 ),
                 onPressed: widget.displayFunction,
                 child: IgnorePointer(

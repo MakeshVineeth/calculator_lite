@@ -244,29 +244,35 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
           children: availableWidgets,
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        height: _helperFunctions.isLandScape(context) ? 40 : 58,
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex.value,
-          selectedLabelStyle: FixedValues.semiBoldStyle,
-          unselectedLabelStyle: FixedValues.semiBoldStyle,
-          elevation: 0,
-          iconSize:
-              _helperFunctions.isLandScape(context) ? _iconSizeLandscape : 24.0,
-          selectedFontSize:
-              _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
-          unselectedFontSize:
-              _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
-          type: BottomNavigationBarType.fixed,
-          items: List.generate(
-            tabs.length,
-            (index) =>
-                BottomNavClass(
-                  title: tabs.keys.elementAt(index),
-                  icon: tabs.values.elementAt(index),
-                ).returnNavItems(),
+      bottomNavigationBar: Center(
+        heightFactor: 1,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: SizedBox(
+            height: _helperFunctions.isLandScape(context) ? 40 : 58,
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex.value,
+              selectedLabelStyle: FixedValues.semiBoldStyle,
+              unselectedLabelStyle: FixedValues.semiBoldStyle,
+              elevation: 0,
+              iconSize:
+                  _helperFunctions.isLandScape(context) ? _iconSizeLandscape : 24.0,
+              selectedFontSize:
+                  _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
+              unselectedFontSize:
+                  _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
+              type: BottomNavigationBarType.fixed,
+              items: List.generate(
+                tabs.length,
+                (index) =>
+                    BottomNavClass(
+                      title: tabs.keys.elementAt(index),
+                      icon: tabs.values.elementAt(index),
+                    ).returnNavItems(),
+              ),
+              onTap: _onItemTapped,
+            ),
           ),
-          onTap: _onItemTapped,
         ),
       ),
     );
