@@ -32,6 +32,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await Hive.initFlutter('hiveUserData');
   Hive.registerAdapter(CurrencyListItemAdapter());
   Hive.registerAdapter(HistoryItemAdapter());
@@ -139,10 +140,15 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
       SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarDividerColor: Colors.transparent,
+          systemNavigationBarContrastEnforced: false,
           statusBarIconBrightness:
               isLightTheme ? Brightness.dark : Brightness.light,
           statusBarBrightness:
               isLightTheme ? Brightness.light : Brightness.dark,
+          systemNavigationBarIconBrightness:
+              isLightTheme ? Brightness.dark : Brightness.light,
         ),
       );
     }
