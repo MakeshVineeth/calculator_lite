@@ -7,19 +7,32 @@ class CalcButtons extends StatefulWidget {
   final int index;
   final VoidCallback displayFunction;
   final bool isCornerRows;
+  final AutoSizeGroup? autoSizeGroup;
 
-  const CalcButtons(
-      {required this.rowData,
-      required this.index,
-      required this.displayFunction,
-      required this.isCornerRows,
-      super.key});
+  const CalcButtons({
+    required this.rowData,
+    required this.index,
+    required this.displayFunction,
+    required this.isCornerRows,
+    this.autoSizeGroup,
+    super.key,
+  });
 
   @override
   State<CalcButtons> createState() => _CalcButtonsState();
 }
 
 class _CalcButtonsState extends State<CalcButtons> {
+  static const Set<String> _textFunctions = {
+    'sin',
+    'cos',
+    'tan',
+    'ln',
+    'log',
+    'mod',
+    'inv',
+  };
+
   @override
   Widget build(BuildContext context) {
     Color? fgColor = Theme.of(context)
@@ -35,6 +48,28 @@ class _CalcButtonsState extends State<CalcButtons> {
       fgColor = Theme.of(context).primaryColor; // Check if it corners rows
     }
 
+    final String text = widget.rowData[widget.index].toString();
+    final bool isFunctionWord = _textFunctions.contains(text);
+    final bool isSingleChar = text.length == 1 || text == '+/-';
+
+    final double fontSize;
+    final double minFontSize;
+    final AutoSizeGroup? group;
+
+    if (isFunctionWord) {
+      fontSize = 20.0;
+      minFontSize = 14.0;
+      group = widget.autoSizeGroup;
+    } else if (isSingleChar) {
+      fontSize = 28.0;
+      minFontSize = 18.0;
+      group = null;
+    } else {
+      fontSize = 18.0;
+      minFontSize = 12.0;
+      group = null;
+    }
+
     return Expanded(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -44,17 +79,22 @@ class _CalcButtonsState extends State<CalcButtons> {
             child: Container(
               margin: const EdgeInsets.all(5.0),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
                 onPressed: widget.displayFunction,
                 child: IgnorePointer(
                   child: FadeThis(
                     child: AutoSizeText(
-                      widget.rowData[widget.index].toString(),
+                      text,
+                      group: group,
                       style: TextStyle(
                         color: fgColor,
-                        fontSize: 30.0,
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.w500,
                       ),
-                      minFontSize: 13,
-                      overflow: TextOverflow.ellipsis,
+                      minFontSize: minFontSize,
+                      stepGranularity: 1,
                       maxLines: 1,
                     ),
                   ),

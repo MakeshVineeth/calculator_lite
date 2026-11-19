@@ -12,6 +12,7 @@ class HelperFunctions {
     FixedValues.minus,
     '+',
     '^',
+    'mod',
   ];
 
   final List<String> numbersList = [
@@ -114,9 +115,12 @@ class HelperFunctions {
 
   BigInt factorial(BigInt n) {
     if (n < BigInt.zero) throw ArgumentError('Negative numbers are not allowed.');
-    return n <= BigInt.one
-        ? BigInt.one
-        : n * factorial(n - BigInt.one);
+    if (n > BigInt.from(170)) throw Exception('Factorial exceeds representation limits.');
+    BigInt result = BigInt.one;
+    for (BigInt i = BigInt.two; i <= n; i += BigInt.one) {
+      result *= i;
+    }
+    return result;
   }
 
   double getDegValue(List<String> computerString, int index, double angle) {
@@ -148,7 +152,9 @@ class HelperFunctions {
         break;
 
       case 'cos⁻¹(':
-        if (angle.abs() != 0.5) {
+        if (angle.abs() > 1) {
+          angleResult = double.nan;
+        } else if (angle.abs() != 0.5) {
           angleResult = Angle.acos(angle).degrees;
         } else {
           angleResult = Angle.acos(angle).degrees.roundToDouble();
@@ -156,7 +162,9 @@ class HelperFunctions {
         break;
 
       case 'sin⁻¹(':
-        if (angle.abs() != 0.5) {
+        if (angle.abs() > 1) {
+          angleResult = double.nan;
+        } else if (angle.abs() != 0.5) {
           angleResult = Angle.asin(angle).degrees;
         } else {
           angleResult = Angle.asin(angle).degrees.roundToDouble();
@@ -169,10 +177,6 @@ class HelperFunctions {
 
       default:
         angleResult = double.nan;
-    }
-
-    if (['cos⁻¹(', 'sin⁻¹(', 'tan⁻¹('].contains(computerString[index])) {
-      if (angle.abs() > 1) angleResult = double.nan;
     }
 
     return angleResult;

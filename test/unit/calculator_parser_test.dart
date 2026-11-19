@@ -1,4 +1,5 @@
 import 'package:calculator_lite/Backend/calc_parser.dart';
+import 'package:calculator_lite/UIElements/display_screen.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -204,6 +205,99 @@ void main() {
       );
       final result = parser.evalFunction([]);
       expect(result.isNaN, isTrue);
+    });
+  });
+
+  group('CalcParser - Google Drive Bug Regression Tests', () {
+    test('Screenshot 1: large number precision and trailing zero stripping', () {
+      final parser = CalcParser(
+        calculationString: [
+          '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
+          '+', '3', '2', '5', '6', 'cos(', '5', '6', ')', '+', '2', '5', '6', '9'
+        ],
+        currentMetric: 'RAD',
+      );
+      final result = parser.evalFunction(parser.calculationString);
+      expect(result.isFinite, isTrue);
+      final formatted = DisplayScreen.formatNumber(result);
+      expect(formatted.endsWith('0'), isFalse);
+    });
+
+    test('Screenshot 2: 85tan(5) strips trailing zeroes in formatNumber', () {
+      final parser = CalcParser(
+        calculationString: ['8', '5', 'tan(', '5', ')'],
+        currentMetric: 'DEG',
+      );
+      final result = parser.evalFunction(['8', '5', 'tan(', '5', ')']);
+      expect(result, isNotNull);
+      final formatted = DisplayScreen.formatNumber(result);
+      expect(formatted.endsWith('0'), isFalse);
+      expect(DisplayScreen.formatNumber(-287.3437755310), equals('-287.343775531'));
+    });
+
+    test('Screenshot 3: cos⁻¹(5) domain error produces NaN and displays Invalid Input', () {
+      final parser = CalcParser(
+        calculationString: ['cos⁻¹(', '5', ')'],
+        currentMetric: 'DEG',
+      );
+      final result = parser.evalFunction(['cos⁻¹(', '5', ')']);
+      expect(result.isNaN, isTrue);
+      expect(DisplayScreen.formatNumber(result), equals('Invalid Input'));
+    });
+
+    test('Screenshot 4: tan⁻¹(5) is valid in DEG and does not produce NaN', () {
+      final parser = CalcParser(
+        calculationString: ['tan⁻¹(', '5', ')'],
+        currentMetric: 'DEG',
+      );
+      final result = parser.evalFunction(['tan⁻¹(', '5', ')']);
+      expect(result.isNaN, isFalse);
+      expect(result, closeTo(78.69, 0.05));
+    });
+
+    test('Screenshot 5: 1!5 auto-inserts multiplyChar to avoid digit concatenation', () {
+      final parser = CalcParser(
+        calculationString: ['1', '!'],
+        currentMetric: 'RAD',
+      );
+      final res = parser.addToExpression('5');
+      expect(res, equals(['1', '!', FixedValues.multiplyChar, '5']));
+    });
+
+    test('Screenshot 6: operator replacement prevents modmod and blocks binary operator after open bracket', () {
+      final parser1 = CalcParser(
+        calculationString: ['5', 'mod'],
+        currentMetric: 'RAD',
+      );
+      final res1 = parser1.addToExpression('mod');
+      expect(res1, equals(['5', 'mod']));
+
+      final parser2 = CalcParser(
+        calculationString: [FixedValues.root, '('],
+        currentMetric: 'RAD',
+      );
+      final res2 = parser2.addToExpression('mod');
+      expect(res2, equals([FixedValues.root, '(']));
+    });
+
+    test('Screenshot 7: reciprocal of 0 does not insert literal NaN into calculationString', () {
+      final parser = CalcParser(
+        calculationString: ['0'],
+        currentMetric: 'RAD',
+      );
+      parser.addToExpression(FixedValues.reciprocalChar);
+      expect(parser.calculationString.contains('N'), isFalse);
+      expect(parser.calculationString.contains('a'), isFalse);
+    });
+
+    test('Screenshot 8 & 9: cos⁻¹(tan⁻¹(e^56)) produces NaN and formats to Invalid Input', () {
+      final parser = CalcParser(
+        calculationString: ['cos⁻¹(', 'tan⁻¹(', 'e', '^', '5', '6', ')', ')'],
+        currentMetric: 'RAD',
+      );
+      final result = parser.evalFunction(parser.calculationString);
+      expect(result.isNaN, isTrue);
+      expect(DisplayScreen.formatNumber(result), equals('Invalid Input'));
     });
   });
 }

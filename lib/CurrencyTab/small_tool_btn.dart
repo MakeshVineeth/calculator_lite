@@ -10,7 +10,8 @@ class SmallToolBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      padding: EdgeInsets.zero,
+      minWidth: 0,
+      padding: const EdgeInsets.all(8.0),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       shape: FixedValues.roundShapeBtns,
       onPressed: () => function(),

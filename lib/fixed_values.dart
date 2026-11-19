@@ -111,7 +111,15 @@ class FixedValues {
       dialogTheme: DialogThemeData(
         backgroundColor: background,
         surfaceTintColor: Colors.transparent,
-        shape: FixedValues.roundShapeLarge,
+        elevation: isLight ? 12.0 : 8.0,
+        shadowColor:
+            isLight ? const Color(0x33000000) : const Color(0x66000000),
+        shape: RoundedRectangleBorder(
+          borderRadius: large,
+          side: isLight
+              ? const BorderSide(color: Color(0x1F000000), width: 1.0)
+              : const BorderSide(color: Color(0x22FFFFFF), width: 0.5),
+        ),
         titleTextStyle: TextStyle(
           color: foregroundText,
           fontWeight: FontWeight.w600,
@@ -126,13 +134,28 @@ class FixedValues {
       popupMenuTheme: PopupMenuThemeData(
         color: background,
         surfaceTintColor: Colors.transparent,
+        elevation: isLight ? 8.0 : 4.0,
+        shadowColor:
+            isLight ? const Color(0x26000000) : const Color(0x66000000),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          side: isLight
+              ? const BorderSide(color: Color(0x1F000000), width: 1.0)
+              : const BorderSide(color: Color(0x22FFFFFF), width: 0.5),
+        ),
         textStyle: TextStyle(color: foregroundText),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: background,
         surfaceTintColor: Colors.transparent,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+        elevation: isLight ? 12.0 : 8.0,
+        shadowColor:
+            isLight ? const Color(0x33000000) : const Color(0x66000000),
+        shape: RoundedRectangleBorder(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+          side: isLight
+              ? const BorderSide(color: Color(0x1F000000), width: 1.0)
+              : const BorderSide(color: Color(0x22FFFFFF), width: 0.5),
         ),
       ),
       appBarTheme: Theme.of(context).appBarTheme.copyWith(
@@ -154,6 +177,7 @@ class FixedValues {
           backgroundColor: background,
           shape: roundShapeBtns,
           elevation: isLight ? 2.0 : 10.0,
+          padding: EdgeInsets.zero,
         ),
       ),
       textTheme: Theme.of(context).textTheme.apply(
@@ -194,6 +218,16 @@ class FixedValues {
   static final RoundedRectangleBorder roundShapeLarge = RoundedRectangleBorder(
     borderRadius: large,
   );
+
+  static ShapeBorder roundDialogShape(BuildContext context) {
+    final bool isLight = Theme.of(context).brightness == Brightness.light;
+    return RoundedRectangleBorder(
+      borderRadius: large,
+      side: isLight
+          ? const BorderSide(color: Color(0x1F000000), width: 1.0)
+          : const BorderSide(color: Color(0x22FFFFFF), width: 0.5),
+    );
+  }
 
   static final RoundedRectangleBorder roundShapeBtns = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(30.0),

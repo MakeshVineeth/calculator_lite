@@ -1,6 +1,7 @@
 ﻿import 'dart:async';
 import 'dart:io' show Platform, exit;
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:calculator_lite/Backend/calc_parser.dart';
 import 'package:calculator_lite/Backend/custom_focus_events.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';
@@ -40,13 +41,18 @@ class _CalculatorTabState extends State<CalculatorTab> {
   final MethodChannel _androidAppRetain =
       const MethodChannel('kotlin.flutter.dev');
   final HelperFunctions _helperFunctions = HelperFunctions();
+  final AutoSizeGroup _advKeypadGroup = AutoSizeGroup();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
-        ? FixedValues.horizontalLayout
-        : FixedValues.rowSimple);
+    _currentChild = buildCalcRows(
+      _helperFunctions.isLandScape(context)
+          ? FixedValues.horizontalLayout
+          : FixedValues.rowSimple,
+      autoSizeGroup:
+          _helperFunctions.isLandScape(context) ? _advKeypadGroup : null,
+    );
     getCurrentMetrics();
   }
 
@@ -119,7 +125,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
         setState(() {
           calculationString.clear();
-          calculationString.add(mainValue.toString());
+          calculationString.addAll(
+              DisplayScreen.formatNumber(mainValue).split(''));
         });
       }
     }
@@ -195,7 +202,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
     }
   }
 
-  Widget calcRows(List<dynamic> rowData, int index) {
+  Widget calcRows(List<dynamic> rowData, int index,
+      {AutoSizeGroup? autoSizeGroup}) {
     bool isCornerRows = false;
     if (index == 0) isCornerRows = true;
 
@@ -210,6 +218,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
               rowData: rowData,
               index: index,
               isCornerRows: isCornerRows,
+              autoSizeGroup: autoSizeGroup,
               displayFunction: () => displayToScreen(
                 value: rowData[index].toString(),
                 context: context,
@@ -312,10 +321,15 @@ class _CalculatorTabState extends State<CalculatorTab> {
         ),
       );
 
-  Widget buildCalcRows(List<List<dynamic>> currentRow) => Column(
+  Widget buildCalcRows(List<List<dynamic>> currentRow,
+          {AutoSizeGroup? autoSizeGroup}) =>
+      Column(
         key: UniqueKey(),
         children: List.generate(
-            currentRow.length, (index) => calcRows(currentRow[index], index)),
+          currentRow.length,
+          (index) => calcRows(currentRow[index], index,
+              autoSizeGroup: autoSizeGroup),
+        ),
       );
 
   void changeMetrics() async {
@@ -346,19 +360,31 @@ class _CalculatorTabState extends State<CalculatorTab> {
     // For upper arrow.
     else if (value.contains(FixedValues.upperArrow)) {
       if (secondPageFlip) {
-        _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
-            ? FixedValues.horizontalLayoutInverse
-            : FixedValues.rowInverse);
+        _currentChild = buildCalcRows(
+          _helperFunctions.isLandScape(context)
+              ? FixedValues.horizontalLayoutInverse
+              : FixedValues.rowInverse,
+          autoSizeGroup: _advKeypadGroup,
+        );
       } else {
-        _currentChild = buildCalcRows(_helperFunctions.isLandScape(context)
-            ? FixedValues.horizontalLayout
-            : FixedValues.rowExtras);
+        _currentChild = buildCalcRows(
+          _helperFunctions.isLandScape(context)
+              ? FixedValues.horizontalLayout
+              : FixedValues.rowExtras,
+          autoSizeGroup: _advKeypadGroup,
+        );
       }
     }
 
     // For down arrow.
     else {
-      _currentChild = buildCalcRows(FixedValues.rowSimple);
+      _currentChild = buildCalcRows(
+        _helperFunctions.isLandScape(context)
+            ? FixedValues.horizontalLayout
+            : FixedValues.rowSimple,
+        autoSizeGroup:
+            _helperFunctions.isLandScape(context) ? _advKeypadGroup : null,
+      );
     }
   }
 }

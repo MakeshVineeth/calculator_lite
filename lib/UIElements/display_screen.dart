@@ -16,14 +16,24 @@ class DisplayScreen extends StatefulWidget {
 
   static String formatNumber(double value) {
     if (value == -0) value = 0; // For Cos90 = -0
-    const int precision = 10;
+    if (value.isNaN) return 'Invalid Input';
     const String infinity = 'Infinity';
     final String infinitySymbol = String.fromCharCode(charcode.$infin);
-    String valueStr = value.toString();
-    if (value % 1 == 0) {
+    if (value.isInfinite) {
+      return value.isNegative ? '-$infinitySymbol' : infinitySymbol;
+    }
+
+    const int precision = 10;
+    String valueStr = '';
+    if (value % 1 == 0 && value.abs() < 1e15) {
       valueStr = value.toStringAsFixed(0);
+    } else if (value.abs() >= 1e15 || (value.abs() > 0 && value.abs() < 1e-7)) {
+      valueStr = value.toString();
     } else {
       valueStr = value.toStringAsFixed(precision);
+      valueStr = valueStr
+          .replaceFirst(RegExp(r'0+$'), '')
+          .replaceFirst(RegExp(r'\.$'), '');
     }
 
     return valueStr.replaceAll(infinity, infinitySymbol);
@@ -94,11 +104,28 @@ class _DisplayScreenState extends State<DisplayScreen> {
     );
   }
 
+  static bool _isExpressionComplete(List<String> calcStr) {
+    if (calcStr.isEmpty) return false;
+    final last = calcStr.last;
+    if (last == '.' ||
+        last == '(' ||
+        last.endsWith('(') ||
+        HelperFunctions().operations.contains(last)) {
+      return false;
+    }
+    return true;
+  }
+
   void runInitial() {
     if (mounted) {
-      DisplayScreen.isDoubleValid(widget.mainValue)
-          ? myController.text = DisplayScreen.formatNumber(widget.mainValue)
-          : myController.clear();
+      if (DisplayScreen.isDoubleValid(widget.mainValue)) {
+        myController.text = DisplayScreen.formatNumber(widget.mainValue);
+      } else if (widget.mainValue.isNaN &&
+          _isExpressionComplete(widget.calculationString)) {
+        myController.text = 'Invalid Input';
+      } else {
+        myController.clear();
+      }
     }
   }
 

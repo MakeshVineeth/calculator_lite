@@ -65,6 +65,67 @@ class CalcParser {
       final int lastIndex = calculationString.length - 1;
       final String lastChar = calculationString[lastIndex];
 
+      // Disallow binary operators after open brackets or functions (e.g. '(+', '√(mod', 'sin(*')
+      if (lastChar == '(' || lastChar.endsWith('(')) {
+        if (value != FixedValues.minus &&
+            helperFunctions.operations.contains(value)) {
+          return calculationString;
+        }
+      }
+
+      // Handle operator replacement when consecutive operators are entered
+      if (helperFunctions.operations.contains(lastChar) &&
+          helperFunctions.operations.contains(value)) {
+        // Allow unary minus after binary multiplication, division, or power (e.g. 5 × -3)
+        if (value == FixedValues.minus &&
+            [FixedValues.multiplyChar, FixedValues.divisionChar, '^']
+                .contains(lastChar)) {
+          calculationString.add(value);
+          return calculationString;
+        }
+
+        // If lastChar was a unary minus following another operator (e.g. '×', '-'),
+        // and a new operator is pressed, remove the minus so the base operator is replaced
+        if (lastChar == FixedValues.minus &&
+            calculationString.length > 1 &&
+            helperFunctions.operations
+                .contains(calculationString[calculationString.length - 2])) {
+          calculationString.removeLast();
+        }
+
+        // Replace the previous operator with the new one
+        calculationString[calculationString.length - 1] = value;
+        return calculationString;
+      }
+
+      // Postfix operators: if a number, constant, or function is entered immediately
+      // after a closed bracket, factorial, percentage, superscript, or constant,
+      // auto-insert multiplication (e.g. '1!5' -> '1! × 5', '5%5' -> '5% × 5', '(2)5' -> '(2) × 5').
+      final bool isLastPostfix = [
+        ')',
+        '!',
+        '%',
+        FixedValues.sup2,
+        FixedValues.sup3,
+        FixedValues.pi,
+        'e'
+      ].contains(lastChar);
+
+      final bool isNextOperand = helperFunctions.numbersList.contains(value) ||
+          helperFunctions.constList.contains(value) ||
+          trigFunctions.contains(value) ||
+          [
+            FixedValues.root,
+            FixedValues.cubeRoot,
+            'eˣ',
+            '𝟏𝟬ˣ',
+            '('
+          ].contains(value);
+
+      if (isLastPostfix && isNextOperand) {
+        calculationString.add(FixedValues.multiplyChar);
+      }
+
       final bool case1 = (value.contains(FixedValues.minus) &&
           !lastChar.contains(FixedValues.minus));
       final bool case2 = !(helperFunctions.operations.contains(value) &&
@@ -181,23 +242,29 @@ class CalcParser {
 
   void reciprocalFunction() {
     try {
+      if (calculationString.isEmpty) return;
       final int lastIndex = calculationString.length - 1;
       if (!helperFunctions.randomList.contains(calculationString[lastIndex])) {
-        final SmartParseResult values = smartParseLast(lastIndex, calculationString);
+        final SmartParseResult values =
+            smartParseLast(lastIndex, calculationString);
 
-        calculationString.removeRange(values.start + 1, lastIndex + 1);
-        final double reciprocal = 1 / values.value;
-        String valueStr = '';
-
-        if (reciprocal >= 0) {
-          valueStr = DisplayScreen.formatNumber(reciprocal);
-        } else {
-          valueStr = DisplayScreen.formatNumber(reciprocal);
-          valueStr = valueStr.replaceAll('-', FixedValues.minus);
+        if (values.value == 0 ||
+            values.value.isNaN ||
+            values.value.isInfinite) {
+          return;
         }
 
+        final double reciprocal = 1 / values.value;
+        if (reciprocal.isNaN || reciprocal.isInfinite) {
+          return;
+        }
+
+        calculationString.removeRange(values.start + 1, lastIndex + 1);
+        String valueStr = DisplayScreen.formatNumber(reciprocal);
+        valueStr = valueStr.replaceAll('-', FixedValues.minus);
+
         if (calculationString.isNotEmpty) {
-          calculationString.addAll(['(', ...valueStr.split('')]);
+          calculationString.addAll(['(', ...valueStr.split(''), ')']);
         } else {
           calculationString.addAll([...valueStr.split('')]);
         }
@@ -455,15 +522,17 @@ class CalcParser {
     final SmartParseResult data = smartParseLast(count, computerStr);
     count = data.start;
     final double val = data.value;
-    if (char.contains('!') && (val % 1 == 0 && val >= 0)) {
-      final BigInt getNum = BigInt.from(val);
-      BigInt factNum;
-
-      try {
-        factNum = helperFunctions.factorial(getNum);
-        computerStr.removeRange(count + 1, index);
-        computerStr.insert(count + 1, factNum.toString());
-      } catch (_) {
+    if (char.contains('!')) {
+      if (val % 1 == 0 && val >= 0) {
+        final BigInt getNum = BigInt.from(val);
+        try {
+          final BigInt factNum = helperFunctions.factorial(getNum);
+          computerStr.removeRange(count + 1, index);
+          computerStr.insert(count + 1, factNum.toString());
+        } catch (_) {
+          computerStr = ['0/0'];
+        }
+      } else {
         computerStr = ['0/0'];
       }
 
@@ -538,8 +607,8 @@ class CalcParser {
             helperFunctions.concatenateList(
                 [second, lastChar, '(', second, ')', '*', first, '/', '100']));
       } else {
-        computerStr.replaceRange(0, index,
-            helperFunctions.concatenateList([second, lastChar, first / 100]));
+        computerStr.replaceRange(count + 1, index,
+            helperFunctions.concatenateList([first / 100]));
       }
 
       computerStr = helperFunctions.replaceExp(computerStr);

@@ -57,12 +57,14 @@ class _BlurredWindowState extends State<BlurredWindow> {
 }
 
 Future<void> showBlurDialog(
-        {required BuildContext context, required Widget child}) =>
-    showDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      barrierDismissible: true,
-      builder: (context) => BlurredWindow(
-        child: child,
-      ),
-    );
+    {required BuildContext context, required Widget child}) {
+  final bool isLight = Theme.of(context).brightness == Brightness.light;
+  return showDialog(
+    context: context,
+    barrierColor: isLight ? const Color(0x33000000) : const Color(0x55000000),
+    barrierDismissible: true,
+    builder: (context) => BlurredWindow(
+      child: child,
+    ),
+  );
+}

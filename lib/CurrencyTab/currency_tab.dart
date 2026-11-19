@@ -92,31 +92,30 @@ class _CurrencyTabState extends State<CurrencyTab> {
                   Card(
                     shape: FixedValues.roundShapeLarge,
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14.0,
+                        vertical: 12.0,
+                      ),
                       child: Row(
                         children: <Widget>[
                           Expanded(
-                            flex: 4,
                             child: UpdateColumn(updateListen: updateListen),
                           ),
-                          Flexible(
-                            child: SmallToolBtn(
-                              function: () => resetForm(context),
-                              icon: Icons.restart_alt_rounded,
-                            ),
+                          SmallToolBtn(
+                            function: () => resetForm(context),
+                            icon: Icons.restart_alt_rounded,
                           ),
-                          Flexible(
-                            child: SmallToolBtn(
-                              function: () async {
-                                final value = await popCurBtns();
-                                if (!context.mounted) return;
-                                showSlideUp(
-                                  context: context,
-                                  menuList: value,
-                                );
-                              },
-                              icon: Icons.expand_more_outlined,
-                            ),
+                          const SizedBox(width: 4),
+                          SmallToolBtn(
+                            function: () async {
+                              final value = await popCurBtns();
+                              if (!context.mounted) return;
+                              showSlideUp(
+                                context: context,
+                                menuList: value,
+                              );
+                            },
+                            icon: Icons.expand_more_outlined,
                           ),
                         ],
                       ),
