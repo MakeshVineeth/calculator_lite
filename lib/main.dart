@@ -29,6 +29,7 @@ import 'dart:io' show Platform;
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 import 'HistoryTab/history_item.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:calculator_lite/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -84,11 +85,12 @@ Widget materialApp(final ThemeMode setTheme, BuildContext context) =>
     MaterialApp(
       title: FixedValues.appName,
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en')],
+      supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       themeMode: setTheme,
       restorationScopeId: 'root',
