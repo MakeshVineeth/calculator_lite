@@ -300,4 +300,99 @@ void main() {
       expect(DisplayScreen.formatNumber(result), equals('Invalid Input'));
     });
   });
+
+  group('CalcParser - Extreme Edge Cases & Robustness Suite', () {
+    test('cube root of negative real numbers evaluates correctly', () {
+      final parser = CalcParser(
+        calculationString: [FixedValues.cubeRootSym, '(', FixedValues.minus, '8', ')'],
+        currentMetric: 'RAD',
+      );
+      final result = parser.evalFunction(parser.calculationString);
+      expect(result, closeTo(-2.0, 0.0001));
+
+      final parser2 = CalcParser(
+        calculationString: [FixedValues.cubeRootSym, '(', FixedValues.minus, '2', '7', ')'],
+        currentMetric: 'RAD',
+      );
+      final result2 = parser2.evalFunction(parser2.calculationString);
+      expect(result2, closeTo(-3.0, 0.0001));
+    });
+
+    test('postfix operators blocked after binary operators and open brackets', () {
+      final parser1 = CalcParser(
+        calculationString: ['5', '+'],
+        currentMetric: 'RAD',
+      );
+      expect(parser1.addToExpression('!'), equals(['5', '+']));
+      expect(parser1.addToExpression('%'), equals(['5', '+']));
+      expect(parser1.addToExpression(FixedValues.squareChar), equals(['5', '+']));
+      expect(parser1.addToExpression(FixedValues.cubeChar), equals(['5', '+']));
+
+      final parser2 = CalcParser(
+        calculationString: ['('],
+        currentMetric: 'RAD',
+      );
+      expect(parser2.addToExpression('!'), equals(['(']));
+      expect(parser2.addToExpression('%'), equals(['(']));
+    });
+
+    test('decimal point after operator or bracket auto-inserts leading zero', () {
+      final parser1 = CalcParser(
+        calculationString: ['5', '+'],
+        currentMetric: 'RAD',
+      );
+      expect(parser1.addToExpression('.'), equals(['5', '+', '0.']));
+
+      final parser2 = CalcParser(
+        calculationString: ['('],
+        currentMetric: 'RAD',
+      );
+      expect(parser2.addToExpression('.'), equals(['(', '0.']));
+    });
+
+    test('trailing decimal point evaluated cleanly as .0', () {
+      final parser = CalcParser(
+        calculationString: ['5', '.'],
+        currentMetric: 'RAD',
+      );
+      final result = parser.evalFunction(parser.calculationString);
+      expect(result, equals(5.0));
+    });
+
+    test('closing bracket blocked immediately after operator or dot', () {
+      final parser1 = CalcParser(
+        calculationString: ['(', '5', '+'],
+        currentMetric: 'RAD',
+      );
+      expect(parser1.addToExpression(')'), equals(['(', '5', '+']));
+
+      final parser2 = CalcParser(
+        calculationString: ['(', '5', '.'],
+        currentMetric: 'RAD',
+      );
+      expect(parser2.addToExpression(')'), equals(['(', '5', '.']));
+    });
+
+    test('setSign toggles sign with FixedValues.minus', () {
+      final parser = CalcParser(
+        calculationString: ['5'],
+        currentMetric: 'RAD',
+      );
+      parser.addToExpression(FixedValues.changeSignChar);
+      expect(parser.calculationString.first, equals(FixedValues.minus));
+
+      parser.addToExpression(FixedValues.changeSignChar);
+      expect(parser.calculationString.contains(FixedValues.minus), isFalse);
+    });
+
+    test('extreme trigonometric asymptotes', () {
+      final parser = CalcParser(
+        calculationString: ['tan(', '9', '0', ')'],
+        currentMetric: 'DEG',
+      );
+      final result = parser.evalFunction(parser.calculationString);
+      expect(result.isInfinite, isTrue);
+      expect(DisplayScreen.formatNumber(result), equals('∞'));
+    });
+  });
 }

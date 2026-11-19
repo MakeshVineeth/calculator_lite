@@ -73,6 +73,17 @@ class CalcParser {
         }
       }
 
+      // Disallow postfix operators (!, %, ², ³) after operators, open brackets, or '.'
+      if (['!', '%', FixedValues.squareChar, FixedValues.cubeChar]
+          .contains(value)) {
+        if (helperFunctions.operations.contains(lastChar) ||
+            lastChar == '(' ||
+            lastChar.endsWith('(') ||
+            lastChar == '.') {
+          return calculationString;
+        }
+      }
+
       // Handle operator replacement when consecutive operators are entered
       if (helperFunctions.operations.contains(lastChar) &&
           helperFunctions.operations.contains(value)) {
@@ -96,6 +107,16 @@ class CalcParser {
         // Replace the previous operator with the new one
         calculationString[calculationString.length - 1] = value;
         return calculationString;
+      }
+
+      // If user inputs '.' immediately after an operator or open bracket, format as '0.'
+      if (value == '.') {
+        if (helperFunctions.operations.contains(lastChar) ||
+            lastChar == '(' ||
+            lastChar.endsWith('(')) {
+          calculationString.add('0.');
+          return calculationString;
+        }
       }
 
       // Postfix operators: if a number, constant, or function is entered immediately
@@ -200,7 +221,10 @@ class CalcParser {
     final int count = '('.allMatches(computerStr).length;
     final int count1 = ')'.allMatches(computerStr).length;
     if (count1 < count) {
-      if (lastChar != FixedValues.minus && lastChar != '(') {
+      if (!helperFunctions.operations.contains(lastChar) &&
+          lastChar != '(' &&
+          !lastChar.endsWith('(') &&
+          lastChar != '.') {
         calculationString.add(')');
       }
     }
@@ -277,11 +301,20 @@ class CalcParser {
     final int i = helperFunctions.parseNumbersFromEnd(lastIndex, calculationString);
 
     if (i == -1) {
-      calculationString.insert(0, FixedValues.minus);
-    } else if (calculationString[i] == '-') {
+      if (calculationString.isNotEmpty &&
+          (calculationString.first == '-' ||
+              calculationString.first == FixedValues.minus)) {
+        calculationString.removeAt(0);
+      } else {
+        calculationString.insert(0, FixedValues.minus);
+      }
+    } else if (calculationString[i] == '-' ||
+        calculationString[i] == FixedValues.minus) {
       calculationString.removeAt(i);
     } else if (calculationString[i] == '(') {
-      if (i > 0 && calculationString[i - 1] == FixedValues.minus) {
+      if (i > 0 &&
+          (calculationString[i - 1] == '-' ||
+              calculationString[i - 1] == FixedValues.minus)) {
         calculationString.removeAt(i - 1);
       } else {
         calculationString.insert(i, FixedValues.minus);
@@ -435,6 +468,10 @@ class CalcParser {
       }
     }
 
+    if (tempString.isNotEmpty && tempString.last == '.') {
+      tempString[tempString.length - 1] = '.0';
+    }
+
     computerStr = tempString.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
@@ -489,7 +526,22 @@ class CalcParser {
       final List<String> valStr = computerStr.getRange(index + 1, count).toList();
       final double val = evalFunction(valStr);
       if (val < 0) {
-        computerStr = ['0/0'];
+        if (char == FixedValues.root) {
+          computerStr = ['0/0'];
+        } else {
+          final double absVal = val.abs();
+          final List<String> replaceRoot = ['(-(nrt(3, $absVal)))'];
+          if (index == 0 ||
+              helperFunctions.operations.contains(computerStr[index - 1]) ||
+              trigs.contains(computerStr[index - 1]) ||
+              ['(', FixedValues.root, FixedValues.cubeRootSym]
+                  .contains(computerStr[index - 1])) {
+            computerStr.replaceRange(index, count, replaceRoot);
+          } else {
+            replaceRoot[0] = '*${replaceRoot[0]}';
+            computerStr.replaceRange(index, count, replaceRoot);
+          }
+        }
       } else {
         List<String> replaceRoot;
         if (char == FixedValues.root) {

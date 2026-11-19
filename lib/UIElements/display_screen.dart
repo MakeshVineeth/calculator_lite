@@ -1,5 +1,6 @@
 ﻿import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:charcode/charcode.dart' as charcode;
 import 'package:calculator_lite/UIElements/edit_text.dart';
 import 'package:auto_size_text_field/auto_size_text_field.dart';
@@ -50,10 +51,12 @@ class DisplayScreen extends StatefulWidget {
 
 class _DisplayScreenState extends State<DisplayScreen> {
   final myController = TextEditingController();
+  final ScrollController outputScrollController = ScrollController();
 
   @override
   void dispose() {
     myController.dispose();
+    outputScrollController.dispose();
     super.dispose();
   }
 
@@ -63,45 +66,77 @@ class _DisplayScreenState extends State<DisplayScreen> {
     return Expanded(
       flex: 2,
       child: LayoutBuilder(
-        builder: (context, constraints) => ListView(
-          physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics()),
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
+        builder: (context, constraints) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          constraints: BoxConstraints(
+            minHeight: constraints.maxHeight,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Expression Area (flexible top with scrollbar & auto-scroll)
+              Expanded(
+                child: TextFieldCalc(
+                  calculationString: widget.calculationString,
+                ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Text Widget for all calculations.
-                  TextFieldCalc(
-                    calculationString: widget.calculationString,
-                  ),
-                  AutoSizeTextField(
+              const SizedBox(height: 4),
+              // Result Output Area (anchored bottom right with scrollbar and tap-to-copy)
+              GestureDetector(
+                onTap: () => _copyResultToClipboard(context),
+                onLongPress: () => _copyResultToClipboard(context),
+                child: RawScrollbar(
+                  controller: outputScrollController,
+                  thumbVisibility: true,
+                  interactive: true,
+                  thickness: 3.5,
+                  radius: const Radius.circular(3),
+                  thumbColor:
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.4),
+                  child: AutoSizeTextField(
+                    textAlign: TextAlign.right,
                     controller: myController,
+                    scrollController: outputScrollController,
                     minLines: 1,
                     maxLines: 2,
                     readOnly: true,
                     showCursor: false,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     ),
                     style: mainValueStyle.copyWith(
                       fontSize:
-                          HelperFunctions().isLandScape(context) ? 30 : 45.0,
+                          HelperFunctions().isLandScape(context) ? 26 : 40.0,
                     ),
                     scrollPhysics: const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics()),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _copyResultToClipboard(BuildContext context) {
+    final text = myController.text.trim();
+    if (text.isNotEmpty && text != 'Invalid Input') {
+      Clipboard.setData(ClipboardData(text: text));
+      HapticFeedback.lightImpact();
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Copied "$text" to clipboard'),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   static bool _isExpressionComplete(List<String> calcStr) {
@@ -126,6 +161,16 @@ class _DisplayScreenState extends State<DisplayScreen> {
       } else {
         myController.clear();
       }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (outputScrollController.hasClients) {
+          outputScrollController.animateTo(
+            outputScrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+          );
+        }
+      });
     }
   }
 
