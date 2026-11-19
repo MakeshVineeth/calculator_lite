@@ -1,124 +1,132 @@
-import 'dart:convert';
-import 'package:calculator_lite/Backend/helper_functions.dart';
+﻿import 'dart:convert';
+import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'commons.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:dio/dio.dart';
-import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 
 class CurrencyData {
-  final HelperFunctions helperFunctions = HelperFunctions();
-
   Future<String> getRemoteData() async {
     try {
-      // gets a list of all currencies.
-      List<String> allCurrencies = await writeCurrencyDetails();
+      // 1. Fetch latest USD-based rates from remote API
+      const String usdUrl = '${CommonsData.remoteUrl}?from=USD';
+      final Response<dynamic>? response = await CommonsData.getResponse(usdUrl);
 
-      if (allCurrencies.isEmpty) {
+      if (response == null || response.data == null) {
         return CommonsData.errorToken;
       }
 
-      // for each currency, store it's values in separate boxes. Each currency is used as base in later part of the code.
-      List<Future<String>> futures = [];
+      final Map<String, dynamic> data =
+          Map<String, dynamic>.from(response.data as Map);
+      final Map<String, dynamic> rawRates =
+          Map<String, dynamic>.from(data['rates'] as Map);
 
-      for (String currentBase in allCurrencies) {
-        String currentBaseUrl = '${CommonsData.remoteUrl}?from=$currentBase';
-
-        futures.add(
-          insertData(currency: currentBase, currentBaseUrl: currentBaseUrl),
-        );
+      // Store USD rates
+      final Map<String, double> usdRates = {'USD': 1.0};
+      for (final entry in rawRates.entries) {
+        final val = entry.value;
+        if (val is num) {
+          usdRates[entry.key] = val.toDouble();
+        }
       }
 
-      List<String> results = await Future.wait<String>(futures);
-      return results.contains(CommonsData.errorToken)
-          ? CommonsData.errorToken
-          : CommonsData.successToken;
-    } catch (e) {
-      debugPrint("Unable to retrieve remote data: $e");
-      return CommonsData.errorToken;
-    }
-  }
+      final Box<dynamic> usdBox = await _openBoxSafe<dynamic>('usd');
+      await usdBox.putAll(usdRates);
 
-  Future<List<String>> writeCurrencyDetails() async {
-    try {
-      // Load the countries json asset. Used for getting country code for flag icon.
-      String countryJson = await rootBundle.loadString('assets/countries.json');
-      Map data = json.decode(countryJson);
-      List<dynamic> countriesList =
-          data['countries']['country']; // Should be dynamic, else runtime errors.
+      // Dynamically discover and register any newly added currencies from the API
+      final Box<CurrencyListItem> currencyBox =
+          await _openBoxSafe<CurrencyListItem>(CommonsData.currencyListBox);
+      await _registerNewCurrencies(usdRates.keys.toList(), currencyBox);
 
-      // Load the currencies json. Used for retrieving currency name.
-      Response? response = await CommonsData.getResponse(
-        CommonsData.getCurrencyListUrl,
-      );
+      // Compute and update cross-rates for all returned currencies:
+      // Rate(Base -> Target) = Rate(USD -> Target) / Rate(USD -> Base)
+      for (final baseCode in usdRates.keys) {
+        final baseToUsd = usdRates[baseCode];
+        if (baseToUsd == null || baseToUsd <= 0) continue;
 
-      if (response == null) return List.empty();
-
-      final Map<String, String> currencyMap = Map<String, String>.from(
-        response.data,
-      );
-
-      // Loop through all available currencies.
-      for (int keyIndex = 0; keyIndex < currencyMap.length; keyIndex++) {
-        String currencyCode = currencyMap.keys.elementAt(keyIndex);
-        String flagURL = "";
-        String currencyName = "";
-
-        // Find out country code in order to get flag.
-        for (int index = 0; index < countriesList.length; index++) {
-          Map<String, dynamic> eachCountry = countriesList[index];
-
-          if (eachCountry['currencyCode'] == currencyCode) {
-            currencyName = currencyMap[currencyCode]!;
-
-            String countryCode = eachCountry['countryCode'].toLowerCase();
-            flagURL = 'icons/flags/png100px/$countryCode.png';
-            break;
+        final Map<String, double> ratesForBase = {};
+        for (final targetCode in usdRates.keys) {
+          final targetToUsd = usdRates[targetCode];
+          if (targetToUsd != null) {
+            ratesForBase[targetCode] = targetToUsd / baseToUsd;
           }
         }
 
-        final CurrencyListItem currencyListItem = CurrencyListItem(
-          currencyCode: currencyCode,
-          currencyName: currencyName,
-          flagURL: flagURL,
-        );
-
-        final currencyBox = await Hive.openBox(CommonsData.currencyListBox);
-        await currencyBox.put(keyIndex, currencyListItem);
+        final Box<dynamic> baseBox =
+            await _openBoxSafe<dynamic>(baseCode.toLowerCase());
+        await baseBox.putAll(ratesForBase);
       }
 
-      return currencyMap.keys.toList();
+      return CommonsData.successToken;
     } catch (e) {
-      debugPrint("Error writing data: $e");
-      return List.empty();
+      debugPrint('Unable to retrieve remote data: $e');
+      return CommonsData.errorToken;
     }
   }
 
-  Future<String> insertData({
-    required String currency,
-    required String currentBaseUrl,
-  }) async {
+  Future<void> _registerNewCurrencies(
+    List<String> remoteCodes,
+    Box<CurrencyListItem> currencyBox,
+  ) async {
     try {
-      final box = await Hive.openBox(currency.toLowerCase());
-      Response? response = await CommonsData.getResponse(currentBaseUrl);
+      final existingCodes =
+          currencyBox.values.map((e) => e.currencyCode.toUpperCase()).toSet();
 
-      if (response?.data != null) {
-        final Map data = Map<String, dynamic>.from(response?.data);
-        Map<String, dynamic> rates = data['rates'];
+      final newCodes = remoteCodes
+          .map((k) => k.toUpperCase())
+          .where((k) => !existingCodes.contains(k))
+          .toList();
 
-        await box.putAll(rates);
-        return CommonsData.successToken;
-      } else {
-        debugPrint(
-          "Response error with CurrentUrl: $currentBaseUrl and current: $currency.",
+      if (newCodes.isEmpty) return;
+
+      final String jsonStr =
+          await rootBundle.loadString('assets/countries.json');
+      final Map<String, dynamic> data =
+          json.decode(jsonStr) as Map<String, dynamic>;
+      final List<dynamic> countryList =
+          (data['countries'] as Map<String, dynamic>)['country']
+              as List<dynamic>? ??
+          [];
+
+      final Map<String, Map<String, String>> countryMap = {};
+      for (final c in countryList) {
+        final code = (c['currencyCode'] as String? ?? '').toUpperCase();
+        if (code.isNotEmpty && !countryMap.containsKey(code)) {
+          countryMap[code] = {
+            'countryName': c['countryName'] as String? ?? '',
+            'countryCode': (c['countryCode'] as String? ?? '').toLowerCase(),
+          };
+        }
+      }
+
+      for (final code in newCodes) {
+        final info = countryMap[code];
+        final String countryName = info?['countryName'] ?? '';
+        final String countryCode = info?['countryCode'] ?? '';
+        final String displayName = countryName.isNotEmpty
+            ? '$countryName - $code'
+            : code;
+        final String flagURL = countryCode.isNotEmpty
+            ? 'icons/flags/png100px/$countryCode.png'
+            : '';
+
+        final newItem = CurrencyListItem(
+          currencyCode: code,
+          currencyName: displayName,
+          flagURL: flagURL,
         );
-
-        return CommonsData.errorToken;
+        await currencyBox.add(newItem);
       }
     } catch (e) {
-      debugPrint("Error inserting data: $e");
-      return CommonsData.errorToken;
+      debugPrint('Error registering new dynamic currencies: $e');
     }
+  }
+
+  Future<Box<T>> _openBoxSafe<T>(String name) async {
+    if (Hive.isBoxOpen(name)) {
+      return Hive.box<T>(name);
+    }
+    return await Hive.openBox<T>(name);
   }
 }

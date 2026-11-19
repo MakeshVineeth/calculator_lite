@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io' show Platform, exit;
 
 import 'package:calculator_lite/Backend/calc_parser.dart';
@@ -35,10 +35,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
   bool secondPageFlip = false;
   List<String> calculationString = List.empty(growable: true);
   double mainValue = 0;
-  String currentMetric = "";
+  String currentMetric = '';
   Timer? timer;
   final MethodChannel _androidAppRetain =
-      const MethodChannel("kotlin.flutter.dev");
+      const MethodChannel('kotlin.flutter.dev');
   final HelperFunctions _helperFunctions = HelperFunctions();
 
   @override
@@ -66,7 +66,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void backSpaceBtn() {
-    int len = calculationString.length;
+    final int len = calculationString.length;
     if (len > 0) setState(() => calculationString.removeAt(len - 1));
   }
 
@@ -79,7 +79,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       timer?.cancel();
     }
 
-    bool isFocused = focus.isFocused;
+    final bool isFocused = focus.isFocused;
 
     // First check for down or up arrow buttons
     if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
@@ -99,7 +99,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
         backSpaceBtn();
 
         if (calculationString.isNotEmpty) {
-          runCalcParser("");
+          runCalcParser('');
         } else {
           setState(() => mainValue = 0);
         }
@@ -107,14 +107,14 @@ class _CalculatorTabState extends State<CalculatorTab> {
         setState(() => calculationString =
             focus.removeBack(calculationString: calculationString));
 
-        runCalcParser("");
+        runCalcParser('');
       }
     }
 
     // Code for =
     else if (value.contains('=')) {
       if (DisplayScreen.isDoubleValid(mainValue)) {
-        String calcStr = calculationString.join();
+        final String calcStr = calculationString.join();
         addToHistory(calcStr);
 
         setState(() {
@@ -135,7 +135,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
               value: value,
             ));
 
-        runCalcParser("");
+        runCalcParser('');
       }
     }
   }
@@ -149,35 +149,36 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
     setState(() => calculationString = str);
 
-    CalcParser calcParser = CalcParser(
+    final CalcParser calcParser = CalcParser(
       calculationString: calculationString,
       currentMetric: currentMetric,
     );
 
-    double getValue = await calcParser.getValue();
+    final double getValue = await calcParser.getValue();
     setState(() => mainValue = getValue);
 
-    String calcStr = calculationString.join();
+    final String calcStr = calculationString.join();
     timer = Timer(const Duration(seconds: 6), () => addToHistory(calcStr));
   }
 
-  static List<String> getCalcStrIsolate(Map<dynamic, dynamic> args) {
-    // Function to run in isolate.
-    CalcParser calcParser = CalcParser(
-        calculationString: args['calculationString'],
-        currentMetric: args['currentMetric']);
+  static List<String> getCalcStrIsolate(Map<String, dynamic> args) {
+    final CalcParser calcParser = CalcParser(
+        calculationString:
+            (args['calculationString'] as List<dynamic>).cast<String>(),
+        currentMetric: args['currentMetric'] as String);
 
-    return calcParser.addToExpression(args['value']);
+    return calcParser.addToExpression(args['value'] as String);
   }
 
   void addToHistory(String historyCalcStr) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    String status = preferences.getString(CommonsHistory.historyStatusPref) ??
+    final String status = preferences.getString(CommonsHistory.historyStatusPref) ??
         CommonsHistory.historyEnabled;
 
     if (status.contains(CommonsHistory.historyEnabled) &&
         Hive.isBoxOpen(CommonsHistory.historyBox)) {
-      final Box box = Hive.box(CommonsHistory.historyBox);
+      final Box<HistoryItem> box =
+          Hive.box<HistoryItem>(CommonsHistory.historyBox);
 
       if (historyCalcStr.isNotEmpty) {
         final DateTime now = DateTime.now();
@@ -189,12 +190,12 @@ class _CalculatorTabState extends State<CalculatorTab> {
           metrics: currentMetric,
         );
 
-        box.add(historyItem);
+        await box.add(historyItem);
       }
     }
   }
 
-  Widget calcRows(List rowData, int index) {
+  Widget calcRows(List<dynamic> rowData, int index) {
     bool isCornerRows = false;
     if (index == 0) isCornerRows = true;
 
@@ -255,11 +256,11 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   Widget popUpDotMenu() {
-    Map<String, Function> menuList = {
+    final Map<String, Function> menuList = {
       'Change Theme': () => PopThemeChooser.showThemeChooser(context),
       'Secure Mode': () {
         if (Platform.isAndroid) {
-          showDialog(
+          showDialog<void>(
               context: context, builder: (context) => const PrivacyDialog());
         }
       },
@@ -274,7 +275,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
       'About Calculator Lite': () => AboutPage.showAboutDialogFunc(context),
       'Exit': () {
         if (Platform.isAndroid) {
-          _androidAppRetain.invokeMethod("sendToBackground");
+          _androidAppRetain.invokeMethod('sendToBackground');
         } else if (!Platform.isIOS) {
           exit(0);
         } // Not allowed on IOS as it's against Apple Human Interface guidelines to exit the app programmatically.
@@ -311,7 +312,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
         ),
       );
 
-  Widget buildCalcRows(List currentRow) => Column(
+  Widget buildCalcRows(List<List<dynamic>> currentRow) => Column(
         key: UniqueKey(),
         children: List.generate(
             currentRow.length, (index) => calcRows(currentRow[index], index)),
@@ -324,10 +325,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
       } else {
         currentMetric = 'RAD';
       }
-      runCalcParser("");
+      runCalcParser('');
     });
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('metrics', currentMetric);
   }
 

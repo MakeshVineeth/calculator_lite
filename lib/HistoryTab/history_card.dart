@@ -1,4 +1,4 @@
-import 'package:calculator_lite/HistoryTab/edit_widget.dart';
+﻿import 'package:calculator_lite/HistoryTab/edit_widget.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -17,7 +17,8 @@ class HistoryCard extends StatelessWidget {
 
   HistoryCard({super.key, required this.index, required this.historyItem});
 
-  final Box historyBox = Hive.box(CommonsHistory.historyBox);
+  final Box<HistoryItem> historyBox =
+      Hive.box<HistoryItem>(CommonsHistory.historyBox);
   final HelperFunctions _helperFunctions = HelperFunctions();
   final snackBar = const SnackBar(content: Text('Copied to Clipboard!'));
 
@@ -119,7 +120,7 @@ class HistoryCard extends StatelessWidget {
 
   Widget itemRow({
     required String heading,
-    required text,
+    required String text,
     required BuildContext context,
   }) {
     return Expanded(
@@ -160,12 +161,13 @@ class HistoryCard extends StatelessWidget {
             children: <Widget>[
               Flexible(
                 child: IconButton(
-                  onPressed: () =>
-                      Clipboard.setData(ClipboardData(text: text)).then(
-                        (_) => ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(snackBar),
-                      ),
+                  onPressed: () async {
+                    await Clipboard.setData(ClipboardData(text: text));
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(snackBar);
+                  },
                   icon: Icon(
                     Icons.copy_rounded,
                     size: 20,

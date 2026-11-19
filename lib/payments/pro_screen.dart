@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
 import 'package:calculator_lite/fixed_values.dart';
@@ -207,16 +207,18 @@ class _ProScreenState extends State<ProScreen> {
   void _buyProduct(ProductDetails prod) async {
     try {
       final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
-      bool iapAvailable = await _iap.isAvailable();
+      final bool iapAvailable = await _iap.isAvailable();
 
-      if (iapAvailable) _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      if (iapAvailable) {
+        await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      }
     } catch (_) {}
   }
 
   Future<void> _getProducts() async {
     try {
       _products.clear();
-      bool iapAvailable = await _iap.isAvailable();
+      final bool iapAvailable = await _iap.isAvailable();
 
       if (iapAvailable) {
         final ProductDetailsResponse response = await _iap.queryProductDetails(

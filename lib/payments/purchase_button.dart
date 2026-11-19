@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class PurchaseButton extends StatelessWidget {
   final Color bg;
@@ -10,7 +10,7 @@ class PurchaseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isPortrait =
+    final bool isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
 
     return ElevatedButton(

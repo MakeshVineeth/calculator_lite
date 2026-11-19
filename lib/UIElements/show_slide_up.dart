@@ -1,63 +1,74 @@
-import 'package:slide_popup_dialog_null_safety/slide_popup_dialog.dart'
-    as slide_dialog;
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixed_values.dart';
 
-void showSlideUp(
-    {required BuildContext context,
-    required Map<String, Function> menuList}) {
-  slide_dialog.showSlideDialog(
-    backgroundColor: Theme.of(context).brightness == Brightness.light
-        ? Theme.of(context).scaffoldBackgroundColor
-        : Colors.grey[900],
+/// Displays a modern, native bottom slide-up sheet with actions.
+void showSlideUp({
+  required BuildContext context,
+  required Map<String, Function> menuList,
+}) {
+  final isLight = Theme.of(context).brightness == Brightness.light;
+  showModalBottomSheet<void>(
     context: context,
-    child: Expanded(
-      child: ListView.separated(
-        cacheExtent: 2000,
-        addAutomaticKeepAlives: true,
-        addRepaintBoundaries: true,
-        physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics()),
-        separatorBuilder: (context, index) => const Divider(thickness: 1),
-        itemCount: menuList.length,
-        itemBuilder: (context, index) => buttonDesigned(
-          function: () {
-            Navigator.of(context, rootNavigator: true).pop();
-            menuList.entries.elementAt(index).value();
-          },
-          text: menuList.entries.elementAt(index).key,
-          context: context,
-        ),
-      ),
+    backgroundColor:
+        isLight ? Theme.of(context).scaffoldBackgroundColor : Colors.grey[900],
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
     ),
-  );
-}
-
-Widget buttonDesigned(
-    {required Function function,
-    required String text,
-    required BuildContext context}) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
-    child: TextButton(
-      style: ButtonStyle(
-        shape: WidgetStateProperty.all(FixedValues.roundShapeLarge),
-      ),
-      onPressed: () => function(),
-      child: IgnorePointer(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                fontSize: 18,
+    builder: (BuildContext sheetContext) {
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[500],
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-          ),
+            const SizedBox(height: 8),
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const BouncingScrollPhysics(),
+                separatorBuilder: (context, index) =>
+                    const Divider(thickness: 1, height: 1),
+                itemCount: menuList.length,
+                itemBuilder: (context, index) {
+                  final entry = menuList.entries.elementAt(index);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 4),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        shape: FixedValues.roundShapeLarge,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () {
+                        Navigator.of(sheetContext).pop();
+                        entry.value();
+                      },
+                      child: Center(
+                        child: Text(
+                          entry.key,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
         ),
-      ),
-    ),
+      );
+    },
   );
 }

@@ -1,4 +1,4 @@
-import 'package:calculator_lite/fixed_values.dart';
+﻿import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:calculator_lite/Backend/calc_parser.dart';
 
@@ -10,15 +10,15 @@ class CustomFocusEvents extends ChangeNotifier {
   bool isFocused = false;
 
   int getCurPosition(List<String> calculationString) {
-    List<String> convertStr = [];
+    final List<String> convertStr = [];
     if (calculationString.length != myText.length) {
-      String trimmedText = myText.substring(0, position);
+      final String trimmedText = myText.substring(0, position);
 
       for (int i = 0; i < trimmedText.length; i++) {
         if ((lists.contains(trimmedText[i]) || trimmedText.contains('(')) &&
             i - 1 >= 0 &&
             lists.contains(trimmedText[i - 1])) {
-          int len = convertStr.length - 1;
+          final int len = convertStr.length - 1;
           convertStr[len] = '${convertStr[len]}${trimmedText[i]}';
         } else {
           convertStr.add(trimmedText[i]);
@@ -37,8 +37,8 @@ class CustomFocusEvents extends ChangeNotifier {
       {required int start, required List<String> calculationString}) {
     try {
       myText = calculationString.join();
-      int len = myText.length;
-      if (start > 0 && start < len && myText[start - 1] != "d") {
+      final int len = myText.length;
+      if (start > 0 && start < len && myText[start - 1] != 'd') {
         if (myText[start].contains(FixedValues.root) &&
             myText.length > 1 &&
             myText[start - 1].contains(FixedValues.sup3)) {
@@ -69,32 +69,32 @@ class CustomFocusEvents extends ChangeNotifier {
   List<String> removeBack({
     required List<String> calculationString,
   }) {
-    int firstLength = calculationString.join().length;
-    int pos = getCurPosition(calculationString) - 1;
+    final int firstLength = calculationString.join().length;
+    final int pos = getCurPosition(calculationString) - 1;
     if (pos > -1 && pos < calculationString.length) {
       calculationString.removeAt(pos);
     } else if (pos == calculationString.length) {
       calculationString.removeAt(pos - 1);
     }
-    int secondLength = calculationString.join().length;
+    final int secondLength = calculationString.join().length;
 
-    int diff = firstLength - secondLength;
+    final int diff = firstLength - secondLength;
     position = diff > 0 ? position - diff : position;
     return calculationString;
   }
 
   List<String> getRegulatedString(
       {required List<String> calculationString,
-      required var currentMetric,
-      required var value}) {
+      required String currentMetric,
+      required String value}) {
     try {
-      int firstLength = calculationString.join().length;
-      int pos = getCurPosition(calculationString);
+      final int firstLength = calculationString.join().length;
+      final int pos = getCurPosition(calculationString);
 
       // Temp String for Checking.
       List<String> temp = calculationString.getRange(0, pos).toList();
       int flag = temp.length;
-      CalcParser calcParser =
+      final CalcParser calcParser =
           CalcParser(calculationString: temp, currentMetric: currentMetric);
       temp = calcParser.addToExpression(value);
       if (flag != temp.length) {
@@ -114,8 +114,8 @@ class CustomFocusEvents extends ChangeNotifier {
           }
 
           // set position of cursor.
-          int secondLength = calculationString.join().length;
-          int diff = secondLength - firstLength;
+          final int secondLength = calculationString.join().length;
+          final int diff = secondLength - firstLength;
           position = diff > 0 ? position + diff : position;
         }
       }

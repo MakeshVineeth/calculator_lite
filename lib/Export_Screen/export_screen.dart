@@ -1,4 +1,4 @@
-import 'dart:io' show File;
+﻿import 'dart:io' show File;
 import 'package:calculator_lite/Export_Screen/validate_functions.dart';
 import 'package:calculator_lite/HistoryTab/commons_history.dart';
 import 'package:calculator_lite/HistoryTab/history_item.dart';
@@ -150,15 +150,15 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   String generateFileName() {
-    DateTime now = DateTime.now();
-    String date = DateFormat(CommonStrings.dateFormat).format(now);
-    String time = DateFormat('H_m_ss').format(now);
+    final DateTime now = DateTime.now();
+    final String date = DateFormat(CommonStrings.dateFormat).format(now);
+    final String time = DateFormat('H_m_ss').format(now);
     return 'History_${date}_$time';
   }
 
   void kotlinFile(String path) async {
     try {
-      String result = await platform.invokeMethod('createFile', {
+      final String? result = await platform.invokeMethod<String>('createFile', {
         'path': path,
         'fileName': generateFileName(),
       });
@@ -211,30 +211,31 @@ class _ExportScreenState extends State<ExportScreen> {
   void exportEvent({bool save = false}) async {
     try {
       clearStatusTips();
-      bool isValid = _formKey.currentState!.validate();
+      final bool isValid = _formKey.currentState!.validate();
       setStatus(isLoading: true);
-      final Box history = Hive.box(CommonsHistory.historyBox);
-      final List<HistoryItem> data = [...history.values];
+      final Box<HistoryItem> history =
+          Hive.box<HistoryItem>(CommonsHistory.historyBox);
+      final List<HistoryItem> data = history.values.toList();
 
       if (isValid && data.isNotEmpty) {
-        List<Map<String, String>> allData = [];
+        final List<Map<String, String>> allData = [];
 
-        for (var element in data) {
-          String formattedDate = DateFormat(
+        for (final element in data) {
+          final String formattedDate = DateFormat(
             CommonStrings.dateFormat,
           ).format(element.dateTime);
-          DateTime val = getDateTime(formattedDate);
+          final DateTime val = getDateTime(formattedDate);
 
-          bool case1 =
+          final bool case1 =
               checkDateFormat(_dateFrom) == null &&
               checkDateFormat(_dateTo) == null;
-          bool case2 = checkDateFormat(_dateFrom) == null;
-          bool case3 = checkDateFormat(_dateTo) == null;
-          bool case4 = checkDateFormat(_dateTo) != null;
+          final bool case2 = checkDateFormat(_dateFrom) == null;
+          final bool case3 = checkDateFormat(_dateTo) == null;
+          final bool case4 = checkDateFormat(_dateTo) != null;
 
           if (case1) {
-            DateTime from = getDateTime(_dateFrom.text);
-            DateTime to = getDateTime(_dateTo.text);
+            final DateTime from = getDateTime(_dateFrom.text);
+            final DateTime to = getDateTime(_dateTo.text);
 
             if (to.compareTo(val) == 0 ||
                 from.compareTo(val) == 0 ||
@@ -251,7 +252,7 @@ class _ExportScreenState extends State<ExportScreen> {
               allData.add(eachHistoryItem);
             }
           } else if (case2) {
-            DateTime from = getDateTime(_dateFrom.text);
+            final DateTime from = getDateTime(_dateFrom.text);
 
             if (from.compareTo(val) == 0 || from.isBefore(val)) {
               final Map<String, String> eachHistoryItem = {
@@ -266,7 +267,7 @@ class _ExportScreenState extends State<ExportScreen> {
               allData.add(eachHistoryItem);
             }
           } else if (case3) {
-            DateTime to = getDateTime(_dateTo.text);
+            final DateTime to = getDateTime(_dateTo.text);
 
             if (to.compareTo(val) == 0 || to.isAfter(val)) {
               final Map<String, String> eachHistoryItem = {
@@ -295,26 +296,26 @@ class _ExportScreenState extends State<ExportScreen> {
         }
 
         if (allData.isNotEmpty) {
-          String? status = await ExportExcel(
+          final String? status = await ExportExcel(
             fileName: generateFileName(),
           ).writeExcel(data: allData);
 
           // If not null, then Share as the file exists.
           if (status != null) {
-            File file = File(status);
+            final File file = File(status);
             if (!await file.exists()) {
-              setStatus(text: "Unable to create file", isError: true);
+              setStatus(text: 'Unable to create file', isError: true);
               return;
             }
 
             if (save) {
               kotlinFile(file.path);
             } else {
-              List<XFile> files = [];
-              XFile fileForSharing = XFile(file.path);
+              final List<XFile> files = [];
+              final XFile fileForSharing = XFile(file.path);
               files.add(fileForSharing);
 
-              ShareResult shareResult = await SharePlus.instance.share(
+              final ShareResult shareResult = await SharePlus.instance.share(
                 ShareParams(files: files, text: 'Logging Excel File'),
               );
 
@@ -324,7 +325,7 @@ class _ExportScreenState extends State<ExportScreen> {
               }
 
               if (shareResult.status != ShareResultStatus.success) {
-                setStatus(text: "Unable to share", isError: true);
+                setStatus(text: 'Unable to share', isError: true);
                 return;
               }
             }

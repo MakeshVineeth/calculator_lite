@@ -23,6 +23,7 @@
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
+**/ios/Flutter/ephemeral/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -30,6 +31,7 @@
 .pub-cache/
 .pub/
 /build/
+android/build/
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -43,3 +45,14 @@ app.*.map.json
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 android/java_pid1672.hprof
+
+# Keystores, signing keys & private properties (NEVER commit to VCS)
+*.jks
+*.keystore
+*.p12
+*.key
+**/key.properties
+android/key.properties
+**/keystore
+android/keystore
+android/app/keystore

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'validate_functions.dart';
 import 'export_theming.dart';
 
 class TextFieldCustom extends StatefulWidget {
   final String title;
   final TextEditingController controller;
-  final Function? validate;
+  final String? Function(TextEditingController)? validate;
   final TextInputType textInputType;
   final bool ignoreValidation;
 

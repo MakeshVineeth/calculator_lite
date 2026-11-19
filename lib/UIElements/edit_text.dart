@@ -1,4 +1,4 @@
-import 'package:calculator_lite/Backend/custom_focus_events.dart';
+﻿import 'package:calculator_lite/Backend/custom_focus_events.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +50,7 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
 
   void onStart(BuildContext context) {
     if (mounted) {
-      CustomFocusEvents customFocusEvents = Provider.of(context);
+      final CustomFocusEvents customFocusEvents = Provider.of(context);
 
       if (customFocusEvents.isFocused) {
         myController.value = TextEditingValue(
@@ -70,13 +70,13 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
 
   void onTapFunction(BuildContext context) {
     if (mounted) {
-      TextSelection i = myController.selection;
-      int? count = Provider.of<CustomFocusEvents>(context, listen: false)
+      final TextSelection i = myController.selection;
+      final int? count = Provider.of<CustomFocusEvents>(context, listen: false)
               .getPosition(
                   start: i.start,
                   calculationString: widget.calculationString);
 
-      TextSelection textSelection =
+      final TextSelection textSelection =
           TextSelection(baseOffset: count!, extentOffset: count);
       myController.selection = textSelection;
       Provider.of<CustomFocusEvents>(context, listen: false).updateFocus();

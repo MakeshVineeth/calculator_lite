@@ -1,4 +1,4 @@
-import 'package:calculator_lite/Backend/helper_functions.dart';
+﻿import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:charcode/charcode.dart' as charcode;
 import 'package:calculator_lite/UIElements/edit_text.dart';
@@ -16,9 +16,9 @@ class DisplayScreen extends StatefulWidget {
 
   static String formatNumber(double value) {
     if (value == -0) value = 0; // For Cos90 = -0
-    int precision = 10;
-    String infinity = 'Infinity';
-    String infinitySymbol = String.fromCharCode(charcode.$infin);
+    const int precision = 10;
+    const String infinity = 'Infinity';
+    final String infinitySymbol = String.fromCharCode(charcode.$infin);
     String valueStr = value.toString();
     if (value % 1 == 0) {
       valueStr = value.toStringAsFixed(0);

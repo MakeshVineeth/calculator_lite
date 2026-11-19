@@ -1,9 +1,9 @@
-import 'package:auto_size_text/auto_size_text.dart';
+﻿import 'package:auto_size_text/auto_size_text.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:flutter/material.dart';
 
 class CalcButtons extends StatefulWidget {
-  final List rowData;
+  final List<dynamic> rowData;
   final int index;
   final VoidCallback displayFunction;
   final bool isCornerRows;

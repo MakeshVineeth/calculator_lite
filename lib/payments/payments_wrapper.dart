@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:calculator_lite/payments/common_purchase_strings.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
       onError: (error) => _purchaseStatus.changeStatusCheck(StatusCheck.error),
     );
 
-    bool available = await _iap.isAvailable();
+    final bool available = await _iap.isAvailable();
     if (available) await _iap.restorePurchases(applicationUserName: null);
   }
 
@@ -60,10 +60,12 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
 
   Future<void> _listenToPurchaseUpdated(
       List<PurchaseDetails> purchaseDetailsList) async {
-    for (var purchase in purchaseDetailsList) {
+    for (final purchase in purchaseDetailsList) {
       _verifyPurchase(purchase);
 
-      if (purchase.pendingCompletePurchase) _iap.completePurchase(purchase);
+      if (purchase.pendingCompletePurchase) {
+        await _iap.completePurchase(purchase);
+      }
     }
   }
 

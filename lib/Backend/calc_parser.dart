@@ -6,6 +6,13 @@ import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/foundation.dart';
 import 'package:math_expressions/math_expressions.dart';
 
+class SmartParseResult {
+  final int start;
+  final double value;
+
+  const SmartParseResult({required this.start, required this.value});
+}
+
 class CalcParser {
   List<String> calculationString;
   String currentMetric;
@@ -55,18 +62,15 @@ class CalcParser {
   // This function adds elements to displayScreen with formatting.
   List<String> addToExpression(String value) {
     if (calculationString.isNotEmpty) {
-      int lastIndex = calculationString.length - 1;
-      String lastChar = calculationString[lastIndex];
+      final int lastIndex = calculationString.length - 1;
+      final String lastChar = calculationString[lastIndex];
 
-      bool case1 = (value.contains(FixedValues.minus) &&
-          !lastChar.contains(
-              FixedValues.minus)); // checks -+, *- etc but not -- and root-
-      bool case2 = !(helperFunctions.operations.contains(value) &&
-          helperFunctions.operations.contains(
-              lastChar)); // same operators side-by-side aren't allowed.
+      final bool case1 = (value.contains(FixedValues.minus) &&
+          !lastChar.contains(FixedValues.minus));
+      final bool case2 = !(helperFunctions.operations.contains(value) &&
+          helperFunctions.operations.contains(lastChar));
 
       if (case1 || case2) {
-        // Code for reciprocal button.
         if (value.contains(FixedValues.reciprocalChar)) {
           reciprocalFunction();
         } else if (value.contains(FixedValues.minus)) {
@@ -74,13 +78,9 @@ class CalcParser {
               .contains(lastChar))) {
             calculationString.add(value);
           }
-        }
-
-        // Code for add bracket after following functions.
-        else if (trigFunctions.contains(value)) {
+        } else if (trigFunctions.contains(value)) {
           calculationString.add('$value(');
-        } else if ([FixedValues.squareChar, FixedValues.cubeChar]
-            .contains(value)) {
+        } else if ([FixedValues.squareChar, FixedValues.cubeChar].contains(value)) {
           if ([')', FixedValues.pi, 'e'].contains(lastChar) ||
               helperFunctions.numbersList.contains(lastChar) ||
               [FixedValues.sup2, FixedValues.sup3].contains(lastChar)) {
@@ -90,61 +90,54 @@ class CalcParser {
               calculationString.add(FixedValues.sup3);
             }
           }
-        }
-
-        // Code for replace x with
-        else if (value == 'eˣ') {
+        } else if (value == 'eˣ') {
           calculationString.addAll(['e', '^']);
         } else if (value == '𝟏𝟬ˣ') {
           calculationString.addAll(['1', '0', '^']);
         } else if (value == FixedValues.cubeRoot) {
-          calculationString.add(FixedValues.cubeRootSym);
-        } else if (value.contains(FixedValues.decimalChar)) {
+          calculationString.addAll([FixedValues.cubeRootSym, '(']);
+        } else if (value == FixedValues.root) {
+          calculationString.addAll([FixedValues.root, '(']);
+        } else if (value == '.') {
           setDecimalChar();
-        } else if (value.contains(')')) {
-          addClosedBracket();
-        } else if (value.contains(FixedValues.changeSignChar)) {
+        } else if (value == FixedValues.changeSignChar) {
           setSign();
-        } else if (['!', '%', 'mod'].contains(value) ||
-            helperFunctions.operations.contains(value)) {
-          if (value.contains(FixedValues.minus) ||
-              !(helperFunctions.randomList.contains(lastChar) ||
-                  lastChar.contains('(') ||
-                  helperFunctions.operations.contains(lastChar))) {
-            calculationString.add(value);
-          }
-        } else if (value.isNotEmpty) {
+        } else if (value == ')') {
+          addClosedBracket();
+        } else {
+          calculationString.add(value);
+        }
+      }
+    } else {
+      if (!avoidFirstElement.contains(value)) {
+        if (value.startsWith(FixedValues.changeSignChar)) {
+          calculationString.add(FixedValues.minus);
+        } else if (trigFunctions.contains(value)) {
+          calculationString.add('$value(');
+        } else if (value == 'eˣ') {
+          calculationString.addAll(['e', '^']);
+        } else if (value == '𝟏𝟬ˣ') {
+          calculationString.addAll(['1', '0', '^']);
+        } else if (value == FixedValues.cubeRoot) {
+          calculationString.addAll([FixedValues.cubeRootSym, '(']);
+        } else if (value == FixedValues.root) {
+          calculationString.addAll([FixedValues.root, '(']);
+        } else if (value == '.') {
+          calculationString.add('0.');
+        } else {
           calculationString.add(value);
         }
       }
     }
 
-    // Following functions should not present in the first position.
-    else if (!(avoidFirstElement.contains(value))) {
-      // Check if only value present is NOT an operator.
-      if (trigFunctions.contains(value)) {
-        calculationString.add('$value(');
-      } else if (value.contains(FixedValues.cubeRoot)) {
-        calculationString.add(FixedValues.cubeRootSym);
-      } else if (value.contains(FixedValues.decimalChar)) {
-        calculationString.add('.');
-      } else if (value == 'eˣ') {
-        calculationString.addAll(['e', '^']);
-      } else if (value == '𝟏𝟬ˣ') {
-        calculationString.addAll(['1', '0', '^']);
-      } else if (value.isNotEmpty) {
-        calculationString.add(value);
-      }
-    }
     return calculationString;
   }
 
   void addClosedBracket() {
-    // This function adds closed bracket no more than what is required.
-    String lastChar = calculationString.last;
-    String computerStr = calculationString.join();
-    int count = '('.allMatches(computerStr).length;
-    int count1 = ')'.allMatches(computerStr).length;
+    final String lastChar = calculationString.last;
+    final String computerStr = calculationString.join();
+    final int count = '('.allMatches(computerStr).length;
+    final int count1 = ')'.allMatches(computerStr).length;
     if (count1 < count) {
       if (lastChar != FixedValues.minus && lastChar != '(') {
         calculationString.add(')');
@@ -152,197 +145,107 @@ class CalcParser {
     }
   }
 
-  List smartParseLast(int lastIndex, List<String> compStr) {
+  SmartParseResult smartParseLast(int lastIndex, List<String> compStr) {
     double value = 0;
     int start = 0;
     try {
-      // Parse numbers initially.
       start = helperFunctions.parseNumbersFromEnd(lastIndex, compStr);
       if (start != lastIndex) {
         value =
-            double.tryParse(compStr.getRange(start + 1, lastIndex + 1).join())!;
-      }
-
-      // Run below code for Matching brackets
-      else if (compStr[lastIndex].contains(')')) {
+            double.tryParse(compStr.getRange(start + 1, lastIndex + 1).join()) ?? 0;
+      } else if (compStr[lastIndex].contains(')')) {
         start = helperFunctions.parseMatchingBrackets(lastIndex, compStr);
-        List<String> temp = compStr.getRange(start, lastIndex + 1).toList();
+        final List<String> temp = compStr.getRange(start, lastIndex + 1).toList();
         value = evalFunction(temp);
-        start -=
-            1; // Temp solution, i should be 1 low to keep left-most bracket as it will be removed during the process.
-      }
-
-      // Check for constants.
-      else if (helperFunctions.constList.contains(compStr[lastIndex])) {
+        start -= 1;
+      } else if (helperFunctions.constList.contains(compStr[lastIndex])) {
         start = helperFunctions.parseConstFromEnd(lastIndex, compStr);
-        List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
+        final List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
         value = evalFunction(temp);
-      }
-
-      // Check for % and ! now.
-      else if (['%', '!'].contains(compStr[lastIndex])) {
+      } else if (['%', '!'].contains(compStr[lastIndex])) {
         start = 0;
         List<String> temp = compStr.getRange(start, lastIndex).toList();
-        List getData = smartParseLast(temp.length - 1, temp);
-        start = getData[0];
+        final SmartParseResult getData = smartParseLast(temp.length - 1, temp);
+        start = getData.start;
         temp = compStr.getRange(start + 1, lastIndex + 1).toList();
         value = evalFunction(temp);
-      }
-
-      // Executes if there are no integers from beginning.
-      else {
+      } else {
         start = helperFunctions.parseOperatorFromEnd(lastIndex, compStr);
-        List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
+        final List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
         value = evalFunction(temp);
       }
     } catch (_) {}
 
-    return [start, value];
+    return SmartParseResult(start: start, value: value);
   }
 
   void reciprocalFunction() {
     try {
-      int lastIndex = calculationString.length - 1;
+      final int lastIndex = calculationString.length - 1;
       if (!helperFunctions.randomList.contains(calculationString[lastIndex])) {
-        List values = smartParseLast(lastIndex, calculationString);
+        final SmartParseResult values = smartParseLast(lastIndex, calculationString);
 
-        calculationString.removeRange(values[0] + 1, lastIndex + 1);
-        values[1] = 1 / values[1];
-        String valueStr = "";
+        calculationString.removeRange(values.start + 1, lastIndex + 1);
+        final double reciprocal = 1 / values.value;
+        String valueStr = '';
 
-        // Negative checks happens here
-        if (values[1] >= 0) {
-          valueStr = DisplayScreen.formatNumber(values[1]);
+        if (reciprocal >= 0) {
+          valueStr = DisplayScreen.formatNumber(reciprocal);
         } else {
-          valueStr = DisplayScreen.formatNumber(values[1]);
+          valueStr = DisplayScreen.formatNumber(reciprocal);
           valueStr = valueStr.replaceAll('-', FixedValues.minus);
         }
 
-        // if (calculationString.length > 0) valueStr = "(" + valueStr;
         if (calculationString.isNotEmpty) {
           calculationString.addAll(['(', ...valueStr.split('')]);
         } else {
           calculationString.addAll([...valueStr.split('')]);
         }
       }
-    }
-
-    // Do nothing for exceptions.
-    catch (_) {}
+    } catch (_) {}
   }
 
   void setSign() {
-    int lastIndex = calculationString.length - 1; // Get index of last char
-    int i = helperFunctions.parseNumbersFromEnd(lastIndex, calculationString);
+    final int lastIndex = calculationString.length - 1;
+    final int i = helperFunctions.parseNumbersFromEnd(lastIndex, calculationString);
 
-    // If it is equal to -1 then add sign directly as there are no operators at this point, only a number.
     if (i == -1) {
       calculationString.insert(0, FixedValues.minus);
-    } else if (calculationString.length == 1) {
-      if (calculationString[lastIndex] != FixedValues.minus) {
-        calculationString.insert(0, FixedValues.minus);
+    } else if (calculationString[i] == '-') {
+      calculationString.removeAt(i);
+    } else if (calculationString[i] == '(') {
+      if (i > 0 && calculationString[i - 1] == FixedValues.minus) {
+        calculationString.removeAt(i - 1);
       } else {
-        calculationString.removeAt(lastIndex);
+        calculationString.insert(i, FixedValues.minus);
       }
-    }
-
-    // Check if i is not equal to last item in the array, meaning there are numbers beginning from the end.
-    else if (i != lastIndex) {
-      insertSign(i);
-    } else if (calculationString[lastIndex] == '(') {
-      insertSign(i - 1);
-    } else if (calculationString[lastIndex].contains(')')) {
-      i = helperFunctions.parseMatchingBrackets(lastIndex, calculationString) -
-          1;
-      if (i != -1) {
-        insertSign(i);
-      } else {
-        calculationString.insert(0, FixedValues.minus);
-      }
-    }
-
-    // Use Case
-    else if (helperFunctions.constList.contains(calculationString[lastIndex])) {
-      i = helperFunctions.parseConstFromEnd(lastIndex, calculationString);
-      if (i != -1) insertSign(i);
-    }
-
-    // Use Case
-    else if (helperFunctions.randomList
-        .contains(calculationString[lastIndex])) {
-      i = helperFunctions.parseRandomFromEnd(lastIndex, calculationString);
-      if (i != -1) insertSign(i);
-    }
-
-    // Use Case
-    else {
-      i = helperFunctions.parseOperatorFromEnd(lastIndex, calculationString);
-      if (i != -1) {
-        insertSign(i);
-      } else {
-        calculationString.insert(0, FixedValues.minus);
-      }
-    }
-  }
-
-  void insertSign(int i) {
-    // check if last is (-
-    if (calculationString.length > 1 &&
-        i > 0 &&
-        calculationString[i] == '–' &&
-        calculationString[i - 1] == '(' &&
-        i + 1 <= calculationString.length) {
-      calculationString.removeRange(i - 1, i + 1);
+    } else if (calculationString[i] == '+') {
+      calculationString[i] = FixedValues.minus;
     } else {
-      switch (calculationString[i]) {
-        case 'ln(':
-        case 'log(':
-        case 'sin(':
-        case 'cos(':
-        case 'tan(':
-        case 'sin⁻¹(':
-        case 'cos⁻¹(':
-        case 'tan⁻¹(':
-        case '(':
-          calculationString.insert(i + 1, FixedValues.minus);
-          break;
-        case '+':
-          calculationString[i] = FixedValues.minus;
-          break;
-        case '–':
-          if (i != 0 && !calculationString[i - 1].contains('(')) {
-            calculationString[i] = '+';
-          } else {
-            calculationString.removeAt(i);
-          } // Just remove - instead of adding + when position is at 0.
-          break;
-        default:
-          calculationString.insertAll(i + 1, ['(', (FixedValues.minus)]);
-      }
+      calculationString.insertAll(i + 1, ['(', (FixedValues.minus)]);
     }
   }
 
   void setDecimalChar() {
-    int index = helperFunctions.parseNumbersFromEnd(
+    final int index = helperFunctions.parseNumbersFromEnd(
         calculationString.length - 1, calculationString);
-    List<String> getCompareStr = calculationString
+    final List<String> getCompareStr = calculationString
         .getRange(index + 1, calculationString.length)
         .toList();
-    bool count = getCompareStr.join().contains('.');
+    final bool count = getCompareStr.join().contains('.');
     if (!count) calculationString.add('.');
   }
 
-  // This function called from CalcTab.dart after calling addToExpression.
   Future<double> getValue() => compute(evalFunction, calculationString);
 
   double evalFunction(List<String> calcStr) {
     try {
-      GrammarParser p = GrammarParser();
-      String comptStr = computerString(calcStr);
-      Expression exp = p.parse(
-          comptStr); // evalFunction is executed first, internally function asks for computerString.
-      ContextModel cm = ContextModel();
-      double eval = exp.evaluate(EvaluationType.REAL, cm);
+      final GrammarParser p = GrammarParser();
+      final String comptStr = computerString(calcStr);
+      final Expression exp = p.parse(comptStr);
+      final ContextModel cm = ContextModel();
+      final dynamic evalResult = exp.evaluate(EvaluationType.REAL, cm);
+      final double eval = evalResult is num ? evalResult.toDouble() : double.nan;
 
       return eval;
     } catch (_) {
@@ -351,24 +254,18 @@ class CalcParser {
   }
 
   String computerString(List<String> calcStr) {
-    // Go through Custom Functions
     List<String> tempString = List.from(calcStr);
 
-    // add * to respective positions.
     if (tempString.length > 1) {
       for (int i = tempString.length - 1; i > 0; i--) {
-        int lastIndex = i;
-        String lastChar = tempString[lastIndex];
-        String lastButOne = tempString[lastIndex - 1];
+        final int lastIndex = i;
+        final String lastChar = tempString[lastIndex];
+        final String lastButOne = tempString[lastIndex - 1];
 
         if (lastButOne == '.' &&
             !helperFunctions.numbersList.contains(lastChar)) {
           tempString[lastIndex - 1] = '.0';
-        }
-
-        // check pre-value
-        else if (helperFunctions.numbersList.contains(lastButOne)) {
-          // check post value
+        } else if (helperFunctions.numbersList.contains(lastButOne)) {
           if ([
             'sin(',
             'cos(',
@@ -386,10 +283,7 @@ class CalcParser {
           ].contains(lastChar)) {
             tempString.insert(lastIndex, FixedValues.multiplyChar);
           }
-        }
-
-        // another use case
-        else if ([
+        } else if ([
               '%',
               'e',
               FixedValues.pi,
@@ -429,26 +323,24 @@ class CalcParser {
       tempString = getRoot(tempString, FixedValues.cubeRootSym);
     }
 
-    while (tempString.where((value) => value == "!").isNotEmpty) {
-      tempString = getFactorOrPercent(tempString, "!");
+    while (tempString.where((value) => value == '!').isNotEmpty) {
+      tempString = getFactorOrPercent(tempString, '!');
     }
 
-    while (tempString.where((value) => value == "%").isNotEmpty) {
-      tempString = getFactorOrPercent(tempString, "%");
+    while (tempString.where((value) => value == '%').isNotEmpty) {
+      tempString = getFactorOrPercent(tempString, '%');
     }
 
-    // Attach parentheses automatically.
     String computerStr = tempString.join();
-    int countOpen = '('.allMatches(computerStr).length;
-    int countClosed = ')'.allMatches(computerStr).length;
+    final int countOpen = '('.allMatches(computerStr).length;
+    final int countClosed = ')'.allMatches(computerStr).length;
     if (countOpen != countClosed) {
-      int toAdd = countOpen - countClosed;
+      final int toAdd = countOpen - countClosed;
       for (int i = 0; i < toAdd; i++) {
         tempString.add(')');
       }
     }
 
-    // For DEG
     if (currentMetric == 'DEG') {
       while ((tempString.where((item) => trigs.contains(item))).isNotEmpty) {
         for (int count = 0; count < tempString.length; count++) {
@@ -461,10 +353,10 @@ class CalcParser {
               if (tempString[braceCount].contains(')')) closedBrace += 1;
               if (openBrace == closedBrace) break;
             }
-            List<String> temp =
+            final List<String> temp =
                 tempString.getRange(count + 1, braceCount).toList();
-            double angle = evalFunction(temp);
-            double degVal =
+            final double angle = evalFunction(temp);
+            final double degVal =
                 helperFunctions.getDegValue(tempString, count, angle);
             String replaceThis =
                 degVal == double.infinity ? '1/0' : degVal.toString();
@@ -476,7 +368,6 @@ class CalcParser {
       }
     }
 
-    // Replace with strings that dart/math_exp package can understand.
     computerStr = tempString.join();
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
@@ -493,18 +384,15 @@ class CalcParser {
     return computerStr;
   }
 
-  // For Root
   List<String> getRoot(List<String> computerStr, String char) {
-    int index = computerStr.indexOf(char);
+    final int index = computerStr.indexOf(char);
     if (index != -1) {
       int count = index + 1;
 
-      // Detect braces first.
       if (index < computerStr.length - 1 &&
           (computerStr[count].contains('('))) {
         int openBrace = 0;
         int closedBrace = 0;
-        //if (trigs.contains(computerStr[count])) openBrace = 1;
         for (; count < computerStr.length; count++) {
           if (computerStr[count].contains('(')) openBrace += 1;
           if (computerStr[count].contains(')')) closedBrace += 1;
@@ -513,10 +401,7 @@ class CalcParser {
             break;
           }
         }
-      }
-
-      // Detect operators now.
-      else {
+      } else {
         for (; count < computerStr.length; count++) {
           if (helperFunctions.operations.contains(computerStr[count]) ||
               trigs.contains(computerStr[count]) ||
@@ -534,10 +419,10 @@ class CalcParser {
         }
       }
 
-      List<String> valStr = computerStr.getRange(index + 1, count).toList();
-      double val = evalFunction(valStr);
+      final List<String> valStr = computerStr.getRange(index + 1, count).toList();
+      final double val = evalFunction(valStr);
       if (val < 0) {
-        computerStr = ['0/0']; // Make it NaN
+        computerStr = ['0/0'];
       } else {
         List<String> replaceRoot;
         if (char == FixedValues.root) {
@@ -553,8 +438,7 @@ class CalcParser {
                 .contains(computerStr[index - 1])) {
           computerStr.replaceRange(index, count, replaceRoot);
         } else {
-          replaceRoot[0] =
-              '*${replaceRoot[0]}'; // Add * for those that do not contain any operator before.
+          replaceRoot[0] = '*${replaceRoot[0]}';
           computerStr.replaceRange(index, count, replaceRoot);
         }
       }
@@ -564,37 +448,32 @@ class CalcParser {
     }
   }
 
-  // Factorial Function
   List<String> getFactorOrPercent(List<String> computerStr, String char) {
-    int index = computerStr.indexOf(char);
+    final int index = computerStr.indexOf(char);
     computerStr.removeAt(index);
     int count = index - 1;
-    List data = smartParseLast(count, computerStr);
-    count = data[0];
-    double val = data[1];
+    final SmartParseResult data = smartParseLast(count, computerStr);
+    count = data.start;
+    final double val = data.value;
     if (char.contains('!') && (val % 1 == 0 && val >= 0)) {
-      BigInt getNum = BigInt.from(val);
+      final BigInt getNum = BigInt.from(val);
       BigInt factNum;
 
-      // Catch overloaded values here.
       try {
         factNum = helperFunctions.factorial(getNum);
         computerStr.removeRange(count + 1, index);
         computerStr.insert(count + 1, factNum.toString());
       } catch (_) {
-        computerStr = ['0/0']; // Make it NaN this way.
+        computerStr = ['0/0'];
       }
 
       return computerStr;
-    }
-
-    // For % below code.
-    else if (char.contains("%")) {
+    } else if (char.contains('%')) {
       List<String> prev = List.empty(growable: true);
-      String lastChar = "";
+      String lastChar = '';
       List<String> second = List.empty(growable: true);
-      double first = val;
-      List plusminus = [FixedValues.minus, '+'];
+      final double first = val;
+      final List<String> plusminus = [FixedValues.minus, '+'];
       bool previousMinus = false;
 
       if (count != -1) {
@@ -602,7 +481,6 @@ class CalcParser {
         lastChar = prev.last;
 
         if (helperFunctions.operations.contains(lastChar)) {
-          // Run separate checks for minus
           if (lastChar.contains(FixedValues.minus)) {
             if (prev.length < 2 ||
                 prev[prev.length - 2].contains('(') ||
@@ -611,56 +489,37 @@ class CalcParser {
             } else {
               second = prev.getRange(0, count).toList();
             }
-          }
-
-          // Return if it is not an minus operator.
-          else {
+          } else {
             second = prev.getRange(0, count).toList();
           }
-        }
-        // Return if it is not any operator.
-        else {
+        } else {
           second = prev.getRange(0, count + 1).toList();
         }
       }
 
-      // Detects single 55 or 25 etc
       if (count == -1) {
         computerStr.replaceRange(
             count + 1, index, helperFunctions.concatenateList([val / 100]));
 
-        // Detects %%
-        if (index + 1 < computerStr.length && computerStr[index + 1] == "%") {
+        if (index + 1 < computerStr.length && computerStr[index + 1] == '%') {
           int i = index + 1;
-          while (computerStr[i] == "%") {
+          while (computerStr[i] == '%') {
             computerStr[i] = '*0.01';
             i++;
             if (i >= computerStr.length) break;
           }
         }
         return computerStr;
-      }
-
-      // Special checks
-      else if (previousMinus || prev.last.contains('(${FixedValues.minus}')) {
+      } else if (previousMinus || prev.last.contains('(${FixedValues.minus}')) {
         computerStr.insertAll(prev.length + 1, ['*', '0.01']);
-      }
-
-      // Detects 8 + 5 % * debug point here (This: 8 + 5% * 5 + 3%); Detects post 5% if it is * or ^ or something else.
-      else if ((index < computerStr.length) &&
+      } else if ((index < computerStr.length) &&
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
         computerStr.replaceRange(
             count + 1, index, helperFunctions.concatenateList([first / 100]));
-      }
-
-      // Detects tan( etc at the end
-      else if (helperFunctions.randomList.contains(lastChar)) {
+      } else if (helperFunctions.randomList.contains(lastChar)) {
         computerStr.replaceRange(
             count + 1, index, helperFunctions.concatenateList([first / 100]));
-      }
-
-      // Detects 9 - tan(2)% and 9 + cos(2) * cos(2)%
-      else if ((index - 1 > -1) &&
+      } else if ((index - 1 > -1) &&
           !helperFunctions.numbersList.contains(computerStr[index - 1])) {
         if (plusminus.contains(prev[prev.length - 1])) {
           computerStr.replaceRange(
@@ -672,29 +531,20 @@ class CalcParser {
           computerStr.replaceRange(
               count + 1, index, helperFunctions.concatenateList([first / 100]));
         }
-      }
-
-      // Detects 9 - 5 + 6 * sin(5) + 3%
-      else if (plusminus.contains(lastChar)) {
+      } else if (plusminus.contains(lastChar)) {
         computerStr.replaceRange(
             0,
             index,
             helperFunctions.concatenateList(
                 [second, lastChar, '(', second, ')', '*', first, '/', '100']));
-      }
-
-      // Detects 9 + 6 * sin(5) * 6%
-      else {
+      } else {
         computerStr.replaceRange(0, index,
             helperFunctions.concatenateList([second, lastChar, first / 100]));
       }
 
       computerStr = helperFunctions.replaceExp(computerStr);
       return computerStr;
-    }
-
-    // Returns null if char is neither % nor ! nor even if it is factorial but unsupported value like decimals etc.
-    else {
+    } else {
       return List.empty();
     }
   }

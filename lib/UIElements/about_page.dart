@@ -1,8 +1,9 @@
-import 'package:calculator_lite/common_methods/common_methods.dart';
+﻿import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'buttons_links.dart';
 
 class AboutPage extends StatelessWidget {
@@ -12,7 +13,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeScale(
       child: AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
         shape: FixedValues.roundShapeLarge,
         buttonPadding: const EdgeInsets.all(10.0),
 
@@ -34,9 +35,17 @@ class AboutPage extends StatelessWidget {
                       FixedValues.appName,
                       style: FixedValues.appTitleStyle(context),
                     ),
-                    const Text(
-                      FixedValues.appVersion,
-                      style: TextStyle(color: Colors.grey),
+                    FutureBuilder<PackageInfo>(
+                      future: PackageInfo.fromPlatform(),
+                      builder: (context, snapshot) {
+                        final version = snapshot.hasData
+                            ? 'Version ${snapshot.data!.version} (Build ${snapshot.data!.buildNumber})'
+                            : 'Version ${FixedValues.appVersion}';
+                        return Text(
+                          version,
+                          style: const TextStyle(color: Colors.grey),
+                        );
+                      },
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -97,7 +106,7 @@ class AboutPage extends StatelessWidget {
 
   static void showAboutDialogFunc(BuildContext context) async {
     try {
-      showBlurDialog(context: context, child: const AboutPage());
+      await showBlurDialog(context: context, child: const AboutPage());
     } catch (_) {}
   }
 }

@@ -1,16 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_animator/flutter_animator.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:calculator_lite/UIElements/bounce_widget.dart';
 
 class BottomNavClass {
-  String title;
-  IconData icon;
+  final String title;
+  final IconData icon;
 
-  BottomNavClass({required this.title, required this.icon});
+  const BottomNavClass({required this.title, required this.icon});
 
   BottomNavigationBarItem returnNavItems() => BottomNavigationBarItem(
         label: title,
         icon: Icon(icon),
-        activeIcon: Bounce(
+        activeIcon: BounceWidget(
           child: Icon(icon),
         ),
       );

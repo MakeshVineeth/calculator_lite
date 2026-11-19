@@ -1,4 +1,4 @@
-import 'package:charcode/charcode.dart' as charcode;
+﻿import 'package:charcode/charcode.dart' as charcode;
 import 'package:flutter/material.dart';
 
 class FixedValues {
@@ -89,14 +89,15 @@ class FixedValues {
   ];
 
   static ThemeData getThemeData(Brightness brightness, BuildContext context) {
-    bool isLight = brightness == Brightness.light;
-    MaterialColor foreground = isLight ? Colors.red : Colors.yellow;
-    Color? background = isLight ? Colors.white : Colors.grey[900];
-    Color? foregroundText = isLight ? Colors.black : Colors.white;
-    Color? backgroundScaffold = isLight ? background : Colors.black;
+    final bool isLight = brightness == Brightness.light;
+    final MaterialColor foreground = isLight ? Colors.red : Colors.yellow;
+    final Color background = isLight ? Colors.white : Colors.grey[900]!;
+    final Color foregroundText = isLight ? Colors.black : Colors.white;
+    final Color backgroundScaffold = isLight ? background : Colors.black;
 
     return ThemeData(
       useMaterial3: true,
+      brightness: brightness,
       primaryColor: foreground,
       scaffoldBackgroundColor: backgroundScaffold,
       iconTheme: IconThemeData(color: foreground),
@@ -107,6 +108,33 @@ class FixedValues {
         surfaceTintColor: Colors.transparent,
       ),
       cardColor: background,
+      dialogTheme: DialogThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
+        shape: FixedValues.roundShapeLarge,
+        titleTextStyle: TextStyle(
+          color: foregroundText,
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
+        ),
+        contentTextStyle: TextStyle(
+          color: foregroundText,
+          fontSize: 14,
+        ),
+      ),
+      dialogBackgroundColor: background,
+      popupMenuTheme: PopupMenuThemeData(
+        color: background,
+        surfaceTintColor: Colors.transparent,
+        textStyle: TextStyle(color: foregroundText),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+        ),
+      ),
       appBarTheme: Theme.of(context).appBarTheme.copyWith(
         centerTitle: true,
         titleSpacing: 1,
@@ -135,23 +163,29 @@ class FixedValues {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(shape: roundShapeBtns),
       ),
-      colorScheme: ColorScheme.fromSwatch(primarySwatch: foreground)
-          .copyWith(secondary: foreground, brightness: brightness)
-          .copyWith(surface: backgroundScaffold),
-      bottomAppBarTheme: BottomAppBarTheme(color: backgroundScaffold),
+      colorScheme: ColorScheme.fromSwatch(
+        primarySwatch: foreground,
+        brightness: brightness,
+      ).copyWith(
+        secondary: foreground,
+        surface: backgroundScaffold,
+        surfaceContainer: background,
+        surfaceContainerHigh: background,
+        surfaceContainerHighest: background,
+      ),
+      bottomAppBarTheme: BottomAppBarThemeData(color: backgroundScaffold),
     );
   }
 
   static const TextStyle semiBoldStyle = TextStyle(
     fontWeight: FontWeight.w600,
-    color: Colors.black,
   );
 
   static const Color blurBgColor = Colors.white10;
   static const double sigmaLevel = 5.0;
   static const Duration transitionDuration = Duration(milliseconds: 100);
   static const String appName = 'Calculator Lite';
-  static const String appVersion = '2.0.0';
+  static const String appVersion = '2.1.0';
   static const String logo = 'logo.png';
   static const String appLegalese =
       'An Open-Source Calculator that does all the calculations for you. Make faster calculations, display latest currencies, previous history scrolling, renaming the titles of history items and so much more!';

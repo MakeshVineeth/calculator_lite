@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copy_data.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
@@ -27,26 +27,49 @@ class CurrencyTab extends StatefulWidget {
 
 class _CurrencyTabState extends State<CurrencyTab> {
   final _scrollController = ScrollController();
-  late Box fromBox;
-  late Box toBox;
+  late Box<CurrencyListItem> fromBox;
+  late Box<CurrencyListItem> toBox;
   final resetFormProvider = ResetFormProvider();
   final UpdateListen updateListen = UpdateListen();
   late PurchaseStatusProvider _purchaseStatusProvider;
+  late Future<void> _processFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _processFuture = process();
+  }
 
   Future<void> process() async {
     await CopyData().copyData;
-    fromBox = Hive.box(CommonsData.fromBox);
-    toBox = Hive.box(CommonsData.toBox);
+    fromBox = Hive.box<CurrencyListItem>(CommonsData.fromBox);
+    toBox = Hive.box<CurrencyListItem>(CommonsData.toBox);
 
-    for (CurrencyListItem item in fromBox.values) {
-      await Hive.openBox(item.currencyCode.toLowerCase());
+    if (fromBox.isEmpty) {
+      final currencyBox =
+          Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
+      if (currencyBox.isNotEmpty) {
+        final usd = currencyBox.values.firstWhere(
+          (c) => c.currencyCode == 'USD',
+          orElse: () => currencyBox.values.first,
+        );
+        final eur = currencyBox.values.firstWhere(
+          (c) => c.currencyCode == 'EUR',
+          orElse: () => currencyBox.values.last,
+        );
+        await fromBox.add(usd);
+        await toBox.add(eur);
+      }
+    }
+
+    for (final CurrencyListItem item in fromBox.values) {
+      await Hive.openBox<dynamic>(item.currencyCode.toLowerCase());
     }
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    Hive.close();
     super.dispose();
   }
 
@@ -56,10 +79,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: FutureBuilder(
-        future: process(),
+      child: FutureBuilder<void>(
+        future: _processFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              !snapshot.hasError) {
             return FadeThis(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -78,18 +102,18 @@ class _CurrencyTabState extends State<CurrencyTab> {
                           Flexible(
                             child: SmallToolBtn(
                               function: () => resetForm(context),
-                              icon: Icons.clear_all_outlined,
+                              icon: Icons.restart_alt_rounded,
                             ),
                           ),
                           Flexible(
                             child: SmallToolBtn(
-                              function: () {
-                                popCurBtns().then((value) {
-                                  showSlideUp(
-                                    context: context,
-                                    menuList: value,
-                                  );
-                                });
+                              function: () async {
+                                final value = await popCurBtns();
+                                if (!context.mounted) return;
+                                showSlideUp(
+                                  context: context,
+                                  menuList: value,
+                                );
                               },
                               icon: Icons.expand_more_outlined,
                             ),
@@ -105,6 +129,24 @@ class _CurrencyTabState extends State<CurrencyTab> {
                   ),
                   const SizedBox(height: 10),
                   Expanded(child: widgetsData()),
+                ],
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Failed to load currency data'),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _processFuture = process();
+                      });
+                    },
+                    child: const Text('Retry'),
+                  ),
                 ],
               ),
             );
@@ -172,39 +214,45 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   void addCurrencyCard() async {
     // Check for payment status. And allow not more than 7 currency cards.
-    bool paymentStatus = _purchaseStatusProvider.hasPurchased;
+    final bool paymentStatus = _purchaseStatusProvider.hasPurchased;
 
     if ((paymentStatus == false && fromBox.length >= 5) && Platform.isAndroid) {
       Navigator.pushNamed(context, FixedValues.buyRoute);
       return;
     }
 
-    final list = Hive.box(CommonsData.currencyListBox);
+    final Box<CurrencyListItem> list =
+        Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
     if (list.length > 0) {
       final NumberFormat currencyFormat = NumberFormat.currency(
         locale: Localizations.localeOf(context).toString(),
       );
-      String currencyCode = currencyFormat.currencyName ?? 'USD';
+      final String currencyCode = currencyFormat.currencyName ?? 'USD';
 
-      List<CurrencyListItem> currencyList =
-          list.values.cast<CurrencyListItem>().toList();
+      final List<CurrencyListItem> currencyList =
+          list.values.toList();
 
-      CurrencyListItem fromCur = list.getAt(0);
-      CurrencyListItem toCur = list.getAt(0);
+      CurrencyListItem fromCur = list.getAt(0)!;
+      final CurrencyListItem toCur = list.getAt(0)!;
 
-      for (CurrencyListItem element in currencyList) {
+      for (final CurrencyListItem element in currencyList) {
         if (element.currencyCode == currencyCode) {
           fromCur = element;
           break;
         }
       }
 
-      await Hive.openBox(fromCur.currencyCode.toLowerCase());
+      if (!Hive.isBoxOpen(fromCur.currencyCode.toLowerCase())) {
+        await Hive.openBox<dynamic>(fromCur.currencyCode.toLowerCase());
+      }
+      if (!Hive.isBoxOpen(toCur.currencyCode.toLowerCase())) {
+        await Hive.openBox<dynamic>(toCur.currencyCode.toLowerCase());
+      }
 
       await fromBox.add(fromCur);
       await toBox.add(toCur);
 
-      int index = fromBox.length;
+      final int index = fromBox.length;
       _animListKey.currentState?.insertItem(
         index - 1,
         duration: CommonsData.dur1,

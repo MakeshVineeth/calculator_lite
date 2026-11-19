@@ -1,4 +1,4 @@
-import 'package:calculator_lite/Backend/helper_functions.dart';
+﻿import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:calculator_lite/CurrencyTab/currency_tab.dart';
 import 'package:calculator_lite/Export_Screen/export_screen.dart';
 import 'package:calculator_lite/HistoryTab/commons_history.dart';
@@ -15,9 +15,10 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:calculator_lite/bottom_nav_class.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
-import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
+
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,7 +51,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   void getThemeStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final themeString = prefs.getString('theme') ?? 'System Default';
-    ThemeMode themeMode = MiniThemeFunctions.parseTheme(themeString);
+    final ThemeMode themeMode = MiniThemeFunctions.parseTheme(themeString);
     setThemeFunction(themeMode);
   }
 
@@ -81,12 +82,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
 Widget materialApp(final ThemeMode setTheme, BuildContext context) =>
     MaterialApp(
       title: FixedValues.appName,
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [Locale('en')],
+      supportedLocales: const [Locale('en')],
       debugShowCheckedModeBanner: false,
       themeMode: setTheme,
       restorationScopeId: 'root',
@@ -134,13 +135,16 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
 
   void setFlatStatusBar() {
     if (Platform.isAndroid) {
-      bool isLightTheme = Theme.of(context).brightness == Brightness.light;
-      FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-      if (isLightTheme) {
-        FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-      } else {
-        FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
-      }
+      final isLightTheme = Theme.of(context).brightness == Brightness.light;
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness:
+              isLightTheme ? Brightness.dark : Brightness.light,
+          statusBarBrightness:
+              isLightTheme ? Brightness.light : Brightness.dark,
+        ),
+      );
     }
   }
 
@@ -168,17 +172,17 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
     try {
       if (Platform.isAndroid) {
         try {
-          DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-          AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-          int sdkVer = androidInfo.version.sdkInt;
+          final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+          final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+          final int sdkVer = androidInfo.version.sdkInt;
 
           if (sdkVer >= 23) await FlutterDisplayMode.setHighRefreshRate();
         } catch (_) {}
 
-        bool disabled = await getPrefs('privacy', true);
-        setSecure(disabled);
+        final bool disabled = await getPrefs('privacy', true);
+        await setSecure(disabled);
 
-        quickActions.initialize((shortcutType) {
+        await quickActions.initialize((shortcutType) {
           int index = 1;
 
           if (shortcutType == AppShortcuts.calculatorQuickAction.type) {
@@ -192,15 +196,16 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
           _onItemTapped(index);
         });
 
-        quickActions.setShortcutItems(AppShortcuts.shortcutsList);
+        await quickActions.setShortcutItems(AppShortcuts.shortcutsList);
       }
 
       if (await isFirstLaunch()) {
         await setPrefs(FixedValues.firstLaunchPref, false);
 
         // Add a sample history item.
-        final Box box = await Hive.openBox(CommonsHistory.historyBox);
-        DateTime now = DateTime.now();
+        final Box<HistoryItem> box =
+            await Hive.openBox<HistoryItem>(CommonsHistory.historyBox);
+        final DateTime now = DateTime.now();
         final HistoryItem historyItem = HistoryItem(
           expression: '5+3',
           value: '8.0',

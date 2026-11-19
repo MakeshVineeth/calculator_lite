@@ -1,115 +1,148 @@
-import 'dart:io';
+﻿import 'dart:convert';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:archive/archive.dart';
 
 class CopyData {
+  static const int kSeedVersion = 2;
+  static const String kSeedVersionKey = 'currency_seed_version_v2';
+
   Future<String> get copyData async {
     try {
-      bool check = await Hive.boxExists(CommonsData.currencyListBox);
+      final bool check = await Hive.boxExists(CommonsData.currencyListBox);
 
-      // If box doesn't exist at all, then copy the data without checking last updated.
-      if (!check) {
-        await copy();
-      } else {
-        // read updated_date.txt from app's doc dir.
-        String? date = await readData();
+      final fromBox = await _openBoxSafe<CurrencyListItem>(CommonsData.fromBox);
+      final toBox = await _openBoxSafe<CurrencyListItem>(CommonsData.toBox);
+      final currencyBox =
+          await _openBoxSafe<CurrencyListItem>(CommonsData.currencyListBox);
+      final dateBox = await _openBoxSafe<dynamic>(CommonsData.updatedDateBox);
 
-        // read updated_date.txt from assets.
-        String dateAsset =
-            await rootBundle.loadString('assets/updated_date.txt');
+      final int existingSeedVersion =
+          (await dateBox.get(kSeedVersionKey, defaultValue: 0)) as int;
 
-        // if not null, then date file exists, then copy all data by checking previous date.
-        if (date != null) {
-          DateTime? dateTime = DateTime.tryParse(date);
-          DateTime? dateTimeAsset = DateTime.tryParse(dateAsset);
-          if (dateTime!.isBefore(dateTimeAsset!)) await copy();
-        } else {
-          await copy();
-          await writeData(dateAsset);
+      // Seed or re-seed if currencies box doesn't exist, is empty, seed version is outdated, or items < 180
+      if (!check ||
+          currencyBox.isEmpty ||
+          existingSeedVersion < kSeedVersion ||
+          currencyBox.length < 180) {
+        await seedFromAsset(currencyBox, dateBox);
+        await dateBox.put(kSeedVersionKey, kSeedVersion);
+      }
+
+      // Seed initial from/to cards if empty or invalid
+      if (currencyBox.isNotEmpty && (fromBox.isEmpty || toBox.isEmpty)) {
+        CurrencyListItem defaultFrom = currencyBox.getAt(0)!;
+        CurrencyListItem defaultTo = currencyBox.getAt(0)!;
+
+        for (final item in currencyBox.values) {
+          if (item.currencyCode == 'USD') defaultFrom = item;
+          if (item.currencyCode == 'EUR') defaultTo = item;
+        }
+
+        if (fromBox.isEmpty) await fromBox.add(defaultFrom);
+        if (toBox.isEmpty) await toBox.add(defaultTo);
+      }
+
+      // Heal existing from/to cards with updated flags/names if needed
+      if (fromBox.isNotEmpty && currencyBox.isNotEmpty) {
+        for (int i = 0; i < fromBox.length; i++) {
+          final item = fromBox.getAt(i);
+          if (item != null) {
+            final match = currencyBox.values.firstWhere(
+              (c) => c.currencyCode == item.currencyCode,
+              orElse: () => item,
+            );
+            if (match.flagURL != item.flagURL) {
+              await fromBox.putAt(i, match);
+            }
+          }
+        }
+      }
+      if (toBox.isNotEmpty && currencyBox.isNotEmpty) {
+        for (int i = 0; i < toBox.length; i++) {
+          final item = toBox.getAt(i);
+          if (item != null) {
+            final match = currencyBox.values.firstWhere(
+              (c) => c.currencyCode == item.currencyCode,
+              orElse: () => item,
+            );
+            if (match.flagURL != item.flagURL) {
+              await toBox.putAt(i, match);
+            }
+          }
         }
       }
 
-      await Hive.openBox(CommonsData.fromBox);
-      await Hive.openBox(CommonsData.toBox);
-      await Hive.openBox(CommonsData.currencyListBox);
-      await Hive.openBox(CommonsData.updatedDateBox);
-
       return CommonsData.successToken;
-    }
-
-    // For exceptions
-    catch (e) {
+    } catch (e) {
       debugPrint('Exception copyData: $e');
       return CommonsData.errorToken;
     }
   }
 
-  Future<void> copy() async {
-    try {
-      String folderName = 'hiveUserData';
-      String zipFileName = '$folderName.zip';
-      ByteData zipContent = await rootBundle.load('assets/$zipFileName');
-
-      Directory tempDir = await getTemporaryDirectory();
-      String tempPath = '${tempDir.path}/$zipFileName';
-
-      File zipFile = File(tempPath);
-      zipFile.writeAsBytesSync(zipContent.buffer.asUint8List());
-
-      List<int> bytes = File(tempPath).readAsBytesSync();
-      Archive archive = ZipDecoder().decodeBytes(bytes);
-
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      String appPath = '${appDocDir.path}/$folderName';
-      Directory(appPath).createSync();
-
-      for (ArchiveFile file in archive) {
-        String filename = file.name;
-        List<int> data = file.content;
-        File('$appPath/$filename')
-          ..createSync(recursive: true)
-          ..writeAsBytesSync(data);
-      }
-    } catch (e) {
-      debugPrint("Error Copying Data: $e");
+  Future<Box<T>> _openBoxSafe<T>(String name) async {
+    if (Hive.isBoxOpen(name)) {
+      return Hive.box<T>(name);
     }
+    return await Hive.openBox<T>(name);
   }
 
-  // Gets local path of app doc dir
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  // Gets updated_date text file from App's Document Dir
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/updated_date.txt');
-  }
-
-  // write text to updated_date.txt
-  Future<File> writeData(String text) async {
-    final file = await _localFile;
-    return file.writeAsString(text);
-  }
-
-  // read data from updated date text
-  Future<String?> readData() async {
+  Future<void> seedFromAsset(
+    Box<CurrencyListItem> currencyBox,
+    Box<dynamic> dateBox,
+  ) async {
     try {
-      final file = await _localFile;
+      final String jsonStr =
+          await rootBundle.loadString('assets/currencies_data.json');
+      final Map<String, dynamic> data =
+          json.decode(jsonStr) as Map<String, dynamic>;
 
-      if (file.existsSync()) {
-        return await file.readAsString();
-      } else {
-        return null;
+      final String updatedDate =
+          data['updated_date'] as String? ?? DateTime.now().toString();
+      await dateBox.put(CommonsData.lastDateChecked, updatedDate);
+      await dateBox.put(CommonsData.updatedDateKey, updatedDate);
+
+      await currencyBox.clear();
+      final List<dynamic> currenciesList =
+          data['currencies'] as List<dynamic>? ?? [];
+      final Set<String> seen = {};
+      for (int i = 0; i < currenciesList.length; i++) {
+        final Map<String, dynamic> item =
+            currenciesList[i] as Map<String, dynamic>;
+        final String code = (item['currencyCode'] as String? ?? '').trim();
+        final String name = (item['currencyName'] as String? ?? '').trim();
+        final String flag = (item['flagURL'] as String? ?? '').trim();
+        if (code.isEmpty) continue;
+
+        final String dedupeKey = '${code}_$name'.toLowerCase();
+        if (!seen.add(dedupeKey)) continue;
+
+        final currencyItem = CurrencyListItem(
+          currencyCode: code,
+          currencyName: name,
+          flagURL: flag,
+        );
+        await currencyBox.add(currencyItem);
+      }
+
+      final Map<String, dynamic> rates =
+          data['rates'] as Map<String, dynamic>? ?? {};
+      for (final entry in rates.entries) {
+        final String baseCode = entry.key.toLowerCase();
+        final Map<String, dynamic> rateMap =
+            entry.value as Map<String, dynamic>;
+        final Box<dynamic> rateBox = await _openBoxSafe<dynamic>(baseCode);
+        for (final r in rateMap.entries) {
+          final val = r.value;
+          if (val is num) {
+            await rateBox.put(r.key, val.toDouble());
+          }
+        }
       }
     } catch (e) {
-      debugPrint("Error Reading data: $e");
-      return null;
+      debugPrint('Error seeding currency data: $e');
     }
   }
 }

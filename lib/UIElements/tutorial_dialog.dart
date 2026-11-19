@@ -1,4 +1,4 @@
-import 'package:calculator_lite/UIElements/dialog_text_btn.dart';
+﻿import 'package:calculator_lite/UIElements/dialog_text_btn.dart';
 import 'package:calculator_lite/UIElements/fade_scale_widget.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/fixed_values.dart';
