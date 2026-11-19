@@ -40,6 +40,10 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   @override
   Widget build(BuildContext context) {
     onStart(context);
+    final Size screenSize = MediaQuery.sizeOf(context);
+    final bool isCompact = screenSize.width < 360 || screenSize.height < 450;
+    final bool isLand = HelperFunctions().isLandScape(context);
+
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         _onScrollNotification(notification);
@@ -69,9 +73,9 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
               readOnly: true,
               stepGranularity: 2,
               minLines: 1,
-              maxLines: HelperFunctions().isLandScape(context) ? 2 : 4,
-              minFontSize: MediaQuery.sizeOf(context).width < 360 ? 14 : 22,
-              maxFontSize: HelperFunctions().isLandScape(context) ? 28 : 50,
+              maxLines: (isLand || isCompact) ? 2 : 4,
+              minFontSize: isCompact ? 12 : 22,
+              maxFontSize: (isLand || isCompact) ? 28 : 50,
               focusNode: focus,
               showCursor: true,
               onTap: () => onTapFunction(context),

@@ -103,6 +103,9 @@ void main() {
       'Tablet Portrait (800x1280)': const Size(800, 1280),
       'Tablet Landscape (1280x800)': const Size(1280, 800),
       'TV / 1080p Desktop (1920x1080)': const Size(1920, 1080),
+      'Phone Half Split-Screen (390x400)': const Size(390, 400),
+      'Phone 1/3 Split-Screen (390x270)': const Size(390, 270),
+      'Foldable Side-by-Side Split (400x841)': const Size(400, 841),
     };
 
     for (final entry in deviceResolutions.entries) {

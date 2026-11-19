@@ -338,9 +338,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final Size screenSize = MediaQuery.sizeOf(context);
     final bool isLand = _helperFunctions.isLandScape(context);
     final double maxW = isLand ? 960.0 : 650.0;
+    final bool isCompact = screenSize.width < 360 || screenSize.height < 450;
 
     return ChangeNotifierProvider<CustomFocusEvents>.value(
       value: _customFocusEvents,
@@ -352,8 +353,8 @@ class _CalculatorTabState extends State<CalculatorTab> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  metricsButton(),
-                  popUpDotMenu(),
+                  metricsButton(isCompact: isCompact),
+                  popUpDotMenu(isCompact: isCompact),
                 ],
               ),
               // Display Widget
@@ -364,7 +365,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
               Expanded(
                 flex: isLand ? 6 : 3,
                 child: Padding(
-                  padding: EdgeInsets.all(screenWidth < 360 ? 2.0 : 5.0),
+                  padding: EdgeInsets.all(isCompact ? 2.0 : 5.0),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: _currentChild,
@@ -378,7 +379,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     );
   }
 
-  Widget popUpDotMenu() {
+  Widget popUpDotMenu({bool isCompact = false}) {
     final Map<String, Function> menuList = {
       'Change Theme': () => PopThemeChooser.showThemeChooser(context),
       'Secure Mode': () {
@@ -408,6 +409,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
     return Container(
       alignment: Alignment.centerRight,
       child: IconButton(
+        padding:
+            isCompact ? const EdgeInsets.all(4.0) : const EdgeInsets.all(8.0),
+        constraints: isCompact ? const BoxConstraints() : null,
+        visualDensity: isCompact ? VisualDensity.compact : null,
         onPressed: () => showSlideUp(
           context: context,
           menuList: menuList,
@@ -419,17 +424,23 @@ class _CalculatorTabState extends State<CalculatorTab> {
     );
   }
 
-  Widget metricsButton() => Padding(
-        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.all(5.0),
-          ),
-          onPressed: changeMetrics,
-          child: Text(
-            currentMetric,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600, //w600 is semi-bold.
+  Widget metricsButton({bool isCompact = false}) => Padding(
+        padding: EdgeInsets.fromLTRB(10, isCompact ? 0 : 5, 0, 0),
+        child: SizedBox(
+          height: isCompact ? 30 : null,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(
+                horizontal: isCompact ? 8.0 : 12.0,
+                vertical: isCompact ? 2.0 : 5.0,
+              ),
+            ),
+            onPressed: changeMetrics,
+            child: Text(
+              currentMetric,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600, //w600 is semi-bold.
+              ),
             ),
           ),
         ),

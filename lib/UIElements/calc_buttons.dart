@@ -52,8 +52,8 @@ class _CalcButtonsState extends State<CalcButtons> {
     final bool isFunctionWord = _textFunctions.contains(text);
     final bool isSingleChar = text.length == 1 || text == '+/-';
 
-    final double screenWidth = MediaQuery.sizeOf(context).width;
-    final bool isSmallScreen = screenWidth < 360;
+    final Size screenSize = MediaQuery.sizeOf(context);
+    final bool isSmallScreen = screenSize.width < 360 || screenSize.height < 450;
 
     final double fontSize;
     final double minFontSize;
@@ -73,7 +73,7 @@ class _CalcButtonsState extends State<CalcButtons> {
       group = null;
     }
 
-    final double marginVal = isSmallScreen ? 2.5 : 5.0;
+    final double marginVal = isSmallScreen ? 2.0 : 5.0;
 
     return Expanded(
       child: Row(

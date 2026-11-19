@@ -63,11 +63,16 @@ class _DisplayScreenState extends State<DisplayScreen> {
   @override
   Widget build(BuildContext context) {
     runInitial();
+    final bool isCompact = MediaQuery.sizeOf(context).height < 450 ||
+        HelperFunctions().isLandScape(context);
     return Expanded(
       flex: 2,
       child: LayoutBuilder(
         builder: (context, constraints) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          padding: EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: isCompact ? 1 : 2,
+          ),
           constraints: BoxConstraints(
             minHeight: constraints.maxHeight,
           ),
@@ -81,7 +86,7 @@ class _DisplayScreenState extends State<DisplayScreen> {
                   calculationString: widget.calculationString,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: isCompact ? 1 : 4),
               // Result Output Area (anchored bottom right with scrollbar and tap-to-copy)
               GestureDetector(
                 onTap: () => _copyResultToClipboard(context),
@@ -99,7 +104,7 @@ class _DisplayScreenState extends State<DisplayScreen> {
                     controller: myController,
                     scrollController: outputScrollController,
                     minLines: 1,
-                    maxLines: 2,
+                    maxLines: isCompact ? 1 : 2,
                     readOnly: true,
                     showCursor: false,
                     decoration: const InputDecoration(
@@ -108,8 +113,7 @@ class _DisplayScreenState extends State<DisplayScreen> {
                           EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     ),
                     style: mainValueStyle.copyWith(
-                      fontSize:
-                          HelperFunctions().isLandScape(context) ? 26 : 40.0,
+                      fontSize: isCompact ? 22.0 : 40.0,
                     ),
                     scrollPhysics: const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics()),
