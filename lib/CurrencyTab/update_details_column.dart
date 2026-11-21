@@ -20,7 +20,7 @@ class UpdateColumn extends StatefulWidget {
 }
 
 class _UpdateColumnState extends State<UpdateColumn> {
-  String status = 'None';
+  late String status;
   final CurrencyData currencyData = CurrencyData();
   final HelperFunctions _helperFunctions = HelperFunctions();
   static const int defaultTries = 1;
@@ -28,9 +28,21 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
   Timer? _autoUpdateTimer;
 
+  String _initialStatus() {
+    final String? lastChecked = Hive.box<dynamic>(CommonsData.updatedDateBox)
+        .get(CommonsData.lastDateChecked) as String?;
+    final DateTime? lastCheckedDate =
+        lastChecked == null ? null : DateTime.tryParse(lastChecked);
+    final bool checkedRecently = lastCheckedDate != null &&
+        DateTime.now().difference(lastCheckedDate) <
+            CommonsData.recentCheckWindow;
+    return checkedRecently ? CommonsData.upToDate : CommonsData.waitingStr;
+  }
+
   @override
   void initState() {
     super.initState();
+    status = _initialStatus();
     _autoUpdateTimer = Timer(const Duration(seconds: 5), () {
       if (mounted) updateInitial();
     });
@@ -59,6 +71,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       // Checking if user disabled auto updates. And allow manual update.
       if (updateStatus.contains(CommonsData.autoUpdateDisabled) && !force) {
+        if (mounted) setState(() => status = CommonsData.autoUpdateOffStr);
         return;
       }
 
@@ -93,7 +106,9 @@ class _UpdateColumnState extends State<UpdateColumn> {
           await CommonsData.getResponse(CommonsData.remoteUrl);
 
       if (getBaseData?.data == null) {
+        widget.updateListen.inProgress = false;
         if (mounted) setState(() => status = CommonsData.errorToken);
+        retryMethod(CommonsData.errorToken);
         return;
       }
 

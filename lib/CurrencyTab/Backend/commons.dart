@@ -18,6 +18,9 @@ class CommonsData {
   static const progressToken = 'Downloading..';
   static const checkingStr = 'Checking...';
   static const upToDate = 'Up to date';
+  static const waitingStr = 'Waiting..';
+  static const autoUpdateOffStr = 'Auto-update off';
+  static const recentCheckWindow = Duration(hours: 3);
   static const autoUpdatePref = 'auto_update_status';
   static const autoUpdateEnabled = 'auto_update_yes';
   static const autoUpdateDisabled = 'auto_update_no';
