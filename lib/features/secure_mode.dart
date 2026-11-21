@@ -34,7 +34,7 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
           'Secure Mode',
           style: FixedValues.semiBoldStyle,
         ),
-        shape: FixedValues.roundShapeLarge,
+        shape: FixedValues.roundDialogShape(context),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

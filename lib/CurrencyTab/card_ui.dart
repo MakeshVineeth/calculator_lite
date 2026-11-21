@@ -218,14 +218,23 @@ class _CardUIState extends State<CardUI> {
   }
 
   void displayCurrencyChooser(String method) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     await CurrencyChooser.show(
       context: context,
       index: widget.index,
       method: method,
     );
 
-    if (mounted) setState(() => updateExchange());
+    if (!mounted) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
+    });
 
+    setState(() => updateExchange());
     handleFromText(controllerFrom.text, CommonsData.fromBox);
   }
 

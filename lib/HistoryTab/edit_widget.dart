@@ -43,7 +43,7 @@ class _EditWidgetState extends State<EditWidget> {
     return FadeScale(
       child: AlertDialog(
         backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-        shape: FixedValues.roundShapeLarge,
+        shape: FixedValues.roundDialogShape(context),
         title: Text('Change Title', style: FixedValues.appTitleStyle(context)),
         content: Column(
           mainAxisSize: MainAxisSize.min,

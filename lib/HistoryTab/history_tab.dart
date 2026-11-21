@@ -28,70 +28,75 @@ class _HistoryTabState extends State<HistoryTab> {
   Widget build(BuildContext context) {
     final bool isLightTheme = Theme.of(context).brightness == Brightness.light;
 
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: AnimatedSearchBar(
-                  cursorColor: Theme.of(context).textTheme.labelLarge?.color,
-                  searchStyle: TextStyle(
-                    color: Theme.of(context).textTheme.labelLarge?.color,
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 700),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: AnimatedSearchBar(
+                      cursorColor: Theme.of(context).textTheme.labelLarge?.color,
+                      searchStyle: TextStyle(
+                        color: Theme.of(context).textTheme.labelLarge?.color,
+                      ),
+                      searchDecoration: InputDecoration(
+                        labelText: 'Search',
+                        alignLabelWithHint: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 8,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: FixedValues.large,
+                          borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                            width: widthSearchBorder,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: FixedValues.large,
+                          borderSide: BorderSide(
+                            color:
+                                isLightTheme
+                                    ? Colors.grey[600]!
+                                    : Colors.grey[350]!,
+                            width: widthSearchBorder,
+                          ),
+                        ),
+                      ),
+                      onChanged:
+                          (value) => setState(
+                            () => searchString = value.trim().toLowerCase(),
+                          ),
+                    ),
                   ),
-                  searchDecoration: InputDecoration(
-                    labelText: 'Search',
-                    alignLabelWithHint: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 8,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: FixedValues.large,
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: widthSearchBorder,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: FixedValues.large,
-                      borderSide: BorderSide(
-                        color:
-                            isLightTheme
-                                ? Colors.grey[600]!
-                                : Colors.grey[350]!,
-                        width: widthSearchBorder,
-                      ),
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.more_vert_rounded),
+                    onPressed: () => menuShow(),
                   ),
-                  onChanged:
-                      (value) => setState(
-                        () => searchString = value.trim().toLowerCase(),
-                      ),
-                ),
+                ],
               ),
-              IconButton(
-                icon: const Icon(Icons.more_vert_rounded),
-                onPressed: () => menuShow(),
-              ),
-            ],
-          ),
+            ),
+            FutureBuilder<Box<HistoryItem>?>(
+              future: getHistoryBox(),
+              builder: (context, AsyncSnapshot<Box<HistoryItem>?> data) {
+                if (data.connectionState == ConnectionState.done &&
+                    data.data != null) {
+                  return listWidget(data.data!);
+                } else {
+                  return const Expanded(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+              },
+            ),
+          ],
         ),
-        FutureBuilder<Box<HistoryItem>?>(
-          future: getHistoryBox(),
-          builder: (context, AsyncSnapshot<Box<HistoryItem>?> data) {
-            if (data.connectionState == ConnectionState.done &&
-                data.data != null) {
-              return listWidget(data.data!);
-            } else {
-              return const Expanded(
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-          },
-        ),
-      ],
+      ),
     );
   }
 

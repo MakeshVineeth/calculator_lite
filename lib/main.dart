@@ -29,9 +29,11 @@ import 'dart:io' show Platform;
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
 import 'HistoryTab/history_item.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:calculator_lite/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await Hive.initFlutter('hiveUserData');
   Hive.registerAdapter(CurrencyListItemAdapter());
   Hive.registerAdapter(HistoryItemAdapter());
@@ -83,11 +85,12 @@ Widget materialApp(final ThemeMode setTheme, BuildContext context) =>
     MaterialApp(
       title: FixedValues.appName,
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en')],
+      supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       themeMode: setTheme,
       restorationScopeId: 'root',
@@ -139,10 +142,15 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
       SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarDividerColor: Colors.transparent,
+          systemNavigationBarContrastEnforced: false,
           statusBarIconBrightness:
               isLightTheme ? Brightness.dark : Brightness.light,
           statusBarBrightness:
               isLightTheme ? Brightness.light : Brightness.dark,
+          systemNavigationBarIconBrightness:
+              isLightTheme ? Brightness.dark : Brightness.light,
         ),
       );
     }
@@ -238,29 +246,35 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
           children: availableWidgets,
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        height: _helperFunctions.isLandScape(context) ? 40 : 58,
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex.value,
-          selectedLabelStyle: FixedValues.semiBoldStyle,
-          unselectedLabelStyle: FixedValues.semiBoldStyle,
-          elevation: 0,
-          iconSize:
-              _helperFunctions.isLandScape(context) ? _iconSizeLandscape : 24.0,
-          selectedFontSize:
-              _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
-          unselectedFontSize:
-              _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
-          type: BottomNavigationBarType.fixed,
-          items: List.generate(
-            tabs.length,
-            (index) =>
-                BottomNavClass(
-                  title: tabs.keys.elementAt(index),
-                  icon: tabs.values.elementAt(index),
-                ).returnNavItems(),
+      bottomNavigationBar: Center(
+        heightFactor: 1,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: SizedBox(
+            height: _helperFunctions.isLandScape(context) ? 40 : 58,
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex.value,
+              selectedLabelStyle: FixedValues.semiBoldStyle,
+              unselectedLabelStyle: FixedValues.semiBoldStyle,
+              elevation: 0,
+              iconSize:
+                  _helperFunctions.isLandScape(context) ? _iconSizeLandscape : 24.0,
+              selectedFontSize:
+                  _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
+              unselectedFontSize:
+                  _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
+              type: BottomNavigationBarType.fixed,
+              items: List.generate(
+                tabs.length,
+                (index) =>
+                    BottomNavClass(
+                      title: tabs.keys.elementAt(index),
+                      icon: tabs.values.elementAt(index),
+                    ).returnNavItems(),
+              ),
+              onTap: _onItemTapped,
+            ),
           ),
-          onTap: _onItemTapped,
         ),
       ),
     );

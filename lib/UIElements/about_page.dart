@@ -14,7 +14,7 @@ class AboutPage extends StatelessWidget {
     return FadeScale(
       child: AlertDialog(
         backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-        shape: FixedValues.roundShapeLarge,
+        shape: FixedValues.roundDialogShape(context),
         buttonPadding: const EdgeInsets.all(10.0),
 
         content: SingleChildScrollView(

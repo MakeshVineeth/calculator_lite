@@ -18,7 +18,7 @@ class PopThemeChooser extends StatelessWidget {
           style: FixedValues.semiBoldStyle,
         ),
         content: const ThemeButtons(),
-        shape: FixedValues.roundShapeLarge,
+        shape: FixedValues.roundDialogShape(context),
       ),
     );
   }

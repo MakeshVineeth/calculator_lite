@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "appTitle": "Calculator Lite",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "tabCalculator": "Calculator",
+  "@tabCalculator": {
+    "description": "Label for calculator tab"
+  },
+  "tabCurrency": "Currency",
+  "@tabCurrency": {
+    "description": "Label for currency converter tab"
+  },
+  "tabHistory": "History",
+  "@tabHistory": {
+    "description": "Label for calculation history tab"
+  }
+}

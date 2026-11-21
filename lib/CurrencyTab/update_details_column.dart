@@ -185,17 +185,21 @@ class _UpdateColumnState extends State<UpdateColumn> {
     final String lastUpdated =
         _helperFunctions.getDate(dateTime ?? DateTime.now());
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        textDetail(
-            title: 'Last Checked: ', value: lastUpdated, context: context),
-        const SizedBox(height: 5),
-        textDetail(title: 'Status: ', value: status, context: context),
-        const SizedBox(height: 5),
-        srcLink(context: context),
-      ],
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          textDetail(
+              title: 'Last Checked: ', value: lastUpdated, context: context),
+          const SizedBox(height: 5),
+          textDetail(title: 'Status: ', value: status, context: context),
+          const SizedBox(height: 5),
+          srcLink(context: context),
+        ],
+      ),
     );
   }
 
@@ -210,31 +214,29 @@ class _UpdateColumnState extends State<UpdateColumn> {
       defaultColor = Colors.green;
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: statusStyle,
-          ),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: Text(
-              value,
-              style: statusStyle.copyWith(
-                color: defaultColor,
-              ),
-              key: UniqueKey(),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          title,
+          style: statusStyle,
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: Text(
+            value,
+            style: statusStyle.copyWith(
+              color: defaultColor,
             ),
+            key: UniqueKey(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget srcLink({required BuildContext context}) => Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             'Source: ',

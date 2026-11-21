@@ -32,6 +32,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
 
   @override
   void dispose() {
+    FocusManager.instance.primaryFocus?.unfocus();
     _searchController.dispose();
     super.dispose();
   }
@@ -69,7 +70,9 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
     return FadeScale(
       child: AlertDialog(
         backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-        shape: FixedValues.roundShapeLarge,
+        elevation: isLight ? 12.0 : 8.0,
+        shadowColor: isLight ? const Color(0x33000000) : const Color(0x66000000),
+        shape: FixedValues.roundDialogShape(context),
         title: Text(
           'Select Currency',
           style: TextStyle(
@@ -140,7 +143,6 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                       )
                     : ListView.builder(
                         itemCount: filteredItems.length,
-                        itemExtent: 56.0,
                         physics: const AlwaysScrollableScrollPhysics(
                           parent: BouncingScrollPhysics(),
                         ),
@@ -150,10 +152,14 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
 
                           return ListTile(
                             shape: FixedValues.roundShapeLarge,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             onTap: () async {
+                              FocusManager.instance.primaryFocus?.unfocus();
                               await onTap(context, currencyListItem);
                               if (!context.mounted) return;
-                              FocusScope.of(context).unfocus();
                               Navigator.of(context, rootNavigator: true).pop();
                             },
                             leading: FlagIcon(flagURL: currencyListItem.flagURL),

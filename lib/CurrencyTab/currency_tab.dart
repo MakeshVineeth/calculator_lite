@@ -85,51 +85,55 @@ class _CurrencyTabState extends State<CurrencyTab> {
           if (snapshot.connectionState == ConnectionState.done &&
               !snapshot.hasError) {
             return FadeThis(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Card(
-                    shape: FixedValues.roundShapeLarge,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 4,
-                            child: UpdateColumn(updateListen: updateListen),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 700),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Card(
+                        shape: FixedValues.roundShapeLarge,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14.0,
+                            vertical: 12.0,
                           ),
-                          Flexible(
-                            child: SmallToolBtn(
-                              function: () => resetForm(context),
-                              icon: Icons.restart_alt_rounded,
-                            ),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: UpdateColumn(updateListen: updateListen),
+                              ),
+                              SmallToolBtn(
+                                function: () => resetForm(context),
+                                icon: Icons.restart_alt_rounded,
+                              ),
+                              const SizedBox(width: 4),
+                              SmallToolBtn(
+                                function: () async {
+                                  final value = await popCurBtns();
+                                  if (!context.mounted) return;
+                                  showSlideUp(
+                                    context: context,
+                                    menuList: value,
+                                  );
+                                },
+                                icon: Icons.expand_more_outlined,
+                              ),
+                            ],
                           ),
-                          Flexible(
-                            child: SmallToolBtn(
-                              function: () async {
-                                final value = await popCurBtns();
-                                if (!context.mounted) return;
-                                showSlideUp(
-                                  context: context,
-                                  menuList: value,
-                                );
-                              },
-                              icon: Icons.expand_more_outlined,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      IconButton(
+                        onPressed: () => addCurrencyCard(),
+                        iconSize: 30,
+                        icon: const Icon(Icons.add_circle_rounded),
+                      ),
+                      const SizedBox(height: 10),
+                      Expanded(child: widgetsData()),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () => addCurrencyCard(),
-                    iconSize: 30,
-                    icon: const Icon(Icons.add_circle_rounded),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(child: widgetsData()),
-                ],
+                ),
               ),
             );
           } else if (snapshot.hasError) {

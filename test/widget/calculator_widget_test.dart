@@ -34,6 +34,32 @@ void main() {
       expect(find.byType(DisplayScreen), findsOneWidget);
     });
 
+    testWidgets('DisplayScreen handles long input and long output with scrollbars',
+        (WidgetTester tester) async {
+      final longCalculation = List.generate(50, (i) => '${i % 10}');
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChangeNotifierProvider<CustomFocusEvents>(
+              create: (_) => CustomFocusEvents(),
+              child: Column(
+                children: [
+                  DisplayScreen(
+                    calculationString: longCalculation,
+                    mainValue: 123456789012345.0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(DisplayScreen), findsOneWidget);
+      expect(find.byType(RawScrollbar), findsNWidgets(2));
+    });
+
     testWidgets('BottomNavClass returns valid NavigationBarItem',
         (WidgetTester tester) async {
       const item = BottomNavClass(

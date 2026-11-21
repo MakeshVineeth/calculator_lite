@@ -56,3 +56,4 @@ android/key.properties
 **/keystore
 android/keystore
 android/app/keystore
+.android/
