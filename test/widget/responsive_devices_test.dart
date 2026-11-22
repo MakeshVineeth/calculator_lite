@@ -7,6 +7,8 @@ import 'package:calculator_lite/calculator_tab.dart';
 import 'package:calculator_lite/CurrencyTab/currency_tab.dart';
 import 'package:calculator_lite/HistoryTab/history_tab.dart';
 import 'package:calculator_lite/UIElements/display_screen.dart';
+import 'package:calculator_lite/fixed_values.dart' as fv;
+import 'package:calculator_lite/main.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -189,6 +191,52 @@ void main() {
       await tester.pump();
 
       expect(find.byType(CurrencyTab), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+        'ScaffoldHome keeps BottomNavigationBar visible above 48dp 3-button system navigation bar',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(412, 915);
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.padding = const FakeViewPadding(top: 24, bottom: 48);
+      tester.view.viewPadding = const FakeViewPadding(top: 24, bottom: 48);
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+        tester.view.resetPadding();
+        tester.view.resetViewPadding();
+      });
+
+      SharedPreferences.setMockInitialValues({
+        fv.FixedValues.firstLaunchPref: false,
+        CommonsData.autoUpdatePref: CommonsData.autoUpdateDisabled,
+        CommonsHistory.historyStatusPref: CommonsHistory.historyEnabled,
+      });
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<PurchaseStatusProvider>(
+              create: (_) => PurchaseStatusProvider(),
+            ),
+          ],
+          child: const MaterialApp(
+            home: ScaffoldHome(),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final bottomNavFinder = find.byType(BottomNavigationBar);
+      expect(bottomNavFinder, findsOneWidget);
+
+      final Rect navRect = tester.getRect(bottomNavFinder);
+      expect(navRect.height, greaterThanOrEqualTo(48.0));
+      expect(navRect.bottom, lessThanOrEqualTo(915.0 - 48.0));
+      expect(find.text('Currency'), findsOneWidget);
+      expect(find.text('Calculator'), findsOneWidget);
+      expect(find.text('History'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });

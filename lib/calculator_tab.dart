@@ -102,7 +102,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
     } else if (value.contains('C')) {
       setState(() {
         calculationString.clear();
-        mainValue = double.nan;
+        mainValue = 0;
         if (isFocused) focus.clearData();
       });
     }
@@ -464,7 +464,9 @@ class _CalculatorTabState extends State<CalculatorTab> {
       } else {
         currentMetric = 'RAD';
       }
-      runCalcParser('');
+      if (calculationString.isNotEmpty) {
+        runCalcParser('');
+      }
     });
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();

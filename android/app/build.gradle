@@ -29,7 +29,7 @@ def keystoreProperties = new Properties()
    }
 
 android {
-    compileSdkVersion 36
+    compileSdkVersion 37
     ndkVersion "29.0.13113456"
 
     sourceSets {
@@ -47,7 +47,7 @@ android {
     defaultConfig {
         applicationId "com.makeshtech.calculator_lite"
         minSdkVersion 24
-        targetSdkVersion 36
+        targetSdkVersion 37
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
