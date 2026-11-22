@@ -2,7 +2,7 @@ name: calculator_lite
 description: 'Calculator Lite: Fast calculations, currency converter, history tracking, and professional productivity.'
 
 publish_to: 'none'
-version: 2.1.2+23
+version: 2.1.3+24
 
 environment:
   sdk: '>=3.5.0 <4.0.0'

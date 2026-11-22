@@ -87,6 +87,15 @@ class _CalcButtonsState extends State<CalcButtons> {
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.zero,
                   elevation: 1.0,
+                ).copyWith(
+                  side: WidgetStateProperty.resolveWith<BorderSide?>(
+                    (states) => states.contains(WidgetState.focused)
+                        ? BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2.5,
+                          )
+                        : null,
+                  ),
                 ),
                 onPressed: widget.displayFunction,
                 child: IgnorePointer(

@@ -45,13 +45,15 @@ class _ProScreenState extends State<ProScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Support Us'), elevation: 0),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Card(
-          elevation: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: checkPlatformWin(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Card(
+            elevation: 5,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: checkPlatformWin(),
+            ),
           ),
         ),
       ),
