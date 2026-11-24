@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.NonNull
 import androidx.core.view.WindowCompat
+import com.google.android.play.core.review.ReviewManagerFactory
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -36,6 +37,20 @@ class MainActivity : FlutterActivity() {
                     Handler(Looper.getMainLooper()).postDelayed({
                         kotlin.system.exitProcess(0)
                     }, 1000)
+                }
+                "requestReview" -> {
+                    val manager = ReviewManagerFactory.create(this)
+                    val request = manager.requestReviewFlow()
+                    request.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val reviewInfo = task.result
+                            manager.launchReviewFlow(this, reviewInfo).addOnCompleteListener {
+                                result.success(true)
+                            }
+                        } else {
+                            result.success(false)
+                        }
+                    }
                 }
                 "createFile" -> {
                     methodResult = result
