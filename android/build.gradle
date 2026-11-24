@@ -17,17 +17,16 @@ subprojects {
         if (project.hasProperty('android')) {
             project.android {
                 if (namespace == null) {
-                    namespace project.group
+                    namespace = project.group
                 }
             }
         }
 
-        // Set SDK and build tools version for Android application or library projects
+        // Set SDK version for Android application or library projects
         if (project.plugins.hasPlugin("com.android.application") ||
             project.plugins.hasPlugin("com.android.library")) {
             project.android {
-                compileSdkVersion 36
-                buildToolsVersion "36.0.0"
+                compileSdk = 37
             }
         }
     }

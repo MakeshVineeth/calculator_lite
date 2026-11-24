@@ -48,7 +48,6 @@ dependencies:
   # Monetization & Reviews
   in_app_purchase: ^3.3.1
   in_app_purchase_android: ^0.5.5
-  in_app_review: ^2.0.10
 
   # Data Export
   excel: ^4.0.6

@@ -1,6 +1,5 @@
 plugins {
     id "com.android.application"
-    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -29,36 +28,36 @@ def keystoreProperties = new Properties()
    }
 
 android {
-    compileSdkVersion 37
-    ndkVersion "29.0.13113456"
+    compileSdk = 37
+    ndkVersion = flutter.ndkVersion
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
 
-    lintOptions {
-        disable 'InvalidPackage'
+    lint {
+        disable += 'InvalidPackage'
     }
 
     defaultConfig {
-        applicationId "com.makeshtech.calculator_lite"
-        minSdkVersion 24
-        targetSdkVersion 37
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        applicationId = "com.makeshtech.calculator_lite"
+        minSdk = 24
+        targetSdk = 37
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
     }
 
     signingConfigs {
        release {
            if (keystorePropertiesFile.exists() && keystoreProperties['storeFile'] != null) {
-               keyAlias keystoreProperties['keyAlias']
-               keyPassword keystoreProperties['keyPassword']
-               storeFile file(keystoreProperties['storeFile'])
-               storePassword keystoreProperties['storePassword']
+               keyAlias = keystoreProperties['keyAlias']
+               keyPassword = keystoreProperties['keyPassword']
+               storeFile = file(keystoreProperties['storeFile'])
+               storePassword = keystoreProperties['storePassword']
            }
        }
    }
@@ -66,16 +65,20 @@ android {
     buildTypes {
         release {
             if (keystorePropertiesFile.exists() && keystoreProperties['storeFile'] != null) {
-                signingConfig signingConfigs.release
+                signingConfig = signingConfigs.release
             } else {
-                signingConfig signingConfigs.debug
+                signingConfig = signingConfigs.debug
             }
         }
     }
 
-    namespace 'com.makeshtech.calculator_lite'
+    namespace = 'com.makeshtech.calculator_lite'
 }
 
 flutter {
-    source '../..'
+    source = '../..'
+}
+
+dependencies {
+    implementation 'com.google.android.play:review-ktx:2.0.2'
 }

@@ -2,7 +2,7 @@
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:in_app_review/in_app_review.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
@@ -35,10 +35,7 @@ Future<bool> isFirstLaunch() async {
 }
 
 void showPlayStorePage() {
-  try {
-    final InAppReview inAppReview = InAppReview.instance;
-    inAppReview.openStoreListing();
-  } catch (_) {}
+  launchThisUrl(url: FixedValues.playStoreLink);
 }
 
 Future<void> askForReview({bool action = false}) async {
@@ -71,16 +68,17 @@ Future<void> askForReview({bool action = false}) async {
     if ((action && reviewAskedCount == 0) ||
         (difference.inMinutes >= 30 && reviewAskedCount == 0) ||
         difference.inHours >= 3) {
-      final InAppReview inAppReview = InAppReview.instance;
-      final bool isAvailable = await inAppReview.isAvailable();
-
-      if (isAvailable) {
-        Future.delayed(const Duration(seconds: 2), () async {
+      Future.delayed(const Duration(seconds: 2), () async {
+        try {
           await prefs.setInt(reviewCountPrefs, ++reviewAskedCount);
           await prefs.setString(dateStrPrefs, now.toString());
-          await inAppReview.requestReview();
-        });
-      }
+          await const MethodChannel(
+            'kotlin.flutter.dev',
+          ).invokeMethod<bool>('requestReview');
+        } catch (e) {
+          debugPrint(e.toString());
+        }
+      });
     }
   } catch (e) {
     debugPrint(e.toString());
