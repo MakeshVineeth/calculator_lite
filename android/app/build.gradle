@@ -22,10 +22,11 @@ if (flutterVersionName == null) {
 }
 
 def keystoreProperties = new Properties()
-   def keystorePropertiesFile = rootProject.file('key.properties')
-   if (keystorePropertiesFile.exists()) {
-       keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-   }
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+def hasReleaseKeystore = keystorePropertiesFile.exists() && keystoreProperties['storeFile'] != null
 
 android {
     compileSdk = 37
@@ -52,27 +53,32 @@ android {
     }
 
     signingConfigs {
-       release {
-           if (keystorePropertiesFile.exists() && keystoreProperties['storeFile'] != null) {
-               keyAlias = keystoreProperties['keyAlias']
-               keyPassword = keystoreProperties['keyPassword']
-               storeFile = file(keystoreProperties['storeFile'])
-               storePassword = keystoreProperties['storePassword']
-           }
-       }
-   }
-
-    buildTypes {
         release {
-            if (keystorePropertiesFile.exists() && keystoreProperties['storeFile'] != null) {
-                signingConfig = signingConfigs.release
-            } else {
-                signingConfig = signingConfigs.debug
+            if (hasReleaseKeystore) {
+                keyAlias = keystoreProperties['keyAlias']
+                keyPassword = keystoreProperties['keyPassword']
+                storeFile = file(keystoreProperties['storeFile'])
+                storePassword = keystoreProperties['storePassword']
             }
         }
     }
 
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.release
+        }
+    }
+
     namespace = 'com.makeshtech.calculator_lite'
+}
+
+gradle.taskGraph.whenReady { graph ->
+    def releaseRequested = graph.allTasks.any { it.name ==~ /(assemble|bundle|package)Release/ }
+    if (releaseRequested && !hasReleaseKeystore) {
+        throw new GradleException(
+            'Release builds must be signed. Create android/key.properties with storeFile, storePassword, keyAlias and keyPassword.'
+        )
+    }
 }
 
 flutter {

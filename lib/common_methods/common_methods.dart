@@ -70,11 +70,13 @@ Future<void> askForReview({bool action = false}) async {
         difference.inHours >= 3) {
       Future.delayed(const Duration(seconds: 2), () async {
         try {
-          await prefs.setInt(reviewCountPrefs, ++reviewAskedCount);
-          await prefs.setString(dateStrPrefs, now.toString());
-          await const MethodChannel(
+          final bool? flowCompleted = await const MethodChannel(
             'kotlin.flutter.dev',
           ).invokeMethod<bool>('requestReview');
+          if (flowCompleted ?? false) {
+            await prefs.setInt(reviewCountPrefs, ++reviewAskedCount);
+            await prefs.setString(dateStrPrefs, now.toString());
+          }
         } catch (e) {
           debugPrint(e.toString());
         }
