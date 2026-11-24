@@ -1,70 +1,48 @@
-﻿import 'package:flutter/material.dart';
-import 'package:calculator_lite/fixed_values.dart';
-import 'dart:ui';
+﻿import 'dart:ui';
 
-class BlurredWindow extends StatefulWidget {
+import 'package:calculator_lite/fixed_values.dart';
+import 'package:flutter/material.dart';
+
+class BlurredWindow extends StatelessWidget {
   final Widget child;
 
   const BlurredWindow({required this.child, super.key});
 
   @override
-  State<BlurredWindow> createState() => _BlurredWindowState();
-}
-
-class _BlurredWindowState extends State<BlurredWindow> {
-  double _currentOpacity = 0;
-  final Duration duration = const Duration(milliseconds: 1000);
-  late Widget _currentChild;
-
-  @override
-  void initState() {
-    super.initState();
-
-    setState(() {
-      _currentOpacity = 1;
-      _currentChild = BackdropFilter(
-        filter: ImageFilter.blur(
-            sigmaX: FixedValues.sigmaLevel, sigmaY: FixedValues.sigmaLevel),
-        child: widget.child,
-      );
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => AnimatedOpacity(
-        key: UniqueKey(),
-        opacity: _currentOpacity,
-        duration: duration,
-        child: GestureDetector(
-          onTap: () => Navigator.of(context, rootNavigator: true).pop(),
-          child: AnimatedContainer(
-            key: UniqueKey(),
-            duration: duration,
-            child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                child: SizedBox(
-                    height: constraints.maxHeight,
-                    width: constraints.maxWidth,
-                    child: Center(child: _currentChild))),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: FixedValues.sigmaLevel,
+                sigmaY: FixedValues.sigmaLevel,
+              ),
+              child: const SizedBox.expand(),
+            ),
           ),
         ),
-      ),
+        SafeArea(
+          child: Center(child: child),
+        ),
+      ],
     );
   }
 }
 
-Future<void> showBlurDialog(
-    {required BuildContext context, required Widget child}) {
+Future<void> showBlurDialog({
+  required BuildContext context,
+  required Widget child,
+}) {
   final bool isLight = Theme.of(context).brightness == Brightness.light;
-  return showDialog(
+  return showDialog<void>(
     context: context,
+    useSafeArea: false,
     barrierColor: isLight ? const Color(0x33000000) : const Color(0x55000000),
     barrierDismissible: true,
-    builder: (context) => BlurredWindow(
-      child: child,
-    ),
+    builder: (context) => BlurredWindow(child: child),
   );
 }

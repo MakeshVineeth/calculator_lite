@@ -48,6 +48,7 @@ class _CardUIState extends State<CardUI> {
 
   String placeholder = '0.00';
   String currentRateStr = '';
+  bool _isChooserOpen = false;
 
   bool isFromMethod(String method) => method == CommonsData.fromBox;
   final HelperFunctions helperFunctions = HelperFunctions();
@@ -218,13 +219,19 @@ class _CardUIState extends State<CardUI> {
   }
 
   void displayCurrencyChooser(String method) async {
+    if (_isChooserOpen) return;
+    _isChooserOpen = true;
     FocusManager.instance.primaryFocus?.unfocus();
 
-    await CurrencyChooser.show(
-      context: context,
-      index: widget.index,
-      method: method,
-    );
+    try {
+      await CurrencyChooser.show(
+        context: context,
+        index: widget.index,
+        method: method,
+      );
+    } finally {
+      _isChooserOpen = false;
+    }
 
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();
