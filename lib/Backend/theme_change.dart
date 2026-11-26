@@ -9,8 +9,7 @@ class ThemeChange extends InheritedWidget {
       : super(child: newChild);
 
   @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) =>
-      newChild != oldWidget.child;
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 
   static ThemeChange? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<ThemeChange>();

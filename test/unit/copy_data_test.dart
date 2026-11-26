@@ -48,6 +48,10 @@ void main() {
     expect(Hive.isBoxOpen(CommonsData.fromBox), isTrue);
     expect(Hive.isBoxOpen(CommonsData.toBox), isTrue);
     expect(Hive.isBoxOpen(CommonsData.currencyListBox), isTrue);
+    expect(Hive.isBoxOpen(CommonsData.updatedDateBox), isTrue);
+    expect(await Hive.boxExists('jpy'), isTrue);
+    expect(Hive.isBoxOpen('jpy'), isFalse);
+    expect(Hive.isBoxOpen('gbp'), isFalse);
 
     final currencyBox = Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
     expect(currencyBox.length, greaterThanOrEqualTo(180));

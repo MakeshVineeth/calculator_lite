@@ -15,39 +15,43 @@ class PaymentsWrapper extends StatefulWidget {
 }
 
 class _PaymentsWrapperState extends State<PaymentsWrapper> {
-  // The In App Purchase plugin
   final InAppPurchase _iap = InAppPurchase.instance;
-
-  // Updates to purchases
-  late StreamSubscription<List<PurchaseDetails>> _subscription;
-
-  // Provider
+  StreamSubscription<List<PurchaseDetails>>? _subscription;
   final PurchaseStatusProvider _purchaseStatus = PurchaseStatusProvider();
 
   @override
   void initState() {
-    _initialize();
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _initialize();
+    });
   }
 
   @override
   void dispose() {
-    _subscription.cancel();
+    _subscription?.cancel();
+    _purchaseStatus.dispose();
     super.dispose();
   }
 
-  // Initialize data
-  void _initialize() async {
-    final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
+  Future<void> _initialize() async {
+    try {
+      final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
 
-    _subscription = purchaseUpdated.listen(
-      (purchaseDetailsList) => _listenToPurchaseUpdated(purchaseDetailsList),
-      onDone: () => _subscription.cancel(),
-      onError: (error) => _purchaseStatus.changeStatusCheck(StatusCheck.error),
-    );
+      _subscription = purchaseUpdated.listen(
+        (purchaseDetailsList) => _listenToPurchaseUpdated(purchaseDetailsList),
+        onDone: () => _subscription?.cancel(),
+        onError: (_) {
+          if (mounted) _purchaseStatus.changeStatusCheck(StatusCheck.error);
+        },
+      );
 
-    final bool available = await _iap.isAvailable();
-    if (available) await _iap.restorePurchases(applicationUserName: null);
+      final bool available = await _iap.isAvailable();
+      if (!mounted) return;
+      if (available) {
+        await _iap.restorePurchases(applicationUserName: null);
+      }
+    } catch (_) {}
   }
 
   @override
@@ -59,8 +63,10 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
   }
 
   Future<void> _listenToPurchaseUpdated(
-      List<PurchaseDetails> purchaseDetailsList) async {
+    List<PurchaseDetails> purchaseDetailsList,
+  ) async {
     for (final purchase in purchaseDetailsList) {
+      if (!mounted) return;
       _verifyPurchase(purchase);
 
       if (purchase.pendingCompletePurchase) {
@@ -71,14 +77,9 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
 
   void _verifyPurchase(PurchaseDetails purchase) {
     try {
-      // Check if purchased the right product.
       if (CommonPurchaseStrings.productIds.contains(purchase.productID)) {
-        // Now check the product status.
-
         switch (purchase.status) {
           case PurchaseStatus.restored:
-            _deliverPurchase(purchase);
-            break;
           case PurchaseStatus.purchased:
             _deliverPurchase(purchase);
             break;
@@ -92,17 +93,14 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
             _purchaseStatus.changeStatusCheck(StatusCheck.isNull);
             break;
         }
-      }
-
-      // If a null or any wrong productID is received.
-      else {
+      } else {
         _purchaseStatus.changeStatusCheck(StatusCheck.error);
       }
     } catch (_) {}
   }
 
   void _deliverPurchase(PurchaseDetails purchase) {
-    // If verified, deliver it. A Separate Provider to unlock the features.
+    if (!mounted) return;
     _purchaseStatus.updateStatus(true);
     _iap.completePurchase(purchase);
   }

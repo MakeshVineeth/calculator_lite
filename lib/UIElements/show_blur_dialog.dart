@@ -26,7 +26,9 @@ class BlurredWindow extends StatelessWidget {
           ),
         ),
         SafeArea(
-          child: Center(child: child),
+          child: Center(
+            child: RepaintBoundary(child: child),
+          ),
         ),
       ],
     );

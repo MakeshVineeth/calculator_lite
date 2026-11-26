@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:calculator_lite/UIElements/display_screen.dart';
 import 'package:calculator_lite/fixed_values.dart';
-import 'package:flutter/foundation.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 class SmartParseResult {
@@ -19,7 +18,7 @@ class CalcParser {
 
   CalcParser({required this.calculationString, required this.currentMetric});
 
-  final HelperFunctions helperFunctions = HelperFunctions();
+  final HelperFunctions helperFunctions = const HelperFunctions();
 
   // List of constants for conditional checks.
   final List<String> trigFunctions = [
@@ -336,7 +335,8 @@ class CalcParser {
     if (!count) calculationString.add('.');
   }
 
-  Future<double> getValue() => compute(evalFunction, calculationString);
+  Future<double> getValue() =>
+      Future<double>.value(evalFunction(calculationString));
 
   double evalFunction(List<String> calcStr) {
     try {

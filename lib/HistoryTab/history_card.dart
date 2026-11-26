@@ -1,26 +1,30 @@
-﻿import 'package:calculator_lite/HistoryTab/edit_widget.dart';
+﻿import 'package:calculator_lite/Backend/helper_functions.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
+import 'package:calculator_lite/HistoryTab/commons_history.dart';
+import 'package:calculator_lite/HistoryTab/edit_widget.dart';
+import 'package:calculator_lite/HistoryTab/history_item.dart';
+import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
+import 'package:calculator_lite/UIElements/slide_panel_item.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_ce/hive.dart';
-import 'commons_history.dart';
-import 'history_item.dart';
-import 'package:calculator_lite/Backend/helper_functions.dart';
-import 'package:calculator_lite/UIElements/slide_panel_item.dart';
-import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
-import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
-import 'package:flutter/services.dart';
 
 class HistoryCard extends StatelessWidget {
   final int index;
   final HistoryItem historyItem;
 
-  HistoryCard({super.key, required this.index, required this.historyItem});
+  const HistoryCard({
+    super.key,
+    required this.index,
+    required this.historyItem,
+  });
 
-  final Box<HistoryItem> historyBox =
-      Hive.box<HistoryItem>(CommonsHistory.historyBox);
-  final HelperFunctions _helperFunctions = HelperFunctions();
-  final snackBar = const SnackBar(content: Text('Copied to Clipboard!'));
+  static const HelperFunctions _helperFunctions = HelperFunctions();
+  static const SnackBar _snackBar = SnackBar(
+    content: Text('Copied to Clipboard!'),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +119,13 @@ class HistoryCard extends StatelessWidget {
     );
   }
 
-  void delete() =>
-      Future.delayed(CommonsData.dur1, () => historyBox.deleteAt(index));
+  void delete() => Future.delayed(CommonsData.dur1, () {
+    if (!Hive.isBoxOpen(CommonsHistory.historyBox)) return;
+    final box = Hive.box<HistoryItem>(CommonsHistory.historyBox);
+    if (index >= 0 && index < box.length) {
+      box.deleteAt(index);
+    }
+  });
 
   Widget itemRow({
     required String heading,
@@ -164,9 +173,7 @@ class HistoryCard extends StatelessWidget {
                   onPressed: () async {
                     await Clipboard.setData(ClipboardData(text: text));
                     if (!context.mounted) return;
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(snackBar);
+                    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
                   },
                   icon: Icon(
                     Icons.copy_rounded,

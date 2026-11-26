@@ -1,13 +1,14 @@
 ﻿import 'dart:async';
+
+import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/get_currency_data.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:calculator_lite/Backend/helper_functions.dart';
-import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UpdateColumn extends StatefulWidget {
@@ -22,13 +23,18 @@ class UpdateColumn extends StatefulWidget {
 class _UpdateColumnState extends State<UpdateColumn> {
   late String status;
   final CurrencyData currencyData = CurrencyData();
-  final HelperFunctions _helperFunctions = HelperFunctions();
+  final HelperFunctions _helperFunctions = const HelperFunctions();
   static const int defaultTries = 1;
   int triesLeft = defaultTries;
 
   Timer? _autoUpdateTimer;
+  Timer? _retryTimer;
+  Timer? _retryExecTimer;
 
   String _initialStatus() {
+    if (!Hive.isBoxOpen(CommonsData.updatedDateBox)) {
+      return CommonsData.waitingStr;
+    }
     final String? lastChecked = Hive.box<dynamic>(CommonsData.updatedDateBox)
         .get(CommonsData.lastDateChecked) as String?;
     final DateTime? lastCheckedDate =
@@ -46,9 +52,16 @@ class _UpdateColumnState extends State<UpdateColumn> {
     _autoUpdateTimer = Timer(const Duration(seconds: 5), () {
       if (mounted) updateInitial();
     });
-
-    // Check if Update now is clicked from other screen or widget.
     widget.updateListen.addListener(_handleUpdateListener);
+  }
+
+  @override
+  void didUpdateWidget(covariant UpdateColumn oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.updateListen != widget.updateListen) {
+      oldWidget.updateListen.removeListener(_handleUpdateListener);
+      widget.updateListen.addListener(_handleUpdateListener);
+    }
   }
 
   void _handleUpdateListener() {
@@ -58,20 +71,23 @@ class _UpdateColumnState extends State<UpdateColumn> {
   @override
   void dispose() {
     _autoUpdateTimer?.cancel();
+    _retryTimer?.cancel();
+    _retryExecTimer?.cancel();
     widget.updateListen.removeListener(_handleUpdateListener);
     super.dispose();
   }
 
   Future<void> updateInitial({bool force = false}) async {
+    if (!mounted) return;
     try {
       final SharedPreferences preferences =
           await SharedPreferences.getInstance();
+      if (!mounted) return;
       final updateStatus = preferences.getString(CommonsData.autoUpdatePref) ??
           CommonsData.autoUpdateEnabled;
 
-      // Checking if user disabled auto updates. And allow manual update.
       if (updateStatus.contains(CommonsData.autoUpdateDisabled) && !force) {
-        if (mounted) setState(() => status = CommonsData.autoUpdateOffStr);
+        setState(() => status = CommonsData.autoUpdateOffStr);
         return;
       }
 
@@ -80,11 +96,18 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       final DateTime now = DateTime.now();
       final bool checkDateBox = await Hive.boxExists(CommonsData.updatedDateBox);
+      if (!mounted) {
+        widget.updateListen.inProgress = false;
+        return;
+      }
 
-      // if force is enabled, skip date checking.
       if (checkDateBox && !force) {
         final Box<dynamic> dateBox =
             await Hive.openBox<dynamic>(CommonsData.updatedDateBox);
+        if (!mounted) {
+          widget.updateListen.inProgress = false;
+          return;
+        }
 
         final String? lastChecked =
             dateBox.get(CommonsData.lastDateChecked) as String?;
@@ -104,10 +127,14 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       final Response<dynamic>? getBaseData =
           await CommonsData.getResponse(CommonsData.remoteUrl);
+      if (!mounted) {
+        widget.updateListen.inProgress = false;
+        return;
+      }
 
       if (getBaseData?.data == null) {
         widget.updateListen.inProgress = false;
-        if (mounted) setState(() => status = CommonsData.errorToken);
+        setState(() => status = CommonsData.errorToken);
         retryMethod(CommonsData.errorToken);
         return;
       }
@@ -143,6 +170,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
 
       final String result = await currencyData.getRemoteData();
       debugPrint('Data retrieve result: $result');
+      if (!mounted) {
+        widget.updateListen.inProgress = false;
+        return;
+      }
 
       if (result == CommonsData.successToken) {
         final Box<dynamic> dateBox =
@@ -161,41 +192,44 @@ class _UpdateColumnState extends State<UpdateColumn> {
       debugPrint('Error Updating: $e');
       widget.updateListen.inProgress = false;
 
-      if (mounted) setState(() => status = CommonsData.errorToken);
-      retryMethod(CommonsData.errorToken);
+      if (mounted) {
+        setState(() => status = CommonsData.errorToken);
+        retryMethod(CommonsData.errorToken);
+      }
     }
   }
 
-  // Retries in case of network issues.
   void retryMethod(String result) {
-    // Keep track of no of tries
+    if (!mounted) return;
     if (triesLeft == 0) {
       widget.updateListen.inProgress = false;
       return;
     }
 
-    // Wait for 4 seconds and retry again.
     if (result == CommonsData.errorToken) {
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() {
-            status = CommonsData.retryString;
-            if (triesLeft > 0) triesLeft -= 1;
-          });
-        }
+      _retryTimer?.cancel();
+      _retryTimer = Timer(const Duration(seconds: 3), () {
+        if (!mounted) return;
+        setState(() {
+          status = CommonsData.retryString;
+          if (triesLeft > 0) triesLeft -= 1;
+        });
 
-        Future.delayed(
-            const Duration(seconds: 1), () => updateInitial(force: true));
+        _retryExecTimer?.cancel();
+        _retryExecTimer = Timer(const Duration(seconds: 1), () {
+          if (mounted) updateInitial(force: true);
+        });
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final String lastCheckedStr =
-        (Hive.box<dynamic>(CommonsData.updatedDateBox)
+    final String lastCheckedStr = Hive.isBoxOpen(CommonsData.updatedDateBox)
+        ? ((Hive.box<dynamic>(CommonsData.updatedDateBox)
                 .get(CommonsData.lastDateChecked) as String?) ??
-            DateTime.now().toString();
+            DateTime.now().toString())
+        : DateTime.now().toString();
     final DateTime? dateTime = DateTime.tryParse(lastCheckedStr);
     final String lastUpdated =
         _helperFunctions.getDate(dateTime ?? DateTime.now());
@@ -208,7 +242,10 @@ class _UpdateColumnState extends State<UpdateColumn> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           textDetail(
-              title: 'Last Checked: ', value: lastUpdated, context: context),
+            title: 'Last Checked: ',
+            value: lastUpdated,
+            context: context,
+          ),
           const SizedBox(height: 5),
           textDetail(title: 'Status: ', value: status, context: context),
           const SizedBox(height: 5),
@@ -218,11 +255,12 @@ class _UpdateColumnState extends State<UpdateColumn> {
     );
   }
 
-  Widget textDetail(
-      {required String title,
-      required String value,
-      required BuildContext context}) {
-    Color? defaultColor = Theme.of(context).textTheme.labelLarge!.color;
+  Widget textDetail({
+    required String title,
+    required String value,
+    required BuildContext context,
+  }) {
+    Color? defaultColor = Theme.of(context).textTheme.labelLarge?.color;
 
     if (value == CommonsData.errorToken) defaultColor = Colors.redAccent;
     if (value == CommonsData.successToken || value == CommonsData.upToDate) {
@@ -243,7 +281,7 @@ class _UpdateColumnState extends State<UpdateColumn> {
             style: statusStyle.copyWith(
               color: defaultColor,
             ),
-            key: UniqueKey(),
+            key: ValueKey<String>(value),
           ),
         ),
       ],
@@ -251,27 +289,27 @@ class _UpdateColumnState extends State<UpdateColumn> {
   }
 
   Widget srcLink({required BuildContext context}) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Source: ',
-            style: statusStyle,
-          ),
-          InkWell(
-            onTap: () => launchThisUrl(url: CommonsData.remoteSource),
-            borderRadius: FixedValues.large,
-            child: Padding(
-              padding: const EdgeInsets.all(3.0),
-              child: Text(
-                CommonsData.remoteName,
-                style: statusStyle.copyWith(
-                  decoration: TextDecoration.underline,
-                ),
-              ),
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        'Source: ',
+        style: statusStyle,
+      ),
+      InkWell(
+        onTap: () => launchThisUrl(url: CommonsData.remoteSource),
+        borderRadius: FixedValues.large,
+        child: Padding(
+          padding: const EdgeInsets.all(3.0),
+          child: Text(
+            CommonsData.remoteName,
+            style: statusStyle.copyWith(
+              decoration: TextDecoration.underline,
             ),
           ),
-        ],
-      );
+        ),
+      ),
+    ],
+  );
 
   TextStyle statusStyle = const TextStyle(
     fontWeight: FontWeight.w600,

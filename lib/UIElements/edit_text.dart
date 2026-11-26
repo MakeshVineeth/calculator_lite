@@ -1,13 +1,14 @@
-﻿import 'package:calculator_lite/Backend/custom_focus_events.dart';
+﻿import 'package:auto_size_text_field/auto_size_text_field.dart';
+import 'package:calculator_lite/Backend/custom_focus_events.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:auto_size_text_field/auto_size_text_field.dart';
 
 class TextFieldCalc extends StatefulWidget {
   const TextFieldCalc({required this.calculationString, super.key});
 
   final List<String> calculationString;
+
   @override
   State<TextFieldCalc> createState() => _TextFieldCalcState();
 }
@@ -20,11 +21,68 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   String _previousText = '';
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncExpression();
+  }
+
+  @override
+  void didUpdateWidget(covariant TextFieldCalc oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncExpression();
+  }
+
+  @override
   void dispose() {
     myController.dispose();
     focus.dispose();
     scrollController.dispose();
     super.dispose();
+  }
+
+  void _syncExpression() {
+    if (!mounted) return;
+    final CustomFocusEvents customFocusEvents =
+        Provider.of<CustomFocusEvents>(context);
+    final String text = widget.calculationString.join();
+
+    if (customFocusEvents.isFocused) {
+      final targetValue = TextEditingValue(
+        text: text,
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: customFocusEvents.position),
+        ),
+      );
+      if (myController.value != targetValue) {
+        myController.value = targetValue;
+      }
+      _previousText = text;
+      return;
+    }
+
+    if (focus.hasFocus) {
+      focus.unfocus();
+    }
+    final targetValue = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+    if (myController.value != targetValue) {
+      myController.value = targetValue;
+    }
+
+    if (_previousText != text) {
+      _previousText = text;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && scrollController.hasClients) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
   }
 
   void _onScrollNotification(ScrollNotification notification) {
@@ -39,10 +97,9 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
 
   @override
   Widget build(BuildContext context) {
-    onStart(context);
     final Size screenSize = MediaQuery.sizeOf(context);
     final bool isCompact = screenSize.width < 360 || screenSize.height < 450;
-    final bool isLand = HelperFunctions().isLandScape(context);
+    final bool isLand = const HelperFunctions().isLandScape(context);
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
@@ -80,7 +137,8 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
               showCursor: true,
               onTap: () => onTapFunction(context),
               scrollPhysics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics()),
+                parent: BouncingScrollPhysics(),
+              ),
             ),
           ),
           if (_showJumpToEnd)
@@ -107,7 +165,9 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -141,58 +201,25 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
     );
   }
 
-  void onStart(BuildContext context) {
-    if (mounted) {
-      final CustomFocusEvents customFocusEvents = Provider.of(context);
-      final String text = widget.calculationString.join();
-
-      if (customFocusEvents.isFocused) {
-        myController.value = TextEditingValue(
-            text: text,
-            selection: TextSelection.fromPosition(
-              TextPosition(offset: customFocusEvents.position),
-            ));
-      } else {
-        focus.unfocus();
-        myController.clear();
-        myController.value = TextEditingValue(
-          text: text,
-          selection: TextSelection.collapsed(offset: text.length),
-        );
-
-        if (_previousText != text) {
-          _previousText = text;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (scrollController.hasClients) {
-              scrollController.animateTo(
-                scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 150),
-                curve: Curves.easeOut,
-              );
-            }
-          });
-        }
-      }
-    }
-  }
-
   void onTapFunction(BuildContext context) {
     if (mounted) {
       final TextSelection i = myController.selection;
-      final int? count = Provider.of<CustomFocusEvents>(context, listen: false)
-              .getPosition(
-                  start: i.start,
-                  calculationString: widget.calculationString);
+      final customFocus = Provider.of<CustomFocusEvents>(context, listen: false);
+      final int? count = customFocus.getPosition(
+        start: i.start,
+        calculationString: widget.calculationString,
+      );
+      if (count == null) return;
 
       final TextSelection textSelection =
-          TextSelection(baseOffset: count!, extentOffset: count);
+          TextSelection(baseOffset: count, extentOffset: count);
       myController.selection = textSelection;
-      Provider.of<CustomFocusEvents>(context, listen: false).updateFocus();
+      customFocus.updateFocus();
     }
   }
 
   TextStyle completeStringStyle() => const TextStyle(
-        fontSize: 60,
-        letterSpacing: 1,
-      );
+    fontSize: 60,
+    letterSpacing: 1,
+  );
 }

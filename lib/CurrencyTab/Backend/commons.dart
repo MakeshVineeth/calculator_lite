@@ -26,17 +26,17 @@ class CommonsData {
   static const autoUpdateDisabled = 'auto_update_no';
   static const Duration dur1 = Duration(milliseconds: 500);
 
-  static Future<Response<dynamic>?> getResponse(String url) async {
-    final options = BaseOptions(
+  static final Dio _dio = Dio(
+    BaseOptions(
       baseUrl: remoteUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
-    );
+    ),
+  );
 
-    final Dio dio = Dio(options);
-
+  static Future<Response<dynamic>?> getResponse(String url) async {
     try {
-      return await dio.get<dynamic>(url);
+      return await _dio.get<dynamic>(url);
     } on DioException catch (e) {
       debugPrint('DioException: ${e.message}');
       return null;

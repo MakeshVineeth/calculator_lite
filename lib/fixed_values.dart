@@ -88,12 +88,23 @@ class FixedValues {
     [changeSignChar, 0, decimalChar, '=', pi, cubeRoot, capChar, squareChar],
   ];
 
-  static ThemeData getThemeData(Brightness brightness, BuildContext context) {
+  static final ThemeData _lightTheme = _buildThemeData(Brightness.light);
+  static final ThemeData _darkTheme = _buildThemeData(Brightness.dark);
+
+  static ThemeData getThemeData(Brightness brightness, [BuildContext? context]) =>
+      brightness == Brightness.light ? _lightTheme : _darkTheme;
+
+  static ThemeData _buildThemeData(Brightness brightness) {
     final bool isLight = brightness == Brightness.light;
     final MaterialColor foreground = isLight ? Colors.red : Colors.yellow;
     final Color background = isLight ? Colors.white : Colors.grey[900]!;
     final Color foregroundText = isLight ? Colors.black : Colors.white;
     final Color backgroundScaffold = isLight ? background : Colors.black;
+    final TextTheme baseTextTheme =
+        (isLight
+                ? ThemeData.light(useMaterial3: true)
+                : ThemeData.dark(useMaterial3: true))
+            .textTheme;
 
     return ThemeData(
       useMaterial3: true,
@@ -158,10 +169,10 @@ class FixedValues {
               : const BorderSide(color: Color(0x22FFFFFF), width: 0.5),
         ),
       ),
-      appBarTheme: Theme.of(context).appBarTheme.copyWith(
+      appBarTheme: AppBarTheme(
         centerTitle: true,
         titleSpacing: 1,
-        color: background,
+        backgroundColor: background,
         iconTheme: IconThemeData(color: foreground),
         titleTextStyle: TextStyle(
           color: foreground,
@@ -180,7 +191,7 @@ class FixedValues {
           padding: EdgeInsets.zero,
         ),
       ),
-      textTheme: Theme.of(context).textTheme.apply(
+      textTheme: baseTextTheme.apply(
         bodyColor: foregroundText,
         displayColor: foregroundText,
       ),

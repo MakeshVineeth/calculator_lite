@@ -6,19 +6,23 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.NonNull
 import androidx.core.view.WindowCompat
 import com.google.android.play.core.review.ReviewManagerFactory
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MainActivity : FlutterActivity() {
-    private val channel = "kotlin.flutter.dev"
+    private val channelName = "kotlin.flutter.dev"
     private val createFileRequestCode = 6
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val ioExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+
+    private var methodChannel: MethodChannel? = null
     private var methodResult: MethodChannel.Result? = null
     private var filePath: String? = null
     private var fileName: String? = null
@@ -28,20 +32,23 @@ class MainActivity : FlutterActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
+        val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName)
+        channel.setMethodCallHandler { call, result ->
             when (call.method) {
                 "sendToBackground" -> {
+                    result.success(null)
                     finishAndRemoveTask()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        kotlin.system.exitProcess(0)
-                    }, 1000)
                 }
                 "requestReview" -> {
-                    val manager = ReviewManagerFactory.create(this)
+                    val manager = ReviewManagerFactory.create(applicationContext)
                     val request = manager.requestReviewFlow()
                     request.addOnCompleteListener { task ->
+                        if (isFinishing || isDestroyed) {
+                            result.success(false)
+                            return@addOnCompleteListener
+                        }
                         if (task.isSuccessful) {
                             val reviewInfo = task.result
                             manager.launchReviewFlow(this, reviewInfo).addOnCompleteListener {
@@ -53,27 +60,57 @@ class MainActivity : FlutterActivity() {
                     }
                 }
                 "createFile" -> {
-                    methodResult = result
-                    filePath = call.argument("path")
-                    fileName = call.argument("fileName")
-
-                    if (fileName.isNullOrBlank()) {
+                    val requestedPath = call.argument<String>("path")
+                    val requestedName = call.argument<String>("fileName")
+                    if (methodResult != null ||
+                        requestedName.isNullOrBlank() ||
+                        requestedPath.isNullOrBlank()
+                    ) {
                         result.success(null)
                         return@setMethodCallHandler
                     }
 
+                    methodResult = result
+                    filePath = requestedPath
+                    fileName = requestedName
+
                     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        putExtra(Intent.EXTRA_TITLE, "$fileName.xlsx")
+                        putExtra(Intent.EXTRA_TITLE, "$requestedName.xlsx")
                     }
 
-                    @Suppress("DEPRECATION")
-                    startActivityForResult(intent, createFileRequestCode)
+                    try {
+                        @Suppress("DEPRECATION")
+                        startActivityForResult(intent, createFileRequestCode)
+                    } catch (_: Exception) {
+                        clearPendingFileState()
+                        result.success(null)
+                    }
                 }
                 else -> result.notImplemented()
             }
         }
+        methodChannel = channel
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        methodChannel?.setMethodCallHandler(null)
+        methodChannel = null
+        super.cleanUpFlutterEngine(flutterEngine)
+    }
+
+    override fun onDestroy() {
+        clearPendingFileState()
+        mainHandler.removeCallbacksAndMessages(null)
+        ioExecutor.shutdown()
+        super.onDestroy()
+    }
+
+    private fun clearPendingFileState() {
+        methodResult = null
+        filePath = null
+        fileName = null
     }
 
     @Deprecated("Deprecated in Java")
@@ -84,32 +121,38 @@ class MainActivity : FlutterActivity() {
             return
         }
 
-        if (resultCode == Activity.RESULT_OK && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try {
-                data?.data?.also { uri ->
-                    val pathStr = filePath
-                    if (pathStr != null) {
-                        val pathObj = Paths.get(pathStr)
-                        val fileContent = Files.readAllBytes(pathObj)
+        val pendingResult = methodResult
+        val pathStr = filePath
+        clearPendingFileState()
 
-                        contentResolver.openFileDescriptor(uri, "w")?.use { pfd ->
-                            FileOutputStream(pfd.fileDescriptor).use { output ->
-                                output.write(fileContent)
-                            }
-                        }
-                        methodResult?.success("success")
-                    } else {
-                        methodResult?.success(null)
-                    }
-                } ?: run {
-                    methodResult?.success(null)
-                }
-            } catch (ex: Exception) {
-                methodResult?.success(null)
-            }
-        } else {
-            methodResult?.success(null)
+        if (resultCode != Activity.RESULT_OK || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            pendingResult?.success(null)
+            return
         }
-        methodResult = null
+
+        val uri = data?.data
+        if (uri == null || pathStr.isNullOrBlank()) {
+            pendingResult?.success(null)
+            return
+        }
+
+        ioExecutor.execute {
+            var success = false
+            try {
+                contentResolver.openFileDescriptor(uri, "w")?.use { pfd ->
+                    FileInputStream(pathStr).use { input ->
+                        FileOutputStream(pfd.fileDescriptor).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                }
+                success = true
+            } catch (_: Exception) {
+                success = false
+            }
+            mainHandler.post {
+                pendingResult?.success(if (success) "success" else null)
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿import 'dart:io' show File;
+import 'package:calculator_lite/Backend/hive_initializer.dart';
 import 'package:calculator_lite/HistoryTab/commons_history.dart';
 import 'package:calculator_lite/HistoryTab/history_item.dart';
 import 'package:calculator_lite/fixed_values.dart';
@@ -673,6 +674,7 @@ class _ExportScreenState extends State<ExportScreen> {
       helpText: 'Select $title',
     );
 
+    if (!mounted) return;
     if (picked != null) {
       setState(() {
         controller.text = DateFormat(CommonStrings.dateFormat).format(picked);
@@ -688,7 +690,7 @@ class _ExportScreenState extends State<ExportScreen> {
     return 'History_${date}_$time';
   }
 
-  void kotlinFile(String path) async {
+  Future<void> kotlinFile(String path) async {
     try {
       final String? result = await platform.invokeMethod<String>('createFile', {
         'path': path,
@@ -769,6 +771,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
       setStatus(isLoading: true);
 
+      await HiveInitializer.ensureInitialized();
       if (!Hive.isBoxOpen(CommonsHistory.historyBox)) {
         await Hive.openBox<HistoryItem>(CommonsHistory.historyBox);
       }
@@ -790,10 +793,11 @@ class _ExportScreenState extends State<ExportScreen> {
 
       final DateTime? fromDate = hasFrom ? getDateTime(_dateFrom.text) : null;
       final DateTime? toDate = hasTo ? getDateTime(_dateTo.text) : null;
+      final DateFormat itemDateFormat = DateFormat(CommonStrings.dateFormat);
+      final DateFormat displayDateFormat = DateFormat.yMMMMd('en_US').add_jm();
 
       for (final element in data) {
-        final String formattedDate =
-            DateFormat(CommonStrings.dateFormat).format(element.dateTime);
+        final String formattedDate = itemDateFormat.format(element.dateTime);
         final DateTime itemDate = getDateTime(formattedDate);
 
         bool include = true;
@@ -807,9 +811,7 @@ class _ExportScreenState extends State<ExportScreen> {
         if (include) {
           allData.add({
             CommonStrings.historyTitle: element.title,
-            CommonStrings.dateTitle: DateFormat.yMMMMd('en_US')
-                .add_jm()
-                .format(element.dateTime),
+            CommonStrings.dateTitle: displayDateFormat.format(element.dateTime),
             CommonStrings.expTextTitle: element.expression,
             CommonStrings.valTextTile: element.value,
           });
@@ -839,22 +841,24 @@ class _ExportScreenState extends State<ExportScreen> {
         return;
       }
 
-      if (save) {
-        kotlinFile(file.path);
-      } else {
-        final List<XFile> files = [XFile(file.path)];
-        final ShareResult shareResult = await SharePlus.instance.share(
-          ShareParams(files: files, text: 'Calculator History Export'),
-        );
+      try {
+        if (save) {
+          await kotlinFile(file.path);
+        } else {
+          final List<XFile> files = [XFile(file.path)];
+          final ShareResult shareResult = await SharePlus.instance.share(
+            ShareParams(files: files, text: 'Calculator History Export'),
+          );
 
-        if (await file.exists()) {
-          await file.delete();
+          if (shareResult.status != ShareResultStatus.success) {
+            setStatus(text: 'Share cancelled or unavailable.', isError: true);
+            return;
+          }
           clearStatus();
         }
-
-        if (shareResult.status != ShareResultStatus.success) {
-          setStatus(text: 'Share cancelled or unavailable.', isError: true);
-          return;
+      } finally {
+        if (await file.exists()) {
+          await file.delete();
         }
       }
     } catch (e) {

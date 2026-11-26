@@ -9,6 +9,8 @@ import 'buttons_links.dart';
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
+  static final Future<PackageInfo> _packageInfoFuture = PackageInfo.fromPlatform();
+
   @override
   Widget build(BuildContext context) {
     return FadeScale(
@@ -24,7 +26,7 @@ class AboutPage extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              applicationIconImg(),
+              applicationIconImg(context),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -36,7 +38,7 @@ class AboutPage extends StatelessWidget {
                       style: FixedValues.appTitleStyle(context),
                     ),
                     FutureBuilder<PackageInfo>(
-                      future: PackageInfo.fromPlatform(),
+                      future: _packageInfoFuture,
                       builder: (context, snapshot) {
                         final version = snapshot.hasData
                             ? 'Version ${snapshot.data!.version} (Build ${snapshot.data!.buildNumber})'
@@ -101,8 +103,14 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget applicationIconImg() =>
-      const Image(image: AssetImage('assets/${FixedValues.logo}'), width: 30);
+  Widget applicationIconImg(BuildContext context) {
+    final cachePx = (30 * MediaQuery.devicePixelRatioOf(context)).round();
+    return Image.asset(
+      'assets/${FixedValues.logo}',
+      width: 30,
+      cacheWidth: cachePx > 0 ? cachePx : null,
+    );
+  }
 
   static void showAboutDialogFunc(BuildContext context) async {
     try {

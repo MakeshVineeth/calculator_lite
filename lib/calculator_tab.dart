@@ -5,6 +5,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:calculator_lite/Backend/calc_parser.dart';
 import 'package:calculator_lite/Backend/custom_focus_events.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';
+import 'package:calculator_lite/Backend/hive_initializer.dart';
 import 'package:calculator_lite/UIElements/about_page.dart';
 import 'package:calculator_lite/UIElements/calc_buttons.dart';
 import 'package:calculator_lite/UIElements/display_screen.dart';
@@ -13,7 +14,6 @@ import 'package:calculator_lite/UIElements/theme_chooser.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/secure_mode.dart';
 import 'package:calculator_lite/fixed_values.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_ce/hive.dart';
@@ -33,14 +33,17 @@ class CalculatorTab extends StatefulWidget {
 
 class _CalculatorTabState extends State<CalculatorTab> {
   late Widget _currentChild;
+  bool _isExtrasOpen = false;
   bool secondPageFlip = false;
+  bool? _lastIsLandscape;
+  bool? _lastIsSmallScreen;
   List<String> calculationString = List.empty(growable: true);
   double mainValue = 0;
   String currentMetric = '';
   Timer? timer;
   final MethodChannel _androidAppRetain =
       const MethodChannel('kotlin.flutter.dev');
-  final HelperFunctions _helperFunctions = HelperFunctions();
+  final HelperFunctions _helperFunctions = const HelperFunctions();
   final AutoSizeGroup _advKeypadGroup = AutoSizeGroup();
   final CustomFocusEvents _customFocusEvents = CustomFocusEvents();
 
@@ -48,35 +51,81 @@ class _CalculatorTabState extends State<CalculatorTab> {
   void initState() {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleHardwareKey);
+    getCurrentMetrics();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _currentChild = buildCalcRows(
-      _helperFunctions.isLandScape(context)
-          ? FixedValues.horizontalLayout
-          : FixedValues.rowSimple,
-      autoSizeGroup:
-          _helperFunctions.isLandScape(context) ? _advKeypadGroup : null,
-    );
-    getCurrentMetrics();
+    final bool isLandscape = _helperFunctions.isLandScape(context);
+    final Size screenSize = MediaQuery.sizeOf(context);
+    final bool isSmallScreen =
+        screenSize.width < 360 || screenSize.height < 450;
+
+    if (_lastIsLandscape != isLandscape ||
+        _lastIsSmallScreen != isSmallScreen) {
+      _lastIsLandscape = isLandscape;
+      _lastIsSmallScreen = isSmallScreen;
+      _rebuildActiveKeypad(
+        isLandscape: isLandscape,
+        isSmallScreen: isSmallScreen,
+      );
+    }
   }
 
   @override
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_handleHardwareKey);
-    if (timer != null && timer!.isActive) {
-      timer?.cancel();
-    }
+    timer?.cancel();
     _customFocusEvents.dispose();
     super.dispose();
   }
 
   void getCurrentMetrics() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     final current = prefs.getString('metrics') ?? 'RAD';
     setState(() => currentMetric = current);
+  }
+
+  void _rebuildActiveKeypad({
+    required bool isLandscape,
+    required bool isSmallScreen,
+  }) {
+    if (isLandscape) {
+      final rows = secondPageFlip
+          ? FixedValues.horizontalLayoutInverse
+          : FixedValues.horizontalLayout;
+      _currentChild = buildCalcRows(
+        rows,
+        keypadKey: secondPageFlip ? 'land_inverse' : 'land',
+        autoSizeGroup: _advKeypadGroup,
+        isSmallScreen: isSmallScreen,
+      );
+      return;
+    }
+
+    if (secondPageFlip) {
+      _currentChild = buildCalcRows(
+        FixedValues.rowInverse,
+        keypadKey: 'inverse',
+        autoSizeGroup: _advKeypadGroup,
+        isSmallScreen: isSmallScreen,
+      );
+    } else if (_isExtrasOpen) {
+      _currentChild = buildCalcRows(
+        FixedValues.rowExtras,
+        keypadKey: 'extras',
+        autoSizeGroup: _advKeypadGroup,
+        isSmallScreen: isSmallScreen,
+      );
+    } else {
+      _currentChild = buildCalcRows(
+        FixedValues.rowSimple,
+        keypadKey: 'simple',
+        isSmallScreen: isSmallScreen,
+      );
+    }
   }
 
   void backSpaceBtn() {
@@ -89,13 +138,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
     required BuildContext context,
     required CustomFocusEvents focus,
   }) {
-    if (timer != null && timer!.isActive) {
-      timer?.cancel();
-    }
+    timer?.cancel();
 
     final bool isFocused = focus.isFocused;
 
-    // First check for down or up arrow buttons
     if ([FixedValues.upperArrow, FixedValues.downArrow, FixedValues.invButton]
         .contains(value)) {
       setState(() => changeButtons(value));
@@ -105,28 +151,22 @@ class _CalculatorTabState extends State<CalculatorTab> {
         mainValue = 0;
         if (isFocused) focus.clearData();
       });
-    }
-
-    // Back button
-    else if (value.contains(FixedValues.backSpaceChar)) {
+    } else if (value.contains(FixedValues.backSpaceChar)) {
       if (!isFocused) {
         backSpaceBtn();
-
         if (calculationString.isNotEmpty) {
           runCalcParser('');
         } else {
           setState(() => mainValue = 0);
         }
       } else {
-        setState(() => calculationString =
-            focus.removeBack(calculationString: calculationString));
-
+        setState(
+          () => calculationString =
+              focus.removeBack(calculationString: calculationString),
+        );
         runCalcParser('');
       }
-    }
-
-    // Code for =
-    else if (value.contains('=')) {
+    } else if (value.contains('=')) {
       if (DisplayScreen.isDoubleValid(mainValue)) {
         final String calcStr = calculationString.join();
         addToHistory(calcStr);
@@ -134,86 +174,82 @@ class _CalculatorTabState extends State<CalculatorTab> {
         setState(() {
           calculationString.clear();
           calculationString.addAll(
-              DisplayScreen.formatNumber(mainValue).split(''));
+            DisplayScreen.formatNumber(mainValue).split(''),
+          );
         });
       }
-    }
-
-    // at last
-    else {
+    } else {
       if (!isFocused) {
         runCalcParser(value);
       } else {
-        setState(() => calculationString = focus.getRegulatedString(
-              calculationString: calculationString,
-              currentMetric: currentMetric,
-              value: value,
-            ));
-
+        setState(
+          () => calculationString = focus.getRegulatedString(
+            calculationString: calculationString,
+            currentMetric: currentMetric,
+            value: value,
+          ),
+        );
         runCalcParser('');
       }
     }
   }
 
-  Future<void> runCalcParser(String value) async {
-    final List<String> str = await compute(getCalcStrIsolate, {
-      'calculationString': calculationString,
-      'value': value,
-      'currentMetric': currentMetric,
-    });
-
-    setState(() => calculationString = str);
-
+  void runCalcParser(String value) {
+    timer?.cancel();
     final CalcParser calcParser = CalcParser(
-      calculationString: calculationString,
+      calculationString: List<String>.from(calculationString),
       currentMetric: currentMetric,
     );
 
-    final double getValue = await calcParser.getValue();
-    setState(() => mainValue = getValue);
+    final List<String> updatedString = value.isEmpty
+        ? List<String>.from(calculationString)
+        : calcParser.addToExpression(value);
+    calcParser.calculationString = updatedString;
+    final double computedValue = calcParser.evalFunction(updatedString);
 
-    final String calcStr = calculationString.join();
+    setState(() {
+      calculationString = updatedString;
+      mainValue = computedValue;
+    });
+
+    final String calcStr = updatedString.join();
     timer = Timer(const Duration(seconds: 6), () => addToHistory(calcStr));
   }
 
-  static List<String> getCalcStrIsolate(Map<String, dynamic> args) {
-    final CalcParser calcParser = CalcParser(
-        calculationString:
-            (args['calculationString'] as List<dynamic>).cast<String>(),
-        currentMetric: args['currentMetric'] as String);
-
-    return calcParser.addToExpression(args['value'] as String);
-  }
-
   void addToHistory(String historyCalcStr) async {
+    if (historyCalcStr.isEmpty) return;
+
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    final String status = preferences.getString(CommonsHistory.historyStatusPref) ??
-        CommonsHistory.historyEnabled;
+    final String status =
+        preferences.getString(CommonsHistory.historyStatusPref) ??
+            CommonsHistory.historyEnabled;
 
-    if (status.contains(CommonsHistory.historyEnabled) &&
-        Hive.isBoxOpen(CommonsHistory.historyBox)) {
-      final Box<HistoryItem> box =
-          Hive.box<HistoryItem>(CommonsHistory.historyBox);
+    if (!status.contains(CommonsHistory.historyEnabled)) return;
 
-      if (historyCalcStr.isNotEmpty) {
-        final DateTime now = DateTime.now();
-        final HistoryItem historyItem = HistoryItem(
-          expression: historyCalcStr,
-          value: mainValue.toString(),
-          dateTime: now,
-          title: getFormattedTitle(now),
-          metrics: currentMetric,
-        );
+    await HiveInitializer.ensureInitialized();
+    final Box<HistoryItem> box = Hive.isBoxOpen(CommonsHistory.historyBox)
+        ? Hive.box<HistoryItem>(CommonsHistory.historyBox)
+        : await Hive.openBox<HistoryItem>(CommonsHistory.historyBox);
 
-        await box.add(historyItem);
-      }
-    }
+    final DateTime now = DateTime.now();
+    final HistoryItem historyItem = HistoryItem(
+      expression: historyCalcStr,
+      value: mainValue.toString(),
+      dateTime: now,
+      title: getFormattedTitle(now),
+      metrics: currentMetric,
+    );
+
+    await box.add(historyItem);
   }
 
-  Widget calcRows(List<dynamic> rowData, int index,
-      {AutoSizeGroup? autoSizeGroup}) {
-    bool isCornerRows = false;
-    if (index == 0) isCornerRows = true;
+  Widget calcRows(
+    List<dynamic> rowData,
+    int rowIndex, {
+    AutoSizeGroup? autoSizeGroup,
+    bool isSmallScreen = false,
+  }) {
+    final bool isCornerRows = rowIndex == 0;
 
     return Expanded(
       child: Row(
@@ -221,17 +257,16 @@ class _CalculatorTabState extends State<CalculatorTab> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(
           rowData.length,
-          (index) => Consumer<CustomFocusEvents>(
-            builder: (context, focus, child) => CalcButtons(
-              rowData: rowData,
-              index: index,
-              isCornerRows: isCornerRows,
-              autoSizeGroup: autoSizeGroup,
-              displayFunction: () => displayToScreen(
-                value: rowData[index].toString(),
-                context: context,
-                focus: focus,
-              ),
+          (colIndex) => CalcButtons(
+            rowData: rowData,
+            index: colIndex,
+            isCornerRows: isCornerRows,
+            autoSizeGroup: autoSizeGroup,
+            isSmallScreen: isSmallScreen,
+            displayFunction: () => displayToScreen(
+              value: rowData[colIndex].toString(),
+              context: context,
+              focus: _customFocusEvents,
             ),
           ),
         ),
@@ -357,7 +392,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
                   popUpDotMenu(isCompact: isCompact),
                 ],
               ),
-              // Display Widget
               DisplayScreen(
                 calculationString: calculationString,
                 mainValue: mainValue,
@@ -366,9 +400,11 @@ class _CalculatorTabState extends State<CalculatorTab> {
                 flex: isLand ? 6 : 3,
                 child: Padding(
                   padding: EdgeInsets.all(isCompact ? 2.0 : 5.0),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: _currentChild,
+                  child: RepaintBoundary(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: _currentChild,
+                    ),
                   ),
                 ),
               ),
@@ -379,33 +415,35 @@ class _CalculatorTabState extends State<CalculatorTab> {
     );
   }
 
-  Widget popUpDotMenu({bool isCompact = false}) {
-    final Map<String, Function> menuList = {
-      'Change Theme': () => PopThemeChooser.showThemeChooser(context),
-      'Secure Mode': () {
-        if (Platform.isAndroid) {
-          showDialog<void>(
-              context: context, builder: (context) => const PrivacyDialog());
-        }
-      },
-      'Donate': () {
-        if (Platform.isAndroid) {
-          Navigator.pushNamed(context, FixedValues.buyRoute);
-        }
-      },
-      'FAQ': () => launchThisUrl(url: FixedValues.faqUrl),
-      'Rate on Play Store ✨': () => showPlayStorePage(),
-      'Privacy Policy': () => launchThisUrl(url: FixedValues.privacyPolicy),
-      'About Calculator Lite': () => AboutPage.showAboutDialogFunc(context),
-      'Exit': () {
-        if (Platform.isAndroid) {
-          _androidAppRetain.invokeMethod('sendToBackground');
-        } else if (!Platform.isIOS) {
-          exit(0);
-        } // Not allowed on IOS as it's against Apple Human Interface guidelines to exit the app programmatically.
+  Map<String, Function> _buildDotMenu() => {
+    'Change Theme': () => PopThemeChooser.showThemeChooser(context),
+    'Secure Mode': () {
+      if (Platform.isAndroid) {
+        showDialog<void>(
+          context: context,
+          builder: (context) => const PrivacyDialog(),
+        );
       }
-    };
+    },
+    'Donate': () {
+      if (Platform.isAndroid) {
+        Navigator.pushNamed(context, FixedValues.buyRoute);
+      }
+    },
+    'FAQ': () => launchThisUrl(url: FixedValues.faqUrl),
+    'Rate on Play Store ✨': () => showPlayStorePage(),
+    'Privacy Policy': () => launchThisUrl(url: FixedValues.privacyPolicy),
+    'About Calculator Lite': () => AboutPage.showAboutDialogFunc(context),
+    'Exit': () {
+      if (Platform.isAndroid) {
+        _androidAppRetain.invokeMethod<void>('sendToBackground');
+      } else if (!Platform.isIOS) {
+        exit(0);
+      }
+    },
+  };
 
+  Widget popUpDotMenu({bool isCompact = false}) {
     return Container(
       alignment: Alignment.centerRight,
       child: IconButton(
@@ -415,55 +453,55 @@ class _CalculatorTabState extends State<CalculatorTab> {
         visualDensity: isCompact ? VisualDensity.compact : null,
         onPressed: () => showSlideUp(
           context: context,
-          menuList: menuList,
+          menuList: _buildDotMenu(),
         ),
-        icon: const Icon(
-          Icons.more_vert,
-        ),
+        icon: const Icon(Icons.more_vert),
       ),
     );
   }
 
   Widget metricsButton({bool isCompact = false}) => Padding(
-        padding: EdgeInsets.fromLTRB(10, isCompact ? 0 : 5, 0, 0),
-        child: SizedBox(
-          height: isCompact ? 30 : null,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(
-                horizontal: isCompact ? 8.0 : 12.0,
-                vertical: isCompact ? 2.0 : 5.0,
-              ),
-            ),
-            onPressed: changeMetrics,
-            child: Text(
-              currentMetric,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600, //w600 is semi-bold.
-              ),
-            ),
+    padding: EdgeInsets.fromLTRB(10, isCompact ? 0 : 5, 0, 0),
+    child: SizedBox(
+      height: isCompact ? 30 : null,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(
+            horizontal: isCompact ? 8.0 : 12.0,
+            vertical: isCompact ? 2.0 : 5.0,
           ),
         ),
-      );
+        onPressed: changeMetrics,
+        child: Text(
+          currentMetric,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ),
+    ),
+  );
 
-  Widget buildCalcRows(List<List<dynamic>> currentRow,
-          {AutoSizeGroup? autoSizeGroup}) =>
+  Widget buildCalcRows(
+    List<List<dynamic>> currentRow, {
+    required String keypadKey,
+    AutoSizeGroup? autoSizeGroup,
+    bool isSmallScreen = false,
+  }) =>
       Column(
-        key: UniqueKey(),
+        key: ValueKey<String>(keypadKey),
         children: List.generate(
           currentRow.length,
-          (index) => calcRows(currentRow[index], index,
-              autoSizeGroup: autoSizeGroup),
+          (index) => calcRows(
+            currentRow[index],
+            index,
+            autoSizeGroup: autoSizeGroup,
+            isSmallScreen: isSmallScreen,
+          ),
         ),
       );
 
   void changeMetrics() async {
     setState(() {
-      if (currentMetric == 'RAD') {
-        currentMetric = 'DEG';
-      } else {
-        currentMetric = 'RAD';
-      }
+      currentMetric = currentMetric == 'RAD' ? 'DEG' : 'RAD';
       if (calculationString.isNotEmpty) {
         runCalcParser('');
       }
@@ -474,44 +512,24 @@ class _CalculatorTabState extends State<CalculatorTab> {
   }
 
   void changeButtons(String value) {
-    // If inv clicked, reverse bool var and call changeButtons again with upperArrow to change in second page itself.
+    final bool isLandscape = _helperFunctions.isLandScape(context);
+    final Size screenSize = MediaQuery.sizeOf(context);
+    final bool isSmallScreen =
+        screenSize.width < 360 || screenSize.height < 450;
+
     if (value.contains(FixedValues.invButton)) {
-      if (secondPageFlip) {
-        secondPageFlip = false;
-      } else {
-        secondPageFlip = true;
-      }
-      changeButtons(FixedValues.upperArrow);
+      secondPageFlip = !secondPageFlip;
+      _isExtrasOpen = true;
+    } else if (value.contains(FixedValues.upperArrow)) {
+      _isExtrasOpen = true;
+    } else {
+      _isExtrasOpen = false;
+      secondPageFlip = false;
     }
 
-    // For upper arrow.
-    else if (value.contains(FixedValues.upperArrow)) {
-      if (secondPageFlip) {
-        _currentChild = buildCalcRows(
-          _helperFunctions.isLandScape(context)
-              ? FixedValues.horizontalLayoutInverse
-              : FixedValues.rowInverse,
-          autoSizeGroup: _advKeypadGroup,
-        );
-      } else {
-        _currentChild = buildCalcRows(
-          _helperFunctions.isLandScape(context)
-              ? FixedValues.horizontalLayout
-              : FixedValues.rowExtras,
-          autoSizeGroup: _advKeypadGroup,
-        );
-      }
-    }
-
-    // For down arrow.
-    else {
-      _currentChild = buildCalcRows(
-        _helperFunctions.isLandScape(context)
-            ? FixedValues.horizontalLayout
-            : FixedValues.rowSimple,
-        autoSizeGroup:
-            _helperFunctions.isLandScape(context) ? _advKeypadGroup : null,
-      );
-    }
+    _rebuildActiveKeypad(
+      isLandscape: isLandscape,
+      isSmallScreen: isSmallScreen,
+    );
   }
 }

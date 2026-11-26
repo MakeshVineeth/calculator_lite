@@ -34,8 +34,11 @@ class _FadeIndexedStackState extends State<FadeIndexedStack>
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..forward();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      value: 1.0,
+    );
 
     super.initState();
   }
