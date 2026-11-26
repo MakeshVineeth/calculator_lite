@@ -2,9 +2,12 @@ import 'package:calculator_lite/Backend/custom_focus_events.dart';
 import 'package:calculator_lite/UIElements/about_page.dart';
 import 'package:calculator_lite/UIElements/display_screen.dart';
 import 'package:calculator_lite/bottom_nav_class.dart';
+import 'package:calculator_lite/calculator_tab.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('Calculator Widget & UI Tests', () {
@@ -92,6 +95,73 @@ void main() {
       await tester.pump();
       expect(find.byType(AboutPage), findsOneWidget);
       expect(find.text('Calculator Lite'), findsOneWidget);
+    });
+
+    testWidgets(
+        'CalculatorTab keypad decimal button evaluates 622·22×30000 without Invalid Input',
+        (WidgetTester tester) async {
+      SharedPreferences.setMockInitialValues({});
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: CalculatorTab(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final buttons = [
+        '6',
+        '2',
+        '2',
+        FixedValues.decimalChar,
+        '2',
+        '2',
+        FixedValues.multiplyChar,
+        '3',
+        '0',
+        '0',
+        '0',
+        '0',
+      ];
+      for (var i = 0; i < buttons.length; i++) {
+        await tester.tap(find.widgetWithText(ElevatedButton, buttons[i]));
+        for (var attempt = 0; attempt < 20; attempt++) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 25)),
+          );
+          await tester.pump();
+          final current =
+              tester.widget<DisplayScreen>(find.byType(DisplayScreen));
+          if (current.calculationString.join().length == i + 1) {
+            break;
+          }
+        }
+      }
+
+      for (var attempt = 0; attempt < 20; attempt++) {
+        final current =
+            tester.widget<DisplayScreen>(find.byType(DisplayScreen));
+        if ((current.mainValue - 18666600.0).abs() < 0.0001) {
+          break;
+        }
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 25)),
+        );
+        await tester.pump();
+      }
+
+      final display = tester.widget<DisplayScreen>(find.byType(DisplayScreen));
+      expect(
+        display.calculationString.join(),
+        equals('622.22${FixedValues.multiplyChar}30000'),
+      );
+      expect(display.mainValue, closeTo(18666600.0, 0.0001));
+      expect(find.text('Invalid Input'), findsNothing);
+
+      await tester.pump(const Duration(seconds: 7));
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
     });
   });
 }

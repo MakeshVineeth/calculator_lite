@@ -394,5 +394,112 @@ void main() {
       expect(result.isInfinite, isTrue);
       expect(DisplayScreen.formatNumber(result), equals('∞'));
     });
+
+    test('keypad decimalChar (622·22×30000) normalizes and evaluates cleanly', () {
+      final parser = CalcParser(
+        calculationString: [],
+        currentMetric: 'RAD',
+      );
+      final inputs = [
+        '6',
+        '2',
+        '2',
+        FixedValues.decimalChar,
+        '2',
+        '2',
+        FixedValues.multiplyChar,
+        '3',
+        '0',
+        '0',
+        '0',
+        '0',
+      ];
+      for (final token in inputs) {
+        parser.addToExpression(token);
+      }
+
+      expect(
+        parser.calculationString,
+        equals([
+          '6',
+          '2',
+          '2',
+          '.',
+          '2',
+          '2',
+          FixedValues.multiplyChar,
+          '3',
+          '0',
+          '0',
+          '0',
+          '0',
+        ]),
+      );
+      final result = parser.evalFunction(parser.calculationString);
+      expect(result, equals(18666600.0));
+      expect(DisplayScreen.formatNumber(result), equals('18666600'));
+    });
+
+    test('decimalChar handles leading, duplicate, postfix, and raw middot tokens',
+        () {
+      final leading = CalcParser(calculationString: [], currentMetric: 'RAD');
+      for (final t in [
+        FixedValues.decimalChar,
+        '5',
+        '+',
+        FixedValues.decimalChar,
+        '5',
+      ]) {
+        leading.addToExpression(t);
+      }
+      expect(leading.calculationString, equals(['0.', '5', '+', '0.', '5']));
+      expect(leading.evalFunction(leading.calculationString), equals(1.0));
+
+      final dup = CalcParser(calculationString: [], currentMetric: 'RAD');
+      for (final t in [
+        '6',
+        '2',
+        '2',
+        FixedValues.decimalChar,
+        '2',
+        '2',
+        FixedValues.decimalChar,
+        '3',
+      ]) {
+        dup.addToExpression(t);
+      }
+      expect(dup.calculationString.join(), equals('622.223'));
+
+      final zeroDup = CalcParser(calculationString: [], currentMetric: 'RAD');
+      for (final t in [
+        FixedValues.decimalChar,
+        '5',
+        FixedValues.decimalChar,
+        '2',
+      ]) {
+        zeroDup.addToExpression(t);
+      }
+      expect(zeroDup.calculationString.join(), equals('0.52'));
+
+      final postBracket =
+          CalcParser(calculationString: ['(', '2', ')'], currentMetric: 'RAD');
+      postBracket.addToExpression(FixedValues.decimalChar);
+      postBracket.addToExpression('5');
+      expect(
+        postBracket.calculationString,
+        equals(['(', '2', ')', FixedValues.multiplyChar, '0.', '5']),
+      );
+      expect(
+        postBracket.evalFunction(postBracket.calculationString),
+        equals(1.0),
+      );
+
+      final rawMiddot = CalcParser(calculationString: [], currentMetric: 'RAD');
+      expect(
+        rawMiddot.evalFunction(
+            ['6', '2', '2', FixedValues.decimalChar, '2', '2']),
+        closeTo(622.22, 0.0001),
+      );
+    });
   });
 }

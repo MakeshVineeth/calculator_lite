@@ -61,6 +61,11 @@ class CalcParser {
 
   // This function adds elements to displayScreen with formatting.
   List<String> addToExpression(String value) {
+    if (value.isEmpty) return calculationString;
+    if (value == FixedValues.decimalChar) {
+      value = '.';
+    }
+
     if (calculationString.isNotEmpty) {
       final int lastIndex = calculationString.length - 1;
       final String lastChar = calculationString[lastIndex];
@@ -79,7 +84,7 @@ class CalcParser {
         if (helperFunctions.operations.contains(lastChar) ||
             lastChar == '(' ||
             lastChar.endsWith('(') ||
-            lastChar == '.') {
+            lastChar.endsWith('.')) {
           return calculationString;
         }
       }
@@ -224,7 +229,7 @@ class CalcParser {
       if (!helperFunctions.operations.contains(lastChar) &&
           lastChar != '(' &&
           !lastChar.endsWith('(') &&
-          lastChar != '.') {
+          !lastChar.endsWith('.')) {
         calculationString.add(')');
       }
     }
@@ -327,6 +332,14 @@ class CalcParser {
   }
 
   void setDecimalChar() {
+    if (calculationString.isEmpty ||
+        helperFunctions.operations.contains(calculationString.last) ||
+        calculationString.last == '(' ||
+        calculationString.last.endsWith('(')) {
+      calculationString.add('0.');
+      return;
+    }
+
     final int index = helperFunctions.parseNumbersFromEnd(
         calculationString.length - 1, calculationString);
     final List<String> getCompareStr = calculationString
@@ -362,9 +375,9 @@ class CalcParser {
         final String lastChar = tempString[lastIndex];
         final String lastButOne = tempString[lastIndex - 1];
 
-        if (lastButOne == '.' &&
+        if ((lastButOne == '.' || lastButOne == '0.') &&
             !helperFunctions.numbersList.contains(lastChar)) {
-          tempString[lastIndex - 1] = '.0';
+          tempString[lastIndex - 1] = '${lastButOne}0';
         } else if (helperFunctions.numbersList.contains(lastButOne)) {
           if ([
             'sin(',
@@ -468,11 +481,13 @@ class CalcParser {
       }
     }
 
-    if (tempString.isNotEmpty && tempString.last == '.') {
-      tempString[tempString.length - 1] = '.0';
+    if (tempString.isNotEmpty &&
+        (tempString.last == '.' || tempString.last == '0.')) {
+      tempString[tempString.length - 1] = '${tempString.last}0';
     }
 
     computerStr = tempString.join();
+    computerStr = computerStr.replaceAll(FixedValues.decimalChar, '.');
     computerStr = computerStr.replaceAll(FixedValues.divisionChar, '/');
     computerStr = computerStr.replaceAll(FixedValues.multiplyChar, '*');
     computerStr = computerStr.replaceAll(FixedValues.minus, '-');
