@@ -14,14 +14,12 @@ dependencies:
     sdk: flutter
 
   # UI & Design System
-  cupertino_icons: ^2.0.0
   animations: ^3.0.0
   auto_size_text: ^3.0.0
   auto_size_text_field: ^2.2.4
   country_icons: ^3.0.0
   animated_search_bar: ^2.8.0
   flutter_slidable: ^5.2.0
-  octo_image: ^2.1.0
 
   # Mathematical & Calculation Engine
   decimal: ^3.2.1

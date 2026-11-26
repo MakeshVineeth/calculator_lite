@@ -43,7 +43,18 @@ class CurrencyChooser extends StatefulWidget {
 class _CurrencyChooserState extends State<CurrencyChooser> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  late final List<CurrencyListItem> _allItems;
+  late List<CurrencyListItem> _filteredItems;
   String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    final Box<CurrencyListItem> listBoxes =
+        Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
+    _allItems = _deduplicateItems(listBoxes.values.toList());
+    _filteredItems = _allItems;
+  }
 
   @override
   void dispose() {
@@ -64,17 +75,21 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
     return deduplicatedItems;
   }
 
-  List<CurrencyListItem> _filterItems(List<CurrencyListItem> items) {
+  void _applyFilter(String value) {
     // OWASP M4: Sanitize search query input
-    final query = _searchQuery.toLowerCase().trim();
-    if (query.isEmpty) {
-      return items;
-    }
-    return items.where((item) {
-      final code = item.currencyCode.toLowerCase();
-      final name = item.currencyName.toLowerCase();
-      return code.contains(query) || name.contains(query);
-    }).toList();
+    final query = value.toLowerCase().trim();
+    setState(() {
+      _searchQuery = value;
+      if (query.isEmpty) {
+        _filteredItems = _allItems;
+      } else {
+        _filteredItems = _allItems.where((item) {
+          final code = item.currencyCode.toLowerCase();
+          final name = item.currencyName.toLowerCase();
+          return code.contains(query) || name.contains(query);
+        }).toList();
+      }
+    });
   }
 
   Size _dialogSize(BuildContext context) {
@@ -94,10 +109,6 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
 
   @override
   Widget build(BuildContext context) {
-    final Box<CurrencyListItem> listBoxes =
-        Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
-    final deduplicatedItems = _deduplicateItems(listBoxes.values.toList());
-    final filteredItems = _filterItems(deduplicatedItems);
     final dialogSize = _dialogSize(context);
     final isLight = Theme.of(context).brightness == Brightness.light;
 
@@ -135,7 +146,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                     maxLength,
                   }) =>
                       null,
-                  onChanged: (value) => setState(() => _searchQuery = value),
+                  onChanged: _applyFilter,
                   style: TextStyle(
                     fontSize: 14,
                     color: isLight ? Colors.black87 : Colors.white,
@@ -156,7 +167,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                             icon: const Icon(Icons.clear, size: 18),
                             onPressed: () {
                               _searchController.clear();
-                              setState(() => _searchQuery = '');
+                              _applyFilter('');
                             },
                           )
                         : null,
@@ -174,7 +185,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                 ),
               ),
               Expanded(
-                child: filteredItems.isEmpty
+                child: _filteredItems.isEmpty
                     ? Center(
                         child: Text(
                           'No currency found',
@@ -186,7 +197,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                         ),
                       )
                     : ListView.builder(
-                        itemCount: filteredItems.length,
+                        itemCount: _filteredItems.length,
                         keyboardDismissBehavior:
                             ScrollViewKeyboardDismissBehavior.onDrag,
                         physics: const AlwaysScrollableScrollPhysics(
@@ -194,7 +205,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                         ),
                         itemBuilder: (context, index) {
                           final CurrencyListItem currencyListItem =
-                              filteredItems[index];
+                              _filteredItems[index];
 
                           return ListTile(
                             shape: FixedValues.roundShapeLarge,

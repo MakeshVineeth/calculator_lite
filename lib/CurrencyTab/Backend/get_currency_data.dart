@@ -9,7 +9,6 @@ import 'package:hive_ce/hive.dart';
 class CurrencyData {
   Future<String> getRemoteData() async {
     try {
-      // 1. Fetch latest USD-based rates from remote API
       const String usdUrl = '${CommonsData.remoteUrl}?from=USD';
       final Response<dynamic>? response = await CommonsData.getResponse(usdUrl);
 
@@ -22,7 +21,6 @@ class CurrencyData {
       final Map<String, dynamic> rawRates =
           Map<String, dynamic>.from(data['rates'] as Map);
 
-      // Store USD rates
       final Map<String, double> usdRates = {'USD': 1.0};
       for (final entry in rawRates.entries) {
         final val = entry.value;
@@ -31,19 +29,21 @@ class CurrencyData {
         }
       }
 
+      final activeBaseCodes = _activeBaseCurrencyCodes();
+      final bool usdWasOpen = Hive.isBoxOpen('usd');
       final Box<dynamic> usdBox = await _openBoxSafe<dynamic>('usd');
       await usdBox.putAll(usdRates);
 
-      // Dynamically discover and register any newly added currencies from the API
       final Box<CurrencyListItem> currencyBox =
           await _openBoxSafe<CurrencyListItem>(CommonsData.currencyListBox);
       await _registerNewCurrencies(usdRates.keys.toList(), currencyBox);
 
-      // Compute and update cross-rates for all returned currencies:
-      // Rate(Base -> Target) = Rate(USD -> Target) / Rate(USD -> Base)
       for (final baseCode in usdRates.keys) {
         final baseToUsd = usdRates[baseCode];
         if (baseToUsd == null || baseToUsd <= 0) continue;
+
+        final String baseCodeLower = baseCode.toLowerCase();
+        if (baseCodeLower == 'usd') continue;
 
         final Map<String, double> ratesForBase = {};
         for (final targetCode in usdRates.keys) {
@@ -53,9 +53,16 @@ class CurrencyData {
           }
         }
 
-        final Box<dynamic> baseBox =
-            await _openBoxSafe<dynamic>(baseCode.toLowerCase());
+        final bool wasOpen = Hive.isBoxOpen(baseCodeLower);
+        final Box<dynamic> baseBox = await _openBoxSafe<dynamic>(baseCodeLower);
         await baseBox.putAll(ratesForBase);
+        if (!wasOpen && !activeBaseCodes.contains(baseCodeLower)) {
+          await baseBox.close();
+        }
+      }
+
+      if (!usdWasOpen && !activeBaseCodes.contains('usd')) {
+        await usdBox.close();
       }
 
       return CommonsData.successToken;
@@ -63,6 +70,16 @@ class CurrencyData {
       debugPrint('Unable to retrieve remote data: $e');
       return CommonsData.errorToken;
     }
+  }
+
+  Set<String> _activeBaseCurrencyCodes() {
+    if (!Hive.isBoxOpen(CommonsData.fromBox)) {
+      return const {};
+    }
+    return Hive.box<CurrencyListItem>(CommonsData.fromBox)
+        .values
+        .map((e) => e.currencyCode.toLowerCase())
+        .toSet();
   }
 
   Future<void> _registerNewCurrencies(
@@ -86,8 +103,8 @@ class CurrencyData {
           json.decode(jsonStr) as Map<String, dynamic>;
       final List<dynamic> countryList =
           (data['countries'] as Map<String, dynamic>)['country']
-              as List<dynamic>? ??
-          [];
+                  as List<dynamic>? ??
+              [];
 
       final Map<String, Map<String, String>> countryMap = {};
       for (final c in countryList) {
@@ -100,23 +117,27 @@ class CurrencyData {
         }
       }
 
+      final List<CurrencyListItem> toAdd = [];
       for (final code in newCodes) {
         final info = countryMap[code];
         final String countryName = info?['countryName'] ?? '';
         final String countryCode = info?['countryCode'] ?? '';
-        final String displayName = countryName.isNotEmpty
-            ? '$countryName - $code'
-            : code;
-        final String flagURL = countryCode.isNotEmpty
-            ? 'icons/flags/png100px/$countryCode.png'
-            : '';
+        final String displayName =
+            countryName.isNotEmpty ? '$countryName - $code' : code;
+        final String flagURL =
+            countryCode.isNotEmpty ? 'icons/flags/png100px/$countryCode.png' : '';
 
-        final newItem = CurrencyListItem(
-          currencyCode: code,
-          currencyName: displayName,
-          flagURL: flagURL,
+        toAdd.add(
+          CurrencyListItem(
+            currencyCode: code,
+            currencyName: displayName,
+            flagURL: flagURL,
+          ),
         );
-        await currencyBox.add(newItem);
+      }
+
+      if (toAdd.isNotEmpty) {
+        await currencyBox.addAll(toAdd);
       }
     } catch (e) {
       debugPrint('Error registering new dynamic currencies: $e');

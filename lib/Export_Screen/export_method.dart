@@ -47,12 +47,12 @@ class ExportExcel {
       final String tempPath = '${tempDir.path}/$fileName.xlsx';
 
       final List<int>? dataInts = excel.encode();
-      final File file =
-          File(tempPath)
-            ..createSync(recursive: true)
-            ..writeAsBytesSync(dataInts!);
+      if (dataInts == null) return null;
+      final File file = File(tempPath);
+      await file.create(recursive: true);
+      await file.writeAsBytes(dataInts);
 
-      final bool present = file.existsSync();
+      final bool present = await file.exists();
       return present ? tempPath : null;
     } catch (_) {
       return null;

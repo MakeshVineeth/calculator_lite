@@ -2,7 +2,7 @@ import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final helper = HelperFunctions();
+  const helper = HelperFunctions();
 
   group('HelperFunctions - Number and Parsing Logic', () {
     test('parseNumbersFromEnd finds last non-digit index', () {

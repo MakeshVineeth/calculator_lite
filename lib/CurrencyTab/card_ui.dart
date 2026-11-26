@@ -8,9 +8,9 @@ import 'package:calculator_lite/CurrencyTab/flag_icon.dart';
 import 'package:calculator_lite/CurrencyTab/reset_form_provider.dart';
 import 'package:calculator_lite/UIElements/slide_panel_item.dart';
 import 'package:calculator_lite/fixed_values.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive_ce_flutter/adapters.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -32,6 +32,12 @@ class CardUI extends StatefulWidget {
 
 class _CardUIState extends State<CardUI> {
   static String initial = '';
+  static final NumberFormat _formatCurrency = NumberFormat.currency(
+    decimalDigits: 0,
+    symbol: '',
+    locale: Platform.localeName,
+  );
+
   final controllerFrom = TextEditingController(text: initial);
   final controllerTo = TextEditingController(text: initial);
 
@@ -44,14 +50,23 @@ class _CardUIState extends State<CardUI> {
   bool isInitialized = false;
 
   double exchangeRate = 0.0;
-  late Box<dynamic> fromCurBox;
+  Box<dynamic>? _fromCurBox;
+  ValueListenable<Box<dynamic>>? _rateBoxListenable;
+  String? _rateBoxCode;
 
   String placeholder = '0.00';
   String currentRateStr = '';
   bool _isChooserOpen = false;
 
   bool isFromMethod(String method) => method == CommonsData.fromBox;
-  final HelperFunctions helperFunctions = HelperFunctions();
+  final HelperFunctions helperFunctions = const HelperFunctions();
+
+  void _handleResetForm() {
+    if (mounted) {
+      controllerFrom.clear();
+      controllerTo.clear();
+    }
+  }
 
   @override
   void initState() {
@@ -60,24 +75,61 @@ class _CardUIState extends State<CardUI> {
     toBox = Hive.box<CurrencyListItem>(CommonsData.toBox);
     openBoxes();
 
-    widget.resetFormProvider.addListener(() {
-      if (mounted) {
-        controllerFrom.text = '';
-        controllerTo.text = '';
+    if (!widget.remove) {
+      widget.resetFormProvider.addListener(_handleResetForm);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant CardUI oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.resetFormProvider != widget.resetFormProvider) {
+      if (!oldWidget.remove) {
+        oldWidget.resetFormProvider.removeListener(_handleResetForm);
       }
-    });
+      if (!widget.remove) {
+        widget.resetFormProvider.addListener(_handleResetForm);
+      }
+    }
   }
 
   @override
   void dispose() {
+    if (!widget.remove) {
+      widget.resetFormProvider.removeListener(_handleResetForm);
+    }
     controllerFrom.dispose();
     controllerTo.dispose();
     super.dispose();
   }
 
+  void _updateRateBoxListenable(String fromCode) {
+    if (_rateBoxCode == fromCode && _rateBoxListenable != null) return;
+    if (Hive.isBoxOpen(fromCode)) {
+      _fromCurBox = Hive.box<dynamic>(fromCode);
+      _rateBoxListenable = _fromCurBox!.listenable();
+      _rateBoxCode = fromCode;
+    } else {
+      _fromCurBox = null;
+      _rateBoxListenable = null;
+      _rateBoxCode = null;
+    }
+  }
+
+  Future<void> _closeBoxIfUnused(String code) async {
+    if (!Hive.isBoxOpen(code)) return;
+    final stillUsed = fromBox.values.any(
+      (c) => c.currencyCode.toLowerCase() == code,
+    );
+    if (!stillUsed) {
+      await Hive.box<dynamic>(code).close();
+    }
+  }
+
   void openBoxes() async {
     try {
       if (widget.remove) return;
+      if (widget.index >= fromBox.length || widget.index >= toBox.length) return;
 
       fromCur = fromBox.getAt(widget.index) as CurrencyListItem;
       toCur = toBox.getAt(widget.index) as CurrencyListItem;
@@ -85,11 +137,11 @@ class _CardUIState extends State<CardUI> {
       if (!Hive.isBoxOpen(fromCode)) {
         await Hive.openBox<dynamic>(fromCode);
       }
-      fromCurBox = Hive.box(fromCode);
-
+      if (!mounted) return;
+      _updateRateBoxListenable(fromCode);
       isInitialized = true;
 
-      updateExchange();
+      setState(() => updateExchange());
     } catch (_) {
       debugPrint('Exception openBoxes');
     }
@@ -97,26 +149,25 @@ class _CardUIState extends State<CardUI> {
 
   void updateExchange() {
     if (widget.remove) return;
+    if (widget.index >= fromBox.length || widget.index >= toBox.length) return;
 
     try {
       fromCur = fromBox.getAt(widget.index) as CurrencyListItem;
       toCur = toBox.getAt(widget.index) as CurrencyListItem;
+      final fromCode = fromCur.currencyCode.toLowerCase();
+      _updateRateBoxListenable(fromCode);
 
       if (fromCur.currencyCode == toCur.currencyCode) {
         exchangeRate = 1.0;
-      } else {
-        final fromCode = fromCur.currencyCode.toLowerCase();
-        if (Hive.isBoxOpen(fromCode)) {
-          fromCurBox = Hive.box(fromCode);
-          final value = fromCurBox.get(toCur.currencyCode);
-          if (value is num) {
-            exchangeRate = value.toDouble();
-          } else {
-            exchangeRate = 1.0;
-          }
+      } else if (_fromCurBox != null) {
+        final value = _fromCurBox!.get(toCur.currencyCode);
+        if (value is num) {
+          exchangeRate = value.toDouble();
         } else {
           exchangeRate = 1.0;
         }
+      } else {
+        exchangeRate = 1.0;
       }
 
       currentRateStr =
@@ -168,8 +219,11 @@ class _CardUIState extends State<CardUI> {
 
   void delete() => Future.delayed(CommonsData.dur1, () {
     if (!mounted) return;
+    if (widget.index >= fromBox.length || widget.index >= toBox.length) return;
 
     FocusScope.of(context).unfocus();
+    final String? deletedFromCode =
+        isInitialized ? fromCur.currencyCode.toLowerCase() : null;
     fromBox.deleteAt(widget.index);
     toBox.deleteAt(widget.index);
     AnimatedList.of(context).removeItem(
@@ -186,34 +240,43 @@ class _CardUIState extends State<CardUI> {
         ),
       ),
     );
+    if (deletedFromCode != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _closeBoxIfUnused(deletedFromCode);
+      });
+    }
   });
 
   Widget buttonToolTipInfo() {
-    if (!widget.remove) {
-      return ValueListenableBuilder(
-        valueListenable: fromCurBox.listenable(),
+    final listenable = _rateBoxListenable;
+    if (!widget.remove && isInitialized && listenable != null) {
+      return ValueListenableBuilder<Box<dynamic>>(
+        valueListenable: listenable,
         builder: (context, data, child) => currentRateInfo(),
       );
-    } else {
-      return currentRateInfo();
     }
+    return currentRateInfo();
   }
 
   Widget currentRateInfo() {
+    final double prevRate = exchangeRate;
     updateExchange();
 
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => handleFromText(controllerFrom.text, CommonsData.fromBox),
-    );
+    if (prevRate != exchangeRate && controllerFrom.text.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          handleFromText(controllerFrom.text, CommonsData.fromBox);
+        }
+      });
+    }
 
     return Text(
       currentRateStr,
       style: TextStyle(
         fontSize: 13,
-        color:
-            Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey[350]
-                : Colors.grey[700],
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[350]
+            : Colors.grey[700],
       ),
     );
   }
@@ -221,6 +284,10 @@ class _CardUIState extends State<CardUI> {
   void displayCurrencyChooser(String method) async {
     if (_isChooserOpen) return;
     _isChooserOpen = true;
+    final String? prevFromCode =
+        isInitialized && isFromMethod(method)
+            ? fromCur.currencyCode.toLowerCase()
+            : null;
     FocusManager.instance.primaryFocus?.unfocus();
 
     try {
@@ -243,6 +310,14 @@ class _CardUIState extends State<CardUI> {
 
     setState(() => updateExchange());
     handleFromText(controllerFrom.text, CommonsData.fromBox);
+
+    final String newFromCode =
+        isInitialized ? fromCur.currencyCode.toLowerCase() : '';
+    if (prevFromCode != null && prevFromCode != newFromCode) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _closeBoxIfUnused(prevFromCode);
+      });
+    }
   }
 
   Widget buttonCurrency(String method) => Expanded(
@@ -258,16 +333,15 @@ class _CardUIState extends State<CardUI> {
             ),
             onPressed: () => displayCurrencyChooser(method),
             icon: FlagIcon(
-              flagURL:
-                  isInitialized
-                      ? isFromMethod(method)
-                          ? fromCur.flagURL
-                          : toCur.flagURL
-                      : '',
+              flagURL: isInitialized
+                  ? isFromMethod(method)
+                      ? fromCur.flagURL
+                      : toCur.flagURL
+                  : '',
             ),
             label: Text(
               isInitialized
-                  ? (isFromMethod(method) 
+                  ? (isFromMethod(method)
                       ? fromCur.currencyCode
                       : toCur.currencyCode)
                   : '',
@@ -286,11 +360,9 @@ class _CardUIState extends State<CardUI> {
 
   void handleFromText(String from, String method) {
     try {
-      // Text is shown in a currency format. So we're replacing the commas for further parsing.
       from = from.replaceAll(',', '');
 
       final bool isFrom = isFromMethod(method);
-
       final List<String> textArray = from.split('');
 
       if (textArray.isEmpty) {
@@ -299,29 +371,29 @@ class _CardUIState extends State<CardUI> {
         } else {
           controllerFrom.clear();
         }
+        return;
       }
 
       if (!helperFunctions.numbersList.contains(textArray.last)) {
         textArray.removeLast();
       }
 
-      if (textArray.last == '.') {
+      if (textArray.isNotEmpty && textArray.last == '.') {
         final int decimalOccurrence =
-            textArray.where((element) => element == '.').toList().length;
+            textArray.where((element) => element == '.').length;
 
         if (decimalOccurrence > 1) textArray.removeLast();
       }
 
       from = textArray.join();
-
       final double? val = double.tryParse(from);
 
-      // making sure text is an integer & format it using currency format.
-      if (!textArray.contains('.') && helperFunctions.isInteger(val!)) {
-        from = formatCurrency.format(val);
+      if (val != null &&
+          !textArray.contains('.') &&
+          helperFunctions.isInteger(val)) {
+        from = _formatCurrency.format(val);
       }
 
-      // display the new currency formatted numbers. Following code if users types in Left Text Box.
       if (isFrom) {
         controllerFrom.text = from;
         controllerFrom.selection = controllerFrom.selection.copyWith(
@@ -330,15 +402,12 @@ class _CardUIState extends State<CardUI> {
         );
 
         if (val != null) {
-          controllerTo.text = (val * exchangeRate).toStringAsFixed(
-            decimalPlaces,
-          );
+          controllerTo.text =
+              (val * exchangeRate).toStringAsFixed(decimalPlaces);
         } else {
           controllerTo.clear();
         }
-      }
-      // Following code if users types in Right Text Box.
-      else {
+      } else {
         controllerTo.text = from;
         controllerTo.selection = controllerTo.selection.copyWith(
           baseOffset: from.length,
@@ -346,9 +415,8 @@ class _CardUIState extends State<CardUI> {
         );
 
         if (val != null) {
-          controllerFrom.text = (val / exchangeRate).toStringAsFixed(
-            decimalPlaces,
-          );
+          controllerFrom.text =
+              (val / exchangeRate).toStringAsFixed(decimalPlaces);
         } else {
           controllerFrom.clear();
         }
@@ -356,19 +424,12 @@ class _CardUIState extends State<CardUI> {
     } catch (_) {}
   }
 
-  final formatCurrency = NumberFormat.currency(
-    decimalDigits: 0,
-    symbol: '',
-    locale: Platform.localeName,
-  );
-
   Widget getTextField(String method) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 2),
     child: Card(
-      color:
-          Theme.of(context).brightness == Brightness.light
-              ? Theme.of(context).scaffoldBackgroundColor
-              : Colors.black45,
+      color: Theme.of(context).brightness == Brightness.light
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.black45,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: TextFormField(
@@ -382,10 +443,9 @@ class _CardUIState extends State<CardUI> {
           decoration: InputDecoration(
             border: InputBorder.none,
             hintStyle: TextStyle(
-              color:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Colors.grey[800]
-                      : Colors.grey,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.grey[800]
+                  : Colors.grey,
             ),
             hintText: placeholder,
             fillColor: Colors.white70,

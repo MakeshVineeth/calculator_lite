@@ -1,42 +1,38 @@
-﻿import 'package:calculator_lite/Backend/helper_functions.dart';
+﻿import 'dart:async';
+import 'dart:io' show Platform;
+
+import 'package:calculator_lite/Backend/helper_functions.dart';
+import 'package:calculator_lite/Backend/hive_initializer.dart';
+import 'package:calculator_lite/Backend/theme_change.dart';
 import 'package:calculator_lite/CurrencyTab/currency_tab.dart';
 import 'package:calculator_lite/Export_Screen/export_screen.dart';
 import 'package:calculator_lite/HistoryTab/commons_history.dart';
+import 'package:calculator_lite/HistoryTab/history_item.dart';
 import 'package:calculator_lite/HistoryTab/history_tab.dart';
-import 'package:calculator_lite/UIElements/tutorial_dialog.dart';
+import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
 import 'package:calculator_lite/UIElements/show_blur_dialog.dart';
+import 'package:calculator_lite/UIElements/tutorial_dialog.dart';
+import 'package:calculator_lite/bottom_nav_class.dart';
 import 'package:calculator_lite/calculator_tab.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/app_shortcuts.dart';
+import 'package:calculator_lite/fixed_values.dart';
+import 'package:calculator_lite/l10n/app_localizations.dart';
 import 'package:calculator_lite/payments/payments_wrapper.dart';
 import 'package:calculator_lite/payments/pro_screen.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:calculator_lite/bottom_nav_class.dart';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter/services.dart';
-import 'package:hive_ce_flutter/adapters.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:calculator_lite/fixed_values.dart';
-import 'package:calculator_lite/Backend/theme_change.dart';
-import 'package:calculator_lite/UIElements/fade_indexed_page.dart';
-import 'dart:io' show Platform;
-import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
-import 'HistoryTab/history_item.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:calculator_lite/l10n/app_localizations.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  await Hive.initFlutter('hiveUserData');
-  Hive.registerAdapter(CurrencyListItemAdapter());
-  Hive.registerAdapter(HistoryItemAdapter());
+  HiveInitializer.startInit();
   runApp(const BottomNavBar());
 }
 
@@ -57,8 +53,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
     setThemeFunction(themeMode);
   }
 
-  void setThemeFunction(ThemeMode themeMode) =>
-      setState(() => setTheme = themeMode);
+  void setThemeFunction(ThemeMode themeMode) {
+    if (!mounted || setTheme == themeMode) return;
+    setState(() => setTheme = themeMode);
+  }
 
   @override
   void initState() {
@@ -70,13 +68,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     return ThemeChange(
       stateFunction: setThemeFunction,
-      newChild:
-          (Platform.isAndroid)
-              ? PaymentsWrapper(child: materialApp(setTheme, context))
-              : ChangeNotifierProvider<PurchaseStatusProvider>.value(
-                value: PurchaseStatusProvider(),
-                child: materialApp(setTheme, context),
-              ),
+      newChild: Platform.isAndroid
+          ? PaymentsWrapper(child: materialApp(setTheme, context))
+          : ChangeNotifierProvider<PurchaseStatusProvider>(
+              create: (_) => PurchaseStatusProvider(),
+              child: materialApp(setTheme, context),
+            ),
     );
   }
 }
@@ -114,26 +111,41 @@ class ScaffoldHome extends StatefulWidget {
 class _ScaffoldHomeState extends State<ScaffoldHome>
     with RestorationMixin, WidgetsBindingObserver {
   final RestorableInt _currentIndex = RestorableInt(1);
+  final Set<int> _activatedTabs = <int>{1};
   final double _landScapeFont = 10.0;
   final double _iconSizeLandscape = 15.0;
-  final HelperFunctions _helperFunctions = HelperFunctions();
+  final HelperFunctions _helperFunctions = const HelperFunctions();
   final QuickActions quickActions = const QuickActions();
+  Timer? _tutorialTimer;
+  Brightness? _lastStatusBrightness;
 
-  final Map<String, IconData> tabs = {
+  static final Map<String, IconData> tabs = {
     FixedValues.currencyTabTitle: Icons.monetization_on_outlined,
     FixedValues.calculatorTabTitle: Icons.calculate_outlined,
     FixedValues.historyTabTitle: Icons.history_outlined,
   };
 
-  final List<Widget> availableWidgets = <Widget>[
-    const CurrencyTab(),
-    const CalculatorTab(),
-    const HistoryTab(),
+  final List<Widget> availableWidgets = const <Widget>[
+    CurrencyTab(),
+    CalculatorTab(),
+    HistoryTab(),
   ];
 
+  late final List<BottomNavigationBarItem> _navItems = List.generate(
+    tabs.length,
+    (index) => BottomNavClass(
+      title: tabs.keys.elementAt(index),
+      icon: tabs.values.elementAt(index),
+    ).returnNavItems(),
+  );
+
   void _onItemTapped(int index) {
+    if (!mounted) return;
     FocusScope.of(context).unfocus();
-    if (mounted) setState(() => _currentIndex.value = index);
+    setState(() {
+      _currentIndex.value = index;
+      _activatedTabs.add(index);
+    });
   }
 
   void setFlatStatusBar() {
@@ -160,11 +172,25 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    doInitialTasks();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) doInitialTasks();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final brightness = Theme.of(context).brightness;
+    if (_lastStatusBrightness != brightness) {
+      _lastStatusBrightness = brightness;
+      setFlatStatusBar();
+    }
   }
 
   @override
   void dispose() {
+    _tutorialTimer?.cancel();
+    _currentIndex.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -176,41 +202,52 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
     }
   }
 
+  Future<void> _initAndroidStartup() async {
+    await Future.wait<void>([
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge)
+          .catchError((_) {}),
+      FlutterDisplayMode.setHighRefreshRate().catchError((_) {}),
+      quickActions
+          .initialize((shortcutType) {
+            int index = 1;
+            if (shortcutType == AppShortcuts.calculatorQuickAction.type) {
+              index = 1;
+            } else if (shortcutType == AppShortcuts.currencyQuickAction.type) {
+              index = 0;
+            } else if (shortcutType == AppShortcuts.historyQuickAction.type) {
+              index = 2;
+            }
+            _onItemTapped(index);
+          })
+          .catchError((_) {}),
+      quickActions
+          .setShortcutItems(AppShortcuts.shortcutsList)
+          .catchError((_) {}),
+    ]);
+  }
+
   Future<void> doInitialTasks() async {
     try {
+      final prefsFuture = SharedPreferences.getInstance();
       if (Platform.isAndroid) {
-        try {
-          final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-          final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-          final int sdkVer = androidInfo.version.sdkInt;
-
-          if (sdkVer >= 23) await FlutterDisplayMode.setHighRefreshRate();
-        } catch (_) {}
-
-        final bool disabled = await getPrefs('privacy', true);
-        await setSecure(disabled);
-
-        await quickActions.initialize((shortcutType) {
-          int index = 1;
-
-          if (shortcutType == AppShortcuts.calculatorQuickAction.type) {
-            index = 1;
-          } else if (shortcutType == AppShortcuts.currencyQuickAction.type) {
-            index = 0;
-          } else if (shortcutType == AppShortcuts.historyQuickAction.type) {
-            index = 2;
-          }
-
-          _onItemTapped(index);
-        });
-
-        await quickActions.setShortcutItems(AppShortcuts.shortcutsList);
+        await _initAndroidStartup();
       }
 
-      if (await isFirstLaunch()) {
-        await setPrefs(FixedValues.firstLaunchPref, false);
+      final prefs = await prefsFuture;
+      if (!mounted) return;
 
-        // Add a sample history item.
+      if (Platform.isAndroid) {
+        final bool disabled = prefs.getBool('privacy') ?? true;
+        if (!disabled) {
+          await setSecure(false);
+        }
+      }
+
+      final bool showTutorial = prefs.getBool(FixedValues.firstLaunchPref) ?? true;
+      if (showTutorial) {
+        await prefs.setBool(FixedValues.firstLaunchPref, false);
+        await HiveInitializer.ensureInitialized();
+
         final Box<HistoryItem> box =
             await Hive.openBox<HistoryItem>(CommonsHistory.historyBox);
         final DateTime now = DateTime.now();
@@ -224,7 +261,7 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
 
         await box.add(historyItem);
 
-        Future.delayed(const Duration(milliseconds: 600), () {
+        _tutorialTimer = Timer(const Duration(milliseconds: 600), () {
           if (mounted) {
             showBlurDialog(context: context, child: const TutorialDialog());
           }
@@ -237,13 +274,18 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
 
   @override
   Widget build(BuildContext context) {
-    setFlatStatusBar();
+    final bool isLandscape = _helperFunctions.isLandScape(context);
 
     return Scaffold(
       body: SafeArea(
         child: FadeIndexedStack(
           index: _currentIndex.value,
-          children: availableWidgets,
+          children: List<Widget>.generate(
+            availableWidgets.length,
+            (i) => _activatedTabs.contains(i)
+                ? availableWidgets[i]
+                : const SizedBox.shrink(),
+          ),
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -254,27 +296,17 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
             child: SizedBox(
-              height: _helperFunctions.isLandScape(context) ? 48 : 58,
+              height: isLandscape ? 48 : 58,
               child: BottomNavigationBar(
                 currentIndex: _currentIndex.value,
                 selectedLabelStyle: FixedValues.semiBoldStyle,
                 unselectedLabelStyle: FixedValues.semiBoldStyle,
                 elevation: 0,
-                iconSize:
-                    _helperFunctions.isLandScape(context) ? _iconSizeLandscape : 24.0,
-                selectedFontSize:
-                    _helperFunctions.isLandScape(context) ? _landScapeFont : 14.0,
-                unselectedFontSize:
-                    _helperFunctions.isLandScape(context) ? _landScapeFont : 12.0,
+                iconSize: isLandscape ? _iconSizeLandscape : 24.0,
+                selectedFontSize: isLandscape ? _landScapeFont : 14.0,
+                unselectedFontSize: isLandscape ? _landScapeFont : 12.0,
                 type: BottomNavigationBarType.fixed,
-                items: List.generate(
-                  tabs.length,
-                  (index) =>
-                      BottomNavClass(
-                        title: tabs.keys.elementAt(index),
-                        icon: tabs.values.elementAt(index),
-                      ).returnNavItems(),
-                ),
+                items: _navItems,
                 onTap: _onItemTapped,
               ),
             ),
@@ -290,5 +322,6 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(_currentIndex, restorationId);
+    _activatedTabs.add(_currentIndex.value);
   }
 }

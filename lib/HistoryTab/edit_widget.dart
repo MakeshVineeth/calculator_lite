@@ -34,8 +34,8 @@ class _EditWidgetState extends State<EditWidget> {
 
   @override
   void dispose() {
-    super.dispose();
     myController.dispose();
+    super.dispose();
   }
 
   @override

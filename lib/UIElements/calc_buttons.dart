@@ -1,13 +1,13 @@
 ﻿import 'package:auto_size_text/auto_size_text.dart';
-import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:flutter/material.dart';
 
-class CalcButtons extends StatefulWidget {
+class CalcButtons extends StatelessWidget {
   final List<dynamic> rowData;
   final int index;
   final VoidCallback displayFunction;
   final bool isCornerRows;
   final AutoSizeGroup? autoSizeGroup;
+  final bool isSmallScreen;
 
   const CalcButtons({
     required this.rowData,
@@ -15,14 +15,10 @@ class CalcButtons extends StatefulWidget {
     required this.displayFunction,
     required this.isCornerRows,
     this.autoSizeGroup,
+    this.isSmallScreen = false,
     super.key,
   });
 
-  @override
-  State<CalcButtons> createState() => _CalcButtonsState();
-}
-
-class _CalcButtonsState extends State<CalcButtons> {
   static const Set<String> _textFunctions = {
     'sin',
     'cos',
@@ -35,25 +31,16 @@ class _CalcButtonsState extends State<CalcButtons> {
 
   @override
   Widget build(BuildContext context) {
-    Color? fgColor = Theme.of(context)
-        .textTheme
-        .labelLarge!
-        .color; // Initialized as Default Text Color
+    final theme = Theme.of(context);
+    Color? fgColor = theme.textTheme.labelLarge?.color;
 
-    if (widget.index == (widget.rowData.length - 1)) {
-      fgColor = Theme.of(context)
-          .primaryColor; // Last Column as Index 3 and is always primary color like red or blue
-    }
-    if (widget.isCornerRows) {
-      fgColor = Theme.of(context).primaryColor; // Check if it corners rows
+    if (index == (rowData.length - 1) || isCornerRows) {
+      fgColor = theme.primaryColor;
     }
 
-    final String text = widget.rowData[widget.index].toString();
+    final String text = rowData[index].toString();
     final bool isFunctionWord = _textFunctions.contains(text);
     final bool isSingleChar = text.length == 1 || text == '+/-';
-
-    final Size screenSize = MediaQuery.sizeOf(context);
-    final bool isSmallScreen = screenSize.width < 360 || screenSize.height < 450;
 
     final double fontSize;
     final double minFontSize;
@@ -62,7 +49,7 @@ class _CalcButtonsState extends State<CalcButtons> {
     if (isFunctionWord) {
       fontSize = 20.0;
       minFontSize = isSmallScreen ? 8.0 : 12.0;
-      group = widget.autoSizeGroup;
+      group = autoSizeGroup;
     } else if (isSingleChar) {
       fontSize = 28.0;
       minFontSize = isSmallScreen ? 9.0 : 16.0;
@@ -76,48 +63,40 @@ class _CalcButtonsState extends State<CalcButtons> {
     final double marginVal = isSmallScreen ? 2.0 : 5.0;
 
     return Expanded(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.all(marginVal),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  elevation: 1.0,
-                ).copyWith(
-                  side: WidgetStateProperty.resolveWith<BorderSide?>(
-                    (states) => states.contains(WidgetState.focused)
-                        ? BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2.5,
-                          )
-                        : null,
-                  ),
+      child: Padding(
+        padding: EdgeInsets.all(marginVal),
+        child: SizedBox.expand(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.zero,
+              elevation: 1.0,
+            ).copyWith(
+              side: WidgetStateProperty.resolveWith<BorderSide?>(
+                (states) => states.contains(WidgetState.focused)
+                    ? BorderSide(
+                        color: theme.colorScheme.primary,
+                        width: 2.5,
+                      )
+                    : null,
+              ),
+            ),
+            onPressed: displayFunction,
+            child: IgnorePointer(
+              child: AutoSizeText(
+                text,
+                group: group,
+                style: TextStyle(
+                  color: fgColor,
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w500,
                 ),
-                onPressed: widget.displayFunction,
-                child: IgnorePointer(
-                  child: FadeThis(
-                    child: AutoSizeText(
-                      text,
-                      group: group,
-                      style: TextStyle(
-                        color: fgColor,
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      minFontSize: minFontSize,
-                      stepGranularity: 1,
-                      maxLines: 1,
-                    ),
-                  ),
-                ),
+                minFontSize: minFontSize,
+                stepGranularity: 1,
+                maxLines: 1,
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

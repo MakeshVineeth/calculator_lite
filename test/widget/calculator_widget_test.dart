@@ -159,7 +159,6 @@ void main() {
       expect(display.mainValue, closeTo(18666600.0, 0.0001));
       expect(find.text('Invalid Input'), findsNothing);
 
-      await tester.pump(const Duration(seconds: 7));
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpAndSettle();
     });

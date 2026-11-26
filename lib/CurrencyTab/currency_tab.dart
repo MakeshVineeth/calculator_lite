@@ -1,22 +1,23 @@
 ﻿import 'dart:io';
+import 'package:calculator_lite/Backend/hive_initializer.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/copy_data.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/currency_list_item.dart';
+import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
 import 'package:calculator_lite/CurrencyTab/card_ui.dart';
 import 'package:calculator_lite/CurrencyTab/reset_form_provider.dart';
 import 'package:calculator_lite/CurrencyTab/small_tool_btn.dart';
 import 'package:calculator_lite/CurrencyTab/update_details_column.dart';
 import 'package:calculator_lite/UIElements/fade_in_widget.dart';
 import 'package:calculator_lite/UIElements/show_slide_up.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:calculator_lite/payments/provider_purchase_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:calculator_lite/fixed_values.dart';
-import 'package:calculator_lite/CurrencyTab/Backend/update_listener.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 
 class CurrencyTab extends StatefulWidget {
   const CurrencyTab({super.key});
@@ -31,7 +32,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
   late Box<CurrencyListItem> toBox;
   final resetFormProvider = ResetFormProvider();
   final UpdateListen updateListen = UpdateListen();
-  late PurchaseStatusProvider _purchaseStatusProvider;
   late Future<void> _processFuture;
 
   @override
@@ -41,6 +41,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   Future<void> process() async {
+    await HiveInitializer.ensureInitialized();
     await CopyData().copyData;
     fromBox = Hive.box<CurrencyListItem>(CommonsData.fromBox);
     toBox = Hive.box<CurrencyListItem>(CommonsData.toBox);
@@ -63,20 +64,23 @@ class _CurrencyTabState extends State<CurrencyTab> {
     }
 
     for (final CurrencyListItem item in fromBox.values) {
-      await Hive.openBox<dynamic>(item.currencyCode.toLowerCase());
+      final code = item.currencyCode.toLowerCase();
+      if (!Hive.isBoxOpen(code)) {
+        await Hive.openBox<dynamic>(code);
+      }
     }
   }
 
   @override
   void dispose() {
+    resetFormProvider.dispose();
+    updateListen.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _purchaseStatusProvider = context.watch<PurchaseStatusProvider>();
-
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: FutureBuilder<void>(
@@ -166,20 +170,19 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   Future<Map<String, Function>> popCurBtns() async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    final status =
-        preferences.getString(CommonsData.autoUpdatePref) ??
+    final status = preferences.getString(CommonsData.autoUpdatePref) ??
         CommonsData.autoUpdateEnabled;
-    final updateStatusStr =
-        status.contains(CommonsData.autoUpdateEnabled)
-            ? 'Disable Auto Update'
-            : 'Enable Auto Update';
+    final updateStatusStr = status.contains(CommonsData.autoUpdateEnabled)
+        ? 'Disable Auto Update'
+        : 'Enable Auto Update';
 
     final Map<String, Function> menuList = {
       'Update Now': () => updateListen.update(),
-      'Delete All': () {
-        fromBox.clear();
-        toBox.clear();
-        for (int i = 0; i <= fromBox.length - 1; i++) {
+      'Delete All': () async {
+        final int itemCount = fromBox.length;
+        await fromBox.clear();
+        await toBox.clear();
+        for (int i = 0; i < itemCount; i++) {
           _animListKey.currentState?.removeItem(
             0,
             (BuildContext context, Animation<double> animation) =>
@@ -198,7 +201,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
         }
       },
       updateStatusStr: () {
-        // User Preference for auto update.
         if (status.contains(CommonsData.autoUpdateEnabled)) {
           preferences.setString(
             CommonsData.autoUpdatePref,
@@ -217,8 +219,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   void addCurrencyCard() async {
-    // Check for payment status. And allow not more than 7 currency cards.
-    final bool paymentStatus = _purchaseStatusProvider.hasPurchased;
+    final bool paymentStatus =
+        context.read<PurchaseStatusProvider>().hasPurchased;
 
     if ((paymentStatus == false && fromBox.length >= 5) && Platform.isAndroid) {
       Navigator.pushNamed(context, FixedValues.buyRoute);
@@ -233,29 +235,25 @@ class _CurrencyTabState extends State<CurrencyTab> {
       );
       final String currencyCode = currencyFormat.currencyName ?? 'USD';
 
-      final List<CurrencyListItem> currencyList =
-          list.values.toList();
-
       CurrencyListItem fromCur = list.getAt(0)!;
       final CurrencyListItem toCur = list.getAt(0)!;
 
-      for (final CurrencyListItem element in currencyList) {
+      for (final CurrencyListItem element in list.values) {
         if (element.currencyCode == currencyCode) {
           fromCur = element;
           break;
         }
       }
 
-      if (!Hive.isBoxOpen(fromCur.currencyCode.toLowerCase())) {
-        await Hive.openBox<dynamic>(fromCur.currencyCode.toLowerCase());
-      }
-      if (!Hive.isBoxOpen(toCur.currencyCode.toLowerCase())) {
-        await Hive.openBox<dynamic>(toCur.currencyCode.toLowerCase());
+      final fromCode = fromCur.currencyCode.toLowerCase();
+      if (!Hive.isBoxOpen(fromCode)) {
+        await Hive.openBox<dynamic>(fromCode);
       }
 
       await fromBox.add(fromCur);
       await toBox.add(toCur);
 
+      if (!mounted) return;
       final int index = fromBox.length;
       _animListKey.currentState?.insertItem(
         index - 1,
@@ -263,11 +261,13 @@ class _CurrencyTabState extends State<CurrencyTab> {
       );
 
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: CommonsData.dur1,
-          curve: Curves.easeOut,
-        );
+        if (mounted && _scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: CommonsData.dur1,
+            curve: Curves.easeOut,
+          );
+        }
       });
     }
   }
@@ -292,17 +292,16 @@ class _CurrencyTabState extends State<CurrencyTab> {
         parent: BouncingScrollPhysics(),
       ),
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-      itemBuilder:
-          (context, index, animation) => SlideTransition(
-            position: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeIn,
-            ).drive(myTween),
-            child: FadeTransition(
-              opacity: animation,
-              child: CardUI(index: index, resetFormProvider: resetFormProvider),
-            ),
-          ),
+      itemBuilder: (context, index, animation) => SlideTransition(
+        position: CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeIn,
+        ).drive(myTween),
+        child: FadeTransition(
+          opacity: animation,
+          child: CardUI(index: index, resetFormProvider: resetFormProvider),
+        ),
+      ),
     ),
   );
 }

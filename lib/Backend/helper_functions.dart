@@ -6,16 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class HelperFunctions {
-  final List<String> operations = [
+  const HelperFunctions();
+
+  static final Set<String> _operations = {
     FixedValues.divisionChar,
     FixedValues.multiplyChar,
     FixedValues.minus,
     '+',
     '^',
     'mod',
-  ];
+  };
 
-  final List<String> numbersList = [
+  static const Set<String> _numbersSet = {
     '0',
     '1',
     '2',
@@ -27,11 +29,11 @@ class HelperFunctions {
     '8',
     '9',
     '.',
-  ];
+  };
 
-  final List<String> constList = ['e', FixedValues.pi];
+  static final Set<String> _constSet = {'e', FixedValues.pi};
 
-  final List<String> randomList = [
+  static final Set<String> _randomSet = {
     'tan(',
     'sin(',
     'cos(',
@@ -42,32 +44,40 @@ class HelperFunctions {
     'tan⁻¹(',
     FixedValues.root,
     FixedValues.cubeRootSym,
-  ];
+  };
+
+  static final DateFormat _hmFormat = DateFormat.Hm();
+  static final DateFormat _ymdFormat = DateFormat('yyyy-MM-dd');
+
+  Set<String> get operations => _operations;
+  Set<String> get numbersList => _numbersSet;
+  Set<String> get constList => _constSet;
+  Set<String> get randomList => _randomSet;
 
   int parseNumbersFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
-      if (!numbersList.contains(str[i]) && str[i] != '0.') break;
+      if (!_numbersSet.contains(str[i]) && str[i] != '0.') break;
     }
     return i;
   }
 
   int parseRandomFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
-      if (randomList.contains(str[i])) break;
+      if (_randomSet.contains(str[i])) break;
     }
     return i - 1;
   }
 
   int parseConstFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
-      if (!constList.contains(str[i])) break;
+      if (!_constSet.contains(str[i])) break;
     }
     return i;
   }
 
   int parseOperatorFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
-      if (operations.contains(str[i])) break;
+      if (_operations.contains(str[i])) break;
     }
     return i;
   }
@@ -101,11 +111,7 @@ class HelperFunctions {
     final List<String> result = [];
     for (final element in list) {
       if (element is List<String>) {
-        for (final element1 in element) {
-          result.add(element1);
-        }
-      } else if (element is double) {
-        result.add(element.toString());
+        result.addAll(element);
       } else {
         result.add(element.toString());
       }
@@ -115,7 +121,9 @@ class HelperFunctions {
 
   BigInt factorial(BigInt n) {
     if (n < BigInt.zero) throw ArgumentError('Negative numbers are not allowed.');
-    if (n > BigInt.from(170)) throw Exception('Factorial exceeds representation limits.');
+    if (n > BigInt.from(170)) {
+      throw Exception('Factorial exceeds representation limits.');
+    }
     BigInt result = BigInt.one;
     for (BigInt i = BigInt.two; i <= n; i += BigInt.one) {
       result *= i;
@@ -125,84 +133,45 @@ class HelperFunctions {
 
   double getDegValue(List<String> computerString, int index, double angle) {
     final an = Angle.degrees(angle);
-    double angleResult;
     switch (computerString[index]) {
       case 'cos(':
-        if (!isOddMultiple90(angle)) {
-          angleResult = an.cos;
-        } else {
-          angleResult = an.cos.roundToDouble();
-        }
-        break;
-
+        return isOddMultiple90(angle) ? an.cos.roundToDouble() : an.cos;
       case 'sin(':
-        angleResult = an.sin;
-        break;
-
+        return an.sin;
       case 'tan(':
-        if (angle.abs() == 45) {
-          angleResult = an.tan.roundToDouble();
-        } else if (check180(angle)) {
-          angleResult = 0;
-        } else if (!isOddMultiple90(angle)) {
-          angleResult = an.tan;
-        } else {
-          angleResult = double.infinity;
-        }
-        break;
-
+        if (angle.abs() == 45) return an.tan.roundToDouble();
+        if (check180(angle)) return 0;
+        return isOddMultiple90(angle) ? double.infinity : an.tan;
       case 'cos⁻¹(':
-        if (angle.abs() > 1) {
-          angleResult = double.nan;
-        } else if (angle.abs() != 0.5) {
-          angleResult = Angle.acos(angle).degrees;
-        } else {
-          angleResult = Angle.acos(angle).degrees.roundToDouble();
-        }
-        break;
-
+        if (angle.abs() > 1) return double.nan;
+        final res = Angle.acos(angle).degrees;
+        return angle.abs() != 0.5 ? res : res.roundToDouble();
       case 'sin⁻¹(':
-        if (angle.abs() > 1) {
-          angleResult = double.nan;
-        } else if (angle.abs() != 0.5) {
-          angleResult = Angle.asin(angle).degrees;
-        } else {
-          angleResult = Angle.asin(angle).degrees.roundToDouble();
-        }
-        break;
-
+        if (angle.abs() > 1) return double.nan;
+        final res = Angle.asin(angle).degrees;
+        return angle.abs() != 0.5 ? res : res.roundToDouble();
       case 'tan⁻¹(':
-        angleResult = Angle.atan(angle).degrees;
-        break;
-
+        return Angle.atan(angle).degrees;
       default:
-        angleResult = double.nan;
+        return double.nan;
     }
-
-    return angleResult;
   }
 
   bool isOddMultiple90(double angle) {
-    bool isMultiple = false;
     if (isInteger(angle) && angle % 90 == 0) {
       final int quotient = angle ~/ 90;
-      if (isInteger(quotient)) isMultiple = quotient.isOdd;
+      return quotient.isOdd;
     }
-    return isMultiple;
+    return false;
   }
 
-  bool check180(double angle) {
-    return isInteger(angle) && angle % 180 == 0;
-  }
+  bool check180(double angle) => isInteger(angle) && angle % 180 == 0;
 
   bool isInteger(num value) => value is int || value == value.roundToDouble();
 
-  String getDate(DateTime dateTime) {
-    final String t1 = DateFormat.Hm().format(dateTime);
-    final String t2 = DateFormat('yyyy-MM-dd').format(dateTime);
-    return '$t2 $t1';
-  }
+  String getDate(DateTime dateTime) =>
+      '${_ymdFormat.format(dateTime)} ${_hmFormat.format(dateTime)}';
 
   bool isLandScape(BuildContext context) =>
-      MediaQuery.of(context).orientation == Orientation.landscape;
+      MediaQuery.orientationOf(context) == Orientation.landscape;
 }

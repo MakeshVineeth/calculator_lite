@@ -1,14 +1,17 @@
-﻿import 'package:calculator_lite/Backend/helper_functions.dart';
+import 'package:auto_size_text_field/auto_size_text_field.dart';
+import 'package:calculator_lite/Backend/helper_functions.dart';
+import 'package:calculator_lite/UIElements/edit_text.dart';
 import 'package:calculator_lite/fixed_values.dart';
+import 'package:charcode/charcode.dart' as charcode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:charcode/charcode.dart' as charcode;
-import 'package:calculator_lite/UIElements/edit_text.dart';
-import 'package:auto_size_text_field/auto_size_text_field.dart';
 
 class DisplayScreen extends StatefulWidget {
-  const DisplayScreen(
-      {required this.calculationString, required this.mainValue, super.key});
+  const DisplayScreen({
+    required this.calculationString,
+    required this.mainValue,
+    super.key,
+  });
 
   final List<String> calculationString;
   final double mainValue;
@@ -16,8 +19,11 @@ class DisplayScreen extends StatefulWidget {
   @override
   State<DisplayScreen> createState() => _DisplayScreenState();
 
+  static final RegExp _trailingZeros = RegExp(r'0+$');
+  static final RegExp _trailingDot = RegExp(r'\.$');
+
   static String formatNumber(double value) {
-    if (value == -0) value = 0; // For Cos90 = -0
+    if (value == -0) value = 0;
     if (value.isNaN) return 'Invalid Input';
     const String infinity = 'Infinity';
     final String infinitySymbol = String.fromCharCode(charcode.$infin);
@@ -34,18 +40,15 @@ class DisplayScreen extends StatefulWidget {
     } else {
       valueStr = value.toStringAsFixed(precision);
       valueStr = valueStr
-          .replaceFirst(RegExp(r'0+$'), '')
-          .replaceFirst(RegExp(r'\.$'), '');
+          .replaceFirst(_trailingZeros, '')
+          .replaceFirst(_trailingDot, '');
     }
 
     return valueStr.replaceAll(infinity, infinitySymbol);
   }
 
   static bool isDoubleValid(double? val) {
-    if (val == null) return false;
-
-    if (val.isNaN) return false;
-
+    if (val == null || val.isNaN) return false;
     return true;
   }
 }
@@ -53,6 +56,19 @@ class DisplayScreen extends StatefulWidget {
 class _DisplayScreenState extends State<DisplayScreen> {
   final myController = TextEditingController();
   final ScrollController outputScrollController = ScrollController();
+  String _lastRenderedText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _syncController();
+  }
+
+  @override
+  void didUpdateWidget(covariant DisplayScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncController();
+  }
 
   @override
   void dispose() {
@@ -61,67 +77,97 @@ class _DisplayScreenState extends State<DisplayScreen> {
     super.dispose();
   }
 
+  String _computeDisplayText() {
+    if (DisplayScreen.isDoubleValid(widget.mainValue)) {
+      return DisplayScreen.formatNumber(widget.mainValue);
+    }
+    if (widget.mainValue.isNaN &&
+        _isExpressionComplete(widget.calculationString)) {
+      return 'Invalid Input';
+    }
+    return '';
+  }
+
+  void _syncController() {
+    final nextText = _computeDisplayText();
+    if (nextText == _lastRenderedText && myController.text == nextText) {
+      return;
+    }
+    _lastRenderedText = nextText;
+    myController.text = nextText;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && outputScrollController.hasClients) {
+        outputScrollController.animateTo(
+          outputScrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    runInitial();
     final bool isCompact = MediaQuery.sizeOf(context).height < 450 ||
-        HelperFunctions().isLandScape(context);
+        const HelperFunctions().isLandScape(context);
     return Expanded(
       flex: 2,
-      child: LayoutBuilder(
-        builder: (context, constraints) => Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: isCompact ? 1 : 2,
-          ),
-          constraints: BoxConstraints(
-            minHeight: constraints.maxHeight,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Expression Area (flexible top with scrollbar & auto-scroll)
-              Expanded(
-                child: TextFieldCalc(
-                  calculationString: widget.calculationString,
-                ),
-              ),
-              SizedBox(height: isCompact ? 1 : 4),
-              // Result Output Area (anchored bottom right with scrollbar and tap-to-copy)
-              GestureDetector(
-                onTap: () => _copyResultToClipboard(context),
-                onLongPress: () => _copyResultToClipboard(context),
-                child: RawScrollbar(
-                  controller: outputScrollController,
-                  thumbVisibility: true,
-                  interactive: true,
-                  thickness: 3.5,
-                  radius: const Radius.circular(3),
-                  thumbColor:
-                      Theme.of(context).colorScheme.secondary.withOpacity(0.4),
-                  child: AutoSizeTextField(
-                    textAlign: TextAlign.right,
-                    controller: myController,
-                    scrollController: outputScrollController,
-                    minLines: 1,
-                    maxLines: isCompact ? 1 : 2,
-                    readOnly: true,
-                    showCursor: false,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    ),
-                    style: mainValueStyle.copyWith(
-                      fontSize: isCompact ? 22.0 : 40.0,
-                    ),
-                    scrollPhysics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics()),
+      child: RepaintBoundary(
+        child: LayoutBuilder(
+          builder: (context, constraints) => Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: isCompact ? 1 : 2,
+            ),
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: TextFieldCalc(
+                    calculationString: widget.calculationString,
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: isCompact ? 1 : 4),
+                GestureDetector(
+                  onTap: () => _copyResultToClipboard(context),
+                  onLongPress: () => _copyResultToClipboard(context),
+                  child: RawScrollbar(
+                    controller: outputScrollController,
+                    thumbVisibility: true,
+                    interactive: true,
+                    thickness: 3.5,
+                    radius: const Radius.circular(3),
+                    thumbColor:
+                        Theme.of(context).colorScheme.secondary.withOpacity(0.4),
+                    child: AutoSizeTextField(
+                      textAlign: TextAlign.right,
+                      controller: myController,
+                      scrollController: outputScrollController,
+                      minLines: 1,
+                      maxLines: isCompact ? 1 : 2,
+                      readOnly: true,
+                      showCursor: false,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      ),
+                      style: mainValueStyle.copyWith(
+                        fontSize: isCompact ? 22.0 : 40.0,
+                      ),
+                      scrollPhysics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -152,33 +198,10 @@ class _DisplayScreenState extends State<DisplayScreen> {
         last.endsWith('.') ||
         last == '(' ||
         last.endsWith('(') ||
-        HelperFunctions().operations.contains(last)) {
+        const HelperFunctions().operations.contains(last)) {
       return false;
     }
     return true;
-  }
-
-  void runInitial() {
-    if (mounted) {
-      if (DisplayScreen.isDoubleValid(widget.mainValue)) {
-        myController.text = DisplayScreen.formatNumber(widget.mainValue);
-      } else if (widget.mainValue.isNaN &&
-          _isExpressionComplete(widget.calculationString)) {
-        myController.text = 'Invalid Input';
-      } else {
-        myController.clear();
-      }
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (outputScrollController.hasClients) {
-          outputScrollController.animateTo(
-            outputScrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeOut,
-          );
-        }
-      });
-    }
   }
 
   TextStyle mainValueStyle = const TextStyle(
