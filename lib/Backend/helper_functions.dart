@@ -56,7 +56,7 @@ class HelperFunctions {
 
   int parseNumbersFromEnd(int i, List<String> str) {
     for (; i >= 0; i--) {
-      if (!_numbersSet.contains(str[i])) break;
+      if (!_numbersSet.contains(str[i]) && str[i] != '0.') break;
     }
     return i;
   }

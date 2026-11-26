@@ -1,6 +1,7 @@
-﻿import 'package:auto_size_text_field/auto_size_text_field.dart';
+import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:calculator_lite/Backend/helper_functions.dart';
 import 'package:calculator_lite/UIElements/edit_text.dart';
+import 'package:calculator_lite/fixed_values.dart';
 import 'package:charcode/charcode.dart' as charcode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -193,6 +194,8 @@ class _DisplayScreenState extends State<DisplayScreen> {
     if (calcStr.isEmpty) return false;
     final last = calcStr.last;
     if (last == '.' ||
+        last == FixedValues.decimalChar ||
+        last.endsWith('.') ||
         last == '(' ||
         last.endsWith('(') ||
         const HelperFunctions().operations.contains(last)) {
