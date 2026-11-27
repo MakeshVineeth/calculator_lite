@@ -9,6 +9,7 @@ import 'package:calculator_lite/Backend/hive_initializer.dart';
 import 'package:calculator_lite/UIElements/about_page.dart';
 import 'package:calculator_lite/UIElements/calc_buttons.dart';
 import 'package:calculator_lite/UIElements/display_screen.dart';
+import 'package:calculator_lite/UIElements/edit_text.dart';
 import 'package:calculator_lite/UIElements/show_slide_up.dart';
 import 'package:calculator_lite/UIElements/theme_chooser.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
@@ -25,7 +26,9 @@ import 'HistoryTab/commons_history.dart';
 import 'HistoryTab/history_item.dart';
 
 class CalculatorTab extends StatefulWidget {
-  const CalculatorTab({super.key});
+  final bool isActive;
+
+  const CalculatorTab({this.isActive = true, super.key});
 
   @override
   State<CalculatorTab> createState() => _CalculatorTabState();
@@ -316,6 +319,19 @@ class _CalculatorTabState extends State<CalculatorTab> {
 
   bool _handleHardwareKey(KeyEvent event) {
     if (event is! KeyDownEvent) return false;
+    if (!mounted || !widget.isActive) return false;
+    if (ModalRoute.of(context)?.isCurrent != true) return false;
+
+    final focusContext = FocusManager.instance.primaryFocus?.context;
+    if (focusContext != null) {
+      final hasEditable =
+          focusContext.findAncestorWidgetOfExactType<EditableText>() != null;
+      final isCalcInput =
+          focusContext.findAncestorWidgetOfExactType<TextFieldCalc>() != null;
+      if (hasEditable && !isCalcInput) {
+        return false;
+      }
+    }
 
     final mappedVal = _keyMap[event.logicalKey];
 
@@ -397,7 +413,7 @@ class _CalculatorTabState extends State<CalculatorTab> {
                 mainValue: mainValue,
               ),
               Expanded(
-                flex: isLand ? 6 : 3,
+                flex: isLand ? 4 : 3,
                 child: Padding(
                   padding: EdgeInsets.all(isCompact ? 2.0 : 5.0),
                   child: RepaintBoundary(
@@ -500,12 +516,12 @@ class _CalculatorTabState extends State<CalculatorTab> {
       );
 
   void changeMetrics() async {
-    setState(() {
-      currentMetric = currentMetric == 'RAD' ? 'DEG' : 'RAD';
-      if (calculationString.isNotEmpty) {
-        runCalcParser('');
-      }
-    });
+    currentMetric = currentMetric == 'RAD' ? 'DEG' : 'RAD';
+    if (calculationString.isNotEmpty) {
+      runCalcParser('');
+    } else {
+      setState(() {});
+    }
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('metrics', currentMetric);

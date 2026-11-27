@@ -23,13 +23,13 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _syncExpression();
+    _syncExpression(Provider.of<CustomFocusEvents>(context));
   }
 
   @override
   void didUpdateWidget(covariant TextFieldCalc oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _syncExpression();
+    _syncExpression(Provider.of<CustomFocusEvents>(context, listen: false));
   }
 
   @override
@@ -40,10 +40,8 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
     super.dispose();
   }
 
-  void _syncExpression() {
+  void _syncExpression(CustomFocusEvents customFocusEvents) {
     if (!mounted) return;
-    final CustomFocusEvents customFocusEvents =
-        Provider.of<CustomFocusEvents>(context);
     final String text = widget.calculationString.join();
 
     if (customFocusEvents.isFocused) {
@@ -118,14 +116,17 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
             thumbColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
             child: AutoSizeTextField(
               textAlign: TextAlign.right,
-              style: completeStringStyle(),
+              style: completeStringStyle(isLand || isCompact),
               controller: myController,
               scrollController: scrollController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
+                isDense: true,
                 border: InputBorder.none,
                 hintText: 'Calculate.',
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 4,
+                  vertical: isCompact ? 0 : 2,
+                ),
               ),
               readOnly: true,
               stepGranularity: 2,
@@ -218,8 +219,8 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
     }
   }
 
-  TextStyle completeStringStyle() => const TextStyle(
-    fontSize: 60,
+  TextStyle completeStringStyle(bool isCompact) => TextStyle(
+    fontSize: isCompact ? 26 : 60,
     letterSpacing: 1,
   );
 }

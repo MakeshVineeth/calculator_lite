@@ -50,14 +50,10 @@ class _CurrencyTabState extends State<CurrencyTab> {
       final currencyBox =
           Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
       if (currencyBox.isNotEmpty) {
-        final usd = currencyBox.values.firstWhere(
-          (c) => c.currencyCode == 'USD',
-          orElse: () => currencyBox.values.first,
-        );
-        final eur = currencyBox.values.firstWhere(
-          (c) => c.currencyCode == 'EUR',
-          orElse: () => currencyBox.values.last,
-        );
+        final usd = CopyData.findPreferredCurrency(currencyBox.values, 'USD') ??
+            currencyBox.values.first;
+        final eur = CopyData.findPreferredCurrency(currencyBox.values, 'EUR') ??
+            currencyBox.values.last;
         await fromBox.add(usd);
         await toBox.add(eur);
       }
@@ -235,15 +231,15 @@ class _CurrencyTabState extends State<CurrencyTab> {
       );
       final String currencyCode = currencyFormat.currencyName ?? 'USD';
 
-      CurrencyListItem fromCur = list.getAt(0)!;
-      final CurrencyListItem toCur = list.getAt(0)!;
-
-      for (final CurrencyListItem element in list.values) {
-        if (element.currencyCode == currencyCode) {
-          fromCur = element;
-          break;
-        }
-      }
+      final CurrencyListItem fromCur =
+          CopyData.findPreferredCurrency(list.values, currencyCode) ??
+              CopyData.findPreferredCurrency(list.values, 'USD') ??
+              list.getAt(0)!;
+      final String targetToCode =
+          fromCur.currencyCode == 'EUR' ? 'USD' : 'EUR';
+      final CurrencyListItem toCur =
+          CopyData.findPreferredCurrency(list.values, targetToCode) ??
+              list.getAt(0)!;
 
       final fromCode = fromCur.currencyCode.toLowerCase();
       if (!Hive.isBoxOpen(fromCode)) {

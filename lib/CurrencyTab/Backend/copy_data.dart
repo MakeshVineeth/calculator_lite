@@ -14,6 +14,41 @@ class CopyData {
   static const int kSeedVersion = 2;
   static const String kSeedVersionKey = 'currency_seed_version_v2';
 
+  static const Map<String, String> _preferredFlagSuffixes = {
+    'USD': '/us.png',
+    'EUR': '/eu.png',
+    'GBP': '/gb.png',
+    'AUD': '/au.png',
+    'NZD': '/nz.png',
+    'INR': '/in.png',
+    'CAD': '/ca.png',
+    'JPY': '/jp.png',
+    'CHF': '/ch.png',
+  };
+
+  static CurrencyListItem? findPreferredCurrency(
+    Iterable<CurrencyListItem> items,
+    String code,
+  ) {
+    final targetCode = code.toUpperCase();
+    CurrencyListItem? fallback;
+    final preferredSuffix = _preferredFlagSuffixes[targetCode];
+
+    for (final item in items) {
+      if (item.currencyCode.toUpperCase() != targetCode) continue;
+      fallback ??= item;
+      final flag = item.flagURL.toLowerCase();
+      if (preferredSuffix != null && flag.endsWith(preferredSuffix)) {
+        return item;
+      }
+      if (targetCode == 'EUR' &&
+          (flag.endsWith('/de.png') || flag.endsWith('/fr.png'))) {
+        return item;
+      }
+    }
+    return fallback;
+  }
+
   Future<String> get copyData async {
     try {
       await HiveInitializer.ensureInitialized();
@@ -65,13 +100,10 @@ class CopyData {
       return;
     }
 
-    CurrencyListItem defaultFrom = currencyBox.getAt(0)!;
-    CurrencyListItem defaultTo = currencyBox.getAt(0)!;
-
-    for (final item in currencyBox.values) {
-      if (item.currencyCode == 'USD') defaultFrom = item;
-      if (item.currencyCode == 'EUR') defaultTo = item;
-    }
+    final defaultFrom =
+        findPreferredCurrency(currencyBox.values, 'USD') ?? currencyBox.getAt(0)!;
+    final defaultTo =
+        findPreferredCurrency(currencyBox.values, 'EUR') ?? currencyBox.getAt(0)!;
 
     if (fromBox.isEmpty) await fromBox.add(defaultFrom);
     if (toBox.isEmpty) await toBox.add(defaultTo);
@@ -158,25 +190,34 @@ class CopyData {
 
       final Map<String, dynamic> rates =
           data['rates'] as Map<String, dynamic>? ?? {};
-      for (final entry in rates.entries) {
-        final String baseCode = entry.key.toLowerCase();
-        final Map<String, dynamic> rateMap =
-            entry.value as Map<String, dynamic>;
-        final bool wasOpen = Hive.isBoxOpen(baseCode);
-        final Box<dynamic> rateBox = await _openBoxSafe<dynamic>(baseCode);
-        final Map<String, double> batch = {};
-        for (final r in rateMap.entries) {
-          final val = r.value;
-          if (val is num) {
-            batch[r.key] = val.toDouble();
-          }
-        }
-        if (batch.isNotEmpty) {
-          await rateBox.putAll(batch);
-        }
-        if (!wasOpen) {
-          await rateBox.close();
-        }
+      final rateEntries = rates.entries.toList();
+      const int chunkSize = 16;
+      for (int i = 0; i < rateEntries.length; i += chunkSize) {
+        final int end = (i + chunkSize < rateEntries.length)
+            ? i + chunkSize
+            : rateEntries.length;
+        await Future.wait(
+          rateEntries.sublist(i, end).map((entry) async {
+            final String baseCode = entry.key.toLowerCase();
+            final Map<String, dynamic> rateMap =
+                entry.value as Map<String, dynamic>;
+            final bool wasOpen = Hive.isBoxOpen(baseCode);
+            final Box<dynamic> rateBox = await _openBoxSafe<dynamic>(baseCode);
+            final Map<String, double> batch = {};
+            for (final r in rateMap.entries) {
+              final val = r.value;
+              if (val is num) {
+                batch[r.key] = val.toDouble();
+              }
+            }
+            if (batch.isNotEmpty) {
+              await rateBox.putAll(batch);
+            }
+            if (!wasOpen) {
+              await rateBox.close();
+            }
+          }),
+        );
       }
     } catch (e) {
       debugPrint('Error seeding currency data: $e');

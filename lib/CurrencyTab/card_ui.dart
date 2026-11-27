@@ -32,11 +32,23 @@ class CardUI extends StatefulWidget {
 
 class _CardUIState extends State<CardUI> {
   static String initial = '';
-  static final NumberFormat _formatCurrency = NumberFormat.currency(
-    decimalDigits: 0,
-    symbol: '',
-    locale: Platform.localeName,
-  );
+  static final NumberFormat _formatCurrency = _buildCurrencyFormat();
+
+  static NumberFormat _buildCurrencyFormat() {
+    try {
+      return NumberFormat.currency(
+        decimalDigits: 0,
+        symbol: '',
+        locale: Platform.localeName,
+      );
+    } catch (_) {
+      return NumberFormat.currency(
+        decimalDigits: 0,
+        symbol: '',
+        locale: 'en_US',
+      );
+    }
+  }
 
   final controllerFrom = TextEditingController(text: initial);
   final controllerTo = TextEditingController(text: initial);
@@ -414,7 +426,7 @@ class _CardUIState extends State<CardUI> {
           extentOffset: from.length,
         );
 
-        if (val != null) {
+        if (val != null && exchangeRate > 0) {
           controllerFrom.text =
               (val / exchangeRate).toStringAsFixed(decimalPlaces);
         } else {
