@@ -94,4 +94,21 @@ void main() {
     expect(currencyBox.length, greaterThanOrEqualTo(180));
     expect(dateBox.get(CopyData.kSeedVersionKey), equals(CopyData.kSeedVersion));
   });
+
+  test('CopyData findPreferredCurrency prefers US flag for USD and European flag for EUR', () async {
+    final copyData = CopyData();
+    await copyData.copyData;
+    final currencyBox = Hive.box<CurrencyListItem>(CommonsData.currencyListBox);
+
+    final usd = CopyData.findPreferredCurrency(currencyBox.values, 'USD');
+    final eur = CopyData.findPreferredCurrency(currencyBox.values, 'EUR');
+
+    expect(usd, isNotNull);
+    expect(usd!.flagURL.toLowerCase(), endsWith('/us.png'));
+    expect(eur, isNotNull);
+    expect(
+      eur!.flagURL.toLowerCase(),
+      anyOf(endsWith('/eu.png'), endsWith('/de.png'), endsWith('/fr.png')),
+    );
+  });
 }

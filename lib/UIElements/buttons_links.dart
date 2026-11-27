@@ -36,12 +36,17 @@ class ButtonLinks extends StatelessWidget {
           padding: WidgetStateProperty.all(
               const EdgeInsets.symmetric(vertical: 12.0)),
         ),
-        label: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: foregroundColor,
-            fontSize: 14,
+        label: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            title,
+            maxLines: 1,
+            softWrap: false,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: foregroundColor,
+              fontSize: 14,
+            ),
           ),
         ),
       ),

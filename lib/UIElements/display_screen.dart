@@ -152,13 +152,16 @@ class _DisplayScreenState extends State<DisplayScreen> {
                       maxLines: isCompact ? 1 : 2,
                       readOnly: true,
                       showCursor: false,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
+                        isDense: true,
                         border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: isCompact ? 0 : 2,
+                        ),
                       ),
                       style: mainValueStyle.copyWith(
-                        fontSize: isCompact ? 22.0 : 40.0,
+                        fontSize: isCompact ? 20.0 : 40.0,
                       ),
                       scrollPhysics: const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics(),

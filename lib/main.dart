@@ -282,9 +282,15 @@ class _ScaffoldHomeState extends State<ScaffoldHome>
           index: _currentIndex.value,
           children: List<Widget>.generate(
             availableWidgets.length,
-            (i) => _activatedTabs.contains(i)
-                ? availableWidgets[i]
-                : const SizedBox.shrink(),
+            (i) {
+              if (!_activatedTabs.contains(i)) {
+                return const SizedBox.shrink();
+              }
+              if (i == 1) {
+                return CalculatorTab(isActive: _currentIndex.value == 1);
+              }
+              return availableWidgets[i];
+            },
           ),
         ),
       ),

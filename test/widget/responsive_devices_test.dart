@@ -239,5 +239,45 @@ void main() {
       expect(find.text('History'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets(
+        'Inactive CalculatorTab does not intercept keyboard input destined for focused TextField',
+        (WidgetTester tester) async {
+      final textController = TextEditingController();
+      addTearDown(textController.dispose);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                TextField(
+                  controller: textController,
+                  autofocus: true,
+                ),
+                const Expanded(
+                  child: CalculatorTab(isActive: false),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.runAsync(() async {
+        await tester.sendKeyEvent(LogicalKeyboardKey.digit5);
+        await tester.sendKeyEvent(LogicalKeyboardKey.digit0);
+        await tester.sendKeyEvent(LogicalKeyboardKey.keyC);
+        await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      });
+      await tester.pump();
+
+      final DisplayScreen calcDisplay =
+          tester.widget(find.byType(DisplayScreen));
+      expect(calcDisplay.calculationString, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
   });
 }
