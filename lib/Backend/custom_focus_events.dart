@@ -6,13 +6,14 @@ class CustomFocusEvents extends ChangeNotifier {
   int position = 0;
 
   final List<String> lists = 'sicotao⁻¹mngld'.split('');
-  late String myText;
+  String myText = '';
   bool isFocused = false;
 
   int getCurPosition(List<String> calculationString) {
     final List<String> convertStr = [];
     if (calculationString.length != myText.length) {
-      final String trimmedText = myText.substring(0, position);
+      final int safePos = position.clamp(0, myText.length);
+      final String trimmedText = myText.substring(0, safePos);
 
       for (int i = 0; i < trimmedText.length; i++) {
         if ((lists.contains(trimmedText[i]) || trimmedText.contains('(')) &&
@@ -25,10 +26,8 @@ class CustomFocusEvents extends ChangeNotifier {
         }
       }
     } else {
-      return position;
+      return position.clamp(0, calculationString.length);
     }
-
-    notifyListeners();
 
     return convertStr.length;
   }
@@ -53,10 +52,10 @@ class CustomFocusEvents extends ChangeNotifier {
           }
         }
 
-        position = count;
+        position = count < 0 ? 0 : count;
         return position;
       } else {
-        position = start;
+        position = start.clamp(0, len);
         return position;
       }
     } catch (_) {
@@ -73,13 +72,14 @@ class CustomFocusEvents extends ChangeNotifier {
     final int pos = getCurPosition(calculationString) - 1;
     if (pos > -1 && pos < calculationString.length) {
       calculationString.removeAt(pos);
-    } else if (pos == calculationString.length) {
+    } else if (pos == calculationString.length && calculationString.isNotEmpty) {
       calculationString.removeAt(pos - 1);
     }
-    final int secondLength = calculationString.join().length;
+    myText = calculationString.join();
+    final int secondLength = myText.length;
 
     final int diff = firstLength - secondLength;
-    position = diff > 0 ? position - diff : position;
+    position = (diff > 0 ? position - diff : position).clamp(0, secondLength);
     return calculationString;
   }
 
@@ -124,7 +124,7 @@ class CustomFocusEvents extends ChangeNotifier {
       myText = calculationString.join();
       return calculationString;
     } catch (_) {
-      return List.empty();
+      return List<String>.from(calculationString);
     }
   }
 

@@ -1,16 +1,19 @@
 package com.makeshtech.calculator_lite
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.WindowManager
 import androidx.core.view.WindowCompat
 import com.google.android.play.core.review.ReviewManagerFactory
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.concurrent.ExecutorService
@@ -30,6 +33,10 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        if (!prefs.getBoolean("flutter.privacy", true)) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -62,8 +69,9 @@ class MainActivity : FlutterActivity() {
                 "createFile" -> {
                     val requestedPath = call.argument<String>("path")
                     val requestedName = call.argument<String>("fileName")
+                    val safeName = requestedName?.replace(Regex("[^A-Za-z0-9_-]"), "_")
                     if (methodResult != null ||
-                        requestedName.isNullOrBlank() ||
+                        safeName.isNullOrBlank() ||
                         requestedPath.isNullOrBlank()
                     ) {
                         result.success(null)
@@ -72,12 +80,12 @@ class MainActivity : FlutterActivity() {
 
                     methodResult = result
                     filePath = requestedPath
-                    fileName = requestedName
+                    fileName = safeName
 
                     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        putExtra(Intent.EXTRA_TITLE, "$requestedName.xlsx")
+                        putExtra(Intent.EXTRA_TITLE, "$safeName.xlsx")
                     }
 
                     try {
@@ -139,14 +147,19 @@ class MainActivity : FlutterActivity() {
         ioExecutor.execute {
             var success = false
             try {
-                contentResolver.openFileDescriptor(uri, "w")?.use { pfd ->
-                    FileInputStream(pathStr).use { input ->
-                        FileOutputStream(pfd.fileDescriptor).use { output ->
-                            input.copyTo(output)
+                val cacheRoot = cacheDir.canonicalFile
+                val sourceFile = File(pathStr).canonicalFile
+                val inCacheDir = sourceFile.path.startsWith(cacheRoot.path + File.separator)
+                if (inCacheDir && sourceFile.name.endsWith(".xlsx") && sourceFile.exists()) {
+                    contentResolver.openFileDescriptor(uri, "w")?.use { pfd ->
+                        FileInputStream(sourceFile).use { input ->
+                            FileOutputStream(pfd.fileDescriptor).use { output ->
+                                input.copyTo(output)
+                            }
                         }
+                        success = true
                     }
                 }
-                success = true
             } catch (_: Exception) {
                 success = false
             }

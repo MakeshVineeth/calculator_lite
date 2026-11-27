@@ -1,4 +1,5 @@
 import 'package:calculator_lite/Backend/calc_parser.dart';
+import 'package:calculator_lite/Backend/custom_focus_events.dart';
 import 'package:calculator_lite/UIElements/display_screen.dart';
 import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -500,6 +501,111 @@ void main() {
             ['6', '2', '2', FixedValues.decimalChar, '2', '2']),
         closeTo(622.22, 0.0001),
       );
+    });
+  });
+
+  group('CalcParser & Focus - Security & Critical Bug Regressions', () {
+    test('negative percentages evaluate accurately (-50%, -100%, (-50)%)', () {
+      final p1 = CalcParser(
+        calculationString: [FixedValues.minus, '5', '0', '%'],
+        currentMetric: 'RAD',
+      );
+      expect(p1.evalFunction(p1.calculationString), closeTo(-0.5, 0.0001));
+
+      final p2 = CalcParser(
+        calculationString: [FixedValues.minus, '1', '0', '0', '%'],
+        currentMetric: 'RAD',
+      );
+      expect(p2.evalFunction(p2.calculationString), closeTo(-1.0, 0.0001));
+
+      final p3 = CalcParser(
+        calculationString: ['(', FixedValues.minus, '5', '0', ')', '%'],
+        currentMetric: 'RAD',
+      );
+      expect(p3.evalFunction(p3.calculationString), closeTo(-0.5, 0.0001));
+    });
+
+    test('chained percentages evaluate linearly without exponential expansion',
+        () {
+      final p1 = CalcParser(
+        calculationString: ['1', '0', '0', '+', '1', '0', '%', '+', '1', '0', '%'],
+        currentMetric: 'RAD',
+      );
+      expect(p1.evalFunction(p1.calculationString), closeTo(121.0, 0.0001));
+
+      final chained = <String>['1', '0', '0'];
+      for (int i = 0; i < 30; i++) {
+        chained.addAll(['+', '1', '%']);
+      }
+      final p2 = CalcParser(calculationString: chained, currentMetric: 'RAD');
+      final sw = Stopwatch()..start();
+      final res = p2.evalFunction(p2.calculationString);
+      sw.stop();
+      expect(res, closeTo(134.78489, 0.01));
+      expect(sw.elapsedMilliseconds, lessThan(500));
+    });
+
+    test('enforces maxExpressionLength and maxNestingDepth bounds', () {
+      final parser = CalcParser(calculationString: [], currentMetric: 'RAD');
+      for (int i = 0; i < CalcParser.maxExpressionLength + 25; i++) {
+        parser.addToExpression('1');
+      }
+      expect(parser.calculationString.length, equals(CalcParser.maxExpressionLength));
+
+      final nested = CalcParser(calculationString: [], currentMetric: 'RAD');
+      for (int i = 0; i < CalcParser.maxNestingDepth + 10; i++) {
+        nested.addToExpression('(');
+      }
+      expect(nested.calculationString.length, equals(CalcParser.maxNestingDepth));
+    });
+
+    test('unary minus is not replaced by binary operator and 10^x multiplies after digits',
+        () {
+      final p1 = CalcParser(
+        calculationString: [FixedValues.minus],
+        currentMetric: 'RAD',
+      );
+      expect(p1.addToExpression(FixedValues.multiplyChar),
+          equals([FixedValues.minus]));
+
+      final p2 = CalcParser(
+        calculationString: ['(', FixedValues.minus],
+        currentMetric: 'RAD',
+      );
+      expect(p2.addToExpression(FixedValues.multiplyChar),
+          equals(['(', FixedValues.minus]));
+
+      final p3 = CalcParser(calculationString: ['2'], currentMetric: 'RAD');
+      p3.addToExpression('𝟏𝟬ˣ');
+      p3.addToExpression('3');
+      expect(p3.evalFunction(p3.calculationString), closeTo(2000.0, 0.0001));
+    });
+
+    test('CustomFocusEvents cursor editing updates myText cleanly and handles catch safely',
+        () {
+      final focus = CustomFocusEvents();
+      final expr = ['1', '2', '3'];
+      expect(focus.getPosition(start: 2, calculationString: expr), equals(2));
+      focus.updateFocus();
+
+      final afterBack = focus.removeBack(calculationString: List<String>.from(expr));
+      expect(afterBack, equals(['1', '3']));
+      expect(focus.myText, equals('13'));
+      expect(focus.getCurPosition(afterBack), equals(1));
+
+      focus.clearData();
+      expect(focus.isFocused, isFalse);
+      expect(focus.position, equals(0));
+      expect(focus.myText, equals(''));
+
+      // Out-of-bounds catch path must still return a growable list
+      focus.position = 999;
+      final recovered = focus.getRegulatedString(
+        calculationString: ['1'],
+        currentMetric: 'RAD',
+        value: '2',
+      );
+      expect(() => recovered.add('3'), returnsNormally);
     });
   });
 }

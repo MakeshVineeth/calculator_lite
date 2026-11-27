@@ -15,6 +15,7 @@ import 'package:calculator_lite/UIElements/theme_chooser.dart';
 import 'package:calculator_lite/common_methods/common_methods.dart';
 import 'package:calculator_lite/features/secure_mode.dart';
 import 'package:calculator_lite/fixed_values.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_ce/hive.dart';
@@ -136,6 +137,37 @@ class _CalculatorTabState extends State<CalculatorTab> {
     if (len > 0) setState(() => calculationString.removeAt(len - 1));
   }
 
+  List<String> _tokensFromResult(double value) {
+    String formatted = DisplayScreen.formatNumber(value);
+    if (formatted.contains('e')) {
+      final exactDecimal = Decimal.tryParse(value.toString());
+      if (exactDecimal != null) {
+        final plain = exactDecimal.toString();
+        if (plain.length <= 24) {
+          formatted = plain;
+        } else {
+          final parts = formatted.split('e');
+          if (parts.length == 2) {
+            final mantissa = parts[0].replaceAll('-', FixedValues.minus);
+            final expStr =
+                parts[1].replaceFirst('+', '').replaceAll('-', FixedValues.minus);
+            return [
+              ...mantissa.split(''),
+              FixedValues.multiplyChar,
+              '1',
+              '0',
+              '^',
+              '(',
+              ...expStr.split(''),
+              ')',
+            ];
+          }
+        }
+      }
+    }
+    return formatted.replaceAll('-', FixedValues.minus).split('');
+  }
+
   void displayToScreen({
     required String value,
     required BuildContext context,
@@ -170,15 +202,16 @@ class _CalculatorTabState extends State<CalculatorTab> {
         runCalcParser('');
       }
     } else if (value.contains('=')) {
-      if (DisplayScreen.isDoubleValid(mainValue)) {
+      if (DisplayScreen.isDoubleValid(mainValue) && mainValue.isFinite) {
         final String calcStr = calculationString.join();
-        addToHistory(calcStr);
+        final double valueSnapshot = mainValue;
+        final String metricSnapshot = currentMetric;
+        addToHistory(calcStr, valueSnapshot, metricSnapshot);
 
         setState(() {
+          focus.clearData();
           calculationString.clear();
-          calculationString.addAll(
-            DisplayScreen.formatNumber(mainValue).split(''),
-          );
+          calculationString.addAll(_tokensFromResult(valueSnapshot));
         });
       }
     } else {
@@ -215,12 +248,26 @@ class _CalculatorTabState extends State<CalculatorTab> {
       mainValue = computedValue;
     });
 
-    final String calcStr = updatedString.join();
-    timer = Timer(const Duration(seconds: 6), () => addToHistory(calcStr));
+    if (DisplayScreen.isDoubleValid(computedValue) && computedValue.isFinite) {
+      final String calcStr = updatedString.join();
+      final String metricSnapshot = currentMetric;
+      timer = Timer(
+        const Duration(seconds: 6),
+        () => addToHistory(calcStr, computedValue, metricSnapshot),
+      );
+    }
   }
 
-  void addToHistory(String historyCalcStr) async {
-    if (historyCalcStr.isEmpty) return;
+  void addToHistory(
+    String historyCalcStr,
+    double valueSnapshot,
+    String metricSnapshot,
+  ) async {
+    if (historyCalcStr.isEmpty ||
+        valueSnapshot.isNaN ||
+        valueSnapshot.isInfinite) {
+      return;
+    }
 
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     final String status =
@@ -237,10 +284,10 @@ class _CalculatorTabState extends State<CalculatorTab> {
     final DateTime now = DateTime.now();
     final HistoryItem historyItem = HistoryItem(
       expression: historyCalcStr,
-      value: mainValue.toString(),
+      value: valueSnapshot.toString(),
       dateTime: now,
       title: getFormattedTitle(now),
-      metrics: currentMetric,
+      metrics: metricSnapshot,
     );
 
     await box.add(historyItem);
@@ -333,8 +380,31 @@ class _CalculatorTabState extends State<CalculatorTab> {
       }
     }
 
-    final mappedVal = _keyMap[event.logicalKey];
+    final char = event.character;
+    if (char != null) {
+      String? charMapped;
+      if (char == '+') {
+        charMapped = '+';
+      } else if (char == '-') {
+        charMapped = FixedValues.minus;
+      } else if (char == '*') {
+        charMapped = FixedValues.multiplyChar;
+      } else if (char == '/') {
+        charMapped = FixedValues.divisionChar;
+      } else if (const ['(', ')', '%', '^', '.', '='].contains(char)) {
+        charMapped = char;
+      }
+      if (charMapped != null) {
+        displayToScreen(
+          value: charMapped,
+          context: context,
+          focus: _customFocusEvents,
+        );
+        return true;
+      }
+    }
 
+    final mappedVal = _keyMap[event.logicalKey];
     if (mappedVal != null) {
       displayToScreen(
         value: mappedVal,
@@ -342,46 +412,6 @@ class _CalculatorTabState extends State<CalculatorTab> {
         focus: _customFocusEvents,
       );
       return true;
-    }
-
-    final char = event.character;
-    if (char != null) {
-      if (char == '+') {
-        displayToScreen(
-          value: '+',
-          context: context,
-          focus: _customFocusEvents,
-        );
-        return true;
-      } else if (char == '-') {
-        displayToScreen(
-          value: FixedValues.minus,
-          context: context,
-          focus: _customFocusEvents,
-        );
-        return true;
-      } else if (char == '*') {
-        displayToScreen(
-          value: FixedValues.multiplyChar,
-          context: context,
-          focus: _customFocusEvents,
-        );
-        return true;
-      } else if (char == '/') {
-        displayToScreen(
-          value: FixedValues.divisionChar,
-          context: context,
-          focus: _customFocusEvents,
-        );
-        return true;
-      } else if (['(', ')', '%', '^'].contains(char)) {
-        displayToScreen(
-          value: char,
-          context: context,
-          focus: _customFocusEvents,
-        );
-        return true;
-      }
     }
 
     return false;

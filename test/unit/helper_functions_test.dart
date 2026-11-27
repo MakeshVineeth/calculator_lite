@@ -51,10 +51,19 @@ void main() {
       expect(helper.isOddMultiple90(360), isFalse);
     });
 
-    test('isInteger correctly identifies whole numbers', () {
+    test('isInteger correctly identifies whole numbers and rejects infinities', () {
       expect(helper.isInteger(5), isTrue);
       expect(helper.isInteger(5.0), isTrue);
       expect(helper.isInteger(5.25), isFalse);
+      expect(helper.isInteger(double.infinity), isFalse);
+      expect(helper.isInteger(double.negativeInfinity), isFalse);
+      expect(helper.isInteger(double.nan), isFalse);
+    });
+
+    test('replaceExp preserves non-decimal tokens containing e safely', () {
+      final result = helper.replaceExp(['e', 'abc']);
+      expect(result.first, contains('2.718'));
+      expect(result.last, equals('abc'));
     });
 
     test('getDate formats DateTime into yyyy-MM-dd HH:mm', () {

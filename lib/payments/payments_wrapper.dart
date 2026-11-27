@@ -7,15 +7,16 @@ import 'package:provider/provider.dart';
 
 class PaymentsWrapper extends StatefulWidget {
   final Widget child;
+  final InAppPurchase? iap;
 
-  const PaymentsWrapper({required this.child, super.key});
+  const PaymentsWrapper({required this.child, this.iap, super.key});
 
   @override
   State<PaymentsWrapper> createState() => _PaymentsWrapperState();
 }
 
 class _PaymentsWrapperState extends State<PaymentsWrapper> {
-  final InAppPurchase _iap = InAppPurchase.instance;
+  late final InAppPurchase _iap = widget.iap ?? InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   final PurchaseStatusProvider _purchaseStatus = PurchaseStatusProvider();
 
@@ -102,6 +103,5 @@ class _PaymentsWrapperState extends State<PaymentsWrapper> {
   void _deliverPurchase(PurchaseDetails purchase) {
     if (!mounted) return;
     _purchaseStatus.updateStatus(true);
-    _iap.completePurchase(purchase);
   }
 }

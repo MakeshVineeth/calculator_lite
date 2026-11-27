@@ -44,11 +44,12 @@ class ThemeButtons extends StatefulWidget {
 
 class _ThemeButtonsState extends State<ThemeButtons> {
   String _currentThemeString = 'System Default';
-  late ThemeChange themeChange;
+  ThemeChange? themeChange;
 
   void getCurrentThemeStat() async {
     final prefs = await SharedPreferences.getInstance();
     final theme = prefs.getString('theme') ?? 'System Default';
+    if (!mounted) return;
     setState(() => _currentThemeString = theme);
   }
 
@@ -60,7 +61,7 @@ class _ThemeButtonsState extends State<ThemeButtons> {
 
   @override
   Widget build(BuildContext context) {
-    themeChange = ThemeChange.of(context)!;
+    themeChange = ThemeChange.of(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -88,6 +89,6 @@ class _ThemeButtonsState extends State<ThemeButtons> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('theme', _currentThemeString);
     final ThemeMode themeMode = MiniThemeFunctions.parseTheme(_currentThemeString);
-    themeChange.stateFunction(themeMode);
+    themeChange?.stateFunction(themeMode);
   }
 }

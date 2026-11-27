@@ -26,6 +26,39 @@ class CardUI extends StatefulWidget {
     super.key,
   });
 
+  static final RegExp _whitespaceRegex = RegExp(r'[\s\u00A0\u202F]+');
+
+  static String sanitizeCurrencyInput(
+    String input, {
+    String? groupSep,
+  }) {
+    String cleaned = input.replaceAll(',', '').replaceAll(_whitespaceRegex, '');
+    final sep = groupSep ?? '';
+    if (sep.isNotEmpty && sep != '.') {
+      cleaned = cleaned.replaceAll(sep, '');
+    } else if (sep == '.') {
+      final parts = cleaned.split('.');
+      if (parts.length > 2 ||
+          (parts.length == 2 && parts[1].length == 3 && parts[0].isNotEmpty)) {
+        cleaned = parts.join();
+      }
+    }
+
+    final buffer = StringBuffer();
+    bool hasDot = false;
+    for (int i = 0; i < cleaned.length && buffer.length < 18; i++) {
+      final ch = cleaned[i];
+      final code = ch.codeUnitAt(0);
+      if (code >= 48 && code <= 57) {
+        buffer.write(ch);
+      } else if (ch == '.' && !hasDot) {
+        hasDot = true;
+        buffer.write('.');
+      }
+    }
+    return buffer.toString();
+  }
+
   @override
   State<CardUI> createState() => _CardUIState();
 }
@@ -102,6 +135,9 @@ class _CardUIState extends State<CardUI> {
       if (!widget.remove) {
         widget.resetFormProvider.addListener(_handleResetForm);
       }
+    }
+    if (oldWidget.index != widget.index && !widget.remove) {
+      openBoxes();
     }
   }
 
@@ -372,12 +408,13 @@ class _CardUIState extends State<CardUI> {
 
   void handleFromText(String from, String method) {
     try {
-      from = from.replaceAll(',', '');
+      from = CardUI.sanitizeCurrencyInput(
+        from,
+        groupSep: _formatCurrency.symbols.GROUP_SEP,
+      );
 
       final bool isFrom = isFromMethod(method);
-      final List<String> textArray = from.split('');
-
-      if (textArray.isEmpty) {
+      if (from.isEmpty) {
         if (isFrom) {
           controllerTo.clear();
         } else {
@@ -386,23 +423,10 @@ class _CardUIState extends State<CardUI> {
         return;
       }
 
-      if (!helperFunctions.numbersList.contains(textArray.last)) {
-        textArray.removeLast();
-      }
-
-      if (textArray.isNotEmpty && textArray.last == '.') {
-        final int decimalOccurrence =
-            textArray.where((element) => element == '.').length;
-
-        if (decimalOccurrence > 1) textArray.removeLast();
-      }
-
-      from = textArray.join();
       final double? val = double.tryParse(from);
+      final bool isValidNumber = val != null && val.isFinite;
 
-      if (val != null &&
-          !textArray.contains('.') &&
-          helperFunctions.isInteger(val)) {
+      if (isValidNumber && !from.contains('.') && helperFunctions.isInteger(val)) {
         from = _formatCurrency.format(val);
       }
 
@@ -413,7 +437,7 @@ class _CardUIState extends State<CardUI> {
           extentOffset: from.length,
         );
 
-        if (val != null) {
+        if (isValidNumber) {
           controllerTo.text =
               (val * exchangeRate).toStringAsFixed(decimalPlaces);
         } else {
@@ -426,7 +450,7 @@ class _CardUIState extends State<CardUI> {
           extentOffset: from.length,
         );
 
-        if (val != null && exchangeRate > 0) {
+        if (isValidNumber && exchangeRate > 0) {
           controllerFrom.text =
               (val / exchangeRate).toStringAsFixed(decimalPlaces);
         } else {

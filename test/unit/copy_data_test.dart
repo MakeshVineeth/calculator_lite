@@ -111,4 +111,23 @@ void main() {
       anyOf(endsWith('/eu.png'), endsWith('/de.png'), endsWith('/fr.png')),
     );
   });
+
+  test('CopyData fresh seed + _healCards preserves US and European EUR flags (never /ax.png)',
+      () async {
+    final copyData = CopyData();
+    await copyData.copyData;
+
+    final fromBox = Hive.box<CurrencyListItem>(CommonsData.fromBox);
+    final toBox = Hive.box<CurrencyListItem>(CommonsData.toBox);
+
+    expect(fromBox.isNotEmpty, isTrue);
+    expect(toBox.isNotEmpty, isTrue);
+    expect(fromBox.getAt(0)!.flagURL.toLowerCase(), endsWith('/us.png'));
+    expect(toBox.getAt(0)!.currencyCode, equals('EUR'));
+    expect(toBox.getAt(0)!.flagURL.toLowerCase(), isNot(endsWith('/ax.png')));
+    expect(
+      toBox.getAt(0)!.flagURL.toLowerCase(),
+      anyOf(endsWith('/eu.png'), endsWith('/de.png'), endsWith('/fr.png')),
+    );
+  });
 }

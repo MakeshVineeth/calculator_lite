@@ -46,6 +46,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
   late final List<CurrencyListItem> _allItems;
   late List<CurrencyListItem> _filteredItems;
   String _searchQuery = '';
+  bool _isSelecting = false;
 
   @override
   void initState() {
@@ -214,15 +215,23 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
                               vertical: 4,
                             ),
                             onTap: () async {
+                              if (_isSelecting) return;
+                              _isSelecting = true;
                               _searchFocusNode.unfocus();
-                              final callback = widget.onCurrencySelected;
-                              if (callback != null) {
-                                await callback(currencyListItem);
-                              } else {
-                                await onTap(context, currencyListItem);
+                              try {
+                                final callback = widget.onCurrencySelected;
+                                if (callback != null) {
+                                  await callback(currencyListItem);
+                                } else {
+                                  await onTap(context, currencyListItem);
+                                }
+                                if (!context.mounted) return;
+                                Navigator.of(context, rootNavigator: true).pop();
+                              } finally {
+                                if (mounted) {
+                                  _isSelecting = false;
+                                }
                               }
-                              if (!context.mounted) return;
-                              Navigator.of(context, rootNavigator: true).pop();
                             },
                             leading: FlagIcon(flagURL: currencyListItem.flagURL),
                             title: Text(
@@ -248,6 +257,7 @@ class _CurrencyChooserState extends State<CurrencyChooser> {
     CurrencyListItem currencyListItem,
   ) async {
     final Box<CurrencyListItem> box = Hive.box<CurrencyListItem>(widget.method);
+    if (widget.boxIndex < 0 || widget.boxIndex >= box.length) return;
     await box.putAt(widget.boxIndex, currencyListItem);
     final String codeLower = currencyListItem.currencyCode.toLowerCase();
     if (!Hive.isBoxOpen(codeLower)) {

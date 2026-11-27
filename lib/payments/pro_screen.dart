@@ -10,7 +10,10 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 
 class ProScreen extends StatefulWidget {
-  const ProScreen({super.key});
+  final InAppPurchase? iap;
+  final bool? isAndroidOverride;
+
+  const ProScreen({this.iap, this.isAndroidOverride, super.key});
 
   @override
   State<ProScreen> createState() => _ProScreenState();
@@ -26,7 +29,7 @@ class _ProScreenState extends State<ProScreen> {
   };
 
   // The In App Purchase plugin
-  final InAppPurchase _iap = InAppPurchase.instance;
+  late final InAppPurchase _iap = widget.iap ?? InAppPurchase.instance;
 
   bool isPortrait = true;
 
@@ -61,7 +64,7 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   Widget checkPlatformWin() {
-    if (!Platform.isAndroid) {
+    if (!(widget.isAndroidOverride ?? Platform.isAndroid)) {
       return const Center(
         child: Card(
           child: Padding(
@@ -169,20 +172,7 @@ class _ProScreenState extends State<ProScreen> {
   );
 
   Widget loadProducts() {
-    if (_products.isNotEmpty && !purchaseStatusProvider.hasPurchased) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: List.generate(
-          _products.length,
-          (index) => PurchaseButton(
-            callback: () => _buyProduct(_products.elementAt(index)),
-            fg: Colors.white,
-            bg: Colors.blueAccent,
-            text: 'BUY ${_products.elementAt(index).price}',
-          ),
-        ),
-      );
-    } else if (purchaseStatusProvider.hasPurchased) {
+    if (purchaseStatusProvider.hasPurchased) {
       return PurchaseButton(
         callback: () => {},
         fg: Colors.white,
@@ -195,6 +185,19 @@ class _ProScreenState extends State<ProScreen> {
         fg: Colors.white,
         bg: Colors.blueAccent,
         text: CommonPurchaseStrings.paymentPending,
+      );
+    } else if (_products.isNotEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(
+          _products.length,
+          (index) => PurchaseButton(
+            callback: () => _buyProduct(_products.elementAt(index)),
+            fg: Colors.white,
+            bg: Colors.blueAccent,
+            text: 'BUY ${_products.elementAt(index).price}',
+          ),
+        ),
       );
     } else {
       return PurchaseButton(
