@@ -57,6 +57,14 @@ class _EditWidgetState extends State<EditWidget> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: myController,
+                  maxLength: 150,
+                  buildCounter: (
+                    context, {
+                    required currentLength,
+                    required isFocused,
+                    maxLength,
+                  }) =>
+                      null,
                   scrollPhysics: const AlwaysScrollableScrollPhysics(
                     parent: BouncingScrollPhysics(),
                   ),
@@ -83,6 +91,7 @@ class _EditWidgetState extends State<EditWidget> {
   void changeTitle(bool date) async {
     final Box<HistoryItem> box =
         Hive.box<HistoryItem>(CommonsHistory.historyBox);
+    if (widget.index < 0 || widget.index >= box.length) return;
     final HistoryItem? historyItem = box.getAt(widget.index);
     if (historyItem == null) return;
 

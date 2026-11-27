@@ -45,10 +45,11 @@ class _TextFieldCalcState extends State<TextFieldCalc> {
     final String text = widget.calculationString.join();
 
     if (customFocusEvents.isFocused) {
+      final int safeOffset = customFocusEvents.position.clamp(0, text.length);
       final targetValue = TextEditingValue(
         text: text,
         selection: TextSelection.fromPosition(
-          TextPosition(offset: customFocusEvents.position),
+          TextPosition(offset: safeOffset),
         ),
       );
       if (myController.value != targetValue) {

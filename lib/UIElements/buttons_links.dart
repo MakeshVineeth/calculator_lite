@@ -34,7 +34,7 @@ class ButtonLinks extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0))),
           overlayColor: WidgetStateProperty.all(Colors.white10),
           padding: WidgetStateProperty.all(
-              const EdgeInsets.symmetric(vertical: 12.0)),
+              const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0)),
         ),
         label: FittedBox(
           fit: BoxFit.scaleDown,

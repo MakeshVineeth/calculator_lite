@@ -116,15 +116,20 @@ class CopyData {
   ) async {
     if (currencyBox.isEmpty || (fromBox.isEmpty && toBox.isEmpty)) return;
 
-    final Map<String, CurrencyListItem> byCode = {
-      for (final item in currencyBox.values) item.currencyCode: item,
+    final Set<String> validPairs = {
+      for (final item in currencyBox.values)
+        '${item.currencyCode.toUpperCase()}|${item.flagURL}',
     };
 
     for (final Box<CurrencyListItem> cardBox in [fromBox, toBox]) {
       for (int i = 0; i < cardBox.length; i++) {
         final item = cardBox.getAt(i);
         if (item == null) continue;
-        final match = byCode[item.currencyCode];
+        final pair = '${item.currencyCode.toUpperCase()}|${item.flagURL}';
+        if (item.flagURL.isNotEmpty && validPairs.contains(pair)) {
+          continue;
+        }
+        final match = findPreferredCurrency(currencyBox.values, item.currencyCode);
         if (match != null && match.flagURL != item.flagURL) {
           await cardBox.putAt(i, match);
         }

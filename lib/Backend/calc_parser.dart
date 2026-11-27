@@ -13,6 +13,11 @@ class SmartParseResult {
 }
 
 class CalcParser {
+  static const int maxExpressionLength = 200;
+  static const int maxNestingDepth = 32;
+  static const int maxEvalDepth = 20;
+  static const int maxExpandedTokens = 1024;
+
   List<String> calculationString;
   String currentMetric;
 
@@ -61,8 +66,24 @@ class CalcParser {
   // This function adds elements to displayScreen with formatting.
   List<String> addToExpression(String value) {
     if (value.isEmpty) return calculationString;
+    if (calculationString.length >= maxExpressionLength) {
+      return calculationString;
+    }
     if (value == FixedValues.decimalChar) {
       value = '.';
+    }
+
+    final bool opensGroup = value == '(' ||
+        trigFunctions.contains(value) ||
+        value == FixedValues.root ||
+        value == FixedValues.cubeRoot;
+    if (opensGroup) {
+      final joined = calculationString.join();
+      final openCount = '('.allMatches(joined).length;
+      final closeCount = ')'.allMatches(joined).length;
+      if (openCount - closeCount >= maxNestingDepth) {
+        return calculationString;
+      }
     }
 
     if (calculationString.isNotEmpty) {
@@ -96,6 +117,13 @@ class CalcParser {
             [FixedValues.multiplyChar, FixedValues.divisionChar, '^']
                 .contains(lastChar)) {
           calculationString.add(value);
+          return calculationString;
+        }
+
+        // Preserve leading unary minus at start of expression or immediately after '('
+        if (lastChar == FixedValues.minus &&
+            (calculationString.length == 1 ||
+                calculationString[calculationString.length - 2].endsWith('('))) {
           return calculationString;
         }
 
@@ -177,8 +205,14 @@ class CalcParser {
             }
           }
         } else if (value == 'eˣ') {
+          if (helperFunctions.numbersList.contains(lastChar)) {
+            calculationString.add(FixedValues.multiplyChar);
+          }
           calculationString.addAll(['e', '^']);
         } else if (value == '𝟏𝟬ˣ') {
+          if (helperFunctions.numbersList.contains(lastChar)) {
+            calculationString.add(FixedValues.multiplyChar);
+          }
           calculationString.addAll(['1', '0', '^']);
         } else if (value == FixedValues.cubeRoot) {
           calculationString.addAll([FixedValues.cubeRootSym, '(']);
@@ -234,9 +268,16 @@ class CalcParser {
     }
   }
 
-  SmartParseResult smartParseLast(int lastIndex, List<String> compStr) {
+  SmartParseResult smartParseLast(
+    int lastIndex,
+    List<String> compStr, {
+    int depth = 0,
+  }) {
     double value = 0;
     int start = 0;
+    if (depth > maxEvalDepth) {
+      return const SmartParseResult(start: 0, value: double.nan);
+    }
     try {
       start = helperFunctions.parseNumbersFromEnd(lastIndex, compStr);
       if (start != lastIndex) {
@@ -245,23 +286,24 @@ class CalcParser {
       } else if (compStr[lastIndex].contains(')')) {
         start = helperFunctions.parseMatchingBrackets(lastIndex, compStr);
         final List<String> temp = compStr.getRange(start, lastIndex + 1).toList();
-        value = evalFunction(temp);
+        value = evalFunction(temp, depth: depth + 1);
         start -= 1;
       } else if (helperFunctions.constList.contains(compStr[lastIndex])) {
         start = helperFunctions.parseConstFromEnd(lastIndex, compStr);
         final List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
-        value = evalFunction(temp);
+        value = evalFunction(temp, depth: depth + 1);
       } else if (['%', '!'].contains(compStr[lastIndex])) {
         start = 0;
         List<String> temp = compStr.getRange(start, lastIndex).toList();
-        final SmartParseResult getData = smartParseLast(temp.length - 1, temp);
+        final SmartParseResult getData =
+            smartParseLast(temp.length - 1, temp, depth: depth + 1);
         start = getData.start;
         temp = compStr.getRange(start + 1, lastIndex + 1).toList();
-        value = evalFunction(temp);
+        value = evalFunction(temp, depth: depth + 1);
       } else {
         start = helperFunctions.parseOperatorFromEnd(lastIndex, compStr);
         final List<String> temp = compStr.getRange(start + 1, lastIndex + 1).toList();
-        value = evalFunction(temp);
+        value = evalFunction(temp, depth: depth + 1);
       }
     } catch (_) {}
 
@@ -351,10 +393,13 @@ class CalcParser {
   Future<double> getValue() =>
       Future<double>.value(evalFunction(calculationString));
 
-  double evalFunction(List<String> calcStr) {
+  double evalFunction(List<String> calcStr, {int depth = 0}) {
+    if (depth > maxEvalDepth || calcStr.length > maxExpandedTokens) {
+      return double.nan;
+    }
     try {
       final GrammarParser p = GrammarParser();
-      final String comptStr = computerString(calcStr);
+      final String comptStr = computerString(calcStr, depth: depth);
       final Expression exp = p.parse(comptStr);
       final ContextModel cm = ContextModel();
       final dynamic evalResult = exp.evaluate(EvaluationType.REAL, cm);
@@ -366,7 +411,10 @@ class CalcParser {
     }
   }
 
-  String computerString(List<String> calcStr) {
+  String computerString(List<String> calcStr, {int depth = 0}) {
+    if (depth > maxEvalDepth || calcStr.length > maxExpandedTokens) {
+      return '0/0';
+    }
     List<String> tempString = List.from(calcStr);
 
     if (tempString.length > 1) {
@@ -426,22 +474,38 @@ class CalcParser {
 
     tempString = helperFunctions.replaceExp(tempString);
 
+    int steps = 0;
     while (tempString.where((value) => value == FixedValues.root).isNotEmpty) {
-      tempString = getRoot(tempString, FixedValues.root);
+      if (++steps > maxExpandedTokens || tempString.length > maxExpandedTokens) {
+        return '0/0';
+      }
+      tempString = getRoot(tempString, FixedValues.root, depth: depth);
     }
 
+    steps = 0;
     while (tempString
         .where((value) => value == FixedValues.cubeRootSym)
         .isNotEmpty) {
-      tempString = getRoot(tempString, FixedValues.cubeRootSym);
+      if (++steps > maxExpandedTokens || tempString.length > maxExpandedTokens) {
+        return '0/0';
+      }
+      tempString = getRoot(tempString, FixedValues.cubeRootSym, depth: depth);
     }
 
+    steps = 0;
     while (tempString.where((value) => value == '!').isNotEmpty) {
-      tempString = getFactorOrPercent(tempString, '!');
+      if (++steps > maxExpandedTokens || tempString.length > maxExpandedTokens) {
+        return '0/0';
+      }
+      tempString = getFactorOrPercent(tempString, '!', depth: depth);
     }
 
+    steps = 0;
     while (tempString.where((value) => value == '%').isNotEmpty) {
-      tempString = getFactorOrPercent(tempString, '%');
+      if (++steps > maxExpandedTokens || tempString.length > maxExpandedTokens) {
+        return '0/0';
+      }
+      tempString = getFactorOrPercent(tempString, '%', depth: depth);
     }
 
     String computerStr = tempString.join();
@@ -455,7 +519,12 @@ class CalcParser {
     }
 
     if (currentMetric == 'DEG') {
+      steps = 0;
       while ((tempString.where((item) => trigs.contains(item))).isNotEmpty) {
+        if (++steps > maxExpandedTokens ||
+            tempString.length > maxExpandedTokens) {
+          return '0/0';
+        }
         for (int count = 0; count < tempString.length; count++) {
           if (trigs.contains(tempString[count])) {
             int braceCount = count;
@@ -468,13 +537,16 @@ class CalcParser {
             }
             final List<String> temp =
                 tempString.getRange(count + 1, braceCount).toList();
-            final double angle = evalFunction(temp);
+            final double angle = evalFunction(temp, depth: depth + 1);
             final double degVal =
                 helperFunctions.getDegValue(tempString, count, angle);
             String replaceThis =
                 degVal == double.infinity ? '1/0' : degVal.toString();
             replaceThis = degVal.isNaN ? '0/0' : replaceThis;
-            tempString.replaceRange(count, braceCount + 1, [replaceThis]);
+            final int endRange = (braceCount < tempString.length)
+                ? braceCount + 1
+                : tempString.length;
+            tempString.replaceRange(count, endRange, [replaceThis]);
             break;
           }
         }
@@ -503,7 +575,11 @@ class CalcParser {
     return computerStr;
   }
 
-  List<String> getRoot(List<String> computerStr, String char) {
+  List<String> getRoot(
+    List<String> computerStr,
+    String char, {
+    int depth = 0,
+  }) {
     final int index = computerStr.indexOf(char);
     if (index != -1) {
       int count = index + 1;
@@ -539,7 +615,7 @@ class CalcParser {
       }
 
       final List<String> valStr = computerStr.getRange(index + 1, count).toList();
-      final double val = evalFunction(valStr);
+      final double val = evalFunction(valStr, depth: depth + 1);
       if (val < 0) {
         if (char == FixedValues.root) {
           computerStr = ['0/0'];
@@ -582,11 +658,16 @@ class CalcParser {
     }
   }
 
-  List<String> getFactorOrPercent(List<String> computerStr, String char) {
+  List<String> getFactorOrPercent(
+    List<String> computerStr,
+    String char, {
+    int depth = 0,
+  }) {
     final int index = computerStr.indexOf(char);
     computerStr.removeAt(index);
     int count = index - 1;
-    final SmartParseResult data = smartParseLast(count, computerStr);
+    final SmartParseResult data =
+        smartParseLast(count, computerStr, depth: depth + 1);
     count = data.start;
     final double val = data.value;
     if (char.contains('!')) {
@@ -647,7 +728,8 @@ class CalcParser {
         }
         return computerStr;
       } else if (previousMinus || prev.last.contains('(${FixedValues.minus}')) {
-        computerStr.insertAll(prev.length + 1, ['*', '0.01']);
+        computerStr.replaceRange(
+            count + 1, index, helperFunctions.concatenateList([first / 100]));
       } else if ((index < computerStr.length) &&
           ![FixedValues.minus, '+'].contains(computerStr[index])) {
         computerStr.replaceRange(
@@ -658,21 +740,19 @@ class CalcParser {
       } else if ((index - 1 > -1) &&
           !helperFunctions.numbersList.contains(computerStr[index - 1])) {
         if (plusminus.contains(prev[prev.length - 1])) {
-          computerStr.replaceRange(
-              count + 1,
-              index,
-              helperFunctions
-                  .concatenateList(['(', second, ')', '*', first, '/', '100']));
+          final double baseVal = evalFunction(second, depth: depth + 1);
+          if (!baseVal.isFinite) return ['0/0'];
+          final double pctVal = baseVal * first / 100;
+          computerStr.replaceRange(count + 1, index, ['($pctVal)']);
         } else {
           computerStr.replaceRange(
               count + 1, index, helperFunctions.concatenateList([first / 100]));
         }
       } else if (plusminus.contains(lastChar)) {
-        computerStr.replaceRange(
-            0,
-            index,
-            helperFunctions.concatenateList(
-                [second, lastChar, '(', second, ')', '*', first, '/', '100']));
+        final double baseVal = evalFunction(second, depth: depth + 1);
+        if (!baseVal.isFinite) return ['0/0'];
+        final double pctVal = baseVal * first / 100;
+        computerStr.replaceRange(count + 1, index, ['($pctVal)']);
       } else {
         computerStr.replaceRange(count + 1, index,
             helperFunctions.concatenateList([first / 100]));

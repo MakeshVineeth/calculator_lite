@@ -42,13 +42,13 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
               value: false,
               groupValue: _disabled,
               title: 'Enable',
-              function: _doTask,
+              function: () => _doTask(false),
             ),
             RadioTileCustom(
               value: true,
               groupValue: _disabled,
               title: 'Disable',
-              function: _doTask,
+              function: () => _doTask(true),
             ),
           ],
         ),
@@ -56,12 +56,12 @@ class _PrivacyDialogState extends State<PrivacyDialog> {
     );
   }
 
-  void _doTask() async {
+  void _doTask(bool disabled) async {
     try {
       if (Platform.isAndroid) {
-        if (mounted) setState(() => _disabled = !_disabled);
-        await setPrefs('privacy', _disabled);
-        await setSecure(_disabled);
+        if (mounted) setState(() => _disabled = disabled);
+        await setPrefs('privacy', disabled);
+        await setSecure(disabled);
       }
     } catch (_) {}
   }

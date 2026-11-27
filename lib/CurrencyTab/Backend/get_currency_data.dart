@@ -7,29 +7,54 @@ import 'package:flutter/services.dart';
 import 'package:hive_ce/hive.dart';
 
 class CurrencyData {
+  static final RegExp _currencyCodeRegex = RegExp(r'^[A-Z]{3}$');
+  static const Set<String> _reservedBoxNames = {
+    CommonsData.currencyListBox,
+    CommonsData.fromBox,
+    CommonsData.toBox,
+    CommonsData.updatedDateBox,
+    'history',
+  };
+  static const int _maxRemoteCurrencies = 250;
+
+  static Map<String, double>? parseAndValidateRates(dynamic responseData) {
+    if (responseData is! Map) return null;
+    final dynamic rawRates = responseData['rates'];
+    if (rawRates is! Map) return null;
+
+    final Map<String, double> usdRates = {'USD': 1.0};
+    for (final entry in rawRates.entries) {
+      if (usdRates.length >= _maxRemoteCurrencies) break;
+      final dynamic rawKey = entry.key;
+      final dynamic val = entry.value;
+      if (rawKey is! String || val is! num) continue;
+      final String code = rawKey.trim().toUpperCase();
+      if (!_currencyCodeRegex.hasMatch(code)) continue;
+      if (_reservedBoxNames.contains(code.toLowerCase())) continue;
+      final double parsed = val.toDouble();
+      if (!parsed.isFinite || parsed <= 0) continue;
+      usdRates[code] = parsed;
+    }
+
+    return usdRates.length > 1 ? usdRates : null;
+  }
+
   Future<String> getRemoteData() async {
     try {
       const String usdUrl = '${CommonsData.remoteUrl}?from=USD';
       final Response<dynamic>? response = await CommonsData.getResponse(usdUrl);
 
-      if (response == null || response.data == null) {
+      if (response == null ||
+          response.statusCode != 200 ||
+          response.data == null) {
         return CommonsData.errorToken;
       }
 
-      final Map<String, dynamic> data =
-          Map<String, dynamic>.from(response.data as Map);
-      final Map<String, dynamic> rawRates =
-          Map<String, dynamic>.from(data['rates'] as Map);
-
-      final Map<String, double> usdRates = {'USD': 1.0};
-      for (final entry in rawRates.entries) {
-        final val = entry.value;
-        if (val is num) {
-          usdRates[entry.key] = val.toDouble();
-        }
+      final Map<String, double>? usdRates = parseAndValidateRates(response.data);
+      if (usdRates == null) {
+        return CommonsData.errorToken;
       }
 
-      final activeBaseCodes = _activeBaseCurrencyCodes();
       final bool usdWasOpen = Hive.isBoxOpen('usd');
       final Box<dynamic> usdBox = await _openBoxSafe<dynamic>('usd');
       await usdBox.putAll(usdRates);
@@ -48,20 +73,25 @@ class CurrencyData {
         final Map<String, double> ratesForBase = {};
         for (final targetCode in usdRates.keys) {
           final targetToUsd = usdRates[targetCode];
-          if (targetToUsd != null) {
-            ratesForBase[targetCode] = targetToUsd / baseToUsd;
+          if (targetToUsd != null && targetToUsd.isFinite && targetToUsd > 0) {
+            final double ratio = targetToUsd / baseToUsd;
+            if (ratio.isFinite && ratio > 0) {
+              ratesForBase[targetCode] = ratio;
+            }
           }
         }
 
         final bool wasOpen = Hive.isBoxOpen(baseCodeLower);
         final Box<dynamic> baseBox = await _openBoxSafe<dynamic>(baseCodeLower);
         await baseBox.putAll(ratesForBase);
-        if (!wasOpen && !activeBaseCodes.contains(baseCodeLower)) {
+        final currentActive = _activeBaseCurrencyCodes();
+        if (!wasOpen && !currentActive.contains(baseCodeLower)) {
           await baseBox.close();
         }
       }
 
-      if (!usdWasOpen && !activeBaseCodes.contains('usd')) {
+      final currentActive = _activeBaseCurrencyCodes();
+      if (!usdWasOpen && !currentActive.contains('usd')) {
         await usdBox.close();
       }
 

@@ -100,7 +100,9 @@ class HelperFunctions {
           computerStr[i] = '${math.e}';
         } else {
           final d = Decimal.tryParse(computerStr[i]);
-          computerStr[i] = '$d';
+          if (d != null) {
+            computerStr[i] = '$d';
+          }
         }
       }
     }
@@ -167,7 +169,8 @@ class HelperFunctions {
 
   bool check180(double angle) => isInteger(angle) && angle % 180 == 0;
 
-  bool isInteger(num value) => value is int || value == value.roundToDouble();
+  bool isInteger(num value) =>
+      value.isFinite && (value is int || value == value.roundToDouble());
 
   String getDate(DateTime dateTime) =>
       '${_ymdFormat.format(dateTime)} ${_hmFormat.format(dateTime)}';

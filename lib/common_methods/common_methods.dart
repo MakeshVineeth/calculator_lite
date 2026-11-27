@@ -93,7 +93,8 @@ Future<void> launchThisUrl({
   bool enableJavaScript = false,
 }) async {
   try {
-    final Uri urlEncoded = Uri.tryParse(url)!;
+    final Uri? urlEncoded = Uri.tryParse(url);
+    if (urlEncoded == null || urlEncoded.scheme != 'https') return;
 
     await launchUrl(
       urlEncoded,

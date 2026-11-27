@@ -1,13 +1,11 @@
 ﻿import 'dart:io';
 
-import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:calculator_lite/Backend/hive_initializer.dart';
 import 'package:calculator_lite/CurrencyTab/Backend/commons.dart';
 import 'package:calculator_lite/HistoryTab/commons_history.dart';
 import 'package:calculator_lite/HistoryTab/history_card.dart';
 import 'package:calculator_lite/HistoryTab/history_item.dart';
 import 'package:calculator_lite/UIElements/show_slide_up.dart';
-import 'package:calculator_lite/fixed_values.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -22,7 +20,8 @@ class HistoryTab extends StatefulWidget {
 
 class _HistoryTabState extends State<HistoryTab> {
   String searchString = '';
-  final double widthSearchBorder = 1.5;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   late final Future<Box<HistoryItem>?> _historyBoxFuture;
   Box<HistoryItem>? _cachedBox;
   ValueListenable<Box<HistoryItem>>? _boxListenable;
@@ -31,6 +30,13 @@ class _HistoryTabState extends State<HistoryTab> {
   void initState() {
     super.initState();
     _historyBoxFuture = getHistoryBox();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   ValueListenable<Box<HistoryItem>> _listenableFor(Box<HistoryItem> box) {
@@ -51,36 +57,77 @@ class _HistoryTabState extends State<HistoryTab> {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+              padding: const EdgeInsets.fromLTRB(16, 10, 4, 6),
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: AnimatedSearchBar(
-                      cursorColor: Theme.of(context).textTheme.labelLarge?.color,
-                      searchStyle: TextStyle(
+                    child: TextField(
+                      controller: _searchController,
+                      focusNode: _searchFocusNode,
+                      textInputAction: TextInputAction.search,
+                      maxLength: 100,
+                      buildCounter: (
+                        context, {
+                        required currentLength,
+                        required isFocused,
+                        maxLength,
+                      }) =>
+                          null,
+                      cursorColor: Theme.of(context).colorScheme.primary,
+                      style: TextStyle(
+                        fontSize: 15,
                         color: Theme.of(context).textTheme.labelLarge?.color,
                       ),
-                      searchDecoration: InputDecoration(
-                        labelText: 'Search',
-                        alignLabelWithHint: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 8,
+                      decoration: InputDecoration(
+                        hintText: 'Search history',
+                        hintStyle: TextStyle(
+                          fontSize: 15,
+                          color: isLightTheme
+                              ? Colors.grey[600]
+                              : Colors.grey[400],
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: FixedValues.large,
-                          borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor,
-                            width: widthSearchBorder,
-                          ),
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          size: 20,
+                          color: isLightTheme
+                              ? Colors.grey[700]
+                              : Colors.grey[300],
+                        ),
+                        suffixIcon: searchString.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.close_rounded, size: 18),
+                                tooltip: 'Clear search',
+                                onPressed: () {
+                                  _searchController.clear();
+                                  setState(() => searchString = '');
+                                },
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: isLightTheme
+                            ? Colors.black.withValues(alpha: 0.06)
+                            : Colors.white.withValues(alpha: 0.10),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(28),
+                          borderSide: BorderSide.none,
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: FixedValues.large,
+                          borderRadius: BorderRadius.circular(28),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(28),
                           borderSide: BorderSide(
-                            color: isLightTheme
-                                ? Colors.grey[600]!
-                                : Colors.grey[350]!,
-                            width: widthSearchBorder,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.45),
+                            width: 1.0,
                           ),
                         ),
                       ),
@@ -209,6 +256,10 @@ class _HistoryTabState extends State<HistoryTab> {
             }
           }
 
+          if (matchingIndices.isEmpty) {
+            return _noMatchState(context);
+          }
+
           return Expanded(
             child: ListView.builder(
               itemExtent: 200,
@@ -242,6 +293,30 @@ class _HistoryTabState extends State<HistoryTab> {
           const SizedBox(height: 10),
           Text(
             'Your history will appear here.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _noMatchState(BuildContext context) {
+    final color = Theme.of(context).brightness == Brightness.light
+        ? Colors.grey[600]
+        : Colors.grey[400];
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off_rounded, color: color, size: 30),
+          const SizedBox(height: 10),
+          Text(
+            'No matching history found.',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.w600,

@@ -30,12 +30,19 @@ class CommonsData {
     BaseOptions(
       baseUrl: remoteUrl,
       connectTimeout: const Duration(seconds: 15),
+      sendTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
     ),
   );
 
   static Future<Response<dynamic>?> getResponse(String url) async {
     try {
+      final uri = Uri.tryParse(url);
+      if (uri == null ||
+          uri.scheme != 'https' ||
+          uri.host != 'api.frankfurter.dev') {
+        return null;
+      }
       return await _dio.get<dynamic>(url);
     } on DioException catch (e) {
       debugPrint('DioException: ${e.message}');
